@@ -2,7 +2,6 @@ import SwiftUI
 
 struct UserDetailsView: View {
     var goBack: () -> Void
-    @State private var name = ""
     @State private var selectedCategory: String?
     
     var body: some View {
@@ -18,14 +17,6 @@ struct UserDetailsView: View {
                 Text("Almost there!")
                     .font(.largeTitle)
                     .fontWeight(.bold)
-                
-                VStack(alignment: .leading, spacing: 8) {
-                    Text("Name")
-                        .font(.headline)
-                    TextField("Enter your name", text: $name)
-                        .textFieldStyle(RoundedBorderTextFieldStyle())
-                }
-                .padding(.horizontal, 40)
                 
                 VStack(alignment: .leading, spacing: 15) {
                     Text("Primary Clothing Category")

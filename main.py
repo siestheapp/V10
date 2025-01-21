@@ -1,6 +1,4 @@
-
-
-from fastapi import FastAPI
+from fastapi import FastAPI, HTTPException
 
 import psycopg2
 from psycopg2.extras import RealDictCursor
@@ -27,13 +25,19 @@ app = FastAPI()
 def read_root():
     return {"message": "Welcome to Sies!"}
 
-from pydantic import BaseModel
+from pydantic import BaseModel, validator
 
 # Define a User model for validation
 class User(BaseModel):
     email: str
     password: str
     name: str
+    
+    @validator('password')
+    def password_length(cls, v):
+        if len(v) < 4:
+            raise HTTPException(status_code=400, detail="Password must be at least 4 characters long")
+        return v
 
 # Endpoint for user registration
 @app.post("/register")
@@ -42,16 +46,26 @@ def register(user: User):
     cur = conn.cursor()
 
     try:
+        # Check if email already exists
+        cur.execute("SELECT * FROM users WHERE email = %s", (user.email,))
+        if cur.fetchone():
+            raise HTTPException(status_code=400, detail="Email already registered")
+
         # Insert the user data into the database
         cur.execute(
-            "INSERT INTO users (email, password_hash, name) VALUES (%s, %s, %s)",
+            "INSERT INTO users (email, password_hash, name) VALUES (%s, %s, %s) RETURNING id",
             (user.email, user.password, user.name)
         )
+        new_user_id = cur.fetchone()['id']
         conn.commit()
-        return {"message": f"User {user.name} registered successfully!"}
+        
+        return {
+            "message": f"User {user.name} registered successfully!",
+            "user_id": new_user_id
+        }
     except Exception as e:
         conn.rollback()
-        return {"error": str(e)}
+        raise HTTPException(status_code=400, detail=str(e))
     finally:
         cur.close()
         conn.close()
