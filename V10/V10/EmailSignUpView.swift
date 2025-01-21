@@ -3,12 +3,20 @@ import SwiftUI
 struct EmailSignUpView: View {
     @State private var email = ""
     @State private var showUserDetailsView = false
+    @State private var showPasswordView = false
     
     var body: some View {
         if showUserDetailsView {
             UserDetailsView(goBack: {
                 withAnimation {
                     showUserDetailsView = false
+                    showPasswordView = true
+                }
+            })
+        } else if showPasswordView {
+            CreatePasswordView(showUserDetailsView: $showUserDetailsView, goBack: {
+                withAnimation {
+                    showPasswordView = false
                 }
             })
         } else {
@@ -25,7 +33,7 @@ struct EmailSignUpView: View {
                 
                 Button(action: {
                     withAnimation {
-                        showUserDetailsView = true
+                        showPasswordView = true
                     }
                 }) {
                     Text("Submit")
@@ -37,6 +45,7 @@ struct EmailSignUpView: View {
                         .cornerRadius(10)
                 }
                 .padding(.horizontal, 40)
+                .disabled(email.isEmpty)
             }
             .frame(maxWidth: .infinity, maxHeight: .infinity)
             .background(Color(.systemBackground))
