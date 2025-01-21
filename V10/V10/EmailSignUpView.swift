@@ -157,3 +157,9 @@ struct EmailSignUpView: View {
         return password.count >= 4 // Changed from 8 to 4
     }
 }
+
+struct EmailSignUpView_Previews: PreviewProvider {
+    static var previews: some View {
+        EmailSignUpView()
+    }
+}

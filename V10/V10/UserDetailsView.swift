@@ -3,63 +3,91 @@ import SwiftUI
 struct UserDetailsView: View {
     var goBack: () -> Void
     @State private var selectedCategory: String?
+    @State private var showMeasurementIntro = false
     
     var body: some View {
-        ZStack(alignment: .topLeading) {
-            Button(action: goBack) {
-                Image(systemName: "chevron.left")
-                    .font(.title2)
-                    .foregroundColor(.blue)
-                    .padding()
-            }
-            
-            VStack(spacing: 30) {
-                Text("Almost there!")
-                    .font(.largeTitle)
-                    .fontWeight(.bold)
+        if showMeasurementIntro {
+            MeasurementIntroView()
+        } else {
+            ZStack(alignment: .topLeading) {
+                Button(action: goBack) {
+                    Image(systemName: "chevron.left")
+                        .font(.title2)
+                        .foregroundColor(.blue)
+                        .padding()
+                }
                 
-                VStack(alignment: .leading, spacing: 15) {
-                    Text("Primary Clothing Category")
-                        .font(.headline)
+                VStack(spacing: 30) {
+                    Text("Almost there!")
+                        .font(.largeTitle)
+                        .fontWeight(.bold)
                     
-                    HStack(spacing: 15) {
-                        Button(action: {
-                            selectedCategory = "Womens"
-                        }) {
-                            Text("Womens")
-                                .font(.headline)
-                                .foregroundColor(selectedCategory == "Womens" ? .white : .blue)
-                                .frame(maxWidth: .infinity)
-                                .padding()
-                                .background(selectedCategory == "Womens" ? Color.blue : Color.white)
-                                .cornerRadius(10)
-                                .overlay(
-                                    RoundedRectangle(cornerRadius: 10)
-                                        .stroke(Color.blue, lineWidth: 1)
-                                )
-                        }
+                    VStack(alignment: .leading, spacing: 15) {
+                        Text("Primary Clothing Category")
+                            .font(.headline)
                         
-                        Button(action: {
-                            selectedCategory = "Mens"
-                        }) {
-                            Text("Mens")
-                                .font(.headline)
-                                .foregroundColor(selectedCategory == "Mens" ? .white : .blue)
-                                .frame(maxWidth: .infinity)
-                                .padding()
-                                .background(selectedCategory == "Mens" ? Color.blue : Color.white)
-                                .cornerRadius(10)
-                                .overlay(
-                                    RoundedRectangle(cornerRadius: 10)
-                                        .stroke(Color.blue, lineWidth: 1)
-                                )
+                        HStack(spacing: 15) {
+                            Button(action: {
+                                selectedCategory = "Womens"
+                            }) {
+                                Text("Womens")
+                                    .font(.headline)
+                                    .foregroundColor(selectedCategory == "Womens" ? .white : .blue)
+                                    .frame(maxWidth: .infinity)
+                                    .padding()
+                                    .background(selectedCategory == "Womens" ? Color.blue : Color.white)
+                                    .cornerRadius(10)
+                                    .overlay(
+                                        RoundedRectangle(cornerRadius: 10)
+                                            .stroke(Color.blue, lineWidth: 1)
+                                    )
+                            }
+                            
+                            Button(action: {
+                                selectedCategory = "Mens"
+                            }) {
+                                Text("Mens")
+                                    .font(.headline)
+                                    .foregroundColor(selectedCategory == "Mens" ? .white : .blue)
+                                    .frame(maxWidth: .infinity)
+                                    .padding()
+                                    .background(selectedCategory == "Mens" ? Color.blue : Color.white)
+                                    .cornerRadius(10)
+                                    .overlay(
+                                        RoundedRectangle(cornerRadius: 10)
+                                            .stroke(Color.blue, lineWidth: 1)
+                                    )
+                            }
                         }
                     }
+                    .padding(.horizontal, 40)
+                    
+                    if selectedCategory != nil {
+                        Button(action: {
+                            withAnimation {
+                                showMeasurementIntro = true
+                            }
+                        }) {
+                            Text("Continue")
+                                .font(.headline)
+                                .foregroundColor(.white)
+                                .frame(maxWidth: .infinity)
+                                .padding()
+                                .background(Color.blue)
+                                .cornerRadius(10)
+                        }
+                        .padding(.horizontal, 40)
+                    }
                 }
-                .padding(.horizontal, 40)
+                .frame(maxWidth: .infinity, maxHeight: .infinity)
             }
-            .frame(maxWidth: .infinity, maxHeight: .infinity)
+            .background(Color(.systemBackground))
         }
-        .background(Color(.systemBackground))
+    }
+}
+
+struct UserDetailsView_Previews: PreviewProvider {
+    static var previews: some View {
+        UserDetailsView(goBack: {})
     }
 } 
