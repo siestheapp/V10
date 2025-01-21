@@ -1,1 +1,7 @@
- .DS_Store
+# Ignore all .DS_Store files globally
+**/.DS_Store
+
+# Ignore xcuserdata directories globally
+**/xcuserdata/
+
+
