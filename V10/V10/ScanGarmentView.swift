@@ -13,6 +13,7 @@ struct ScanGarmentView: View {
     @State private var showingCropper = false
     @State private var croppedImage: UIImage?
     @Environment(\.dismiss) private var dismiss
+    @State private var showingGarmentDetail = false
     
     var body: some View {
         VStack(spacing: 20) {
@@ -22,8 +23,6 @@ struct ScanGarmentView: View {
             
             if isLoading {
                 ProgressView()
-            } else if let garment = scannedGarment {
-                GarmentDetailView(garment: garment)
             } else {
                 VStack(spacing: 15) {
                     Button(action: {
@@ -67,6 +66,13 @@ struct ScanGarmentView: View {
         }
         .frame(maxWidth: .infinity, maxHeight: .infinity)
         .background(Color(.systemBackground))
+        .sheet(isPresented: $showingGarmentDetail) {
+            if let garment = scannedGarment {
+                NavigationView {
+                    GarmentDetailView(garment: garment)
+                }
+            }
+        }
         .sheet(isPresented: $showingScanner) {
             BarcodeScannerView(scannedCode: $scannedCode)
         }
@@ -130,6 +136,11 @@ struct ScanGarmentView: View {
         .onChange(of: scannedCode) { oldValue, newCode in
             if let code = newCode {
                 lookupGarment(code: code)
+            }
+        }
+        .onChange(of: scannedGarment) { garment in
+            if garment != nil {
+                showingGarmentDetail = true
             }
         }
     }
@@ -266,13 +277,21 @@ struct ScanGarmentView: View {
         for line in lines {
             let trimmedLine = line.trimmingCharacters(in: .whitespaces)
             
-            // Product code detection (multiple formats)
+            // Product code detection (updated to include Uniqlo's format)
             if trimmedLine.matches(of: /\d{13}/).count > 0 {  // EAN-13 format
                 extractedInfo.productCode = trimmedLine
             } else if trimmedLine.matches(of: /[A-Z]{2}\d{5}[A-Z]{2}-[A-Z]{2}/).count > 0 {  // HT00189FT-US format
                 extractedInfo.productCode = trimmedLine
             } else if trimmedLine.matches(of: /S\d{3}-\d{4}/).count > 0 {  // S202-4575 format
                 extractedInfo.productCode = trimmedLine
+            } else if trimmedLine.matches(of: /\d{6}/).count > 0 {  // 475296 format
+                if let match = trimmedLine.firstMatch(of: /\d{6}/) {
+                    extractedInfo.productCode = String(match.0)
+                }
+            } else if trimmedLine.matches(of: /\d{3}-\d{6}/).count > 0 {  // Add: 341-469922 format
+                if let match = trimmedLine.firstMatch(of: /\d{6}$/) {  // Get last 6 digits
+                    extractedInfo.productCode = String(match.0)
+                }
             }
             
             // Product name detection

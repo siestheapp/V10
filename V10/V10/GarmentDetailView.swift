@@ -6,17 +6,24 @@ struct GarmentDetailView: View {
     @Environment(\.dismiss) private var dismiss
     @State private var showingWebPage = false
     
+    init(garment: UniqloGarment) {
+        self.garment = garment
+    }
+    
     var body: some View {
-        ScrollView {
+        ScrollView(.vertical, showsIndicators: true) {
             VStack(spacing: 20) {
                 // Header Image
                 if let imageUrl = URL(string: garment.imageUrl) {
+                    print("Attempting to load image from: \(garment.imageUrl)")
                     AsyncImage(url: imageUrl) { phase in
                         switch phase {
                         case .empty:
+                            print("Loading image...")
                             ProgressView()
                                 .frame(height: 300)
                         case .success(let image):
+                            print("Image loaded successfully")
                             image
                                 .resizable()
                                 .aspectRatio(contentMode: .fill)
@@ -25,7 +32,8 @@ struct GarmentDetailView: View {
                                 .onTapGesture {
                                     showingWebPage = true
                                 }
-                        case .failure:
+                        case .failure(let error):
+                            print("Image loading failed: \(error.localizedDescription)")
                             Image(systemName: "photo")
                                 .resizable()
                                 .aspectRatio(contentMode: .fit)
@@ -37,6 +45,8 @@ struct GarmentDetailView: View {
                     }
                     .cornerRadius(12)
                     .shadow(radius: 5)
+                } else {
+                    print("Invalid image URL: \(garment.imageUrl)")
                 }
                 
                 // Product Info
@@ -97,9 +107,9 @@ struct GarmentDetailView: View {
         .navigationBarTitleDisplayMode(.inline)
         .toolbar {
             ToolbarItem(placement: .navigationBarTrailing) {
-                Button {
+                Button(action: {
                     dismiss()
-                } label: {
+                }) {
                     Image(systemName: "xmark.circle.fill")
                         .foregroundColor(.gray)
                 }
@@ -141,14 +151,22 @@ struct SafariView: UIViewControllerRepresentable {
     func updateUIViewController(_ uiViewController: SFSafariViewController, context: Context) {}
 }
 
-#Preview("Garment Detail") {
-    NavigationView {
-        GarmentDetailView(garment: UniqloGarment(
-            id: "1",
-            name: "CREW NECK SWEATER",
-            size: "L",
-            color: "Black",
-            price: 49.90
-        ))
+// Update the preview provider
+struct GarmentDetailView_Previews: PreviewProvider {
+    static var previews: some View {
+        NavigationView {  // Keep this for preview
+            GarmentDetailView(garment: UniqloGarment(
+                id: "123456",
+                name: "Test Garment",
+                brand: "UNIQLO",
+                size: "L",
+                category: "Sweaters",
+                subcategory: "Crew Neck",
+                color: "Black",
+                price: 49.90,
+                imageUrl: "https://example.com/image.jpg",
+                productUrl: "https://example.com/product"
+            ))
+        }
     }
 } 

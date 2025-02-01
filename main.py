@@ -10,6 +10,32 @@ DB_NAME = "v10_app"
 DB_USER = "v10_user"
 DB_PASSWORD = "securepassword"
 
+# Add these mappings at the top of the file
+UNIQLO_COLOR_CODES = {
+    "BLACK": "09",
+    "09 BLACK": "09",
+    "NAVY": "69",
+    "WHITE": "00",
+    "GRAY": "08",
+    "BLUE": "65"
+}
+
+UNIQLO_SIZE_CODES = {
+    "XXS": "001",
+    "XS": "002",
+    "S": "003",
+    "M": "004",
+    "L": "005",
+    "XL": "006",
+    "XXL": "007"
+}
+
+def get_uniqlo_codes(color: str, size: str) -> tuple[str, str]:
+    """Convert color and size to Uniqlo display codes"""
+    color_code = UNIQLO_COLOR_CODES.get(color.upper(), "30")  # default to 30
+    size_code = UNIQLO_SIZE_CODES.get(size.upper(), "003")    # default to S
+    return color_code, size_code
+
 def get_db_connection():
     return psycopg2.connect(
         host=DB_HOST,
@@ -170,6 +196,7 @@ async def process_garment(info: ExtractedGarmentInfo):
         existing = cur.fetchone()
         
         if existing:
+            color_code, size_code = get_uniqlo_codes(existing["color"], existing["size"])
             # Return existing garment
             return {
                 "id": existing["id"],
@@ -180,13 +207,17 @@ async def process_garment(info: ExtractedGarmentInfo):
                 "subcategory": existing["subcategory"],
                 "color": existing["color"],
                 "price": float(existing["price"]),
-                "imageUrl": f"https://uniqlo.com/images/{existing['id']}.jpg",
-                "productUrl": f"https://uniqlo.com/products/{existing['id']}"
+                "imageUrl": f"https://image.uniqlo.com/UQ/ST3/us/imagesgoods/{existing['id']}/item/{existing['id']}_{color_code}_large.jpg",
+                "productUrl": f"https://www.uniqlo.com/us/en/products/E{existing['id']}-000/00?colorDisplayCode={color_code}&sizeDisplayCode={size_code}"
             }
         
         # Create new garment entry
-        category = "Sweaters" if "SWEATER" in info.name.upper() else "Unknown"
-        subcategory = "Crew Neck" if "CREW NECK" in info.name.upper() else "Unknown"
+        category = "T-Shirts" if "T-SHIRT" in info.name.upper() else (
+            "Sweaters" if "SWEATER" in info.name.upper() else "Unknown"
+        )
+        subcategory = "Long Sleeve" if "LONG SLEEVE" in info.name.upper() else (
+            "Crew Neck" if "CREW NECK" in info.name.upper() else "Unknown"
+        )
         
         # Insert new garment
         cur.execute("""
@@ -211,6 +242,7 @@ async def process_garment(info: ExtractedGarmentInfo):
         new_garment = cur.fetchone()
         conn.commit()
         
+        color_code, size_code = get_uniqlo_codes(new_garment["color"], new_garment["size"])
         # Return formatted garment info
         return {
             "id": new_garment["id"],
@@ -221,8 +253,8 @@ async def process_garment(info: ExtractedGarmentInfo):
             "subcategory": new_garment["subcategory"],
             "color": new_garment["color"],
             "price": float(new_garment["price"]),
-            "imageUrl": f"https://uniqlo.com/images/{new_garment['id']}.jpg",
-            "productUrl": f"https://uniqlo.com/products/{new_garment['id']}"
+            "imageUrl": f"https://image.uniqlo.com/UQ/ST3/us/imagesgoods/{new_garment['id']}/item/{new_garment['id']}_{color_code}_large.jpg",
+            "productUrl": f"https://www.uniqlo.com/us/en/products/E{new_garment['id']}-000/00?colorDisplayCode={color_code}&sizeDisplayCode={size_code}"
         }
         
     except Exception as e:

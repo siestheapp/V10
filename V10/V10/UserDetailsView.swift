@@ -27,43 +27,20 @@ struct UserDetailsView: View {
                             .font(.headline)
                         
                         HStack(spacing: 15) {
-                            Button(action: {
-                                selectedCategory = "Womens"
-                            }) {
-                                Text("Womens")
-                                    .font(.headline)
-                                    .foregroundColor(selectedCategory == "Womens" ? .white : .blue)
-                                    .frame(maxWidth: .infinity)
-                                    .padding()
-                                    .background(selectedCategory == "Womens" ? Color.blue : Color.white)
-                                    .cornerRadius(10)
-                                    .overlay(
-                                        RoundedRectangle(cornerRadius: 10)
-                                            .stroke(Color.blue, lineWidth: 1)
-                                    )
-                            }
+                            CategoryButton(title: "Womens", 
+                                        isSelected: selectedCategory == "Womens",
+                                        action: { selectedCategory = "Womens" })
                             
-                            Button(action: {
-                                selectedCategory = "Mens"
-                            }) {
-                                Text("Mens")
-                                    .font(.headline)
-                                    .foregroundColor(selectedCategory == "Mens" ? .white : .blue)
-                                    .frame(maxWidth: .infinity)
-                                    .padding()
-                                    .background(selectedCategory == "Mens" ? Color.blue : Color.white)
-                                    .cornerRadius(10)
-                                    .overlay(
-                                        RoundedRectangle(cornerRadius: 10)
-                                            .stroke(Color.blue, lineWidth: 1)
-                                    )
-                            }
+                            CategoryButton(title: "Mens", 
+                                        isSelected: selectedCategory == "Mens",
+                                        action: { selectedCategory = "Mens" })
                         }
                     }
                     .padding(.horizontal, 40)
                     
-                    if selectedCategory != nil {
+                    if let category = selectedCategory {
                         Button(action: {
+                            print("Selected category: \(category)")
                             withAnimation {
                                 showMeasurementIntro = true
                             }
@@ -77,6 +54,7 @@ struct UserDetailsView: View {
                                 .cornerRadius(10)
                         }
                         .padding(.horizontal, 40)
+                        .transition(.opacity)
                     }
                 }
                 .frame(maxWidth: .infinity, maxHeight: .infinity)
@@ -89,5 +67,28 @@ struct UserDetailsView: View {
 struct UserDetailsView_Previews: PreviewProvider {
     static var previews: some View {
         UserDetailsView(goBack: {})
+    }
+}
+
+// Helper view for category buttons
+struct CategoryButton: View {
+    let title: String
+    let isSelected: Bool
+    let action: () -> Void
+    
+    var body: some View {
+        Button(action: action) {
+            Text(title)
+                .font(.headline)
+                .foregroundColor(isSelected ? .white : .blue)
+                .frame(maxWidth: .infinity)
+                .padding()
+                .background(isSelected ? Color.blue : Color.white)
+                .cornerRadius(10)
+                .overlay(
+                    RoundedRectangle(cornerRadius: 10)
+                        .stroke(Color.blue, lineWidth: 1)
+                )
+        }
     }
 } 

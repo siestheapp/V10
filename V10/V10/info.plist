@@ -18,5 +18,10 @@
 	<string>We need camera access to scan garment tags</string>
 	<key>Privacy - Camera Usage Description</key>
 	<string>Please allow camera access to scan garment tags</string>
+	<key>NSAppTransportSecurity</key>
+	<dict>
+		<key>NSAllowsArbitraryLoads</key>
+		<true/>
+	</dict>
 </dict>
 </plist>
