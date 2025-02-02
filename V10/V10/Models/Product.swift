@@ -4,6 +4,7 @@ struct Product: Codable {
     let category: String
     let subcategory: String?
     let price: Double?
+    let scanned_size: String?
     let measurements: MeasurementsData
     let imageUrl: String
     let productUrl: String

@@ -110,13 +110,18 @@ struct ScanGarmentView: View {
             var extractedInfo = ExtractedGarmentInfo()
             
             for line in recognizedText {
-                print("Recognized text: \(line)")  // Keep this debug print
+                print("Recognized text: \(line)")
                 
                 // Product code detection - now handles different formats
                 if line.contains("475296") {  // Direct match
                     extractedInfo.productCode = "475296"
                 } else if let match = line.firstMatch(of: /\d{3}-(\d{6})/)?.1 {  // Format: xxx-475296
                     extractedInfo.productCode = String(match)
+                }
+                
+                // Size detection - look for single letter sizes
+                if line.matches(of: /^[XS|S|M|L|XL|XXL|3XL]$/).count > 0 {
+                    extractedInfo.size = line.trimmingCharacters(in: .whitespaces)
                 }
                 
                 // Price detection (working correctly)
@@ -131,7 +136,11 @@ struct ScanGarmentView: View {
             
             // Only send to backend if we got a product code
             if let productCode = extractedInfo.productCode {
-                sendToBackend(productCode: productCode, scannedPrice: extractedInfo.price)
+                sendToBackend(
+                    productCode: productCode,
+                    scannedPrice: extractedInfo.price,
+                    scannedSize: extractedInfo.size
+                )
             }
         }
         
@@ -148,12 +157,13 @@ struct ScanGarmentView: View {
         }
     }
     
-    private func sendToBackend(productCode: String, scannedPrice: Double?) {
+    private func sendToBackend(productCode: String, scannedPrice: Double?, scannedSize: String?) {
         guard let url = URL(string: "\(Config.baseURL)/process_garment") else { return }
         
         let body: [String: Any] = [
             "product_code": productCode,
-            "scanned_price": scannedPrice ?? 0.0
+            "scanned_price": scannedPrice ?? 0.0,
+            "scanned_size": scannedSize
         ]
         
         var request = URLRequest(url: url)
@@ -200,17 +210,52 @@ struct ProductDetailsView: View {
     let product: Product
     @Binding var isPresented: Bool
     
+    func trackProductClick() {
+        guard let url = URL(string: "\(Config.baseURL)/track_click") else { return }
+        
+        let body: [String: Any] = [
+            "product_code": product.id,
+            "scanned_size": product.scanned_size,
+            // "user_id": UserDefaults.standard.string(forKey: "userId")  // If you add user tracking later
+        ]
+        
+        var request = URLRequest(url: url)
+        request.httpMethod = "POST"
+        request.setValue("application/json", forHTTPHeaderField: "Content-Type")
+        request.httpBody = try? JSONSerialization.data(withJSONObject: body)
+        
+        URLSession.shared.dataTask(with: request) { _, _, _ in }.resume()
+    }
+    
     var body: some View {
         ScrollView {
             VStack(alignment: .leading, spacing: 20) {
-                AsyncImage(url: URL(string: product.imageUrl)) { image in
-                    image.resizable()
-                        .aspectRatio(contentMode: .fit)
-                } placeholder: {
-                    Color.gray.opacity(0.3)
+                // Image from URL
+                AsyncImage(url: URL(string: product.imageUrl)) { phase in
+                    switch phase {
+                    case .empty:
+                        ProgressView()
+                            .frame(height: 300)
+                    case .success(let image):
+                        image
+                            .resizable()
+                            .aspectRatio(contentMode: .fit)
+                            .frame(height: 300)
+                    case .failure(_):
+                        Color.gray
+                            .frame(height: 300)
+                            .overlay(
+                                Image(systemName: "photo")
+                                    .foregroundColor(.white)
+                            )
+                    @unknown default:
+                        EmptyView()
+                    }
                 }
-                .frame(height: 300)
+                .clipShape(RoundedRectangle(cornerRadius: 12))
+                .padding(.horizontal)
                 
+                // Product details
                 VStack(alignment: .leading, spacing: 12) {
                     Text(product.name)
                         .font(.title2)
@@ -246,6 +291,20 @@ struct ProductDetailsView: View {
                 }
                 .padding()
             }
+            
+            Link(destination: URL(string: product.productUrl)!) {
+                Text("View on Uniqlo")
+                    .font(.headline)
+                    .foregroundColor(.white)
+                    .frame(maxWidth: .infinity)
+                    .padding()
+                    .background(Color.blue)
+                    .cornerRadius(10)
+            }
+            .onTapGesture {
+                trackProductClick()
+            }
+            .padding()
         }
         .navigationTitle("Product Details")
         .navigationBarTitleDisplayMode(.inline)

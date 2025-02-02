@@ -3,6 +3,7 @@ from pydantic import BaseModel
 import psycopg2
 from psycopg2.extras import RealDictCursor
 import json
+from urllib.parse import urlparse
 
 # Database connection
 DB_CONFIG = {
@@ -29,6 +30,7 @@ class GarmentInfo(BaseModel):
 class GarmentRequest(BaseModel):
     product_code: str
     scanned_price: float | None = None
+    scanned_size: str | None = None
 
 app = FastAPI()
 
@@ -65,6 +67,27 @@ def register(user: User):
         cur.close()
         conn.close()
 
+def is_valid_uniqlo_url(url: str) -> bool:
+    try:
+        # Check URL format
+        parsed = urlparse(url)
+        
+        # Basic validation
+        if not all([parsed.scheme, parsed.netloc]):
+            return False
+            
+        # Uniqlo-specific validation
+        if not parsed.netloc.endswith("uniqlo.com"):
+            return False
+            
+        # Product code validation
+        if not "/products/E" in parsed.path:
+            return False
+            
+        return True
+    except:
+        return False
+
 @app.post("/process_garment")
 async def process_garment(request: GarmentRequest):
     conn = get_db()
@@ -82,15 +105,51 @@ async def process_garment(request: GarmentRequest):
         product = cur.fetchone()
         
         if product:
+            # Record the scan in history
+            cur.execute("""
+                INSERT INTO scan_history 
+                (product_code, scanned_size, scanned_price)
+                VALUES (%s, %s, %s)
+            """, (request.product_code, request.scanned_size, request.scanned_price))
+            conn.commit()
+            
+            measurements = product["measurements"]
+            # Only return measurements for scanned size if available
+            if request.scanned_size and measurements["sizes"].get(request.scanned_size):
+                size_measurements = {
+                    "units": measurements["units"],
+                    "sizes": {
+                        request.scanned_size: measurements["sizes"][request.scanned_size]
+                    }
+                }
+            else:
+                size_measurements = measurements  # Fallback to all sizes if size not found
+                
+            # Generate URL if not stored
+            product_url = product["product_url"]
+            if not product_url:
+                product_url = f"https://www.uniqlo.com/us/en/products/E{request.product_code}-000"
+                # Validate before storing
+                if is_valid_uniqlo_url(product_url):
+                    cur.execute("""
+                        UPDATE products 
+                        SET product_url = %s 
+                        WHERE product_code = %s
+                    """, (product_url, request.product_code))
+                    conn.commit()
+                else:
+                    print(f"Warning: Generated invalid URL: {product_url}")
+            
             return {
                 "id": product["product_code"],
                 "name": product["name"],
                 "category": product["category"],
                 "subcategory": product["subcategory"],
-                "price": request.scanned_price,  # Use scanned price
-                "measurements": product["measurements"],
+                "price": request.scanned_price,
+                "scanned_size": request.scanned_size,
+                "measurements": size_measurements,
                 "imageUrl": product["image_url"],
-                "productUrl": product["product_url"]
+                "productUrl": product_url
             }
         else:
             raise HTTPException(status_code=404, detail="Product not found")
@@ -104,39 +163,83 @@ def create_tables():
     cur = conn.cursor()
     
     try:
-        # Create tables
+        # Drop old table
+        cur.execute("DROP TABLE IF EXISTS uniqlo_garments CASCADE")
+        
+        # Create new products table
         cur.execute("""
-            CREATE TABLE IF NOT EXISTS uniqlo_garments (
-                id VARCHAR PRIMARY KEY,
-                product_code VARCHAR,
+            CREATE TABLE IF NOT EXISTS products (
+                product_code VARCHAR PRIMARY KEY,
                 name VARCHAR NOT NULL,
-                size VARCHAR NOT NULL,
-                color VARCHAR NOT NULL,
-                price DECIMAL(10,2),
-                category VARCHAR,
+                category VARCHAR NOT NULL,
                 subcategory VARCHAR,
-                materials JSONB,
-                measurements JSONB
+                image_url VARCHAR,
+                product_url VARCHAR
             )
         """)
         
-        # Insert sample data (the sweater from the image)
+        # Create measurements table
         cur.execute("""
-            INSERT INTO uniqlo_garments (
-                id, product_code, name, size, color, price, 
-                category, subcategory, materials, measurements
+            CREATE TABLE IF NOT EXISTS measurements (
+                product_code VARCHAR PRIMARY KEY,
+                measurements JSONB NOT NULL,
+                FOREIGN KEY (product_code) REFERENCES products(product_code)
+            )
+        """)
+        
+        # Create click tracking table
+        cur.execute("""
+            CREATE TABLE IF NOT EXISTS click_tracking (
+                id SERIAL PRIMARY KEY,
+                product_code VARCHAR NOT NULL,
+                user_id VARCHAR,
+                scanned_size VARCHAR,
+                clicked_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+                FOREIGN KEY (product_code) REFERENCES products(product_code)
+            )
+        """)
+        
+        # Create scan history table
+        cur.execute("""
+            CREATE TABLE IF NOT EXISTS scan_history (
+                id SERIAL PRIMARY KEY,
+                user_id VARCHAR,
+                product_code VARCHAR NOT NULL,
+                scanned_size VARCHAR,
+                scanned_price DECIMAL(10,2),
+                scanned_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+                FOREIGN KEY (product_code) REFERENCES products(product_code)
+            )
+        """)
+        
+        # Insert sample product
+        cur.execute("""
+            INSERT INTO products (
+                product_code, name, category, subcategory, image_url
             ) VALUES (
                 '475296',
-                'HT00189FT-US',
                 '3D KNIT CREW NECK SWEATER',
-                'L',
-                '09 Black',
-                49.90,
                 'Sweaters',
                 'Crew Neck',
-                '{"ACRYLIC": 60, "COTTON": 40}'::jsonb,
-                '{"chest": "41-44"}'::jsonb
-            ) ON CONFLICT (id) DO NOTHING
+                'https://image.uniqlo.com/UQ/ST3/us/imagesgoods/475296/item/goods_09_475296.jpg'
+            ) ON CONFLICT (product_code) DO NOTHING
+        """)
+        
+        # Insert sample measurements
+        cur.execute("""
+            INSERT INTO measurements (product_code, measurements) VALUES (
+                '475296',
+                '{
+                    "units": "inches",
+                    "sizes": {
+                        "XS": {"body_length": "25", "body_width": "17", "sleeve_length": "23"},
+                        "S": {"body_length": "26", "body_width": "18", "sleeve_length": "24"},
+                        "M": {"body_length": "27", "body_width": "19", "sleeve_length": "25"},
+                        "L": {"body_length": "28", "body_width": "20", "sleeve_length": "26"},
+                        "XL": {"body_length": "29", "body_width": "21", "sleeve_length": "27"}
+                    }
+                }'::jsonb
+            ) ON CONFLICT (product_code) DO NOTHING
         """)
         
         conn.commit()
@@ -148,3 +251,46 @@ def create_tables():
 
 # Call this when app starts
 create_tables()
+
+@app.post("/track_click")
+async def track_click(product_code: str, user_id: str | None = None, scanned_size: str | None = None):
+    conn = get_db()
+    cur = conn.cursor()
+    
+    try:
+        cur.execute("""
+            INSERT INTO click_tracking 
+            (product_code, user_id, scanned_size)
+            VALUES (%s, %s, %s)
+        """, (product_code, user_id, scanned_size))
+        conn.commit()
+        return {"status": "success"}
+    finally:
+        cur.close()
+        conn.close()
+
+@app.get("/scan_history")
+async def get_scan_history(user_id: str | None = None, limit: int = 50):
+    conn = get_db()
+    cur = conn.cursor()
+    
+    try:
+        cur.execute("""
+            SELECT 
+                h.*,
+                p.name,
+                p.category,
+                p.image_url,
+                p.product_url
+            FROM scan_history h
+            JOIN products p ON h.product_code = p.product_code
+            WHERE user_id IS NULL  -- For now, get all scans
+            ORDER BY scanned_at DESC
+            LIMIT %s
+        """, (limit,))
+        
+        history = cur.fetchall()
+        return history
+    finally:
+        cur.close()
+        conn.close()
