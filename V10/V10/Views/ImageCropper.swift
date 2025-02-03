@@ -39,4 +39,12 @@ struct ImageCropper: View {
             }
         }
     }
+}
+
+#Preview {
+    ImageCropper(
+        image: UIImage(systemName: "photo") ?? UIImage(),
+        onCrop: { _ in },
+        isPresented: .constant(true)
+    )
 } 

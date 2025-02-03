@@ -12,11 +12,13 @@ struct Product: Codable {
 
 struct MeasurementsData: Codable {
     let units: String
+    let measurement_type: String?
     let sizes: [String: SizeData]
 }
 
 struct SizeData: Codable {
-    let body_length: String
+    let body_length_back: String
     let body_width: String
     let sleeve_length: String
+    let shoulder_width: String
 } 

@@ -19,32 +19,37 @@ struct ScanGarmentView: View {
     }
     
     var body: some View {
-        VStack(spacing: 20) {
-            Text("Scan your Uniqlo tag")
-                .font(.title2)
-                .fontWeight(.medium)
-            
-            if isLoading {
-                ProgressView()
-            } else {
-                VStack(spacing: 15) {
-                    Button(action: {
-                        showingCropper = true
-                    }) {
-                        Text("Select Photo")
-                            .font(.headline)
-                            .foregroundColor(.white)
-                            .frame(maxWidth: .infinity)
-                            .padding()
-                            .background(Color.blue)
-                            .cornerRadius(10)
+        NavigationView {
+            VStack(spacing: 20) {
+                Text("Scan your Uniqlo tag")
+                    .font(.title2)
+                    .fontWeight(.medium)
+                
+                if isLoading {
+                    ProgressView()
+                } else {
+                    VStack(spacing: 15) {
+                        Button(action: {
+                            showingCropper = true
+                        }) {
+                            Text("Select Photo")
+                                .font(.headline)
+                                .foregroundColor(.white)
+                                .frame(maxWidth: .infinity)
+                                .padding()
+                                .background(Color.blue)
+                                .cornerRadius(10)
+                        }
                     }
+                    .padding(.horizontal, 40)
                 }
-                .padding(.horizontal, 40)
             }
+            .frame(maxWidth: .infinity, maxHeight: .infinity)
+            .background(Color(.systemBackground))
+            .navigationBarItems(trailing: Button("Done") {
+                isPresented = false
+            })
         }
-        .frame(maxWidth: .infinity, maxHeight: .infinity)
-        .background(Color(.systemBackground))
         .onAppear {
             if selectedImage != nil {
                 showingCropper = true
@@ -70,6 +75,8 @@ struct ScanGarmentView: View {
                         isPresented: $showingProductDetails
                     )
                 }
+                .interactiveDismissDisabled()
+                .presentationDragIndicator(.visible)
             }
         }
     }
@@ -87,6 +94,8 @@ struct ScanGarmentView: View {
         
         // Create OCR request
         let request = VNRecognizeTextRequest { request, error in
+            print("\n--- Starting OCR Processing ---")
+            
             if let error = error {
                 print("OCR error: \(error)")
                 isLoading = false
@@ -101,38 +110,73 @@ struct ScanGarmentView: View {
                 observation.topCandidates(1).first?.string
             }
             
-            // Print each recognized text line for debugging
-            recognizedText.forEach { text in
-                print("Recognized text: \(text)")
+            print("\nAll recognized lines:")
+            recognizedText.enumerated().forEach { index, line in
+                print("[\(index)]: '\(line)'")  // Print with quotes to see whitespace
             }
             
             // Extract garment info
-            var extractedInfo = ExtractedGarmentInfo()
+            var extractedInfo = ExtractedGarmentInfo(
+                productCode: nil,
+                name: nil,
+                size: nil,
+                color: nil,
+                price: nil,
+                materials: [:],
+                measurements: [:],
+                rawText: nil
+            )
             
             for line in recognizedText {
-                print("Recognized text: \(line)")
+                print("\nChecking line: '\(line)'")  // Print with quotes
                 
-                // Product code detection - now handles different formats
-                if line.contains("475296") {  // Direct match
-                    extractedInfo.productCode = "475296"
-                } else if let match = line.firstMatch(of: /\d{3}-(\d{6})/)?.1 {  // Format: xxx-475296
+                // Product code - look for xxx-xxxxxx pattern
+                if let match = line.firstMatch(of: /\d{3}-(\d{6})/)?.1 {
                     extractedInfo.productCode = String(match)
+                    print("Found product code: \(String(match))")
                 }
                 
-                // Size detection - look for single letter sizes
-                if line.matches(of: /^[XS|S|M|L|XL|XXL|3XL]$/).count > 0 {
-                    extractedInfo.size = line.trimmingCharacters(in: .whitespaces)
+                // Size detection - multiple approaches
+                if line == "L" {
+                    extractedInfo.size = "L"
+                    print("Found size (exact match): L")
+                }
+                else if line.trimmingCharacters(in: .whitespaces) == "L" {
+                    extractedInfo.size = "L"
+                    print("Found size (trimmed): L")
+                }
+                else if line.contains("L") && !line.contains("LONG") && !line.contains("POLYESTER") {
+                    extractedInfo.size = "L"
+                    print("Found size (contains L): L")
                 }
                 
-                // Price detection (working correctly)
-                if line.contains("$") {
+                // Price - look for dollar amount
+                if line.hasPrefix("$") {
                     if let price = Double(line.replacingOccurrences(of: "$", with: "")) {
                         extractedInfo.price = price
+                        print("Found price: \(price)")
                     }
+                }
+                
+                // Color - look for color with number prefix
+                if let colorMatch = line.firstMatch(of: /\d{2}\s+([A-Za-z\s]+)/)?.1 {
+                    extractedInfo.color = String(colorMatch)
+                    print("Found color: \(colorMatch)")
+                }
+                
+                // Name - look for product name in all caps
+                if line.contains("CREW NECK") || line.contains("SWEATER") || 
+                   line.contains("T-SHIRT") {
+                    extractedInfo.name = line
+                    print("Found name: \(line)")
                 }
             }
             
-            print("Extracted Info: \(extractedInfo)")  // Debug print
+            // Add final debug print
+            print("\nFinal extracted info:")
+            print("Size: \(extractedInfo.size ?? "nil")")
+            print("Product Code: \(extractedInfo.productCode ?? "nil")")
+            print("Price: \(extractedInfo.price ?? 0.0)")
             
             // Only send to backend if we got a product code
             if let productCode = extractedInfo.productCode {
@@ -146,6 +190,13 @@ struct ScanGarmentView: View {
         
         // Configure the request
         request.recognitionLevel = .accurate
+        request.recognitionLanguages = ["en-US"]
+        request.usesLanguageCorrection = false  // Add this to prevent correction
+        request.minimumTextHeight = 0.1  // Add this to catch smaller text
+        
+        // Optional: Add custom recognition constraints
+        let customWords = ["XS", "S", "M", "L", "XL", "XXL"]
+        request.customWords = customWords
         
         // Create and execute the request handler
         let handler = VNImageRequestHandler(cgImage: cgImage, options: [:])
@@ -166,6 +217,8 @@ struct ScanGarmentView: View {
             "scanned_size": scannedSize
         ]
         
+        print("Sending to backend:", body)  // Add this debug line
+        
         var request = URLRequest(url: url)
         request.httpMethod = "POST"
         request.setValue("application/json", forHTTPHeaderField: "Content-Type")
@@ -178,6 +231,10 @@ struct ScanGarmentView: View {
             }
             
             guard let data = data else { return }
+            
+            if let jsonString = String(data: data, encoding: .utf8) {
+                print("Server response: \(jsonString)")
+            }
             
             do {
                 let product = try JSONDecoder().decode(Product.self, from: data)
@@ -194,126 +251,12 @@ struct ScanGarmentView: View {
     }
 }
 
-// Add this struct to handle extracted info
-struct ExtractedGarmentInfo {
-    var productCode: String?
-    var name: String?
-    var size: String?
-    var color: String?
-    var price: Double?
-    var materials: [String: Int] = [:]
-    var measurements: [String: String] = [:]
-    var rawText: String?
-}
-
-struct ProductDetailsView: View {
-    let product: Product
-    @Binding var isPresented: Bool
-    
-    func trackProductClick() {
-        guard let url = URL(string: "\(Config.baseURL)/track_click") else { return }
-        
-        let body: [String: Any] = [
-            "product_code": product.id,
-            "scanned_size": product.scanned_size,
-            // "user_id": UserDefaults.standard.string(forKey: "userId")  // If you add user tracking later
-        ]
-        
-        var request = URLRequest(url: url)
-        request.httpMethod = "POST"
-        request.setValue("application/json", forHTTPHeaderField: "Content-Type")
-        request.httpBody = try? JSONSerialization.data(withJSONObject: body)
-        
-        URLSession.shared.dataTask(with: request) { _, _, _ in }.resume()
-    }
-    
-    var body: some View {
-        ScrollView {
-            VStack(alignment: .leading, spacing: 20) {
-                // Image from URL
-                AsyncImage(url: URL(string: product.imageUrl)) { phase in
-                    switch phase {
-                    case .empty:
-                        ProgressView()
-                            .frame(height: 300)
-                    case .success(let image):
-                        image
-                            .resizable()
-                            .aspectRatio(contentMode: .fit)
-                            .frame(height: 300)
-                    case .failure(_):
-                        Color.gray
-                            .frame(height: 300)
-                            .overlay(
-                                Image(systemName: "photo")
-                                    .foregroundColor(.white)
-                            )
-                    @unknown default:
-                        EmptyView()
-                    }
-                }
-                .clipShape(RoundedRectangle(cornerRadius: 12))
-                .padding(.horizontal)
-                
-                // Product details
-                VStack(alignment: .leading, spacing: 12) {
-                    Text(product.name)
-                        .font(.title2)
-                        .fontWeight(.bold)
-                    
-                    if let price = product.price {
-                        Text("Price: $\(price, specifier: "%.2f")")
-                            .font(.headline)
-                    }
-                    
-                    Text("Category: \(product.category)")
-                    if let subcategory = product.subcategory {
-                        Text("Subcategory: \(subcategory)")
-                    }
-                    
-                    Text("Measurements (\(product.measurements.units))")
-                        .font(.headline)
-                        .padding(.top)
-                    
-                    ForEach(Array(product.measurements.sizes.keys.sorted()), id: \.self) { size in
-                        if let sizeData = product.measurements.sizes[size] {
-                            VStack(alignment: .leading) {
-                                Text("Size \(size):")
-                                    .fontWeight(.medium)
-                                Text("Body Length: \(sizeData.body_length)")
-                                Text("Body Width: \(sizeData.body_width)")
-                                Text("Sleeve Length: \(sizeData.sleeve_length)")
-                            }
-                            .padding(.leading)
-                            .padding(.vertical, 4)
-                        }
-                    }
-                }
-                .padding()
-            }
-            
-            Link(destination: URL(string: product.productUrl)!) {
-                Text("View on Uniqlo")
-                    .font(.headline)
-                    .foregroundColor(.white)
-                    .frame(maxWidth: .infinity)
-                    .padding()
-                    .background(Color.blue)
-                    .cornerRadius(10)
-            }
-            .onTapGesture {
-                trackProductClick()
-            }
-            .padding()
-        }
-        .navigationTitle("Product Details")
-        .navigationBarTitleDisplayMode(.inline)
-        .toolbar {
-            ToolbarItem(placement: .navigationBarTrailing) {
-                Button("Done") {
-                    isPresented = false
-                }
-            }
-        }
+struct ScanGarmentView_Previews: PreviewProvider {
+    static var previews: some View {
+        ScanGarmentView(
+            selectedImage: UIImage(systemName: "photo") ?? UIImage(),
+            isPresented: .constant(true)
+        )
     }
 } 
+
