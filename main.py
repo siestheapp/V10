@@ -4,6 +4,8 @@ import psycopg2
 from psycopg2.extras import RealDictCursor
 import json
 from urllib.parse import urlparse
+from statistics import mean
+from typing import List, Optional
 
 # Database connection
 DB_CONFIG = {
@@ -31,6 +33,23 @@ class GarmentRequest(BaseModel):
     product_code: str
     scanned_price: float | None = None
     scanned_size: str | None = None
+
+class MeasurementRange(BaseModel):
+    min: float
+    max: float
+    confidence: float
+
+class UserMeasurement(BaseModel):
+    brand: str
+    garment_name: str
+    measurement_type: str  # e.g., "chest", "sleeve_length"
+    value_min: float
+    value_max: float
+    size: str
+    owns_garment: bool
+    fit_type: Optional[str]  # "tight", "regular", "relaxed"
+    garment_type: Optional[str]
+    feedback: Optional[str]
 
 app = FastAPI()
 
@@ -372,6 +391,129 @@ async def get_scan_history(user_id: str | None = None, limit: int = 50):
         print(f"Found {len(history)} history items")  # Debug print
         print(f"First item: {history[0] if history else None}")  # Debug print
         return history
+    finally:
+        cur.close()
+        conn.close()
+
+def standardize_sleeve_measurement(value: float, measurement_name: str) -> dict:
+    """Standardize sleeve measurements to CBL format"""
+    
+    # If value is under 30, assume it's SWL and needs conversion
+    is_likely_swl = value < 30
+    
+    # Get the mapping
+    mapping = conn.execute("""
+        SELECT 
+            mt.name as standard_name,
+            mm.measurement_method,
+            mm.conversion_factor
+        FROM measurement_mappings mm
+        JOIN measurement_types mt ON mm.measurement_type_id = mt.id
+        WHERE mm.original_name ILIKE $1
+    """, measurement_name).fetchone()
+    
+    if mapping:
+        if mapping.measurement_method == 'shoulder_to_wrist' or is_likely_swl:
+            # Convert to CBL
+            converted_value = value * 1.18  # Approximate conversion factor
+            return {
+                "standard_value": converted_value,
+                "original_value": value,
+                "measurement_method": "shoulder_to_wrist",
+                "converted_to_cbl": True
+            }
+        else:
+            # Already CBL
+            return {
+                "standard_value": value,
+                "original_value": value,
+                "measurement_method": "center_back",
+                "converted_to_cbl": False
+            }
+
+@app.get("/user/{user_id}/measurements")
+async def get_user_measurements(user_id: int):
+    conn = get_db()
+    cur = conn.cursor()
+    
+    try:
+        # Get all chest measurements for user
+        cur.execute("""
+            SELECT 
+                m.brand_name,
+                m.garment_name,
+                m.value,
+                m.original_value,
+                m.size,
+                m.owns_garment,
+                f.fit_type,
+                f.garment_type,
+                f.custom_feedback
+            FROM user_measurements m
+            LEFT JOIN fit_feedback f ON 
+                m.brand_name = f.brand 
+                AND m.garment_name = f.garment_name
+                AND m.size = f.size
+            WHERE m.user_id = %s
+            AND m.measurement_type_id = (
+                SELECT id FROM measurement_types WHERE name = 'chest_circumference'
+            )
+        """, (user_id,))
+        
+        measurements = cur.fetchall()
+        
+        # Calculate preferred range
+        def calculate_range(measurements: List[dict]) -> MeasurementRange:
+            values = []
+            for m in measurements:
+                # Convert any half measurements
+                value = m['value'] * 2 if m['original_name'].lower().startswith('half') else m['value']
+                
+                # Weight the measurement based on fit feedback
+                confidence = 1.0
+                if m['fit_type'] == 'tight':
+                    confidence = 0.7  # Less weight for tight fits
+                elif m['fit_type'] == 'relaxed':
+                    confidence = 0.8  # Less weight for relaxed fits
+                
+                values.append({
+                    'value': value,
+                    'confidence': confidence
+                })
+            
+            # Calculate weighted average
+            weighted_values = [v['value'] * v['confidence'] for v in values]
+            weights = [v['confidence'] for v in values]
+            avg = sum(weighted_values) / sum(weights)
+            
+            # Calculate range (±5% from weighted average)
+            return MeasurementRange(
+                min=avg * 0.95,
+                max=avg * 1.05,
+                confidence=mean([v['confidence'] for v in values])
+            )
+        
+        preferred_range = calculate_range(measurements)
+        
+        return {
+            "measurement_type": "chest",
+            "preferred_range": preferred_range,
+            "measurements": [
+                {
+                    "brand": m['brand_name'],
+                    "garment_name": m['garment_name'],
+                    "value_min": m['value'],
+                    "value_max": m['value'],
+                    "size": m['size'],
+                    "owns_garment": m['owns_garment'],
+                    "fit_type": m['fit_type'],
+                    "garment_type": m['garment_type'],
+                    "feedback": m['custom_feedback']
+                }
+                for m in measurements
+            ]
+        }
+        
     finally:
         cur.close()
         conn.close()
