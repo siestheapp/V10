@@ -82,7 +82,7 @@ struct ScanHistoryView: View {
     }
     
     private func loadHistory() {
-        guard let url = URL(string: "\(Config.baseURL)/scan_history") else {
+        guard let url = URL(string: "\(Config.baseURL)/scan_history?user_id=\(Config.defaultUserId)") else {
             errorMessage = "Invalid URL"
             return
         }

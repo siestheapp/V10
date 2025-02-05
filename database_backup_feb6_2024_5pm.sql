@@ -608,7 +608,7 @@ COPY public.user_measurements (id, user_id, measurement_type_id, value, original
 --
 
 COPY public.users (id, email, password_hash, name, created_at, updated_at) FROM stdin;
-18	user1@example.com	sies	User 1	2025-02-05 00:39:36.292515	2025-02-05 00:39:36.292515
+18	srdavey97@gmail.com	sies	user1	2025-02-05 00:39:36.292515	2025-02-05 00:39:36.292515
 \.
 
 
@@ -853,4 +853,36 @@ ALTER DEFAULT PRIVILEGES FOR ROLE seandavey IN SCHEMA public GRANT ALL ON TABLES
 --
 -- PostgreSQL database dump complete
 --
+
+UPDATE fit_feedback 
+SET user_id = 18 
+WHERE user_id IS NULL;
+
+UPDATE scan_history
+SET user_id = '18'
+WHERE user_id IS NULL;
+
+-- Add some sample scan history for user1
+INSERT INTO scan_history 
+(user_id, product_code, scanned_size, scanned_price, scanned_at)
+VALUES 
+('18', '475296', 'L', 49.90, '2025-02-05 00:39:44.258625'),
+('18', '475352', 'M', 29.90, '2025-02-05 00:39:44.258625');
+
+-- Make sure these product codes exist in products table
+INSERT INTO products 
+(product_code, name, category, subcategory, brand, image_url, product_url)
+VALUES
+('475296', '3D KNIT CREW NECK SWEATER', 'Sweaters', 'Crew Neck', 'Uniqlo', 
+ 'https://image.uniqlo.com/UQ/ST3/us/imagesgoods/475296/item/goods_09_475296.jpg',
+ 'https://www.uniqlo.com/us/en/products/E475296-000')
+ON CONFLICT (product_code) DO NOTHING;
+
+INSERT INTO products 
+(product_code, name, category, subcategory, brand, image_url, product_url)
+VALUES
+('475352', 'Waffle T-Shirt Long Sleeve', 'Tops', 'Long Sleeve', 'Uniqlo',
+ 'https://image.uniqlo.com/UQ/ST3/us/imagesgoods/475352/item/goods_09_475352.jpg',
+ 'https://www.uniqlo.com/us/en/products/E475352-000')
+ON CONFLICT (product_code) DO NOTHING;
 

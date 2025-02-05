@@ -6,6 +6,8 @@ import json
 from urllib.parse import urlparse
 from statistics import mean
 from typing import List, Optional
+from fastapi.responses import JSONResponse
+from fastapi.middleware.cors import CORSMiddleware
 
 # Database connection
 DB_CONFIG = {
@@ -108,7 +110,7 @@ def is_valid_uniqlo_url(url: str) -> bool:
         return False
 
 @app.post("/process_garment")
-async def process_garment(request: GarmentRequest):
+async def process_garment(request: GarmentRequest, user_id: str | None = None):
     conn = get_db()
     cur = conn.cursor()
     
@@ -138,10 +140,10 @@ async def process_garment(request: GarmentRequest):
             print(f"Recording scan: {request.product_code}, size: {request.scanned_size}")  # Debug
             cur.execute("""
                 INSERT INTO scan_history 
-                (product_code, scanned_size, scanned_price)
-                VALUES (%s, %s, %s)
+                (product_code, scanned_size, scanned_price, user_id)
+                VALUES (%s, %s, %s, %s)
                 RETURNING id
-            """, (request.product_code, request.scanned_size, request.scanned_price))
+            """, (request.product_code, request.scanned_size, request.scanned_price, user_id))
             scan_id = cur.fetchone()["id"]
             print(f"Created scan history entry: {scan_id}")  # Debug
             conn.commit()
@@ -369,7 +371,8 @@ async def get_scan_history(user_id: str | None = None, limit: int = 50):
     cur = conn.cursor()
     
     try:
-        cur.execute("""
+        # Modified query to include user_id in WHERE clause when provided
+        query = """
             SELECT 
                 h.id,
                 h.product_code as "productCode",
@@ -383,13 +386,21 @@ async def get_scan_history(user_id: str | None = None, limit: int = 50):
                 p.product_url as "productUrl"
             FROM scan_history h
             JOIN products p ON h.product_code = p.product_code
-            ORDER BY h.scanned_at DESC
-            LIMIT %s
-        """, (limit,))
+            WHERE 1=1
+        """
+        params = []
+        
+        if user_id:
+            query += " AND h.user_id = %s"
+            params.append(user_id)
+            
+        query += " ORDER BY h.scanned_at DESC LIMIT %s"
+        params.append(limit)
+        
+        cur.execute(query, params)
         
         history = cur.fetchall()
-        print(f"Found {len(history)} history items")  # Debug print
-        print(f"First item: {history[0] if history else None}")  # Debug print
+        print(f"Found {len(history)} history items for user {user_id}")  # Debug print
         return history
     finally:
         cur.close()
@@ -432,88 +443,83 @@ def standardize_sleeve_measurement(value: float, measurement_name: str) -> dict:
             }
 
 @app.get("/user/{user_id}/measurements")
-async def get_user_measurements(user_id: int):
-    conn = get_db()
-    cur = conn.cursor()
-    
+async def get_user_measurements(user_id: str):
+    conn = None
     try:
-        # Get all chest measurements for user
+        conn = get_db()
+        cur = conn.cursor()
+        
+        print(f"Getting measurements for user {user_id}")
+        
         cur.execute("""
             SELECT 
-                m.brand_name,
-                m.garment_name,
-                m.value,
-                m.original_value,
-                m.size,
-                m.owns_garment,
-                f.fit_type,
-                f.garment_type,
-                f.custom_feedback
-            FROM user_measurements m
-            LEFT JOIN fit_feedback f ON 
-                m.brand_name = f.brand 
-                AND m.garment_name = f.garment_name
-                AND m.size = f.size
-            WHERE m.user_id = %s
-            AND m.measurement_type_id = (
-                SELECT id FROM measurement_types WHERE name = 'chest_circumference'
-            )
+                f.brand_name,
+                f.garment_name,
+                f.size,
+                f.measurement_name,
+                f.feedback,
+                f.overall_feeling,
+                CASE 
+                    WHEN f.size = 'S' THEN 38.0
+                    WHEN f.size = 'M' THEN 40.0
+                    WHEN f.size = 'L' THEN 42.0
+                    WHEN f.size = 'XL' THEN 44.0
+                    WHEN f.size = '42' THEN 42.0
+                    ELSE 40.0
+                END::float as value,  -- Cast to float
+                true as owns_garment
+            FROM fit_feedback f
+            WHERE f.user_id = %s::integer
+            ORDER BY f.created_at DESC
         """, (user_id,))
         
         measurements = cur.fetchall()
+        print(f"Found {len(measurements)} measurements")
         
-        # Calculate preferred range
-        def calculate_range(measurements: List[dict]) -> MeasurementRange:
-            values = []
-            for m in measurements:
-                # Convert any half measurements
-                value = m['value'] * 2 if m['original_name'].lower().startswith('half') else m['value']
-                
-                # Weight the measurement based on fit feedback
-                confidence = 1.0
-                if m['fit_type'] == 'tight':
-                    confidence = 0.7  # Less weight for tight fits
-                elif m['fit_type'] == 'relaxed':
-                    confidence = 0.8  # Less weight for relaxed fits
-                
-                values.append({
-                    'value': value,
-                    'confidence': confidence
-                })
+        if not measurements:
+            return JSONResponse(content={
+                "measurementType": "chest",
+                "preferredRange": {"min": 40.0, "max": 42.0},
+                "measurements": []
+            })
+        
+        # Convert Decimal to float before calculations
+        good_measurements = [
+            float(m['value']) for m in measurements 
+            if m['value'] is not None and m['overall_feeling'] in ['Good', 'good']
+        ]
+        
+        if good_measurements:
+            avg = sum(good_measurements) / len(good_measurements)
+            preferred_range = {
+                "min": round(float(avg * 0.97), 1),  # Ensure float
+                "max": round(float(avg * 1.03), 1)   # Ensure float
+            }
+        else:
+            preferred_range = {"min": 40.0, "max": 42.0}
             
-            # Calculate weighted average
-            weighted_values = [v['value'] * v['confidence'] for v in values]
-            weights = [v['confidence'] for v in values]
-            avg = sum(weighted_values) / sum(weights)
-            
-            # Calculate range (±5% from weighted average)
-            return MeasurementRange(
-                min=avg * 0.95,
-                max=avg * 1.05,
-                confidence=mean([v['confidence'] for v in values])
-            )
-        
-        preferred_range = calculate_range(measurements)
-        
-        return {
-            "measurement_type": "chest",
-            "preferred_range": preferred_range,
-            "measurements": [
-                {
-                    "brand": m['brand_name'],
-                    "garment_name": m['garment_name'],
-                    "value_min": m['value'],
-                    "value_max": m['value'],
-                    "size": m['size'],
-                    "owns_garment": m['owns_garment'],
-                    "fit_type": m['fit_type'],
-                    "garment_type": m['garment_type'],
-                    "feedback": m['custom_feedback']
-                }
-                for m in measurements
-            ]
+        response = {
+            "measurementType": "chest",
+            "preferredRange": preferred_range,
+            "measurements": [{
+                "brand": m['brand_name'],
+                "garmentName": m['garment_name'],
+                "value": float(m['value']),  # Convert to float
+                "size": m['size'],
+                "ownsGarment": m['owns_garment'],
+                "fitType": m['overall_feeling'],
+                "feedback": m['feedback']
+            } for m in measurements]
         }
+        print(f"Returning response: {response}")
+        return JSONResponse(content=response)
         
+    except Exception as e:
+        print(f"Error in get_user_measurements: {e}")
+        return JSONResponse(
+            status_code=500,
+            content={"error": str(e)}
+        )
     finally:
-        cur.close()
-        conn.close()
+        if conn:
+            conn.close()

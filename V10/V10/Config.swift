@@ -10,4 +10,8 @@ struct Config {
     }()
     
     static let uniqloURLTemplate = "https://www.uniqlo.com/us/en/products/E{product_code}-000"
+    
+    // Add default user configuration
+    static let defaultUserId = "18"
+    static let defaultUserName = "user1"
 } 

@@ -1,5 +1,28 @@
 import SwiftUI
 
+struct MeasurementResponse: Codable {
+    let measurementType: String
+    let preferredRange: PreferredRange
+    let measurements: [MeasurementItem]
+}
+
+struct PreferredRange: Codable {
+    let min: Double
+    let max: Double
+}
+
+struct MeasurementItem: Codable, Identifiable {
+    let brand: String
+    let garmentName: String
+    let value: Double
+    let size: String
+    let ownsGarment: Bool
+    let fitType: String?
+    let feedback: String?
+    
+    var id: String { "\(brand)-\(garmentName)-\(size)" }
+}
+
 struct UserMeasurementProfileView: View {
     @State private var measurements: [MeasurementSummary] = []
     @State private var isLoading = true
@@ -61,10 +84,12 @@ struct UserMeasurementProfileView: View {
     }
     
     private func loadMeasurements() {
-        guard let url = URL(string: "\(Config.baseURL)/user/measurements") else {
+        guard let url = URL(string: "\(Config.baseURL)/user/\(Config.defaultUserId)/measurements") else {
             errorMessage = "Invalid URL"
             return
         }
+        
+        print("Loading measurements from: \(url)")  // Debug print
         
         URLSession.shared.dataTask(with: url) { data, response, error in
             if let error = error {
@@ -83,20 +108,46 @@ struct UserMeasurementProfileView: View {
                 return
             }
             
-            // TODO: Parse response and update measurements
-            // For now, let's add some sample data
-            DispatchQueue.main.async {
-                self.measurements = [
-                    MeasurementSummary(
-                        name: "Chest",
-                        measurements: [
-                            BrandMeasurement(brand: "Uniqlo", garmentName: "Waffle T-Shirt", measurementRange: MeasurementRange(value: 41.0), size: "L", ownsGarment: true, fitContext: nil, userFeedback: nil, confidence: 0.9),
-                            BrandMeasurement(brand: "J.Crew", garmentName: "Cotton Sweater", measurementRange: MeasurementRange(value: 43.0), size: "L", ownsGarment: true, fitContext: nil, userFeedback: nil, confidence: 0.9)
-                        ],
-                        preferredRange: MeasurementRange(min: 41.0, max: 43.0)
-                    )
-                ]
-                self.isLoading = false
+            // Debug print the raw response
+            if let rawString = String(data: data, encoding: .utf8) {
+                print("Raw response: \(rawString)")
+            }
+            
+            do {
+                let response = try JSONDecoder().decode(MeasurementResponse.self, from: data)
+                // Debug print the decoded response
+                print("Successfully decoded response: \(response)")
+                
+                DispatchQueue.main.async {
+                    self.measurements = [
+                        MeasurementSummary(
+                            name: response.measurementType.capitalized,
+                            measurements: response.measurements.map { item in
+                                BrandMeasurement(
+                                    brand: item.brand,
+                                    garmentName: item.garmentName,
+                                    measurementRange: MeasurementRange(value: item.value),
+                                    size: item.size,
+                                    ownsGarment: item.ownsGarment,
+                                    fitContext: item.fitType,
+                                    userFeedback: item.feedback,
+                                    confidence: 0.9
+                                )
+                            },
+                            preferredRange: MeasurementRange(
+                                min: response.preferredRange.min,
+                                max: response.preferredRange.max
+                            )
+                        )
+                    ]
+                    self.isLoading = false
+                }
+            } catch {
+                print("Decoding error: \(error)")  // More detailed error print
+                DispatchQueue.main.async {
+                    self.errorMessage = "Failed to parse data: \(error)"
+                    self.isLoading = false
+                }
             }
         }.resume()
     }
