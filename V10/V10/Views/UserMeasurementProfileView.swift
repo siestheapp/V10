@@ -4,6 +4,7 @@ struct UserMeasurementProfileView: View {
     @State private var measurements: [MeasurementSummary] = []
     @State private var isLoading = true
     @State private var errorMessage: String?
+    @State private var showingOwnedOnly = false
     
     var body: some View {
         NavigationView {
@@ -15,6 +16,9 @@ struct UserMeasurementProfileView: View {
                         .foregroundColor(.red)
                 } else {
                     List {
+                        Toggle("Show Only Owned Items", isOn: $showingOwnedOnly)
+                            .padding(.vertical, 4)
+                        
                         ForEach(measurements) { measurement in
                             Section {
                                 VStack(alignment: .leading, spacing: 12) {
@@ -32,7 +36,11 @@ struct UserMeasurementProfileView: View {
                                         .foregroundColor(.gray)
                                         .padding(.top, 4)
                                     
-                                    ForEach(measurement.measurements) { brandMeasurement in
+                                    let filteredMeasurements = showingOwnedOnly ? 
+                                        measurement.measurements.filter { $0.ownsGarment } :
+                                        measurement.measurements
+                                    
+                                    ForEach(filteredMeasurements) { brandMeasurement in
                                         MeasurementDetailRow(measurement: brandMeasurement)
                                     }
                                 }
