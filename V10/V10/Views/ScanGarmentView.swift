@@ -1,6 +1,7 @@
 import SwiftUI
 import PhotosUI
 import Vision
+import Foundation
 
 struct ScanGarmentView: View {
     @Binding var isPresented: Bool
@@ -209,7 +210,10 @@ struct ScanGarmentView: View {
     }
     
     private func sendToBackend(productCode: String, scannedPrice: Double?, scannedSize: String?) {
-        guard let url = URL(string: "\(Config.baseURL)/process_garment") else { return }
+        guard let url = URL(string: "\(baseURL)/process_garment") else {
+            print("❌ Invalid URL: \(baseURL)/process_garment")
+            return 
+        }
         
         let body: [String: Any] = [
             "product_code": productCode,
@@ -219,6 +223,8 @@ struct ScanGarmentView: View {
         
         print("Sending to backend:", body)  // Add this debug line
         
+        NetworkLogger.log(url: url, method: "POST", body: body)
+        
         var request = URLRequest(url: url)
         request.httpMethod = "POST"
         request.setValue("application/json", forHTTPHeaderField: "Content-Type")
@@ -226,15 +232,12 @@ struct ScanGarmentView: View {
         
         URLSession.shared.dataTask(with: request) { data, response, error in
             if let error = error {
-                print("Network error: \(error)")
+                NetworkLogger.logError(error, url: url)
                 return
             }
             
             guard let data = data else { return }
-            
-            if let jsonString = String(data: data, encoding: .utf8) {
-                print("Server response: \(jsonString)")
-            }
+            NetworkLogger.logSuccess(data, url: url)
             
             do {
                 let product = try JSONDecoder().decode(Product.self, from: data)

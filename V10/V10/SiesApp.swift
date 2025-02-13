@@ -9,7 +9,7 @@ struct SiesApp: App {
         WindowGroup {
             if skipToCloset {
                 NavigationView {
-                    ClosetView()
+                    ClosetView()  // Change back to ClosetView
                 }
             } else {
                 HomeView()  // Normal flow

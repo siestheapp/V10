@@ -104,4 +104,7 @@ struct GarmentRow: View {
         }
         .padding(.vertical, 4)
     }
-} 
+}
+
+// Update to use baseURL
+let url = URL(string: "\(baseURL)/user/18/measurements") 

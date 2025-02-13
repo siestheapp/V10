@@ -32,6 +32,13 @@ struct ClosetView: View {
                     Label("Fit", systemImage: "ruler")
                 }
                 .tag(3)
+            
+            // Live Tab
+            LiveMeasurementsView()
+                .tabItem {
+                    Label("Live", systemImage: "chart.line.uptrend.xyaxis")
+                }
+                .tag(4)
         }
     }
 }

@@ -30,7 +30,7 @@ struct ProductDetailsView: View {
     @Binding var isPresented: Bool
     
     func trackProductClick() {
-        guard let url = URL(string: "\(Config.baseURL)/track_click") else { return }
+        guard let url = URL(string: "\(baseURL)/track_click") else { return }
         
         let body: [String: Any] = [
             "product_code": product.id,

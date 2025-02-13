@@ -8,17 +8,41 @@ from statistics import mean
 from typing import List, Optional
 from fastapi.responses import JSONResponse
 from fastapi.middleware.cors import CORSMiddleware
+import asyncpg
 
-# Database connection
+# Create the FastAPI app first
+app = FastAPI()
+
+# Database connection settings
 DB_CONFIG = {
-    "dbname": "v10_app",
+    "database": "v10_app",  # Changed from dbname to database for asyncpg
     "user": "v10_user",
-    "password": "securepassword",
+    "password": "",  # Add your password if needed
     "host": "localhost"
 }
 
+# Create a connection pool
+pool = None
+
+@app.on_event("startup")
+async def startup():
+    global pool
+    pool = await asyncpg.create_pool(**DB_CONFIG)
+
+@app.on_event("shutdown")
+async def shutdown():
+    if pool:
+        await pool.close()
+
+# Keep the old get_db() function for non-async endpoints
 def get_db():
-    return psycopg2.connect(**DB_CONFIG, cursor_factory=RealDictCursor)
+    return psycopg2.connect(
+        dbname="v10_app",  # psycopg2 uses dbname
+        user="v10_user",
+        password="",
+        host="localhost",
+        cursor_factory=RealDictCursor
+    )
 
 # API Models
 class GarmentInfo(BaseModel):
@@ -52,14 +76,6 @@ class UserMeasurement(BaseModel):
     fit_type: Optional[str]  # "tight", "regular", "relaxed"
     garment_type: Optional[str]
     feedback: Optional[str]
-
-app = FastAPI()
-
-@app.get("/")
-def read_root():
-    return {"message": "Welcome to Sies!"}
-
-from pydantic import BaseModel
 
 # Define a User model for validation
 class User(BaseModel):
@@ -523,3 +539,117 @@ async def get_user_measurements(user_id: str):
     finally:
         if conn:
             conn.close()
+
+@app.get("/user/{user_id}/ideal_measurements")
+async def get_ideal_measurements(user_id: str):
+    conn = None
+    try:
+        conn = get_db()
+        cur = conn.cursor()
+        
+        # Get all measurements for this user
+        cur.execute("""
+            WITH measurement_data AS (
+                -- Get measurements from fit_feedback
+                SELECT 
+                    mt.name as type,
+                    mt.display_name,
+                    CASE 
+                        WHEN f.size = 'S' THEN 38.0
+                        WHEN f.size = 'M' THEN 40.0
+                        WHEN f.size = 'L' THEN 42.0
+                        WHEN f.size = 'XL' THEN 44.0
+                        WHEN f.size = '42' THEN 42.0
+                        ELSE NULL
+                    END as value,
+                    f.overall_feeling
+                FROM fit_feedback f
+                JOIN measurement_types mt ON mt.name = 'chest_circumference'
+                WHERE f.user_id = %s
+                AND f.overall_feeling = 'Good'
+                
+                UNION ALL
+                
+                -- Get measurements from user_measurements
+                SELECT 
+                    mt.name as type,
+                    mt.display_name,
+                    um.value,
+                    'Good' as overall_feeling
+                FROM user_measurements um
+                JOIN measurement_types mt ON mt.id = um.measurement_type_id
+                WHERE um.user_id = %s
+                AND um.owns_garment = true
+            )
+            SELECT 
+                type,
+                display_name,
+                ROUND(AVG(value)::numeric, 1) as ideal_value,
+                ROUND(MIN(value)::numeric, 1) as min_value,
+                ROUND(MAX(value)::numeric, 1) as max_value,
+                COUNT(*) as sources_count,
+                -- Calculate confidence based on number of sources and consistency
+                GREATEST(0.5, LEAST(0.95, 
+                    (COUNT(*)::float / 10) * -- More sources = higher confidence
+                    (1 - (STDDEV(value) / AVG(value))::float) -- Less variance = higher confidence
+                )) as confidence
+            FROM measurement_data
+            GROUP BY type, display_name
+            HAVING COUNT(*) > 0
+        """, (user_id, user_id))
+        
+        measurements = cur.fetchall()
+        
+        return [
+            {
+                "type": m['display_name'],
+                "value": float(m['ideal_value']),
+                "range": {
+                    "min": float(m['min_value']),
+                    "max": float(m['max_value'])
+                },
+                "confidence": float(m['confidence']),
+                "sourcesCount": m['sources_count']
+            }
+            for m in measurements
+        ]
+        
+    except Exception as e:
+        print(f"Error in get_ideal_measurements: {e}")
+        return JSONResponse(
+            status_code=500,
+            content={"error": str(e)}
+        )
+    finally:
+        if conn:
+            conn.close()
+
+@app.get("/fit_ranges")
+async def get_fit_ranges():
+    try:
+        print("Fetching fit ranges...")  # Debug log
+        async with pool.acquire() as conn:
+            result = await conn.fetch("""
+                SELECT 
+                    id,
+                    user_id,
+                    measurement_type_id,
+                    good_fit_min,
+                    good_fit_max,
+                    tight_fit_min,
+                    tight_fit_max,
+                    loose_fit_min,
+                    loose_fit_max,
+                    absolute_min,
+                    absolute_max
+                FROM fit_ranges
+                WHERE user_id = 18
+            """)
+            data = [dict(row) for row in result]
+            print(f"Found {len(data)} fit ranges")  # Debug log
+            if not data:
+                print("No fit ranges found for user 18")  # Debug log
+            return data
+    except Exception as e:
+        print(f"Error getting fit ranges: {e}")  # Error log
+        raise HTTPException(status_code=500, detail=str(e))
