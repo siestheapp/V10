@@ -547,10 +547,29 @@ async def get_ideal_measurements(user_id: str):
         conn = get_db()
         cur = conn.cursor()
         
-        # Get all measurements for this user
+        # First get calibrated ranges from fit_ranges
+        cur.execute("""
+            SELECT 
+                mt.name as type,
+                fr.good_fit_min,
+                fr.good_fit_max,
+                fr.tight_fit_min,
+                fr.tight_fit_max,
+                fr.loose_fit_min,
+                fr.loose_fit_max,
+                fr.absolute_min,
+                fr.absolute_max
+            FROM fit_ranges fr
+            JOIN measurement_types mt ON fr.measurement_type_id = mt.id
+            WHERE fr.user_id = %s
+        """, (user_id,))
+        
+        calibrated_ranges = {m['type']: m for m in cur.fetchall()}
+        
+        # Then get historical data
         cur.execute("""
             WITH measurement_data AS (
-                -- Get measurements from fit_feedback
+                -- Get measurements from fit_feedback and user_measurements
                 SELECT 
                     mt.name as type,
                     mt.display_name,
@@ -565,7 +584,7 @@ async def get_ideal_measurements(user_id: str):
                     f.overall_feeling
                 FROM fit_feedback f
                 JOIN measurement_types mt ON mt.name = 'chest_circumference'
-                WHERE f.user_id = %s
+                WHERE f.user_id = %(user_id)s
                 AND f.overall_feeling = 'Good'
                 
                 UNION ALL
@@ -578,41 +597,74 @@ async def get_ideal_measurements(user_id: str):
                     'Good' as overall_feeling
                 FROM user_measurements um
                 JOIN measurement_types mt ON mt.id = um.measurement_type_id
-                WHERE um.user_id = %s
+                WHERE um.user_id = %(user_id)s
                 AND um.owns_garment = true
             )
             SELECT 
                 type,
                 display_name,
-                ROUND(AVG(value)::numeric, 1) as ideal_value,
+                ROUND(AVG(value)::numeric, 1) as calculated_value,
                 ROUND(MIN(value)::numeric, 1) as min_value,
                 ROUND(MAX(value)::numeric, 1) as max_value,
                 COUNT(*) as sources_count,
-                -- Calculate confidence based on number of sources and consistency
                 GREATEST(0.5, LEAST(0.95, 
-                    (COUNT(*)::float / 10) * -- More sources = higher confidence
-                    (1 - (STDDEV(value) / AVG(value))::float) -- Less variance = higher confidence
-                )) as confidence
+                    (COUNT(*)::float / 10) * 
+                    (1 - (STDDEV(value) / AVG(value))::float)
+                )) as calculated_confidence
             FROM measurement_data
             GROUP BY type, display_name
             HAVING COUNT(*) > 0
-        """, (user_id, user_id))
+        """, {'user_id': user_id})
         
-        measurements = cur.fetchall()
+        historical_data = cur.fetchall()
         
-        return [
-            {
-                "type": m['display_name'],
-                "value": float(m['ideal_value']),
-                "range": {
-                    "min": float(m['min_value']),
-                    "max": float(m['max_value'])
-                },
-                "confidence": float(m['confidence']),
-                "sourcesCount": m['sources_count']
-            }
-            for m in measurements
-        ]
+        # If we have no historical data, just use calibrated ranges
+        if not historical_data and calibrated_ranges:
+            measurements = [
+                {
+                    "type": measurement_type,
+                    "value": (m['good_fit_min'] + m['good_fit_max']) / 2,
+                    "range": {
+                        "min": m['good_fit_min'],
+                        "max": m['good_fit_max']
+                    },
+                    "confidence": 0.95,
+                    "sourcesCount": 1
+                }
+                for measurement_type, m in calibrated_ranges.items()
+            ]
+            return measurements
+            
+        # Rest of the combining logic stays the same
+        measurements = []
+        for m in historical_data:
+            measurement_type = m['type']
+            calibrated = calibrated_ranges.get(measurement_type)
+            
+            if calibrated:
+                measurements.append({
+                    "type": m['display_name'],
+                    "value": (calibrated['good_fit_min'] + calibrated['good_fit_max']) / 2,
+                    "range": {
+                        "min": calibrated['good_fit_min'],
+                        "max": calibrated['good_fit_max']
+                    },
+                    "confidence": max(0.95, float(m['calculated_confidence'])),
+                    "sourcesCount": m['sources_count']
+                })
+            else:
+                measurements.append({
+                    "type": m['display_name'],
+                    "value": float(m['calculated_value']),
+                    "range": {
+                        "min": float(m['min_value']),
+                        "max": float(m['max_value'])
+                    },
+                    "confidence": float(m['calculated_confidence']),
+                    "sourcesCount": m['sources_count']
+                })
+        
+        return measurements
         
     except Exception as e:
         print(f"Error in get_ideal_measurements: {e}")
