@@ -210,8 +210,8 @@ struct ScanGarmentView: View {
     }
     
     private func sendToBackend(productCode: String, scannedPrice: Double?, scannedSize: String?) {
-        guard let url = URL(string: "\(baseURL)/process_garment") else {
-            print("❌ Invalid URL: \(baseURL)/process_garment")
+        guard let url = URL(string: "\(Config.baseURL)/process_garment") else {
+            print("❌ Invalid URL: \(Config.baseURL)/process_garment")
             return 
         }
         

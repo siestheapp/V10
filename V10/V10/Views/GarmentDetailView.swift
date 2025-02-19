@@ -3,101 +3,55 @@ import SwiftUI
 struct GarmentDetailView: View {
     let garment: ClosetGarment
     @Binding var isPresented: Bool
-    @State private var selectedMeasurement: String?
     
     var body: some View {
         NavigationView {
-            List {
-                Section(header: Text("GARMENT INFO")) {
-                    LabeledContent("Brand", value: garment.brand)
-                    LabeledContent("Name", value: garment.name)
-                    LabeledContent("Size", value: garment.size)
+            VStack(alignment: .leading, spacing: 16) {
+                // Brand and Category
+                Group {
+                    Text(garment.brand)
+                        .font(.title)
+                    Text(garment.category)
+                        .font(.headline)
+                        .foregroundColor(.gray)
                 }
                 
-                Section(header: Text("MEASUREMENTS")) {
-                    ForEach(Array(garment.measurements.keys.sorted()), id: \.self) { key in
-                        if let range = garment.measurements[key] {
-                            VStack(alignment: .leading) {
-                                HStack {
-                                    Text(key.capitalized)
-                                        .font(.headline)
-                                    Spacer()
-                                    if range.min == range.max {
-                                        Text(String(format: "%.1f\"", range.min))
-                                    } else {
-                                        Text(String(format: "%.1f-%.1f\"", range.min, range.max))
-                                    }
-                                }
-                                
-                                if let feedback = garment.feedback?[key] {
-                                    Text(feedback)
-                                        .font(.caption)
-                                        .foregroundColor(.gray)
-                                } else {
-                                    Button("Add feedback") {
-                                        selectedMeasurement = key
-                                    }
-                                    .font(.caption)
-                                    .foregroundColor(.blue)
-                                }
-                            }
-                            .padding(.vertical, 4)
-                        }
-                    }
+                // Size and Measurements
+                Group {
+                    Text("Size: \(garment.size)")
+                        .font(.headline)
+                    
+                    Text("Chest: \(garment.chestRange)")
+                        .font(.subheadline)
                 }
-            }
-            .navigationTitle("Garment Details")
-            .navigationBarTitleDisplayMode(.inline)
-            .toolbar {
-                ToolbarItem(placement: .navigationBarTrailing) {
-                    Button("Done") {
-                        isPresented = false
-                    }
+                
+                // Fit Feedback
+                if let feedback = garment.fitFeedback {
+                    Text("Feedback: \(feedback)")
+                        .font(.subheadline)
                 }
+                
+                Spacer()
             }
-            .sheet(item: Binding(
-                get: { selectedMeasurement.map { MeasurementIdentifier(name: $0) } },
-                set: { selectedMeasurement = $0?.name }
-            )) { identifier in
-                FeedbackSheet(
-                    measurement: BrandMeasurement(
-                        brand: garment.brand,
-                        garmentName: garment.name,
-                        measurementRange: garment.measurements[identifier.name] ?? MeasurementRange(value: 0),
-                        size: garment.size,
-                        ownsGarment: garment.ownsGarment,
-                        fitContext: nil,
-                        userFeedback: garment.feedback?[identifier.name],
-                        confidence: 0.9
-                    ),
-                    isPresented: Binding(
-                        get: { selectedMeasurement != nil },
-                        set: { if !$0 { selectedMeasurement = nil } }
-                    )
-                )
-            }
+            .padding()
+            .navigationBarItems(trailing: Button("Done") {
+                isPresented = false
+            })
         }
     }
-}
-
-// Helper to make String identifiable for sheet presentation
-struct MeasurementIdentifier: Identifiable {
-    let name: String
-    var id: String { name }
 }
 
 #Preview {
     GarmentDetailView(
         garment: ClosetGarment(
+            id: 1,
             brand: "J.Crew",
-            name: "Cotton Sweater",
+            category: "Tops",
             size: "L",
-            measurements: [
-                "chest": MeasurementRange(min: 41, max: 43),
-                "sleeve": MeasurementRange(min: 34, max: 35)
-            ],
-            ownsGarment: true,
-            feedback: ["chest": "Fits well in chest"]
+            chestRange: "41-43",
+            fitFeedback: "Good Fit",
+            createdAt: "2024-02-18",
+            ownsGarment: true
         ),
         isPresented: .constant(true)
     )

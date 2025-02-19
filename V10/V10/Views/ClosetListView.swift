@@ -1,19 +1,21 @@
 import SwiftUI
 
-struct ClosetGarment: Identifiable {
-    let id = UUID()
+struct ClosetGarment: Identifiable, Codable {
+    let id: Int
     let brand: String
-    let name: String
+    let category: String
     let size: String
-    let measurements: [String: MeasurementRange]  // e.g. ["chest": MeasurementRange(41, 43)]
+    let chestRange: String
+    let fitFeedback: String?
+    let createdAt: String
     let ownsGarment: Bool
-    let feedback: [String: String]?  // Feedback for each measurement
 }
 
 struct ClosetListView: View {
     @State private var garments: [ClosetGarment] = []
     @State private var isLoading = true
     @State private var errorMessage: String?
+    @State private var showingDetail = false
     @State private var selectedGarment: ClosetGarment?
     
     var body: some View {
@@ -47,39 +49,39 @@ struct ClosetListView: View {
                 )
             }
             .onAppear {
-                loadCloset()
+                loadGarments()
             }
         }
     }
     
-    private func loadCloset() {
-        // TODO: Load from server
-        // For now, add sample data
-        self.garments = [
-            ClosetGarment(
-                brand: "J.Crew",
-                name: "Cotton Sweater",
-                size: "L",
-                measurements: [
-                    "chest": MeasurementRange(min: 41, max: 43),
-                    "sleeve": MeasurementRange(min: 34, max: 35)
-                ],
-                ownsGarment: true,
-                feedback: nil
-            ),
-            ClosetGarment(
-                brand: "Theory",
-                name: "Brenan Polo",
-                size: "S",
-                measurements: [
-                    "chest": MeasurementRange(min: 36, max: 38),
-                    "sleeve": MeasurementRange(min: 33.5, max: 34)
-                ],
-                ownsGarment: true,
-                feedback: ["chest": "Tight fit, good for polo"]
-            )
-        ]
-        isLoading = false
+    private func loadGarments() {
+        guard let url = URL(string: "\(Config.baseURL)/user/\(Config.defaultUserId)/closet") else {
+            errorMessage = "Invalid URL"
+            return
+        }
+        
+        URLSession.shared.dataTask(with: url) { data, response, error in
+            DispatchQueue.main.async {
+                self.isLoading = false
+                
+                if let error = error {
+                    self.errorMessage = error.localizedDescription
+                    return
+                }
+                
+                guard let data = data else {
+                    self.errorMessage = "No data received"
+                    return
+                }
+                
+                do {
+                    let garments = try JSONDecoder().decode([ClosetGarment].self, from: data)
+                    self.garments = garments
+                } catch {
+                    self.errorMessage = "Failed to decode response: \(error.localizedDescription)"
+                }
+            }
+        }.resume()
     }
 }
 
@@ -90,21 +92,21 @@ struct GarmentRow: View {
         VStack(alignment: .leading, spacing: 4) {
             Text(garment.brand)
                 .font(.headline)
-            Text(garment.name)
+            Text(garment.category)
                 .foregroundColor(.gray)
             HStack {
                 Text(garment.size)
                     .font(.subheadline)
-                if !garment.ownsGarment {
-                    Text("(Tried on)")
+                if let feedback = garment.fitFeedback {
+                    Text("(\(feedback))")
                         .font(.caption)
                         .foregroundColor(.gray)
                 }
             }
+            Text("Chest: \(garment.chestRange)")
+                .font(.caption)
+                .foregroundColor(.gray)
         }
         .padding(.vertical, 4)
     }
-}
-
-// Update to use baseURL
-let url = URL(string: "\(baseURL)/user/18/measurements") 
+} 

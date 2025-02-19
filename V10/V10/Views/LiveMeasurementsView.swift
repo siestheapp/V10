@@ -64,13 +64,14 @@ struct LiveMeasurementsView: View {
     }
     
     private func loadIdealMeasurements() {
-        let urlString = "\(baseURL)/user/18/ideal_measurements?t=\(Date().timeIntervalSince1970)"
+        let urlString = "\(Config.baseURL)/user/\(Config.defaultUserId)/ideal_measurements?t=\(Date().timeIntervalSince1970)"
+        
         guard let url = URL(string: urlString) else {
-            errorMessage = "Invalid URL"
+            print("❌ Invalid URL: \(urlString)")
             return
         }
         
-        print("🔍 Loading from:", url.absoluteString)  // Debug URL
+        print("🔍 Loading from: \(url)")
         NetworkLogger.log(url: url)
         
         URLSession.shared.dataTask(with: url) { data, response, error in

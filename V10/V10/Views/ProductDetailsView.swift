@@ -29,8 +29,13 @@ struct ProductDetailsView: View {
     let product: Product
     @Binding var isPresented: Bool
     
+    init(product: Product, isPresented: Binding<Bool>, ownsGarment: Bool = true) {
+        self.product = product
+        self._isPresented = isPresented
+    }
+    
     func trackProductClick() {
-        guard let url = URL(string: "\(baseURL)/track_click") else { return }
+        guard let url = URL(string: "\(Config.baseURL)/track_click") else { return }
         
         let body: [String: Any] = [
             "product_code": product.id,
