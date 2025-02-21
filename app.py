@@ -4,11 +4,13 @@ from pydantic import BaseModel
 import psycopg2
 from psycopg2.extras import RealDictCursor
 import asyncpg
-from typing import Optional, List
+from typing import Optional, List, Dict
 from enum import Enum
 from datetime import datetime
 from fastapi.middleware.cors import CORSMiddleware
 from fit_zone_calculator import FitZoneCalculator
+import json
+from urllib.parse import urlparse
 
 app = FastAPI()
 
@@ -74,6 +76,15 @@ class FitFeedback(BaseModel):
     sleeve_fit: Optional[str]
     neck_fit: Optional[str]
     waist_fit: Optional[str]
+
+class GarmentSubmission(BaseModel):
+    productLink: str
+    sizeLabel: str
+    userId: int
+
+class FeedbackSubmission(BaseModel):
+    garment_id: int
+    feedback: Dict[str, int]  # measurement_name -> feedback_value
 
 # Connection Functions
 async def get_pool():
@@ -348,6 +359,160 @@ async def get_scan_history(user_id: str):
     finally:
         cur.close()
         conn.close()
+
+def process_new_garment(product_link: str, size_label: str, user_id: int):
+    # Step 1: Create the garment entry and get measurements
+    with db.connection() as conn:
+        garment_id = conn.execute(
+            "SELECT process_new_garment(%s, %s, %s)",
+            (product_link, size_label, user_id)
+        ).fetchone()[0]
+
+        # Step 2: Get the brand_id for the newly created garment
+        brand_id = conn.execute(
+            "SELECT brand_id FROM user_garments WHERE id = %s",
+            (garment_id,)
+        ).fetchone()[0]
+
+        # Step 3: Get fit feedback questions for this brand
+        feedback_ranges = conn.execute(
+            "SELECT * FROM get_brand_fit_feedback_ranges(%s)",
+            (brand_id,)
+        ).fetchall()
+
+        # Step 4: For each feedback range, collect and store feedback
+        for range in feedback_ranges:
+            # Here you would collect feedback from the user through your API
+            feedback_value = get_user_feedback(range)  # This is a placeholder function
+            
+            conn.execute(
+                "SELECT store_fit_feedback(%s, %s, %s)",
+                (garment_id, range.measurement_name, feedback_value)
+            )
+
+    return garment_id
+
+@app.get("/brands/{brand_id}/measurements")
+async def get_brand_measurements(brand_id: int):
+    try:
+        conn = get_db()
+        cur = conn.cursor()
+        
+        try:
+            cur.execute(
+                "SELECT * FROM get_brand_measurements(%s)",
+                (brand_id,)
+            )
+            measurements = cur.fetchall()
+            
+            # Convert to list of measurement names
+            measurement_list = [m["measurement_name"] for m in measurements]
+            
+            response = {
+                "measurements": measurement_list,
+                "feedbackOptions": [
+                    {"value": 1, "label": "Too tight"},
+                    {"value": 2, "label": "Tight but I like it"},
+                    {"value": 3, "label": "Good"},
+                    {"value": 4, "label": "Loose but I like it"},
+                    {"value": 5, "label": "Too loose"}
+                ]
+            }
+            
+            return response
+            
+        finally:
+            cur.close()
+            conn.close()
+            
+    except Exception as e:
+        print(f"Error in get_brand_measurements: {str(e)}")
+        raise HTTPException(status_code=500, detail=str(e))
+
+@app.post("/garments/submit")
+async def submit_garment_and_feedback(submission: GarmentSubmission):
+    """Submit a new garment with feedback"""
+    try:
+        print(f"Received submission: {submission}")
+        print(f"Product link: {submission.productLink}")
+        print(f"Size label: {submission.sizeLabel}")
+        print(f"User ID: {submission.userId}")
+        
+        conn = get_db()
+        cur = conn.cursor()
+        
+        try:
+            # Extract domain and path from URL
+            parsed_url = urlparse(submission.productLink)
+            domain = parsed_url.netloc.lower()
+            print(f"Parsed domain: {domain}")
+            
+            # Get all brands first
+            cur.execute("SELECT id, name FROM brands")
+            brands = cur.fetchall()
+            print(f"Available brands: {brands}")
+            
+            # Clean up the domain and brand names for comparison
+            clean_domain = domain.replace('.', '').replace('-', '').lower()
+            print(f"Cleaned domain: {clean_domain}")
+            
+            brand_id = None
+            for brand in brands:
+                clean_brand = brand['name'].replace(' ', '').replace('-', '').lower()
+                print(f"Checking brand: {clean_brand}")
+                
+                if clean_brand == 'bananarepublic' and 'bananarepublic.gap.com' in domain:
+                    brand_id = brand['id']
+                    print(f"Found brand {brand['name']} (id: {brand_id})")
+                    break
+            
+            if not brand_id:
+                raise HTTPException(status_code=400, detail="Could not determine brand from URL")
+            
+            # Debug: Print SQL parameters
+            print(f"Executing process_garment_with_feedback with params:")
+            print(f"  product_link: {submission.productLink}")
+            print(f"  size_label: {submission.sizeLabel}")
+            print(f"  user_id: {submission.userId}")
+            print(f"  feedback: {{}}")
+            
+            try:
+                cur.execute(
+                    "SELECT process_garment_with_feedback(%s, %s, %s, %s)",
+                    (
+                        submission.productLink,
+                        submission.sizeLabel,
+                        submission.userId,
+                        "{}"
+                    )
+                )
+                result = cur.fetchone()
+                print(f"SQL execution result: {result}")
+                
+                if result is None:
+                    raise Exception("No result returned from process_garment_with_feedback")
+                
+                garment_id = result[0]
+                conn.commit()
+                return {"garment_id": garment_id, "status": "success"}
+                
+            except psycopg2.Error as e:
+                print(f"Database error: {e.pgerror}")
+                print(f"Database error details: {e.diag.message_detail if e.diag else 'No details'}")
+                raise HTTPException(status_code=500, detail=f"Database error: {str(e)}")
+            
+        finally:
+            cur.close()
+            conn.close()
+            
+    except HTTPException as he:
+        raise he
+    except Exception as e:
+        print(f"Error submitting garment: {str(e)}")
+        print(f"Full error: {type(e).__name__}: {str(e)}")
+        import traceback
+        print(f"Traceback: {traceback.format_exc()}")
+        raise HTTPException(status_code=500, detail=str(e))
 
 if __name__ == "__main__":
     import uvicorn

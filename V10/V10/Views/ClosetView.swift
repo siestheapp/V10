@@ -33,10 +33,10 @@ struct ClosetView: View {
                 }
                 .tag(3)
             
-            // Live Tab
-            LiveMeasurementsView()
+            // Match Tab (replacing Live)
+            MatchScreen()
                 .tabItem {
-                    Label("Live", systemImage: "chart.line.uptrend.xyaxis")
+                    Label("Match", systemImage: "link")
                 }
                 .tag(4)
         }
