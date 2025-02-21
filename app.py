@@ -255,7 +255,7 @@ def get_user_garments(user_id: str) -> list:
         conn.close()
 
 def save_fit_zone(user_id: str, category: str, fit_zone: dict):
-    """Save or update a user's fit zone"""
+    """Save the calculated fit zone to the database"""
     conn = get_db()
     cur = conn.cursor()
     
@@ -265,20 +265,24 @@ def save_fit_zone(user_id: str, category: str, fit_zone: dict):
         
         cur.execute("""
             INSERT INTO user_fit_zones 
-            (user_id, category, tight_min, perfect_min, perfect_max, relaxed_max)
-            VALUES (%s, %s, %s, %s, %s, %s)
+            (user_id, category, tight_min, tight_max, good_min, good_max, relaxed_min, relaxed_max)
+            VALUES (%s, %s, %s, %s, %s, %s, %s, %s)
             ON CONFLICT (user_id, category) 
             DO UPDATE SET 
                 tight_min = EXCLUDED.tight_min,
-                perfect_min = EXCLUDED.perfect_min,
-                perfect_max = EXCLUDED.perfect_max,
+                tight_max = EXCLUDED.tight_max,
+                good_min = EXCLUDED.good_min,
+                good_max = EXCLUDED.good_max,
+                relaxed_min = EXCLUDED.relaxed_min,
                 relaxed_max = EXCLUDED.relaxed_max
         """, (
             user_id, 
-            normalized_category,  # Must be 'Tops'
+            normalized_category,
             fit_zone.get('tight_min'),
-            fit_zone['perfect_min'],
-            fit_zone['perfect_max'],
+            fit_zone.get('tight_max'),
+            fit_zone.get('good_min'),
+            fit_zone.get('good_max'),
+            fit_zone.get('relaxed_min'),
             fit_zone.get('relaxed_max')
         ))
         conn.commit()
@@ -291,8 +295,8 @@ def format_measurements_response(garments: list, fit_zone: dict) -> dict:
     return {
         "measurementType": "chest",
         "preferredRange": {
-            "min": fit_zone['perfect_min'],
-            "max": fit_zone['perfect_max']
+            "min": fit_zone['good_min'],
+            "max": fit_zone['good_max']
         },
         "measurements": [{
             "brand": g["brand"],

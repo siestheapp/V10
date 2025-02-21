@@ -25,23 +25,30 @@ class FitZoneCalculator:
             if (g.get('fit_feedback') == 'Loose but I Like It' or g.get('chest_feedback') == 'Loose but I Like It')
             and g.get('chest_range')
         ]
-        
-        # Calculate averages for each fit type
-        tight_avg = sum(avg for avg, _ in tight_fits) / len(tight_fits) if tight_fits else None
-        good_avg = sum(avg for avg, _ in good_fits) / len(good_fits) if good_fits else None
-        relaxed_avg = sum(avg for avg, _ in relaxed_fits) / len(relaxed_fits) if relaxed_fits else None
-        
+
+        # Compute the actual min/max for each category
+        tight_min = min(chest for chest, _ in tight_fits) if tight_fits else None
+        tight_max = max(chest for chest, _ in tight_fits) if tight_fits else None
+
+        good_min = min(chest for chest, _ in good_fits) if good_fits else None
+        good_max = max(chest for chest, _ in good_fits) if good_fits else None
+
+        relaxed_min = min(chest for chest, _ in relaxed_fits) if relaxed_fits else None
+        relaxed_max = max(chest for chest, _ in relaxed_fits) if relaxed_fits else None
+
         # Return full fit zone
         return {
-            'tight_min': tight_avg * 0.97 if tight_avg else None,
-            'perfect_min': good_avg * 0.97 if good_avg else 40.0,
-            'perfect_max': good_avg * 1.03 if good_avg else 42.0,
-            'relaxed_max': relaxed_avg * 1.03 if relaxed_avg else None
+            'tight_min': tight_min,
+            'tight_max': tight_max,
+            'good_min': good_min,
+            'good_max': good_max,
+            'relaxed_min': relaxed_min,
+            'relaxed_max': relaxed_max
         }
-        
+
     def _parse_chest_range(self, chest_range: str) -> tuple:
         """Parse chest range string into (avg, spread)"""
         if '-' in chest_range:
             min_val, max_val = map(float, chest_range.split('-'))
-            return ((min_val + max_val) / 2, max_val - min_val)
-        return (float(chest_range), 0) 
+            return ((min_val + max_val) / 2, max_val - min_val)  # (average, spread)
+        return (float(chest_range), 0)  # Single value, no spread 
