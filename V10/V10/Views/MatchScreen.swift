@@ -28,7 +28,7 @@ struct MatchScreen: View {
                     .padding()
             }
             
-            Button(action: getBrandMeasurements) {
+            Button(action: submitGarmentWithFeedback) {
                 if isLoading {
                     ProgressView()
                 } else {
@@ -71,154 +71,104 @@ struct MatchScreen: View {
         .padding()
     }
     
-    func getBrandMeasurements() {
+    func submitGarmentWithFeedback() {
         isLoading = true
         errorMessage = nil
         
-        guard let brandId = extractBrandId(from: productLink) else {
-            errorMessage = "Could not determine brand from URL"
+        // First submit the garment
+        guard let submitURL = URL(string: "\(BASE_URL)/garments/submit") else {
+            errorMessage = "Invalid URL"
             isLoading = false
             return
         }
         
+        var submitRequest = URLRequest(url: submitURL)
+        submitRequest.httpMethod = "POST"
+        submitRequest.setValue("application/json", forHTTPHeaderField: "Content-Type")
+        
+        let submitBody: GarmentSubmission = GarmentSubmission(
+            productLink: productLink,
+            sizeLabel: sizeLabel,
+            userId: 1  // Replace with actual user ID
+        )
+        
+        do {
+            submitRequest.httpBody = try JSONEncoder().encode(submitBody)
+            
+            // Debug log
+            print("Submitting to URL: \(submitURL.absoluteString)")
+            print("Request body: \(String(data: submitRequest.httpBody!, encoding: .utf8) ?? "none")")
+            
+            URLSession.shared.dataTask(with: submitRequest) { data, response, error in
+                DispatchQueue.main.async {
+                    if let error = error {
+                        self.errorMessage = error.localizedDescription
+                        self.isLoading = false
+                        return
+                    }
+                    
+                    guard let httpResponse = response as? HTTPURLResponse else {
+                        self.errorMessage = "Invalid response"
+                        self.isLoading = false
+                        return
+                    }
+                    
+                    if httpResponse.statusCode != 200 {
+                        if let data = data, let errorStr = String(data: data, encoding: .utf8) {
+                            self.errorMessage = "Server error: \(errorStr)"
+                        } else {
+                            self.errorMessage = "Server error: \(httpResponse.statusCode)"
+                        }
+                        self.isLoading = false
+                        return
+                    }
+                    
+                    guard let data = data,
+                          let submitResponse = try? JSONDecoder().decode(GarmentSubmissionResponse.self, from: data) else {
+                        self.errorMessage = "Invalid response data"
+                        self.isLoading = false
+                        return
+                    }
+                    
+                    // Then fetch measurements using the returned brand_id
+                    self.getBrandMeasurements(brandId: submitResponse.brandId)
+                }
+            }.resume()
+            
+        } catch {
+            errorMessage = "Failed to encode submission: \(error.localizedDescription)"
+            isLoading = false
+        }
+    }
+    
+    func getBrandMeasurements(brandId: Int) {
         guard let url = URL(string: "\(BASE_URL)/brands/\(brandId)/measurements") else {
             errorMessage = "Invalid URL"
             isLoading = false
             return
         }
         
-        print("Fetching measurements from: \(url.absoluteString)")
-        
-        var request = URLRequest(url: url)
-        request.timeoutInterval = 30
-        
-        URLSession.shared.dataTask(with: request) { data, response, error in
+        URLSession.shared.dataTask(with: url) { data, response, error in
             DispatchQueue.main.async {
-                isLoading = false
+                self.isLoading = false
                 
                 if let error = error {
-                    print("Network error: \(error)")
-                    errorMessage = "Network error: \(error.localizedDescription)"
-                    return
-                }
-                
-                guard let httpResponse = response as? HTTPURLResponse else {
-                    errorMessage = "Invalid response"
-                    return
-                }
-                
-                print("HTTP Status: \(httpResponse.statusCode)")
-                
-                guard httpResponse.statusCode == 200 else {
-                    if let data = data, let errorMessage = String(data: data, encoding: .utf8) {
-                        print("Server error: \(errorMessage)")
-                        self.errorMessage = "Server error: \(errorMessage)"
-                    } else {
-                        self.errorMessage = "Server error: \(httpResponse.statusCode)"
-                    }
+                    self.errorMessage = error.localizedDescription
                     return
                 }
                 
                 guard let data = data else {
-                    errorMessage = "No data received"
+                    self.errorMessage = "No data received"
                     return
                 }
                 
                 do {
-                    print("Raw response: \(String(data: data, encoding: .utf8) ?? "none")")
-                    
-                    // Add debug decoder
-                    let decoder = JSONDecoder()
-                    
-                    // Try decoding individual fields first
-                    let json = try JSONSerialization.jsonObject(with: data) as? [String: Any]
-                    print("Parsed JSON: \(json ?? [:])")
-                    print("Keys in response: \(json?.keys.joined(separator: ", ") ?? "")")
-                    
-                    let response = try decoder.decode(MeasurementsResponse.self, from: data)
+                    let response = try JSONDecoder().decode(MeasurementsResponse.self, from: data)
                     self.measurements = response.measurements
                     self.showingFeedback = true
                 } catch {
-                    print("Decode error: \(error)")
-                    if let decodingError = error as? DecodingError {
-                        switch decodingError {
-                        case .keyNotFound(let key, let context):
-                            print("Missing key: \(key.stringValue)")
-                            print("Context: \(context.debugDescription)")
-                            print("Coding path: \(context.codingPath)")
-                        default:
-                            print("Other decoding error: \(decodingError)")
-                        }
-                    }
-                    errorMessage = "Failed to decode response: \(error.localizedDescription)"
+                    self.errorMessage = "Failed to decode response: \(error.localizedDescription)"
                 }
-            }
-        }.resume()
-    }
-    
-    func submitGarmentWithFeedback() {
-        isLoading = true
-        errorMessage = nil
-        
-        guard let url = URL(string: "\(BASE_URL)/garments/submit") else {
-            errorMessage = "Invalid URL"
-            isLoading = false
-            return
-        }
-        
-        let submission = GarmentSubmission(
-            productLink: productLink,
-            sizeLabel: sizeLabel,
-            userId: 1  // Replace with actual user ID
-        )
-        
-        var request = URLRequest(url: url)
-        request.httpMethod = "POST"
-        request.setValue("application/json", forHTTPHeaderField: "Content-Type")
-        
-        do {
-            let encoder = JSONEncoder()
-            request.httpBody = try encoder.encode(submission)
-            
-            // Debug log
-            print("Submitting to URL: \(url.absoluteString)")
-            print("Request body: \(String(data: request.httpBody!, encoding: .utf8) ?? "none")")
-        } catch {
-            errorMessage = "Failed to encode submission: \(error.localizedDescription)"
-            isLoading = false
-            return
-        }
-        
-        URLSession.shared.dataTask(with: request) { data, response, error in
-            DispatchQueue.main.async {
-                isLoading = false
-                
-                if let error = error {
-                    print("Network error: \(error)")
-                    errorMessage = error.localizedDescription
-                    return
-                }
-                
-                if let httpResponse = response as? HTTPURLResponse {
-                    print("HTTP Status: \(httpResponse.statusCode)")
-                    
-                    if httpResponse.statusCode != 200 {
-                        if let data = data, let errorStr = String(data: data, encoding: .utf8) {
-                            print("Server error: \(errorStr)")
-                            errorMessage = "Server error: \(errorStr)"
-                        } else {
-                            errorMessage = "Server error: \(httpResponse.statusCode)"
-                        }
-                        return
-                    }
-                }
-                
-                // Reset form on success
-                self.productLink = ""
-                self.sizeLabel = ""
-                self.measurements = []
-                self.feedback = [:]
-                self.showingFeedback = false
             }
         }.resume()
     }
@@ -251,4 +201,17 @@ struct GarmentSubmission: Codable {
     let productLink: String
     let sizeLabel: String
     let userId: Int
+}
+
+// Add response model for garment submission
+struct GarmentSubmissionResponse: Codable {
+    let garmentId: Int
+    let brandId: Int
+    let status: String
+    
+    enum CodingKeys: String, CodingKey {
+        case garmentId = "garment_id"
+        case brandId = "brand_id"
+        case status
+    }
 } 

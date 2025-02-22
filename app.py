@@ -105,10 +105,11 @@ pool = None
 @app.on_event("startup")
 async def startup():
     global pool
-    pool = await get_pool()
+    pool = await asyncpg.create_pool(**DB_CONFIG)
 
 @app.on_event("shutdown")
 async def shutdown():
+    global pool
     if pool:
         await pool.close()
 
@@ -395,21 +396,41 @@ def process_new_garment(product_link: str, size_label: str, user_id: int):
 @app.get("/brands/{brand_id}/measurements")
 async def get_brand_measurements(brand_id: int):
     try:
-        conn = get_db()
-        cur = conn.cursor()
-        
-        try:
-            cur.execute(
-                "SELECT * FROM get_brand_measurements(%s)",
-                (brand_id,)
-            )
-            measurements = cur.fetchall()
-            
-            # Convert to list of measurement names
-            measurement_list = [m["measurement_name"] for m in measurements]
-            
-            response = {
-                "measurements": measurement_list,
+        async with pool.acquire() as conn:
+            # First verify the brand exists
+            brand = await conn.fetchrow("SELECT name FROM brands WHERE id = $1", brand_id)
+            if not brand:
+                raise HTTPException(status_code=404, detail="Brand not found")
+
+            # Get all available measurements for this brand
+            size_guide = await conn.fetchrow("""
+                SELECT 
+                    chest_range,
+                    neck_range,
+                    sleeve_range,
+                    waist_range
+                FROM size_guides 
+                WHERE brand_id = $1 
+                LIMIT 1
+            """, brand_id)
+
+            if not size_guide:
+                print(f"No size guide found for brand {brand_id}")
+                measurements = ['overall']  # Default to just overall if no size guide
+            else:
+                # Build measurements array based on what's available
+                measurements = ['overall']  # Always include overall
+                if size_guide.get('chest_range'):
+                    measurements.append('chest')
+                if size_guide.get('neck_range'):
+                    measurements.append('neck')
+                if size_guide.get('sleeve_range'):
+                    measurements.append('sleeve')
+                if size_guide.get('waist_range'):
+                    measurements.append('waist')
+
+            return {
+                "measurements": measurements,
                 "feedbackOptions": [
                     {"value": 1, "label": "Too tight"},
                     {"value": 2, "label": "Tight but I like it"},
@@ -418,13 +439,6 @@ async def get_brand_measurements(brand_id: int):
                     {"value": 5, "label": "Too loose"}
                 ]
             }
-            
-            return response
-            
-        finally:
-            cur.close()
-            conn.close()
-            
     except Exception as e:
         print(f"Error in get_brand_measurements: {str(e)}")
         raise HTTPException(status_code=500, detail=str(e))
@@ -434,28 +448,22 @@ async def submit_garment_and_feedback(submission: GarmentSubmission):
     """Submit a new garment with feedback"""
     try:
         print(f"Received submission: {submission}")
-        print(f"Product link: {submission.productLink}")
-        print(f"Size label: {submission.sizeLabel}")
-        print(f"User ID: {submission.userId}")
         
-        conn = get_db()
-        cur = conn.cursor()
-        
-        try:
+        async with pool.acquire() as conn:
             # Extract domain and path from URL
             parsed_url = urlparse(submission.productLink)
             domain = parsed_url.netloc.lower()
             print(f"Parsed domain: {domain}")
             
-            # Get all brands first
-            cur.execute("SELECT id, name FROM brands")
-            brands = cur.fetchall()
+            # Get all brands
+            brands = await conn.fetch("SELECT id, name FROM brands")
             print(f"Available brands: {brands}")
             
-            # Clean up the domain and brand names for comparison
+            # Clean up the domain for comparison
             clean_domain = domain.replace('.', '').replace('-', '').lower()
             print(f"Cleaned domain: {clean_domain}")
             
+            # Find matching brand
             brand_id = None
             for brand in brands:
                 clean_brand = brand['name'].replace(' ', '').replace('-', '').lower()
@@ -469,44 +477,34 @@ async def submit_garment_and_feedback(submission: GarmentSubmission):
             if not brand_id:
                 raise HTTPException(status_code=400, detail="Could not determine brand from URL")
             
-            # Debug: Print SQL parameters
-            print(f"Executing process_garment_with_feedback with params:")
-            print(f"  product_link: {submission.productLink}")
-            print(f"  size_label: {submission.sizeLabel}")
-            print(f"  user_id: {submission.userId}")
-            print(f"  feedback: {{}}")
+            # Create garment record
+            garment_id = await conn.fetchval("""
+                INSERT INTO user_garments (
+                    user_id, 
+                    brand_id,
+                    category,
+                    size_label,
+                    chest_range,
+                    product_link,
+                    owns_garment
+                ) VALUES ($1, $2, $3, $4, $5, $6, $7)
+                RETURNING id
+            """, 
+                submission.userId,
+                brand_id,
+                'Tops',  # Default category
+                submission.sizeLabel,
+                'N/A',   # Default chest_range
+                submission.productLink,
+                True     # Default owns_garment
+            )
             
-            try:
-                cur.execute(
-                    "SELECT process_garment_with_feedback(%s, %s, %s, %s)",
-                    (
-                        submission.productLink,
-                        submission.sizeLabel,
-                        submission.userId,
-                        "{}"
-                    )
-                )
-                result = cur.fetchone()
-                print(f"SQL execution result: {result}")
-                
-                if result is None:
-                    raise Exception("No result returned from process_garment_with_feedback")
-                
-                garment_id = result[0]
-                conn.commit()
-                return {"garment_id": garment_id, "status": "success"}
-                
-            except psycopg2.Error as e:
-                print(f"Database error: {e.pgerror}")
-                print(f"Database error details: {e.diag.message_detail if e.diag else 'No details'}")
-                raise HTTPException(status_code=500, detail=f"Database error: {str(e)}")
+            return {
+                "garment_id": garment_id, 
+                "brand_id": brand_id,  # Added brand_id to response
+                "status": "success"
+            }
             
-        finally:
-            cur.close()
-            conn.close()
-            
-    except HTTPException as he:
-        raise he
     except Exception as e:
         print(f"Error submitting garment: {str(e)}")
         print(f"Full error: {type(e).__name__}: {str(e)}")
