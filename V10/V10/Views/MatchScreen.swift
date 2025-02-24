@@ -1,194 +1,203 @@
 import SwiftUI
 
-let BASE_URL = "http://127.0.0.1:8005"  // or your actual server URL
+let BASE_URL = "http://127.0.0.1:8005"  // Replace with your actual server URL
 
 struct MatchScreen: View {
+    @EnvironmentObject var userSettings: UserSettings
     @State private var productLink: String = ""
-    @State private var sizeLabel: String = ""
+    @State private var sizeLabel: String = "M"
     @State private var measurements: [String] = []
     @State private var feedback: [String: Int] = [:]
     @State private var showingFeedback: Bool = false
     @State private var isLoading: Bool = false
     @State private var errorMessage: String?
+    @State private var showError: Bool = false
+    
+    let sizeOptions = ["XS", "S", "M", "L", "XL", "XXL"]
     
     var body: some View {
         VStack {
-            // Input Section
-            TextField("Product Link", text: $productLink)
-                .textFieldStyle(RoundedBorderTextFieldStyle())
-                .padding()
-            
-            TextField("Size", text: $sizeLabel)
-                .textFieldStyle(RoundedBorderTextFieldStyle())
-                .padding()
-            
-            if let error = errorMessage {
-                Text(error)
-                    .foregroundColor(.red)
-                    .padding()
+            VStack(alignment: .leading) {
+                Text("Paste Product Link")
+                    .font(.headline)
+                TextField("e.g., https://store.com/product", text: $productLink)
+                    .textFieldStyle(RoundedBorderTextFieldStyle())
+                    .keyboardType(.URL)
+                    .autocapitalization(.none)
             }
+            .padding()
             
-            Button(action: submitGarmentWithFeedback) {
+            VStack(alignment: .leading) {
+                Text("Select Your Size")
+                    .font(.headline)
+                Picker("Size", selection: $sizeLabel) {
+                    ForEach(sizeOptions, id: \.self) { size in
+                        Text(size).tag(size)
+                    }
+                }
+                .pickerStyle(MenuPickerStyle())
+            }
+            .padding()
+            
+            Button(action: {
+                Task {
+                    await submitGarmentWithFeedback()
+                }
+            }) {
                 if isLoading {
                     ProgressView()
                 } else {
                     Text("Submit")
+                        .frame(maxWidth: .infinity)
+                        .padding()
+                        .background(Color.blue)
+                        .foregroundColor(.white)
+                        .cornerRadius(10)
                 }
             }
-            .disabled(productLink.isEmpty || sizeLabel.isEmpty || isLoading)
+            .disabled(productLink.isEmpty || isLoading)
             .padding()
             
             if showingFeedback {
-                ScrollView {
-                    // Feedback Section
-                    ForEach(measurements, id: \.self) { measurement in
-                        VStack(alignment: .leading) {
-                            Text("How does it fit in the \(measurement)?")
-                                .font(.headline)
-                            
-                            Picker("Fit", selection: Binding(
-                                get: { feedback[measurement] ?? 3 },
-                                set: { feedback[measurement] = $0 }
-                            )) {
-                                Text("Too tight").tag(1)
-                                Text("Tight but I like it").tag(2)
-                                Text("Good").tag(3)
-                                Text("Loose but I like it").tag(4)
-                                Text("Too loose").tag(5)
-                            }
-                            .pickerStyle(SegmentedPickerStyle())
-                        }
+                fitFeedbackSection
+            }
+        }
+        .padding()
+        .overlay(
+            Group {
+                if showError {
+                    Text(errorMessage ?? "Unknown error")
+                        .foregroundColor(.white)
                         .padding()
-                    }
-                    
-                    Button("Submit Feedback") {
-                        submitGarmentWithFeedback()
-                    }
-                    .padding()
+                        .background(Color.red)
+                        .cornerRadius(8)
+                        .transition(.move(edge: .top))
+                        .padding(.top, 10)
                 }
+            },
+            alignment: .top
+        )
+        .animation(.easeInOut, value: showError)
+    }
+    
+    private var fitFeedbackSection: some View {
+        ScrollView {
+            VStack(alignment: .leading) {
+                Text("Fit Feedback")
+                    .font(.title2)
+                    .bold()
+                    .padding(.bottom, 5)
+                
+                ForEach(measurements, id: \.self) { measurement in
+                    VStack(alignment: .leading) {
+                        Text("How does it fit in the \(measurement)?")
+                            .font(.headline)
+                        
+                        HStack {
+                            feedbackButton(label: "😣 Too Tight", value: 1, measurement: measurement)
+                            feedbackButton(label: "👍 Tight but Good", value: 2, measurement: measurement)
+                            feedbackButton(label: "👌 Perfect Fit", value: 3, measurement: measurement)
+                            feedbackButton(label: "😏 Loose but Good", value: 4, measurement: measurement)
+                            feedbackButton(label: "😅 Too Loose", value: 5, measurement: measurement)
+                        }
+                    }
+                    .padding(.vertical, 8)
+                }
+                
+                Button("Submit Feedback") {
+                    Task {
+                        await submitGarmentWithFeedback()
+                    }
+                }
+                .padding()
             }
         }
         .padding()
     }
     
-    func submitGarmentWithFeedback() {
+    private func feedbackButton(label: String, value: Int, measurement: String) -> some View {
+        Button(action: { feedback[measurement] = value }) {
+            Text(label)
+                .frame(maxWidth: .infinity)
+                .padding()
+                .background(feedback[measurement] == value ? Color.blue.opacity(0.7) : Color.gray.opacity(0.2))
+                .foregroundColor(.black)
+                .cornerRadius(10)
+        }
+    }
+    
+    func submitGarmentWithFeedback() async {
         isLoading = true
         errorMessage = nil
+        showError = false
         
-        // First submit the garment
         guard let submitURL = URL(string: "\(BASE_URL)/garments/submit") else {
-            errorMessage = "Invalid URL"
-            isLoading = false
+            showError("Invalid URL")
             return
         }
         
-        var submitRequest = URLRequest(url: submitURL)
-        submitRequest.httpMethod = "POST"
-        submitRequest.setValue("application/json", forHTTPHeaderField: "Content-Type")
-        
-        let submitBody: GarmentSubmission = GarmentSubmission(
+        let submitBody = GarmentSubmission(
             productLink: productLink,
             sizeLabel: sizeLabel,
-            userId: 1  // Replace with actual user ID
+            userId: 1 // Replace with actual user ID
         )
         
         do {
-            submitRequest.httpBody = try JSONEncoder().encode(submitBody)
+            var request = URLRequest(url: submitURL)
+            request.httpMethod = "POST"
+            request.setValue("application/json", forHTTPHeaderField: "Content-Type")
+            request.httpBody = try JSONEncoder().encode(submitBody)
             
-            // Debug log
-            print("Submitting to URL: \(submitURL.absoluteString)")
-            print("Request body: \(String(data: submitRequest.httpBody!, encoding: .utf8) ?? "none")")
+            let (data, response) = try await URLSession.shared.data(for: request)
+            guard let httpResponse = response as? HTTPURLResponse, httpResponse.statusCode == 200 else {
+                showError("Server error: \(String(data: data, encoding: .utf8) ?? "Unknown")")
+                return
+            }
             
-            URLSession.shared.dataTask(with: submitRequest) { data, response, error in
-                DispatchQueue.main.async {
-                    if let error = error {
-                        self.errorMessage = error.localizedDescription
-                        self.isLoading = false
-                        return
-                    }
-                    
-                    guard let httpResponse = response as? HTTPURLResponse else {
-                        self.errorMessage = "Invalid response"
-                        self.isLoading = false
-                        return
-                    }
-                    
-                    if httpResponse.statusCode != 200 {
-                        if let data = data, let errorStr = String(data: data, encoding: .utf8) {
-                            self.errorMessage = "Server error: \(errorStr)"
-                        } else {
-                            self.errorMessage = "Server error: \(httpResponse.statusCode)"
-                        }
-                        self.isLoading = false
-                        return
-                    }
-                    
-                    guard let data = data,
-                          let submitResponse = try? JSONDecoder().decode(GarmentSubmissionResponse.self, from: data) else {
-                        self.errorMessage = "Invalid response data"
-                        self.isLoading = false
-                        return
-                    }
-                    
-                    // Then fetch measurements using the returned brand_id
-                    self.getBrandMeasurements(brandId: submitResponse.brandId)
-                }
-            }.resume()
-            
+            let submitResponse = try JSONDecoder().decode(GarmentSubmissionResponse.self, from: data)
+            await getBrandMeasurements(brandId: submitResponse.brandId)
         } catch {
-            errorMessage = "Failed to encode submission: \(error.localizedDescription)"
-            isLoading = false
+            showError("Submission failed: \(error.localizedDescription)")
         }
+        
+        isLoading = false
     }
     
-    func getBrandMeasurements(brandId: Int) {
+    func getBrandMeasurements(brandId: Int) async {
         guard let url = URL(string: "\(BASE_URL)/brands/\(brandId)/measurements") else {
-            errorMessage = "Invalid URL"
-            isLoading = false
+            showError("Invalid URL")
             return
         }
         
-        URLSession.shared.dataTask(with: url) { data, response, error in
-            DispatchQueue.main.async {
-                self.isLoading = false
-                
-                if let error = error {
-                    self.errorMessage = error.localizedDescription
-                    return
-                }
-                
-                guard let data = data else {
-                    self.errorMessage = "No data received"
-                    return
-                }
-                
-                do {
-                    let response = try JSONDecoder().decode(MeasurementsResponse.self, from: data)
-                    self.measurements = response.measurements
-                    self.showingFeedback = true
-                } catch {
-                    self.errorMessage = "Failed to decode response: \(error.localizedDescription)"
-                }
+        do {
+            let (data, _) = try await URLSession.shared.data(from: url)
+            let response = try JSONDecoder().decode(MeasurementsResponse.self, from: data)
+            await MainActor.run {
+                self.measurements = response.measurements
+                self.showingFeedback = true
             }
-        }.resume()
+        } catch {
+            showError("Failed to fetch measurements: \(error.localizedDescription)")
+        }
     }
     
-    // Helper function to extract brand ID from product link
-    private func extractBrandId(from url: String) -> Int? {
-        // This is a simplified example - you'll need to implement proper URL parsing
-        // For now, just return 1 for testing
-        return 1
+    func showError(_ message: String) {
+        errorMessage = message
+        showError = true
+        DispatchQueue.main.asyncAfter(deadline: .now() + 3) {
+            self.showError = false
+        }
+        isLoading = false
     }
 }
 
-// Response models
 struct MeasurementsResponse: Codable {
     let measurements: [String]
-    let feedbackOptions: [FeedbackOption]  // Use camelCase in Swift
+    let feedbackOptions: [FeedbackOption]
     
     enum CodingKeys: String, CodingKey {
         case measurements
-        case feedbackOptions  // No mapping needed since names match
+        case feedbackOptions
     }
 }
 
@@ -203,7 +212,6 @@ struct GarmentSubmission: Codable {
     let userId: Int
 }
 
-// Add response model for garment submission
 struct GarmentSubmissionResponse: Codable {
     let garmentId: Int
     let brandId: Int
@@ -213,5 +221,17 @@ struct GarmentSubmissionResponse: Codable {
         case garmentId = "garment_id"
         case brandId = "brand_id"
         case status
+    }
+}
+
+class UserSettings: ObservableObject {
+    @Published var useMetricSystem: Bool {
+        didSet {
+            UserDefaults.standard.set(useMetricSystem, forKey: "useMetricSystem")
+        }
+    }
+    
+    init() {
+        self.useMetricSystem = UserDefaults.standard.bool(forKey: "useMetricSystem")
     }
 } 
