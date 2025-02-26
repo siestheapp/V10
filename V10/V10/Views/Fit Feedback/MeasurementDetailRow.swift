@@ -7,21 +7,33 @@ struct MeasurementDetailRow: View {
     var body: some View {
         VStack(alignment: .leading, spacing: 4) {
             HStack {
-                VStack(alignment: .leading) {
-                    Text(measurement.brand)
-                        .font(.subheadline)
-                        .fontWeight(.medium)
-                    Text(measurement.garmentName)
-                        .font(.caption)
-                        .foregroundColor(.gray)
-                }
+                Text(measurement.brand)
+                    .font(.headline)
                 Spacer()
-                Text(String(format: "%.1f\"", measurement.value))
+                if let range = measurement.chestRange {
+                    Text(range)
+                        .font(.title3)
+                } else {
+                    Text("\(measurement.value, specifier: "%.1f")\"")
+                        .font(.title3)
+                }
+            }
+            
+            Text(measurement.garmentName)
+                .foregroundColor(.gray)
+            
+            HStack {
+                Text("Size \(measurement.size)")
+                    .font(.subheadline)
+                    .foregroundColor(.gray)
+                
+                Text("• Chest")
+                    .font(.subheadline)
+                    .foregroundColor(.gray)
             }
             
             if !measurement.fitType.isEmpty {
                 Text(measurement.fitType)
-                    .font(.caption)
                     .foregroundColor(.blue)
             }
             
@@ -37,7 +49,7 @@ struct MeasurementDetailRow: View {
                 .foregroundColor(.blue)
             }
         }
-        .padding(.vertical, 4)
+        .padding(.vertical, 8)
         .sheet(isPresented: $showingFeedbackSheet) {
             FeedbackSheet(measurement: measurement, isPresented: $showingFeedbackSheet)
         }
@@ -50,6 +62,7 @@ struct MeasurementDetailRow: View {
             brand: "J.Crew",
             garmentName: "Cotton Sweater",
             value: 42.0,
+            chestRange: "41.0-43.0",
             size: "L",
             ownsGarment: true,
             fitType: "Regular fit",

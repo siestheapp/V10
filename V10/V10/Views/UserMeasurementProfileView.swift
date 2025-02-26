@@ -92,33 +92,25 @@ struct UserMeasurementProfileView: View {
             do {
                 let response = try JSONDecoder().decode(FitZoneResponse.self, from: data)
                 
-                // Create some sample measurements for testing
-                let sampleMeasurements = [
+                // Convert the garments from the response into measurements
+                let measurements = response.tops.garments.map { garment in
                     BrandMeasurement(
-                        brand: "J.Crew",
-                        garmentName: "Cotton Oxford Shirt",
-                        value: response.tops.goodRange.min,
-                        size: "M",
+                        brand: garment.brand,
+                        garmentName: garment.garmentName,
+                        value: garment.chestValue,
+                        chestRange: garment.chestRange,
+                        size: garment.size,
                         ownsGarment: true,
-                        fitType: "Good",
-                        feedback: "Perfect fit in shoulders"
-                    ),
-                    BrandMeasurement(
-                        brand: "Uniqlo",
-                        garmentName: "Supima Cotton T-Shirt",
-                        value: response.tops.goodRange.max,
-                        size: "L",
-                        ownsGarment: true,
-                        fitType: "Relaxed",
-                        feedback: "Slightly loose but comfortable"
+                        fitType: garment.fitFeedback,
+                        feedback: garment.feedback
                     )
-                ]
+                }
                 
                 DispatchQueue.main.async {
                     self.measurements = [
                         MeasurementSummary(
                             name: "Tops",
-                            measurements: sampleMeasurements,
+                            measurements: measurements,
                             preferredRange: response.tops.goodRange
                         )
                     ]

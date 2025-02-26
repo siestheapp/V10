@@ -84,13 +84,14 @@ struct FeedbackSheet: View {
 #Preview {
     FeedbackSheet(
         measurement: BrandMeasurement(
-            brand: "J.Crew",
-            garmentName: "Cotton Sweater",
-            value: 42.0,
-            size: "L",
+            brand: "Theory",
+            garmentName: "Brenan Polo Shirt in Cotton-Linen",
+            value: 36.0,
+            chestRange: "36.0-38.0",
+            size: "S",
             ownsGarment: true,
-            fitType: "Good Fit",
-            feedback: ""
+            fitType: "Tight but I Like It",
+            feedback: "Tight but I Like It"
         ),
         isPresented: .constant(true)
     )

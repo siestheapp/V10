@@ -29,6 +29,7 @@ struct BrandMeasurement: Identifiable, Codable {
     let brand: String
     let garmentName: String
     let value: Double
+    let chestRange: String?
     let size: String
     let ownsGarment: Bool
     let fitType: String
@@ -108,10 +109,22 @@ struct FitZoneRanges: Codable {
     let tightRange: MeasurementRange
     let goodRange: MeasurementRange
     let relaxedRange: MeasurementRange
+    let garments: [GarmentMeasurement]
     
     enum CodingKeys: String, CodingKey {
         case tightRange
         case goodRange
         case relaxedRange
+        case garments
     }
+}
+
+struct GarmentMeasurement: Codable {
+    let brand: String
+    let garmentName: String
+    let chestRange: String?
+    let chestValue: Double
+    let size: String
+    let fitFeedback: String
+    let feedback: String
 }

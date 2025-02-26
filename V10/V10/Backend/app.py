@@ -322,7 +322,18 @@ def format_measurements_response(garments, fit_zone):
             "relaxedRange": {
                 "min": fit_zone['relaxed_range']['min'] or 41.0,
                 "max": fit_zone['relaxed_range']['max'] or 47.0
-            }
+            },
+            "garments": [
+                {
+                    "brand": g["brand"],
+                    "garmentName": g["garment_name"],
+                    "chestRange": g["chest_range"],  # Pass through the original range
+                    "chestValue": float(g["chest_range"].split("-")[0]) if "-" in g["chest_range"] else float(g["chest_range"]),
+                    "size": g["size"],
+                    "fitFeedback": g["fit_feedback"] or "",
+                    "feedback": g["chest_feedback"] or ""
+                } for g in garments
+            ]
         }
     }
 
