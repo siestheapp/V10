@@ -86,12 +86,11 @@ struct FeedbackSheet: View {
         measurement: BrandMeasurement(
             brand: "J.Crew",
             garmentName: "Cotton Sweater",
-            measurementRange: MeasurementRange(min: 41, max: 43),
+            value: 42.0,
             size: "L",
             ownsGarment: true,
-            fitContext: nil,
-            userFeedback: nil,
-            confidence: 0.9
+            fitType: "Good Fit",
+            feedback: ""
         ),
         isPresented: .constant(true)
     )

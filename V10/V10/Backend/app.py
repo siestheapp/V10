@@ -86,6 +86,11 @@ class FeedbackSubmission(BaseModel):
     garment_id: int
     feedback: Dict[str, int]  # measurement_name -> feedback_value
 
+class GarmentRequest(BaseModel):
+    product_code: str
+    scanned_price: float
+    scanned_size: Optional[str]
+
 # Connection Functions
 async def get_pool():
     return await asyncpg.create_pool(**DB_CONFIG)
@@ -125,16 +130,18 @@ async def get_closet(user_id: int):
             SELECT 
                 ug.id as garment_id,
                 b.name as brand_name,
-                ug.category as garment_name,
+                ug.category,
                 ug.size_label as size,
                 ug.chest_range as chest_range,
                 ug.fit_feedback,
-                ug.created_at
+                ug.created_at,
+                ug.owns_garment,
+                ug.product_name
             FROM user_garments ug
             JOIN brands b ON ug.brand_id = b.id
             WHERE ug.user_id = %s 
             AND ug.owns_garment = true
-            ORDER BY ug.created_at DESC
+            ORDER BY ug.category, ug.created_at DESC
         """, (user_id,))
         
         garments = cur.fetchall()
@@ -143,12 +150,13 @@ async def get_closet(user_id: int):
         formatted_garments = [{
             "id": g["garment_id"],
             "brand": g["brand_name"],
-            "category": g["garment_name"],
+            "category": g["category"],
             "size": g["size"],
             "chestRange": g["chest_range"],
             "fitFeedback": g["fit_feedback"],
             "createdAt": g["created_at"].isoformat() if g["created_at"] else None,
-            "ownsGarment": True
+            "ownsGarment": bool(g["owns_garment"]),
+            "productName": g["product_name"]
         } for g in garments]
         
         print(f"Formatted response: {formatted_garments}")  # Debug log
@@ -163,18 +171,19 @@ async def get_user_measurements(user_id: str):
     try:
         # Get garments
         garments = get_user_garments(user_id)
+        print(f"Found garments for measurements: {garments}")  # Debug log
         
         # Calculate fit zones
         calculator = FitZoneCalculator(user_id)
         fit_zone = calculator.calculate_chest_fit_zone(garments)
+        print(f"Calculated fit zone: {fit_zone}")  # Debug log
         
-        # Cache results in user_fit_zones
-        save_fit_zone(user_id, 'chest', fit_zone)
-        
-        # Return response
-        return format_measurements_response(garments, fit_zone)
+        # Format and return response
+        response = format_measurements_response(garments, fit_zone)
+        print(f"Final response: {response}")  # Debug log
+        return response
     except Exception as e:
-        print(f"Error in get_user_measurements: {str(e)}")
+        print(f"Error in get_user_measurements: {str(e)}")  # Error log
         raise HTTPException(status_code=500, detail=str(e))
 
 @app.get("/user/{user_id}/ideal_measurements")
@@ -240,19 +249,11 @@ def get_user_garments(user_id: str) -> list:
             SELECT 
                 b.name as brand,
                 ug.category as garment_name,
-                CASE 
-                    WHEN ug.chest_range ~ '^[0-9]+(\.[0-9]+)?-[0-9]+(\.[0-9]+)?$' THEN 
-                        (CAST(split_part(ug.chest_range, '-', 1) AS FLOAT) + 
-                         CAST(split_part(ug.chest_range, '-', 2) AS FLOAT)) / 2
-                    WHEN ug.chest_range ~ '^[0-9]+(\.[0-9]+)?$' THEN 
-                        CAST(ug.chest_range AS FLOAT)
-                    ELSE NULL
-                END as chest_value,
+                ug.chest_range,
                 ug.size_label as size,
                 ug.owns_garment,
-                ug.fit_feedback as fit_type,
-                uff.chest_fit as chest_feedback,
-                ug.chest_range
+                ug.fit_feedback,  -- Use the actual column name
+                uff.chest_fit as chest_feedback
             FROM user_garments ug
             JOIN brands b ON ug.brand_id = b.id
             LEFT JOIN user_fit_feedback uff ON ug.id = uff.garment_id
@@ -261,7 +262,12 @@ def get_user_garments(user_id: str) -> list:
             AND ug.chest_range IS NOT NULL
         """, (user_id,))
         
-        return cur.fetchall()
+        garments = cur.fetchall()
+        print(f"Found garments: {garments}")
+        return garments
+    except Exception as e:
+        print(f"Error getting garments: {str(e)}")
+        raise
     finally:
         cur.close()
         conn.close()
@@ -302,64 +308,44 @@ def save_fit_zone(user_id: str, category: str, fit_zone: dict):
         cur.close()
         conn.close()
 
-def format_measurements_response(garments: list, fit_zone: dict) -> dict:
-    """Format the measurements response for the API"""
+def format_measurements_response(garments, fit_zone):
     return {
-        "measurementType": "chest",
-        "preferredRange": {
-            "min": fit_zone['good_min'],
-            "max": fit_zone['good_max']
-        },
-        "measurements": [{
-            "brand": g["brand"],
-            "garmentName": g["garment_name"],
-            "value": float(g["chest_value"]) if g["chest_value"] is not None else 0.0,
-            "size": g["size"],
-            "ownsGarment": bool(g["owns_garment"]),
-            "fitType": g["chest_feedback"] or g["fit_type"] or "Unknown",
-            "feedback": g["chest_feedback"] or g["fit_type"] or ""
-        } for g in garments]
+        "Tops": {
+            "tightRange": {
+                "min": fit_zone['tight_range']['min'] or 36.0,
+                "max": fit_zone['tight_range']['max'] or 39.0
+            },
+            "goodRange": {
+                "min": fit_zone['good_range']['min'] or 39.0,
+                "max": fit_zone['good_range']['max'] or 41.0
+            },
+            "relaxedRange": {
+                "min": fit_zone['relaxed_range']['min'] or 41.0,
+                "max": fit_zone['relaxed_range']['max'] or 47.0
+            }
+        }
     }
 
 @app.get("/scan_history")
-async def get_scan_history(user_id: str):
-    """Get user's scan history"""
-    conn = get_db()
-    cur = conn.cursor()
-    
+async def get_scan_history(user_id: int):
     try:
-        cur.execute("""
-            SELECT 
-                ug.id,
-                b.name as brand,
-                ug.category,
-                ug.size_label as size,
-                ug.chest_range,
-                ug.fit_feedback,
-                ug.created_at,
-                ug.owns_garment
-            FROM user_garments ug
-            JOIN brands b ON ug.brand_id = b.id
-            WHERE ug.user_id = %s
-            ORDER BY ug.created_at DESC
-        """, (user_id,))
-        
-        scans = cur.fetchall()
-        
-        return [{
-            "id": s["id"],
-            "brand": s["brand"],
-            "category": s["category"],
-            "size": s["size"],
-            "chestRange": s["chest_range"],
-            "fitFeedback": s["fit_feedback"],
-            "createdAt": s["created_at"].isoformat() if s["created_at"] else None,
-            "ownsGarment": bool(s["owns_garment"])
-        } for s in scans]
-        
-    finally:
-        cur.close()
-        conn.close()
+        return [
+            {
+                "id": 1,
+                "productCode": "475352",  # Changed to camelCase
+                "scannedSize": "L",
+                "scannedPrice": 29.90,
+                "scannedAt": "2024-02-24T10:30:00Z",
+                "name": "Waffle Crew Neck T-Shirt",
+                "category": "Tops",
+                "imageUrl": "https://example.com/image.jpg",
+                "productUrl": "https://uniqlo.com/product/475352",
+                "brand": "Uniqlo"
+            }
+            # Add more history items...
+        ]
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
 
 def process_new_garment(product_link: str, size_label: str, user_id: int):
     # Step 1: Create the garment entry and get measurements
@@ -450,34 +436,26 @@ async def submit_garment_and_feedback(submission: GarmentSubmission):
         print(f"Received submission: {submission}")
         
         async with pool.acquire() as conn:
-            # Extract domain and path from URL
-            parsed_url = urlparse(submission.productLink)
-            domain = parsed_url.netloc.lower()
-            print(f"Parsed domain: {domain}")
+            # First check if this garment already exists
+            existing_garment = await conn.fetchrow("""
+                SELECT id FROM user_garments 
+                WHERE user_id = $1 
+                AND brand_id = (
+                    SELECT id FROM brands 
+                    WHERE name = 'Banana Republic'
+                )
+                AND category = 'Tops'
+                AND size_label = $2
+                AND created_at > NOW() - INTERVAL '1 hour'
+            """, submission.userId, submission.sizeLabel)
             
-            # Get all brands
-            brands = await conn.fetch("SELECT id, name FROM brands")
-            print(f"Available brands: {brands}")
+            if existing_garment:
+                return {
+                    "garment_id": existing_garment['id'],
+                    "status": "existing"
+                }
             
-            # Clean up the domain for comparison
-            clean_domain = domain.replace('.', '').replace('-', '').lower()
-            print(f"Cleaned domain: {clean_domain}")
-            
-            # Find matching brand
-            brand_id = None
-            for brand in brands:
-                clean_brand = brand['name'].replace(' ', '').replace('-', '').lower()
-                print(f"Checking brand: {clean_brand}")
-                
-                if clean_brand == 'bananarepublic' and 'bananarepublic.gap.com' in domain:
-                    brand_id = brand['id']
-                    print(f"Found brand {brand['name']} (id: {brand_id})")
-                    break
-            
-            if not brand_id:
-                raise HTTPException(status_code=400, detail="Could not determine brand from URL")
-            
-            # Create garment record
+            # If no recent duplicate, proceed with insert
             garment_id = await conn.fetchval("""
                 INSERT INTO user_garments (
                     user_id, 
@@ -492,24 +470,94 @@ async def submit_garment_and_feedback(submission: GarmentSubmission):
             """, 
                 submission.userId,
                 brand_id,
-                'Tops',  # Default category
+                'Tops',
                 submission.sizeLabel,
-                'N/A',   # Default chest_range
+                'N/A',
                 submission.productLink,
-                True     # Default owns_garment
+                True
             )
             
             return {
-                "garment_id": garment_id, 
-                "brand_id": brand_id,  # Added brand_id to response
+                "garment_id": garment_id,
                 "status": "success"
             }
             
     except Exception as e:
         print(f"Error submitting garment: {str(e)}")
-        print(f"Full error: {type(e).__name__}: {str(e)}")
-        import traceback
-        print(f"Traceback: {traceback.format_exc()}")
+        raise HTTPException(status_code=500, detail=str(e))
+
+@app.post("/process_garment")
+async def process_garment(garment: GarmentRequest):
+    try:
+        print(f"Processing garment: {garment}")
+        
+        async with pool.acquire() as conn:
+            # First get the brand and product info
+            brand = await conn.fetchrow("""
+                SELECT id, name, measurement_type 
+                FROM brands 
+                WHERE name = 'Uniqlo'
+            """)
+
+            if not brand:
+                raise HTTPException(status_code=400, detail="Brand not found")
+
+            if brand['measurement_type'] == 'product_level':
+                # Get Uniqlo product-specific measurements
+                measurements = await conn.fetchrow("""
+                    SELECT 
+                        product_code,
+                        size,
+                        chest_range,
+                        length_range,
+                        sleeve_range,
+                        name
+                    FROM product_measurements 
+                    WHERE product_code = $1 AND size = $2
+                """, garment.product_code, garment.scanned_size)
+                
+                if not measurements:
+                    raise HTTPException(
+                        status_code=404, 
+                        detail=f"No measurements found for product {garment.product_code} size {garment.scanned_size}"
+                    )
+
+                return {
+                    "id": measurements['product_code'],
+                    "brand": "Uniqlo",
+                    "name": measurements['name'] or "Waffle Crew Neck T-Shirt",
+                    "size": measurements['size'],
+                    "price": garment.scanned_price,
+                    "measurements": {
+                        "chest": measurements['chest_range'],
+                        "length": measurements['length_range'],
+                        "sleeve": measurements['sleeve_range']
+                    },
+                    "productUrl": "https://www.uniqlo.com/us/en/products/E460318-000/00?colorDisplayCode=30&sizeDisplayCode=004",
+                    "imageUrl": "https://image.uniqlo.com/UQ/ST3/us/imagesgoods/460318/item/usgoods_30_460318.jpg"
+                }
+            else:
+                # Get brand-level measurements from size_guides
+                measurements = await conn.fetchrow("""
+                    SELECT * FROM size_guides 
+                    WHERE brand_id = $1 AND size_label = $2
+                """, brand['id'], garment.scanned_size)
+
+                return {
+                    "id": garment.product_code,
+                    "brand": brand['name'],
+                    "name": "Unknown",
+                    "size": garment.scanned_size,
+                    "price": garment.scanned_price,
+                    "measurements": {
+                        "chest": measurements['chest_range'] if measurements else None,
+                        "length": measurements['length_range'] if measurements else None,
+                        "sleeve": measurements['sleeve_range'] if measurements else None
+                    }
+                }
+            
+    except Exception as e:
+        print(f"Error processing garment: {str(e)}")
         raise HTTPException(status_code=500, detail=str(e))
 
 if __name__ == "__main__":

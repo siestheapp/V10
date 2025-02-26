@@ -16,23 +16,17 @@ struct MeasurementDetailRow: View {
                         .foregroundColor(.gray)
                 }
                 Spacer()
-                if measurement.measurementRange.min == measurement.measurementRange.max {
-                    Text(String(format: "%.1f\"", measurement.measurementRange.min))
-                } else {
-                    Text(String(format: "%.1f-%.1f\"", 
-                         measurement.measurementRange.min,
-                         measurement.measurementRange.max))
-                }
+                Text(String(format: "%.1f\"", measurement.value))
             }
             
-            if let context = measurement.fitContext {
-                Text(context)
+            if !measurement.fitType.isEmpty {
+                Text(measurement.fitType)
                     .font(.caption)
                     .foregroundColor(.blue)
             }
             
-            if let feedback = measurement.userFeedback {
-                Text(feedback)
+            if !measurement.feedback.isEmpty {
+                Text(measurement.feedback)
                     .font(.caption)
                     .foregroundColor(.gray)
             } else if measurement.ownsGarment {
@@ -51,15 +45,16 @@ struct MeasurementDetailRow: View {
 }
 
 #Preview {
-    MeasurementDetailRow(measurement: BrandMeasurement(
-        brand: "J.Crew",
-        garmentName: "Cotton Sweater",
-        measurementRange: MeasurementRange(min: 41, max: 43),
-        size: "L",
-        ownsGarment: true,
-        fitContext: "Regular fit",
-        userFeedback: nil,
-        confidence: 0.9
-    ))
+    MeasurementDetailRow(
+        measurement: BrandMeasurement(
+            brand: "J.Crew",
+            garmentName: "Cotton Sweater",
+            value: 42.0,
+            size: "L",
+            ownsGarment: true,
+            fitType: "Regular fit",
+            feedback: ""
+        )
+    )
     .padding()
 } 

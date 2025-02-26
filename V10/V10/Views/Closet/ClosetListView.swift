@@ -9,6 +9,7 @@ struct ClosetGarment: Identifiable, Codable {
     let fitFeedback: String?
     let createdAt: String
     let ownsGarment: Bool
+    let productName: String?
 }
 
 struct ClosetListView: View {
@@ -17,6 +18,12 @@ struct ClosetListView: View {
     @State private var errorMessage: String?
     @State private var showingDetail = false
     @State private var selectedGarment: ClosetGarment?
+    @State private var showingFinds = false
+    
+    // Group garments by category
+    private var garmentsByCategory: [String: [ClosetGarment]] {
+        Dictionary(grouping: garments) { $0.category }
+    }
     
     var body: some View {
         NavigationView {
@@ -28,17 +35,41 @@ struct ClosetListView: View {
                         .foregroundColor(.red)
                 } else {
                     List {
-                        ForEach(garments) { garment in
-                            GarmentRow(garment: garment)
-                                .contentShape(Rectangle())
-                                .onTapGesture {
-                                    selectedGarment = garment
+                        ForEach(Array(garmentsByCategory.keys.sorted()), id: \.self) { category in
+                            Section {
+                                ForEach(garmentsByCategory[category] ?? []) { garment in
+                                    GarmentRow(garment: garment)
+                                        .contentShape(Rectangle())
+                                        .onTapGesture {
+                                            selectedGarment = garment
+                                        }
                                 }
+                            } header: {
+                                Text(category)
+                                    .font(.title2)
+                                    .fontWeight(.bold)
+                                    .foregroundColor(.primary)
+                                    .textCase(nil)
+                                    .padding(.vertical, 8)
+                            }
+                        }
+                    }
+                    .listStyle(PlainListStyle())
+                }
+            }
+            .navigationTitle("My Closet")
+            .toolbar {
+                ToolbarItem(placement: .navigationBarTrailing) {
+                    Button(action: {
+                        showingFinds = true
+                    }) {
+                        HStack {
+                            Image(systemName: "list.bullet")
+                            Text("Finds")
                         }
                     }
                 }
             }
-            .navigationTitle("My Closet")
             .sheet(item: $selectedGarment) { garment in
                 GarmentDetailView(
                     garment: garment,
@@ -47,6 +78,19 @@ struct ClosetListView: View {
                         set: { if !$0 { selectedGarment = nil } }
                     )
                 )
+            }
+            .sheet(isPresented: $showingFinds) {
+                NavigationView {
+                    ScanHistoryView()
+                        .navigationTitle("Recent Finds")
+                        .toolbar {
+                            ToolbarItem(placement: .navigationBarTrailing) {
+                                Button("Done") {
+                                    showingFinds = false
+                                }
+                            }
+                        }
+                }
             }
             .onAppear {
                 loadGarments()
@@ -92,8 +136,13 @@ struct GarmentRow: View {
         VStack(alignment: .leading, spacing: 4) {
             Text(garment.brand)
                 .font(.headline)
-            Text(garment.category)
-                .foregroundColor(.gray)
+            
+            if let productName = garment.productName {
+                Text(productName)
+                    .font(.subheadline)
+                    .foregroundColor(.gray)
+            }
+            
             HStack {
                 Text(garment.size)
                     .font(.subheadline)

@@ -7,10 +7,15 @@ struct GarmentDetailView: View {
     var body: some View {
         NavigationView {
             VStack(alignment: .leading, spacing: 16) {
-                // Brand and Category
+                // Brand and Product Name
                 Group {
                     Text(garment.brand)
                         .font(.title)
+                    if let productName = garment.productName {
+                        Text(productName)
+                            .font(.title2)
+                            .foregroundColor(.gray)
+                    }
                     Text(garment.category)
                         .font(.headline)
                         .foregroundColor(.gray)
@@ -51,7 +56,8 @@ struct GarmentDetailView: View {
             chestRange: "41-43",
             fitFeedback: "Good Fit",
             createdAt: "2024-02-18",
-            ownsGarment: true
+            ownsGarment: true,
+            productName: "Classic Oxford Shirt"
         ),
         isPresented: .constant(true)
     )

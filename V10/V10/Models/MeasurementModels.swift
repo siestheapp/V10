@@ -1,6 +1,6 @@
 import Foundation
 
-struct MeasurementRange {
+struct MeasurementRange: Codable {
     let min: Double
     let max: Double
     
@@ -17,25 +17,28 @@ struct MeasurementRange {
     var average: Double {
         (min + max) / 2
     }
+    
+    // Convert to ClosedRange<Double>
+    var asRange: ClosedRange<Double> {
+        min...max
+    }
 }
 
-struct BrandMeasurement: Identifiable {
+struct BrandMeasurement: Identifiable, Codable {
     let id = UUID()
     let brand: String
     let garmentName: String
-    let measurementRange: MeasurementRange
+    let value: Double
     let size: String
     let ownsGarment: Bool
-    let fitContext: String?
-    let userFeedback: String?
-    let confidence: Double
+    let fitType: String
+    let feedback: String
 }
 
-struct MeasurementSummary: Identifiable {
-    let id = UUID()
-    let name: String
-    let measurements: [BrandMeasurement]
+struct MeasurementResponse: Codable {
+    let measurementType: String?
     let preferredRange: MeasurementRange
+    let measurements: [BrandMeasurement]
 }
 
 enum FitType: String, Codable, CaseIterable {
@@ -67,5 +70,48 @@ struct FitFeedback: Codable {
         case fitType = "fit_type"
         case garmentType = "garment_type"
         case customFeedback = "custom_feedback"
+    }
+}
+
+struct MeasurementSummary: Identifiable {
+    let id = UUID()
+    let name: String
+    let measurements: [BrandMeasurement]
+    let preferredRange: MeasurementRange
+}
+
+struct PreferredRange: Codable {
+    let min: Double
+    let max: Double
+}
+
+struct MeasurementData: Codable {
+    let brand: String
+    let garmentName: String
+    let value: Double
+    let size: String
+    let ownsGarment: Bool
+    let fitType: String
+    let feedback: String
+}
+
+// New model to match server response
+struct FitZoneResponse: Codable {
+    let tops: FitZoneRanges
+    
+    enum CodingKeys: String, CodingKey {
+        case tops = "Tops"
+    }
+}
+
+struct FitZoneRanges: Codable {
+    let tightRange: MeasurementRange
+    let goodRange: MeasurementRange
+    let relaxedRange: MeasurementRange
+    
+    enum CodingKeys: String, CodingKey {
+        case tightRange
+        case goodRange
+        case relaxedRange
     }
 }

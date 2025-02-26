@@ -2,6 +2,9 @@ import SwiftUI
 
 struct ClosetView: View {
     @State private var selectedTab = 0
+    @State private var isLoading = false
+    @State private var showError = false
+    @State private var errorMessage = ""
     
     var body: some View {
         TabView(selection: $selectedTab) {
@@ -33,13 +36,27 @@ struct ClosetView: View {
                 }
                 .tag(3)
             
-            // Match Tab (replacing Live)
-            MatchScreen()
+            // Account Tab (replacing Match)
+            AccountScreen()
                 .tabItem {
                     Label("Match", systemImage: "link")
                 }
                 .tag(4)
         }
+        .overlay(
+            Group {
+                if isLoading {
+                    ProgressView()
+                }
+                if showError {
+                    Text(errorMessage)
+                        .foregroundColor(.white)
+                        .padding()
+                        .background(Color.red)
+                        .cornerRadius(8)
+                }
+            }
+        )
     }
 }
 

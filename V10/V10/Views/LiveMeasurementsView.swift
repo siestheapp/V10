@@ -64,10 +64,8 @@ struct LiveMeasurementsView: View {
     }
     
     private func loadIdealMeasurements() {
-        let urlString = "\(Config.baseURL)/user/\(Config.defaultUserId)/ideal_measurements?t=\(Date().timeIntervalSince1970)"
-        
-        guard let url = URL(string: urlString) else {
-            print("❌ Invalid URL: \(urlString)")
+        guard let url = URL(string: "\(Config.baseURL)/user/\(Config.defaultUserId)/measurements") else {
+            print("❌ Invalid URL: \(Config.baseURL)/user/\(Config.defaultUserId)/measurements")
             return
         }
         
@@ -75,39 +73,51 @@ struct LiveMeasurementsView: View {
         NetworkLogger.log(url: url)
         
         URLSession.shared.dataTask(with: url) { data, response, error in
+            // Move to main queue immediately since we're updating UI state
             DispatchQueue.main.async {
-                isLoading = false
+                self.isLoading = false
                 
                 if let error = error {
-                    print("❌ Network error:", error)  // Debug error
+                    print("❌ Network error:", error)
                     NetworkLogger.logError(error, url: url)
-                    errorMessage = error.localizedDescription
+                    self.errorMessage = error.localizedDescription
                     return
                 }
                 
                 if let httpResponse = response as? HTTPURLResponse {
-                    print("📡 Status code:", httpResponse.statusCode)  // Debug response
+                    print("📡 Status code:", httpResponse.statusCode)
                 }
                 
                 guard let data = data else {
-                    print("⚠️ No data received")  // Debug data
-                    errorMessage = "No data received"
+                    print("⚠️ No data received")
+                    self.errorMessage = "No data received"
                     return
                 }
                 
-                print("📦 Data size:", data.count, "bytes")  // Debug data size
+                print("📦 Data size:", data.count, "bytes")
                 
                 if let jsonString = String(data: data, encoding: .utf8) {
-                    print("📄 Raw JSON:", jsonString)  // Debug JSON
+                    print("📄 Raw JSON:", jsonString)
                 }
                 
                 do {
-                    self.idealMeasurements = try JSONDecoder().decode([IdealMeasurement].self, from: data)
-                    print("✅ Decoded measurements:", self.idealMeasurements.count)  // Debug decoded data
+                    let response = try JSONDecoder().decode(FitZoneResponse.self, from: data)
+                    self.idealMeasurements = [
+                        IdealMeasurement(
+                            type: "Chest",
+                            value: response.tops.goodRange.min,
+                            range: IdealMeasurement.Range(
+                                min: response.tops.tightRange.min,
+                                max: response.tops.relaxedRange.max
+                            ),
+                            confidence: 0.8,
+                            sourcesCount: 1
+                        )
+                    ]
                     self.errorMessage = nil
                 } catch {
-                    print("❌ Decoding error:", error)  // Debug decoding error
-                    errorMessage = "Decoding error: \(error.localizedDescription)"
+                    print("❌ Decoding error:", error)
+                    self.errorMessage = "Decoding error: \(error.localizedDescription)"
                 }
             }
         }.resume()
