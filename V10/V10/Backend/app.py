@@ -718,59 +718,58 @@ async def get_test_user_data(user_id: str):
 
 @app.get("/brands")
 async def get_brands():
-    """Get all brands with their categories and measurements"""
+    """Get all brands with their categories and measurements for men's clothing"""
     try:
         conn = get_db()
         cur = conn.cursor()
         
         try:
-            # Get all brands with their categories and measurements
+            # Get brands that have men's size guides
             cur.execute("""
-                WITH brand_categories AS (
-                    SELECT DISTINCT 
-                        b.id as brand_id,
-                        b.name as brand_name,
-                        sg.category,
-                        array_agg(DISTINCT 
-                            CASE 
-                                WHEN chest_min IS NOT NULL OR chest_max IS NOT NULL THEN 'chest'
-                                ELSE NULL 
-                            END ||
-                            CASE 
-                                WHEN sleeve_min IS NOT NULL OR sleeve_max IS NOT NULL THEN 'sleeve'
-                                ELSE NULL 
-                            END ||
-                            CASE 
-                                WHEN neck_min IS NOT NULL OR neck_max IS NOT NULL THEN 'neck'
-                                ELSE NULL 
-                            END ||
-                            CASE 
-                                WHEN waist_min IS NOT NULL OR waist_max IS NOT NULL THEN 'waist'
-                                ELSE NULL 
-                            END
-                        ) FILTER (WHERE COALESCE(chest_min, chest_max, sleeve_min, sleeve_max, neck_min, neck_max, waist_min, waist_max) IS NOT NULL) as measurements
-                    FROM brands b
-                    LEFT JOIN size_guides_v2 sg ON b.id = sg.brand_id
-                    GROUP BY b.id, b.name, sg.category
-                )
-                SELECT 
-                    brand_id,
-                    brand_name,
-                    array_agg(DISTINCT category) FILTER (WHERE category IS NOT NULL) as categories,
-                    array_agg(DISTINCT unnest(measurements)) FILTER (WHERE measurements IS NOT NULL) as measurements
-                FROM brand_categories
-                GROUP BY brand_id, brand_name
-                ORDER BY brand_name;
+                SELECT DISTINCT b.id, b.name 
+                FROM brands b
+                INNER JOIN size_guides_v2 sg ON b.id = sg.brand_id
+                WHERE sg.gender = 'Men'
+                ORDER BY b.name
             """)
-            
             brands = cur.fetchall()
+            print(f"Found {len(brands)} men's brands")
             
-            return [{
-                "id": brand["brand_id"],
-                "name": brand["brand_name"],
-                "categories": brand["categories"] or [],
-                "measurements": [m for m in (brand["measurements"] or []) if m is not None]
-            } for brand in brands]
+            formatted_brands = []
+            for brand in brands:
+                # For each brand, get its categories and measurements from men's size guides
+                cur.execute("""
+                    SELECT DISTINCT 
+                        category,
+                        measurements_available
+                    FROM size_guides_v2 
+                    WHERE brand_id = %s
+                    AND gender = 'Men'
+                """, (brand["id"],))
+                
+                size_guides = cur.fetchall()
+                
+                # Collect unique categories and measurements
+                categories = set()
+                measurements = set()
+                
+                for guide in size_guides:
+                    if guide["category"]:
+                        categories.add(guide["category"])
+                    if guide["measurements_available"]:
+                        measurements.update(guide["measurements_available"])
+                
+                formatted_brand = {
+                    "id": brand["id"],
+                    "name": brand["name"],
+                    "categories": list(categories),
+                    "measurements": list(measurements)
+                }
+                print(f"Formatted brand: {formatted_brand}")
+                formatted_brands.append(formatted_brand)
+            
+            print(f"Returning {len(formatted_brands)} formatted men's brands")
+            return formatted_brands
             
         finally:
             cur.close()
@@ -778,7 +777,7 @@ async def get_brands():
             
     except Exception as e:
         print(f"Error in get_brands: {str(e)}")
-        raise HTTPException(status_code=500, detail=str(e))
+        return []
 
 if __name__ == "__main__":
     import uvicorn
