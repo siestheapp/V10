@@ -9,6 +9,7 @@ struct ScanTab: View {
     @State private var showingOptions = false
     @State private var showingImagePicker = false
     @State private var showingScanView = false
+    @State private var showingBrandsView = false
     @State private var selectedImage: UIImage?
     @State private var productLink: String = ""
     @State private var selectedSizeCategory: String = "Men's Tops"
@@ -119,6 +120,31 @@ struct ScanTab: View {
                 )
             }
             .padding(.top, 30)
+            .toolbar {
+                ToolbarItem(placement: .navigationBarTrailing) {
+                    Button(action: {
+                        showingBrandsView = true
+                    }) {
+                        HStack {
+                            Image(systemName: "tag")
+                            Text("Brands")
+                        }
+                    }
+                }
+            }
+            .sheet(isPresented: $showingBrandsView) {
+                NavigationView {
+                    BrandsView()
+                        .navigationTitle("Brands")
+                        .toolbar {
+                            ToolbarItem(placement: .navigationBarTrailing) {
+                                Button("Done") {
+                                    showingBrandsView = false
+                                }
+                            }
+                        }
+                }
+            }
             .confirmationDialog("Choose an option", isPresented: $showingOptions) {
                 Button("Open Camera") {
                     showingImagePicker = true

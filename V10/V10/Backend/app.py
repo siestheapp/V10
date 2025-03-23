@@ -132,13 +132,23 @@ async def get_closet(user_id: int):
                 b.name as brand_name,
                 ug.category,
                 ug.size_label as size,
-                ug.chest_range as chest_range,
+                ug.chest_range,
+                sg.sleeve_min,
+                sg.sleeve_max,
+                sg.waist_min,
+                sg.waist_max,
+                sg.neck_min,
+                sg.neck_max,
                 ug.fit_feedback,
                 ug.created_at,
                 ug.owns_garment,
                 ug.product_name
             FROM user_garments ug
             JOIN brands b ON ug.brand_id = b.id
+            LEFT JOIN size_guides_v2 sg ON 
+                ug.brand_id = sg.brand_id AND 
+                ug.size_label = sg.size_label AND
+                ug.category = sg.category
             WHERE ug.user_id = %s 
             AND ug.owns_garment = true
             ORDER BY ug.category, ug.created_at DESC
@@ -147,17 +157,52 @@ async def get_closet(user_id: int):
         garments = cur.fetchall()
         print(f"Raw SQL results: {garments}")  # Debug log
         
-        formatted_garments = [{
-            "id": g["garment_id"],
-            "brand": g["brand_name"],
-            "category": g["category"],
-            "size": g["size"],
-            "chestRange": g["chest_range"],
-            "fitFeedback": g["fit_feedback"],
-            "createdAt": g["created_at"].isoformat() if g["created_at"] else None,
-            "ownsGarment": bool(g["owns_garment"]),
-            "productName": g["product_name"]
-        } for g in garments]
+        def format_measurement(value):
+            """Format a measurement value without trailing .00 for integers"""
+            if isinstance(value, (int, float)):
+                return str(int(value)) if value.is_integer() else f"{value:.2f}"
+            return str(value)
+        
+        formatted_garments = []
+        for g in garments:
+            measurements = {}
+            
+            # Add chest measurement if available
+            if g["chest_range"]:
+                measurements["chest"] = str(g["chest_range"])
+            
+            # Add sleeve measurement if available
+            if g["sleeve_min"] is not None and g["sleeve_max"] is not None:
+                sleeve_min = format_measurement(float(g["sleeve_min"]))
+                sleeve_max = format_measurement(float(g["sleeve_max"]))
+                measurements["sleeve"] = f"{sleeve_min}-{sleeve_max}"
+            
+            # Add waist measurement if available
+            if g["waist_min"] is not None and g["waist_max"] is not None:
+                waist_min = format_measurement(float(g["waist_min"]))
+                waist_max = format_measurement(float(g["waist_max"]))
+                measurements["waist"] = f"{waist_min}-{waist_max}"
+                
+            # Add neck measurement if available
+            if g["neck_min"] is not None and g["neck_max"] is not None:
+                neck_min = format_measurement(float(g["neck_min"]))
+                neck_max = format_measurement(float(g["neck_max"]))
+                measurements["neck"] = f"{neck_min}-{neck_max}"
+            elif g["neck_min"] is not None:
+                measurements["neck"] = format_measurement(float(g["neck_min"]))
+            
+            garment = {
+                "id": g["garment_id"],
+                "brand": g["brand_name"],
+                "category": g["category"],
+                "size": g["size"],
+                "measurements": measurements,
+                "fitFeedback": g["fit_feedback"],
+                "createdAt": g["created_at"].isoformat() if g["created_at"] else None,
+                "ownsGarment": bool(g["owns_garment"]),
+                "productName": g["product_name"]
+            }
+            formatted_garments.append(garment)
         
         print(f"Formatted response: {formatted_garments}")  # Debug log
         return formatted_garments
@@ -569,6 +614,170 @@ async def process_garment(garment: GarmentRequest):
             
     except Exception as e:
         print(f"Error processing garment: {str(e)}")
+        raise HTTPException(status_code=500, detail=str(e))
+
+@app.get("/test/user/{user_id}")
+async def get_test_user_data(user_id: str):
+    """Get comprehensive test data for a user"""
+    try:
+        conn = get_db()
+        cur = conn.cursor()
+        
+        # Get basic user info
+        cur.execute("""
+            SELECT 
+                u.id,
+                u.email,
+                u.created_at,
+                u.gender,
+                u.unit_preference,
+                (
+                    SELECT COUNT(*) 
+                    FROM user_garments 
+                    WHERE user_id = u.id AND owns_garment = true
+                ) as total_garments,
+                (
+                    SELECT created_at 
+                    FROM user_garments 
+                    WHERE user_id = u.id 
+                    ORDER BY created_at DESC 
+                    LIMIT 1
+                ) as last_garment_input,
+                (
+                    SELECT array_agg(DISTINCT brand_name) 
+                    FROM user_garments 
+                    WHERE user_id = u.id AND owns_garment = true
+                ) as brands_owned
+            FROM users u
+            WHERE u.id = %s
+        """, (user_id,))
+        
+        user_info = cur.fetchone()
+        
+        # Get fit zones
+        cur.execute("""
+            SELECT 
+                tight_min, tight_max,
+                good_min, good_max,
+                relaxed_min, relaxed_max
+            FROM user_fit_zones
+            WHERE user_id = %s AND category = 'Tops'
+        """, (user_id,))
+        
+        fit_zones = cur.fetchone()
+        
+        # Get recent feedback
+        cur.execute("""
+            SELECT 
+                ug.id,
+                COALESCE(ug.product_name, ug.category) as garment_name,
+                ug.brand_name,
+                ug.size_label,
+                COALESCE(uff.overall_fit, ug.fit_feedback) as feedback
+            FROM user_garments ug
+            LEFT JOIN user_fit_feedback uff ON ug.id = uff.garment_id
+            WHERE ug.user_id = %s AND ug.owns_garment = true
+            ORDER BY ug.created_at DESC
+            LIMIT 5
+        """, (user_id,))
+        
+        feedback = cur.fetchall()
+        
+        return {
+            "id": user_info['id'],
+            "email": user_info['email'],
+            "createdAt": user_info['created_at'].isoformat(),
+            "gender": user_info['gender'],
+            "unitPreference": user_info['unit_preference'],
+            "totalGarments": user_info['total_garments'],
+            "lastGarmentInput": user_info['last_garment_input'].isoformat() if user_info['last_garment_input'] else None,
+            "brandsOwned": user_info['brands_owned'] or [],
+            "fitZones": {
+                "tightMin": float(fit_zones['tight_min']) if fit_zones and fit_zones['tight_min'] else 0.0,
+                "tightMax": float(fit_zones['tight_max']) if fit_zones and fit_zones['tight_max'] else 0.0,
+                "goodMin": float(fit_zones['good_min']) if fit_zones and fit_zones['good_min'] else 0.0,
+                "goodMax": float(fit_zones['good_max']) if fit_zones and fit_zones['good_max'] else 0.0,
+                "relaxedMin": float(fit_zones['relaxed_min']) if fit_zones and fit_zones['relaxed_min'] else 0.0,
+                "relaxedMax": float(fit_zones['relaxed_max']) if fit_zones and fit_zones['relaxed_max'] else 0.0
+            },
+            "recentFeedback": [{
+                "id": f['id'],
+                "garmentName": f['garment_name'],
+                "brand": f['brand_name'],
+                "size": f['size_label'],
+                "feedback": f['feedback'] or "No feedback"
+            } for f in feedback]
+        }
+        
+    except Exception as e:
+        print(f"Error in get_test_user_data: {str(e)}")
+        raise HTTPException(status_code=500, detail=str(e))
+    finally:
+        cur.close()
+        conn.close()
+
+@app.get("/brands")
+async def get_brands():
+    """Get all brands with their categories and measurements"""
+    try:
+        conn = get_db()
+        cur = conn.cursor()
+        
+        try:
+            # Get all brands with their categories and measurements
+            cur.execute("""
+                WITH brand_categories AS (
+                    SELECT DISTINCT 
+                        b.id as brand_id,
+                        b.name as brand_name,
+                        sg.category,
+                        array_agg(DISTINCT 
+                            CASE 
+                                WHEN chest_min IS NOT NULL OR chest_max IS NOT NULL THEN 'chest'
+                                ELSE NULL 
+                            END ||
+                            CASE 
+                                WHEN sleeve_min IS NOT NULL OR sleeve_max IS NOT NULL THEN 'sleeve'
+                                ELSE NULL 
+                            END ||
+                            CASE 
+                                WHEN neck_min IS NOT NULL OR neck_max IS NOT NULL THEN 'neck'
+                                ELSE NULL 
+                            END ||
+                            CASE 
+                                WHEN waist_min IS NOT NULL OR waist_max IS NOT NULL THEN 'waist'
+                                ELSE NULL 
+                            END
+                        ) FILTER (WHERE COALESCE(chest_min, chest_max, sleeve_min, sleeve_max, neck_min, neck_max, waist_min, waist_max) IS NOT NULL) as measurements
+                    FROM brands b
+                    LEFT JOIN size_guides_v2 sg ON b.id = sg.brand_id
+                    GROUP BY b.id, b.name, sg.category
+                )
+                SELECT 
+                    brand_id,
+                    brand_name,
+                    array_agg(DISTINCT category) FILTER (WHERE category IS NOT NULL) as categories,
+                    array_agg(DISTINCT unnest(measurements)) FILTER (WHERE measurements IS NOT NULL) as measurements
+                FROM brand_categories
+                GROUP BY brand_id, brand_name
+                ORDER BY brand_name;
+            """)
+            
+            brands = cur.fetchall()
+            
+            return [{
+                "id": brand["brand_id"],
+                "name": brand["brand_name"],
+                "categories": brand["categories"] or [],
+                "measurements": [m for m in (brand["measurements"] or []) if m is not None]
+            } for brand in brands]
+            
+        finally:
+            cur.close()
+            conn.close()
+            
+    except Exception as e:
+        print(f"Error in get_brands: {str(e)}")
         raise HTTPException(status_code=500, detail=str(e))
 
 if __name__ == "__main__":

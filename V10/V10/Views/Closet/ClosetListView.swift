@@ -5,11 +5,19 @@ struct ClosetGarment: Identifiable, Codable {
     let brand: String
     let category: String
     let size: String
-    let chestRange: String
+    let measurements: [String: String]
     let fitFeedback: String?
-    let createdAt: String
+    let createdAt: String?
     let ownsGarment: Bool
     let productName: String?
+    
+    enum CodingKeys: String, CodingKey {
+        case id, brand, category, size, measurements
+        case fitFeedback = "fitFeedback"
+        case createdAt = "createdAt"
+        case ownsGarment = "ownsGarment"
+        case productName = "productName"
+    }
 }
 
 struct ClosetListView: View {
@@ -118,10 +126,16 @@ struct ClosetListView: View {
                     return
                 }
                 
+                // Add debug logging
+                if let rawString = String(data: data, encoding: .utf8) {
+                    print("Raw response data: \(rawString)")
+                }
+                
                 do {
                     let garments = try JSONDecoder().decode([ClosetGarment].self, from: data)
                     self.garments = garments
                 } catch {
+                    print("Decoding error details: \(error)")
                     self.errorMessage = "Failed to decode response: \(error.localizedDescription)"
                 }
             }
@@ -152,9 +166,25 @@ struct GarmentRow: View {
                         .foregroundColor(.gray)
                 }
             }
-            Text("Chest: \(garment.chestRange)")
-                .font(.caption)
-                .foregroundColor(.gray)
+            
+            // Show measurements that are available
+            if let chest = garment.measurements["chest"] {
+                HStack {
+                    Text("Chest: \(chest)")
+                        .font(.caption)
+                        .foregroundColor(.gray)
+                    
+                    let additionalMeasurements = garment.measurements.filter { key, _ in
+                        key != "chest"
+                    }.count
+                    
+                    if additionalMeasurements > 0 {
+                        Text("+ \(additionalMeasurements) more")
+                            .font(.caption)
+                            .foregroundColor(.blue)
+                    }
+                }
+            }
         }
         .padding(.vertical, 4)
     }
