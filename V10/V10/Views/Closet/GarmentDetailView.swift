@@ -26,8 +26,22 @@ struct GarmentDetailView: View {
                     Text("Size: \(garment.size)")
                         .font(.headline)
                     
-                    Text("Chest: \(garment.chestRange)")
-                        .font(.subheadline)
+                    VStack(alignment: .leading, spacing: 8) {
+                        Text("Measurements")
+                            .font(.headline)
+                        
+                        ForEach(Array(garment.measurements.keys.sorted()), id: \.self) { key in
+                            if let value = garment.measurements[key], !value.isEmpty {
+                                HStack {
+                                    Text(key.capitalized)
+                                        .font(.subheadline)
+                                    Spacer()
+                                    Text(value)
+                                        .font(.subheadline)
+                                }
+                            }
+                        }
+                    }
                 }
                 
                 // Fit Feedback
@@ -53,7 +67,11 @@ struct GarmentDetailView: View {
             brand: "J.Crew",
             category: "Tops",
             size: "L",
-            chestRange: "41-43",
+            measurements: [
+                "chest": "41-43",
+                "sleeve": "34-35",
+                "waist": "32-34"
+            ],
             fitFeedback: "Good Fit",
             createdAt: "2024-02-18",
             ownsGarment: true,

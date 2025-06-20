@@ -28,11 +28,12 @@ class BrandStore: ObservableObject {
             return
         }
         
-        URLSession.shared.dataTask(with: url) { [weak self] data, response, error in
+        let task = URLSession.shared.dataTask(with: url) { [weak self] data, response, error in
             DispatchQueue.main.async {
                 self?.isLoading = false
                 
                 if let error = error {
+                    print("Network error: \(error)")
                     self?.error = error
                     return
                 }
@@ -42,14 +43,31 @@ class BrandStore: ObservableObject {
                     return
                 }
                 
+                // Debug: Print raw response
+                if let rawString = String(data: data, encoding: .utf8) {
+                    print("Raw response data: \(rawString)")
+                }
+                
+                // Check if response is an error message
+                if let errorDict = try? JSONDecoder().decode([String: String].self, from: data),
+                   let detail = errorDict["detail"] {
+                    print("Server error: \(detail)")
+                    self?.error = NSError(domain: "ServerError", code: -1, userInfo: [NSLocalizedDescriptionKey: detail])
+                    return
+                }
+                
                 do {
-                    let brands = try JSONDecoder().decode([Brand].self, from: data)
+                    let decoder = JSONDecoder()
+                    let brands = try decoder.decode([Brand].self, from: data)
+                    print("Successfully decoded \(brands.count) brands")
                     self?.brands = brands
                 } catch {
                     print("Decoding error: \(error)")
                     self?.error = error
                 }
             }
-        }.resume()
+        }
+        
+        task.resume()
     }
 } 

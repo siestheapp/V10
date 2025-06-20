@@ -43,6 +43,12 @@ struct SiesApp: App {
                                 Label("Live", systemImage: "chart.bar.fill")
                             }
                         
+                        ChatView()
+                            .environmentObject(userSettings)
+                            .tabItem {
+                                Label("Ask AI", systemImage: "bubble.left.and.bubble.right.fill")
+                            }
+                        
                         AccountScreen()
                             .environmentObject(userSettings)
                             .tabItem {

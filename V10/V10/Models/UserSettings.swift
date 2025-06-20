@@ -13,8 +13,15 @@ class UserSettings: ObservableObject {
         }
     }
     
+    @Published var userId: Int {
+        didSet {
+            UserDefaults.standard.set(userId, forKey: "userId")
+        }
+    }
+    
     init() {
         self.useMetricSystem = UserDefaults.standard.bool(forKey: "useMetricSystem")
         self.userEmail = UserDefaults.standard.string(forKey: "userEmail") ?? ""
+        self.userId = UserDefaults.standard.integer(forKey: "userId")
     }
 } 

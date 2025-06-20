@@ -11,16 +11,61 @@ from fastapi.middleware.cors import CORSMiddleware
 from fit_zone_calculator import FitZoneCalculator
 import json
 from urllib.parse import urlparse
+import openai
+from contextlib import asynccontextmanager
+import os
+from dotenv import load_dotenv
 
-app = FastAPI()
+# Load environment variables from .env file
+load_dotenv()
 
-# Database connection settings
+# Set up OpenAI API key
+api_key = os.getenv("OPENAI_API_KEY")
+if not api_key:
+    raise ValueError("OPENAI_API_KEY environment variable not set")
+
+# Initialize OpenAI client
+openai_client = openai.OpenAI(
+    api_key=api_key,
+    base_url="https://api.openai.com/v1",  # Explicitly set the base URL
+    max_retries=3,  # Add retries
+    timeout=30.0  # Increase timeout
+)
+
+# Database configuration
 DB_CONFIG = {
     "database": "tailor2",
     "user": "seandavey",
-    "password": "securepassword",
+    "password": "",
     "host": "localhost"
 }
+
+def get_db_connection():
+    """Get a connection to the database"""
+    return psycopg2.connect(**DB_CONFIG)
+
+@asynccontextmanager
+async def lifespan(app: FastAPI):
+    # Setup
+    global pool
+    pool = await asyncpg.create_pool(**DB_CONFIG)
+    print("Connected to database")
+    yield
+    # Cleanup
+    if pool:
+        await pool.close()
+        print("Closed database connection")
+
+app = FastAPI(lifespan=lifespan)
+
+# Add CORS middleware
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["*"],
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
 
 # Enums for constrained fields
 class FitType(str, Enum):
@@ -91,6 +136,14 @@ class GarmentRequest(BaseModel):
     scanned_price: float
     scanned_size: Optional[str]
 
+class ChatRequest(BaseModel):
+    message: str
+    user_id: int
+
+class ChatMessage(BaseModel):
+    user_id: int
+    message: str
+
 # Connection Functions
 async def get_pool():
     return await asyncpg.create_pool(**DB_CONFIG)
@@ -106,19 +159,6 @@ def get_db():
 
 # Create connection pool on startup
 pool = None
-
-@app.on_event("startup")
-async def startup():
-    global pool
-    pool = await asyncpg.create_pool(**DB_CONFIG)
-
-@app.on_event("shutdown")
-async def shutdown():
-    global pool
-    if pool:
-        await pool.close()
-
-# Start with basic structure and add endpoints one by one 
 
 @app.get("/user/{user_id}/closet")
 async def get_closet(user_id: int):
@@ -274,14 +314,6 @@ async def get_ideal_measurements(user_id: str):
     except Exception as e:
         print(f"Error in get_ideal_measurements: {str(e)}")
         raise HTTPException(status_code=500, detail=str(e))
-
-app.add_middleware(
-    CORSMiddleware,
-    allow_origins=["*"],
-    allow_credentials=True,
-    allow_methods=["*"],
-    allow_headers=["*"],
-)
 
 # Add these helper functions
 def get_user_garments(user_id: str) -> list:
@@ -779,11 +811,84 @@ async def get_brands():
         print(f"Error in get_brands: {str(e)}")
         return []
 
+@app.post("/chat/measurements")
+async def chat_measurements(request: ChatRequest):
+    try:
+        # Get user context
+        with get_db_connection() as conn:
+            with conn.cursor() as cur:
+                # Get available measurements for the category
+                cur.execute("""
+                    SELECT DISTINCT category, measurements_available
+                    FROM size_guides_v2
+                    WHERE category ILIKE %s
+                """, ('%' + request.message.split()[0] + '%',))
+                measurements = cur.fetchall()
+
+                # Get user's measurements
+                cur.execute("""
+                    SELECT measurement_type, value
+                    FROM user_measurements
+                    WHERE user_id = %s
+                """, (request.user_id,))
+                user_measurements = cur.fetchall()
+
+        # Format system context
+        system_context = """You are a helpful clothing measurement assistant. 
+        Your goal is to help users find the right measurements for their garments.
+        Be specific about which measurements are needed and how to take them accurately."""
+
+        try:
+            print("Attempting to call OpenAI API...")
+            response = openai_client.chat.completions.create(
+                model="gpt-3.5-turbo",
+                messages=[
+                    {"role": "system", "content": system_context},
+                    {"role": "user", "content": request.message}
+                ]
+            )
+            return {"response": response.choices[0].message.content}
+        except openai.OpenAIError as e:
+            print(f"OpenAI API error: {str(e)}")
+            # Provide a helpful fallback response based on database info
+            if measurements:
+                fallback_response = f"For {measurements[0]['category']}, you will need the following measurements: {', '.join(measurements[0]['measurements_available'])}."
+            else:
+                fallback_response = "To get accurate measurements, please specify the type of garment (e.g., shirt, pants, jacket) and I can tell you which measurements you need."
+            return {"response": fallback_response}
+            
+    except Exception as e:
+        print(f"Unexpected error: {str(e)}")
+        # Always return a valid response format even in error cases
+        return {"response": "I apologize, but I encountered an error. Please try again."}
+
+def format_measurement_guides(guides):
+    formatted = []
+    for category, measurements in guides:
+        formatted.append(f"- {category}: {', '.join(measurements)}")
+    return "\n".join(formatted)
+
+def format_user_measurements(measurements):
+    if not measurements:
+        return "No measurements recorded yet"
+    formatted = []
+    for type_, value in measurements:
+        formatted.append(f"- {type_}: {value}")
+    return "\n".join(formatted)
+
+def format_recent_garments(garments):
+    if not garments:
+        return "No previous garments recorded"
+    formatted = []
+    for brand, category, size, feedback in garments:
+        formatted.append(f"- {brand} {category}, Size {size}" + (f" (Feedback: {feedback})" if feedback else ""))
+    return "\n".join(formatted)
+
 if __name__ == "__main__":
     import uvicorn
     uvicorn.run(
         "app:app",  # Use string format
         host="0.0.0.0",
-        port=8005,
+        port=8006,  # Changed from 8005 to 8006
         reload=True
     ) 

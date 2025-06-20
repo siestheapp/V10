@@ -13,6 +13,15 @@ struct AccountScreen: View {
     var body: some View {
         NavigationView {
             List {
+                // Add this new section at the top during development
+                Section(header: Text("Developer").font(.title).bold()) {
+                    NavigationLink(destination: TestScreen()) {
+                        AccountRow(icon: "hammer.fill", 
+                                 title: "Test Dashboard", 
+                                 subtitle: "View all user data and calculations")
+                    }
+                }
+                
                 // Purchases Section
                 Section(header: Text("Purchases").font(.title).bold()) {
                     NavigationLink(destination: Text("Orders")) {
