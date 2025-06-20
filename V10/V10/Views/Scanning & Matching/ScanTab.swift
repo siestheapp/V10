@@ -120,6 +120,8 @@ struct ScanTab: View {
                 )
             }
             .padding(.top, 30)
+            .navigationTitle("Scan")
+            .navigationBarTitleDisplayMode(.inline)
             .toolbar {
                 ToolbarItem(placement: .navigationBarTrailing) {
                     Button(action: {
@@ -135,14 +137,6 @@ struct ScanTab: View {
             .sheet(isPresented: $showingBrandsView) {
                 NavigationView {
                     BrandsView()
-                        .navigationTitle("Brands")
-                        .toolbar {
-                            ToolbarItem(placement: .navigationBarTrailing) {
-                                Button("Done") {
-                                    showingBrandsView = false
-                                }
-                            }
-                        }
                 }
             }
             .confirmationDialog("Choose an option", isPresented: $showingOptions) {

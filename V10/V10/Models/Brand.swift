@@ -23,8 +23,10 @@ class BrandStore: ObservableObject {
         isLoading = true
         error = nil
         
-        guard let url = URL(string: "http://localhost:8005/brands") else {
+        guard let url = URL(string: "\(Config.baseURL)/brands") else {
             print("Invalid URL")
+            self.error = NSError(domain: "AppError", code: 1, userInfo: [NSLocalizedDescriptionKey: "Invalid base URL"])
+            self.isLoading = false
             return
         }
         
