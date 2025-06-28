@@ -1536,10 +1536,12 @@ async def get_product_recommendations(user_profile: dict, category: str = None, 
             recommended_size = "XL" if chest_avg > user_chest_good["max"] + 2 else "XS"
         
         # Apply price filter if specified
-        if filters and "priceRange" in filters:
-            price_range = filters["priceRange"]
-            if not (price_range[0] <= product["price"] <= price_range[1]):
-                continue
+        if filters and "minPrice" in filters and "maxPrice" in filters:
+            min_price = filters.get("minPrice")
+            max_price = filters.get("maxPrice")
+            if min_price is not None and max_price is not None:
+                if not (min_price <= product["price"] <= max_price):
+                    continue
         
         # Apply brand filter if specified
         if filters and "brands" in filters and filters["brands"]:

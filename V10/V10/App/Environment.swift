@@ -1,4 +1,4 @@
-enum Environment {
+enum AppEnvironment {
     #if DEBUG
     static let apiBaseURL = "http://localhost:8006"  // Local development server
     #else

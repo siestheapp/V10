@@ -202,8 +202,9 @@ struct ShopItemCard: View {
 }
 
 struct ShopFiltersView: View {
-    @Environment(\.dismiss) private var dismiss
-    @State private var priceRange: ClosedRange<Double> = 0...500
+    @Environment(\.dismiss) private var dismiss: DismissAction
+    @State private var minPrice: Double = 0
+    @State private var maxPrice: Double = 500
     @State private var selectedBrands: Set<String> = []
     @State private var selectedFitTypes: Set<String> = []
     
@@ -216,15 +217,15 @@ struct ShopFiltersView: View {
                 Section("Price Range") {
                     VStack {
                         HStack {
-                            Text("$\(Int(priceRange.lowerBound))")
+                            Text("$\(Int(minPrice))")
                             Spacer()
-                            Text("$\(Int(priceRange.upperBound))")
+                            Text("$\(Int(maxPrice))")
                         }
                         .font(.caption)
                         .foregroundColor(.secondary)
                         
-                        Slider(value: $priceRange.lowerBound, in: 0...500)
-                        Slider(value: $priceRange.upperBound, in: 0...500)
+                        Slider(value: $minPrice, in: 0...500)
+                        Slider(value: $maxPrice, in: 0...500)
                     }
                 }
                 
@@ -291,7 +292,7 @@ struct ShopFiltersView: View {
 
 struct ShopItemDetailView: View {
     let item: ShopItem
-    @Environment(\.dismiss) private var dismiss
+    @Environment(\.dismiss) private var dismiss: DismissAction
     
     var body: some View {
         NavigationView {

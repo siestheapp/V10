@@ -26,17 +26,24 @@ struct ShopItem: Identifiable, Codable {
 
 struct ShopFilters: Codable {
     var category: String?
-    var priceRange: ClosedRange<Double>?
+    var minPrice: Double?
+    var maxPrice: Double?
     var brands: [String]?
     var fitTypes: [String]?
     var sortBy: SortOption?
     
-    enum SortOption: String, CaseIterable {
+    enum SortOption: String, CaseIterable, Codable {
         case relevance = "relevance"
-        case priceLowToHigh = "price_low_to_high"
+        case priceLowToHigh = "price_low_to_low"
         case priceHighToLow = "price_high_to_low"
         case fitConfidence = "fit_confidence"
         case newest = "newest"
+    }
+    
+    enum CodingKeys: String, CodingKey {
+        case category, brands, fitTypes, sortBy
+        case minPrice = "min_price"
+        case maxPrice = "max_price"
     }
 }
 

@@ -37,10 +37,10 @@ struct SiesApp: App {
                                 Label("Fit", systemImage: "ruler")
                             }
                         
-                        LiveFitZoneView()
+                        ShopView()
                             .environmentObject(userSettings)
                             .tabItem {
-                                Label("Live", systemImage: "chart.bar.fill")
+                                Label("Shop", systemImage: "bag")
                             }
                         
                         ChatView()

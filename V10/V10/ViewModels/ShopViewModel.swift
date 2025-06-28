@@ -8,7 +8,7 @@ class ShopViewModel: ObservableObject {
     @Published var error: String?
     @Published var currentFilters = ShopFilters()
     
-    private let userId = Config.defaultUserId
+    private let userId = String(Config.defaultUserId)
     private var currentCategory = "Tops"
     
     func loadRecommendations() {
