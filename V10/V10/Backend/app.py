@@ -16,6 +16,8 @@ from contextlib import asynccontextmanager
 import os
 from dotenv import load_dotenv
 from sqlalchemy import text
+import subprocess
+import sys
 
 # Load environment variables from .env file
 load_dotenv()
@@ -953,6 +955,8 @@ async def submit_garment_with_feedback(request: dict):
         # Recalculate user's measurement profile
         await recalculate_user_measurement_profile(user_id)
         
+        trigger_db_snapshot()
+        
         return {
             "garment_id": garment_id,
             "status": "success",
@@ -1316,6 +1320,8 @@ async def update_garment_feedback(garment_id: int, request: dict):
                 WHERE id = $2
             """, feedback_text.get('overall'), garment_id)
         
+        trigger_db_snapshot()
+        
         return {
             "status": "success",
             "message": "Feedback updated successfully"
@@ -1618,6 +1624,18 @@ def get_database_insights():
         return insights
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"Database analysis failed: {str(e)}")
+
+def trigger_schema_evolution():
+    """Trigger schema evolution tracking"""
+    if os.environ.get("ENV", "development") == "development":
+        subprocess.Popen([sys.executable, "scripts/schema_evolution.py"])
+
+def trigger_db_snapshot():
+    # Run the snapshot script in the background, only in development
+    if os.environ.get("ENV", "development") == "development":
+        subprocess.Popen([sys.executable, "scripts/db_snapshot.py"])
+        # Also trigger schema evolution
+        trigger_schema_evolution()
 
 if __name__ == "__main__":
     import uvicorn
