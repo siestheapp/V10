@@ -15,6 +15,7 @@ import openai
 from contextlib import asynccontextmanager
 import os
 from dotenv import load_dotenv
+from sqlalchemy import text
 
 # Load environment variables from .env file
 load_dotenv()
@@ -1390,183 +1391,233 @@ def get_overall_feedback_description(feedback: dict) -> str:
 
 @app.post("/shop/recommendations")
 async def get_shop_recommendations(request: dict):
-    """Get personalized shopping recommendations based on user's fit zones"""
+    """
+    Get personalized shopping recommendations based on user's fit feedback and measurements.
+    Logic:
+      1. Find user's 'Good Fit' garments (from user_garments + user_fit_feedback).
+      2. Generate mock recommendations based on those garments.
+      3. Return a reason for each recommendation.
+    """
     try:
         user_id = request.get("user_id")
         category = request.get("category")
         filters = request.get("filters", {})
         limit = request.get("limit", 20)
-        
         if not user_id:
             raise HTTPException(status_code=400, detail="User ID is required")
+
+        # 1. Find user's 'Good Fit' garments
+        conn = get_db()
+        cur = conn.cursor(cursor_factory=RealDictCursor)
+        cur.execute("""
+            SELECT ug.id, ug.brand_id, b.name as brand_name, ug.size_label, ug.category, ug.product_name,
+                   uff.overall_fit, uff.chest_fit, uff.sleeve_fit, uff.neck_fit, uff.waist_fit
+            FROM user_garments ug
+            JOIN brands b ON ug.brand_id = b.id
+            LEFT JOIN user_fit_feedback uff ON ug.id = uff.garment_id
+            WHERE ug.user_id = %s AND ug.owns_garment = true
+            ORDER BY ug.created_at DESC
+        """, (user_id,))
+        garments = cur.fetchall()
+
+        # Filter for 'Good Fit' garments
+        good_fit_garments = [g for g in garments if (g.get('overall_fit') or '').lower() in ['good fit', 'good']]
+        if not good_fit_garments:
+            # Fallback: use any owned garment
+            good_fit_garments = garments
+
+        recommendations = []
         
-        # Get user's fit zones
-        user_profile = await get_user_measurement_profile(user_id)
+        # 2. Generate mock recommendations based on user's good fit garments
+        for garment in good_fit_garments[:3]:  # Use up to 3 garments for recommendations
+            # Create mock recommendations based on this garment
+            mock_recommendations = [
+                {
+                    "id": f"rec_{garment['id']}_1",
+                    "name": f"Classic {garment['category'].rstrip('s')}",
+                    "brand": garment['brand_name'],
+                    "price": 79.99,
+                    "image_url": f"https://via.placeholder.com/300x400/4A90E2/FFFFFF?text={garment['brand_name']}+{garment['category']}",
+                    "product_url": f"https://example.com/product/1",
+                    "category": garment['category'],
+                    "fit_confidence": 0.95,
+                    "recommended_size": garment['size_label'],
+                    "measurements": {
+                        "chest": "40-42\"",
+                        "sleeve": "24-25\"",
+                        "length": "28-29\""
+                    },
+                    "available_sizes": ["XS", "S", "M", "L", "XL"],
+                    "description": f"Based on your {garment['brand_name']} {garment['size_label']} that fits well"
+                },
+                {
+                    "id": f"rec_{garment['id']}_2",
+                    "name": f"Premium {garment['category'].rstrip('s')}",
+                    "brand": "Theory" if garment['brand_name'] != "Theory" else "Banana Republic",
+                    "price": 129.99,
+                    "image_url": f"https://via.placeholder.com/300x400/50C878/FFFFFF?text=Theory+{garment['category']}",
+                    "product_url": f"https://example.com/product/2",
+                    "category": garment['category'],
+                    "fit_confidence": 0.88,
+                    "recommended_size": garment['size_label'],
+                    "measurements": {
+                        "chest": "42-44\"",
+                        "sleeve": "25-26\"",
+                        "length": "29-30\""
+                    },
+                    "available_sizes": ["XS", "S", "M", "L", "XL", "XXL"],
+                    "description": f"Similar style to your {garment['brand_name']} {garment['size_label']}"
+                },
+                {
+                    "id": f"rec_{garment['id']}_3",
+                    "name": f"Casual {garment['category'].rstrip('s')}",
+                    "brand": "J.Crew" if garment['brand_name'] != "J.Crew" else "Patagonia",
+                    "price": 59.99,
+                    "image_url": f"https://via.placeholder.com/300x400/FF6B35/FFFFFF?text=J.Crew+{garment['category']}",
+                    "product_url": f"https://example.com/product/3",
+                    "category": garment['category'],
+                    "fit_confidence": 0.92,
+                    "recommended_size": garment['size_label'],
+                    "measurements": {
+                        "chest": "40-42\"",
+                        "sleeve": "24-25\"",
+                        "length": "27-28\""
+                    },
+                    "available_sizes": ["S", "M", "L", "XL"],
+                    "description": f"Same size as your {garment['brand_name']} {garment['size_label']}"
+                }
+            ]
+            
+            # Filter by category if specified
+            if category and category != "All":
+                mock_recommendations = [r for r in mock_recommendations if r["category"] == category]
+            
+            recommendations.extend(mock_recommendations)
+
+        cur.close()
+        conn.close()
         
-        # Get recommendations based on fit zones
-        recommendations = await get_product_recommendations(
-            user_profile, 
-            category, 
-            filters, 
-            limit
-        )
-        
+        # Limit results and remove duplicates
+        unique_recommendations = []
+        seen_ids = set()
+        for rec in recommendations:
+            if rec["id"] not in seen_ids and len(unique_recommendations) < limit:
+                unique_recommendations.append(rec)
+                seen_ids.add(rec["id"])
+
         return {
-            "recommendations": recommendations,
-            "total_count": len(recommendations),
-            "has_more": len(recommendations) >= limit
+            "recommendations": unique_recommendations,
+            "total_count": len(unique_recommendations),
+            "has_more": len(unique_recommendations) >= limit
         }
         
     except Exception as e:
         print(f"Error getting shop recommendations: {str(e)}")
         raise HTTPException(status_code=500, detail=str(e))
 
-async def get_product_recommendations(user_profile: dict, category: str = None, filters: dict = None, limit: int = 20) -> list:
-    """Get product recommendations based on user's fit zones"""
-    
-    # For now, return mock data that matches the user's fit zones
-    # In a real implementation, this would query a product database
-    
-    user_chest_good = user_profile["chest"]["good"]
-    
-    # Mock product database with measurements
-    mock_products = [
-        {
-            "id": "1",
-            "name": "Brenan Polo Shirt",
-            "brand": "Theory",
-            "price": 89.0,
-            "image_url": "https://via.placeholder.com/300x400/4A90E2/FFFFFF?text=Theory+Polo",
-            "product_url": "https://www.theory.com/us/en/mens/polo-shirts/brenan-polo-shirt/",
-            "category": "Tops",
-            "measurements": {
-                "chest": "40-42",
-                "sleeve": "24-25",
-                "length": "28-29"
+@app.get("/database/insights")
+def get_database_insights():
+    """Get database insights and statistics for AI analysis (developer/admin use only)"""
+    import psycopg2
+    from psycopg2.extras import RealDictCursor
+    from datetime import datetime
+    try:
+        conn = psycopg2.connect(
+            dbname=DB_CONFIG["database"],
+            user=DB_CONFIG["user"],
+            password=DB_CONFIG["password"],
+            host=DB_CONFIG["host"]
+        )
+        cur = conn.cursor(cursor_factory=RealDictCursor)
+        # Table counts
+        table_counts = {}
+        tables = [
+            'users',
+            'user_garments',
+            'user_fit_feedback',
+            'user_fit_zones',
+            'user_body_measurements',
+            'product_measurements',
+            'brands'
+        ]
+        for table in tables:
+            cur.execute(f"SELECT COUNT(*) FROM {table}")
+            table_counts[table] = list(cur.fetchone().values())[0]
+        # User insights
+        cur.execute("""
+            SELECT 
+                COUNT(DISTINCT user_id) as active_users,
+                AVG(garment_count) as avg_garments_per_user,
+                MAX(garment_count) as max_garments_per_user
+            FROM (
+                SELECT user_id, COUNT(*) as garment_count 
+                FROM user_garments 
+                GROUP BY user_id
+            ) user_stats
+        """)
+        user_stats = cur.fetchone()
+        # Popular brands
+        cur.execute("""
+            SELECT brand_id, COUNT(*) as count 
+            FROM user_garments 
+            GROUP BY brand_id 
+            ORDER BY count DESC 
+            LIMIT 10
+        """)
+        popular_brands = cur.fetchall()
+        # Fit feedback distribution
+        cur.execute("""
+            SELECT overall_fit, COUNT(*) as count 
+            FROM user_fit_feedback 
+            GROUP BY overall_fit 
+            ORDER BY count DESC
+        """)
+        fit_distribution = cur.fetchall()
+        # Measurement ranges (chest)
+        cur.execute("""
+            SELECT 
+                MIN(calculated_min) as min_chest,
+                MAX(calculated_max) as max_chest,
+                AVG((calculated_min + calculated_max)/2) as avg_chest
+            FROM user_body_measurements 
+            WHERE measurement_type = 'chest'
+        """)
+        chest_stats = cur.fetchone()
+        insights = {
+            "timestamp": datetime.now().isoformat(),
+            "table_counts": table_counts,
+            "user_insights": {
+                "active_users": user_stats["active_users"] if user_stats else 0,
+                "avg_garments_per_user": float(user_stats["avg_garments_per_user"]) if user_stats and user_stats["avg_garments_per_user"] else 0,
+                "max_garments_per_user": user_stats["max_garments_per_user"] if user_stats else 0
             },
-            "available_sizes": ["XS", "S", "M", "L", "XL"],
-            "description": "A refined polo shirt in soft cotton piqué with a modern fit."
-        },
-        {
-            "id": "2",
-            "name": "Classic Fit Oxford Shirt",
-            "brand": "J.Crew",
-            "price": 69.50,
-            "image_url": "https://via.placeholder.com/300x400/50C878/FFFFFF?text=J.Crew+Oxford",
-            "product_url": "https://www.jcrew.com/p/mens_category/shirts/oxford/classic-fit-oxford-shirt/",
-            "category": "Tops",
-            "measurements": {
-                "chest": "42-44",
-                "sleeve": "25-26",
-                "length": "29-30"
+            "popular_brands": popular_brands,
+            "fit_feedback_distribution": fit_distribution,
+            "measurement_insights": {
+                "chest_range": {
+                    "min": float(chest_stats["min_chest"]) if chest_stats and chest_stats["min_chest"] else 0,
+                    "max": float(chest_stats["max_chest"]) if chest_stats and chest_stats["max_chest"] else 0,
+                    "average": float(chest_stats["avg_chest"]) if chest_stats and chest_stats["avg_chest"] else 0
+                }
             },
-            "available_sizes": ["XS", "S", "M", "L", "XL", "XXL"],
-            "description": "Our most popular oxford shirt in a classic fit."
-        },
-        {
-            "id": "3",
-            "name": "Merino Wool Sweater",
-            "brand": "Banana Republic",
-            "price": 79.99,
-            "image_url": "https://via.placeholder.com/300x400/FF6B35/FFFFFF?text=BR+Wool+Sweater",
-            "product_url": "https://bananarepublic.gap.com/browse/product.do?pid=123456",
-            "category": "Tops",
-            "measurements": {
-                "chest": "40-42",
-                "sleeve": "24-25",
-                "length": "27-28"
-            },
-            "available_sizes": ["S", "M", "L", "XL"],
-            "description": "Soft merino wool sweater with a relaxed fit."
-        },
-        {
-            "id": "4",
-            "name": "Performance Tech Tee",
-            "brand": "Lululemon",
-            "price": 58.0,
-            "image_url": "https://via.placeholder.com/300x400/000000/FFFFFF?text=Lulu+Tech+Tee",
-            "product_url": "https://shop.lululemon.com/p/mens-tops/performance-tech-tee-2/",
-            "category": "Tops",
-            "measurements": {
-                "chest": "38-40",
-                "sleeve": "23-24",
-                "length": "26-27"
-            },
-            "available_sizes": ["XS", "S", "M", "L", "XL", "XXL"],
-            "description": "Lightweight performance fabric with moisture-wicking technology."
-        },
-        {
-            "id": "5",
-            "name": "Down Sweater Jacket",
-            "brand": "Patagonia",
-            "price": 199.0,
-            "image_url": "https://via.placeholder.com/300x400/1E3A8A/FFFFFF?text=Patagonia+Down",
-            "product_url": "https://www.patagonia.com/product/mens-down-sweater-jacket/84240.html",
-            "category": "Outerwear",
-            "measurements": {
-                "chest": "40-42",
-                "sleeve": "24-25",
-                "length": "28-29"
-            },
-            "available_sizes": ["XS", "S", "M", "L", "XL", "XXL"],
-            "description": "Lightweight, windproof shell with 800-fill-power goose down insulation."
+            "recommendations": {
+                "data_quality": [],
+                "performance": [],
+                "features": []
+            }
         }
-    ]
-    
-    # Filter by category if specified
-    if category and category != "All":
-        mock_products = [p for p in mock_products if p["category"] == category]
-    
-    # Calculate fit confidence and recommended size for each product
-    recommendations = []
-    for product in mock_products[:limit]:
-        chest_range = product["measurements"]["chest"]
-        chest_min, chest_max = map(float, chest_range.split("-"))
-        chest_avg = (chest_min + chest_max) / 2
-        
-        # Calculate fit confidence based on how well it matches user's good range
-        if user_chest_good["min"] <= chest_avg <= user_chest_good["max"]:
-            fit_confidence = 0.95  # Perfect match
-            recommended_size = "M"  # Default to M for good fit
-        elif user_chest_good["min"] - 2 <= chest_avg <= user_chest_good["max"] + 2:
-            fit_confidence = 0.85  # Close match
-            recommended_size = "L" if chest_avg > user_chest_good["max"] else "S"
-        else:
-            fit_confidence = 0.70  # Poor match
-            recommended_size = "XL" if chest_avg > user_chest_good["max"] + 2 else "XS"
-        
-        # Apply price filter if specified
-        if filters and "minPrice" in filters and "maxPrice" in filters:
-            min_price = filters.get("minPrice")
-            max_price = filters.get("maxPrice")
-            if min_price is not None and max_price is not None:
-                if not (min_price <= product["price"] <= max_price):
-                    continue
-        
-        # Apply brand filter if specified
-        if filters and "brands" in filters and filters["brands"]:
-            if product["brand"] not in filters["brands"]:
-                continue
-        
-        recommendations.append({
-            "id": product["id"],
-            "name": product["name"],
-            "brand": product["brand"],
-            "price": product["price"],
-            "imageUrl": product["image_url"],
-            "productUrl": product["product_url"],
-            "category": product["category"],
-            "fitConfidence": fit_confidence,
-            "recommendedSize": recommended_size,
-            "measurements": {k: f"{v}\"" for k, v in product["measurements"].items()},
-            "availableSizes": product["available_sizes"],
-            "description": product["description"]
-        })
-    
-    # Sort by fit confidence (highest first)
-    recommendations.sort(key=lambda x: x["fitConfidence"], reverse=True)
-    
-    return recommendations
+        # Generate AI recommendations based on data
+        if table_counts['user_garments'] < 100:
+            insights["recommendations"]["data_quality"].append("Consider adding more sample garments for better fit zone calculations")
+        if table_counts['brands'] < 10:
+            insights["recommendations"]["features"].append("Expand brand catalog for better recommendations")
+        if table_counts['user_fit_feedback'] < 50:
+            insights["recommendations"]["data_quality"].append("More fit feedback needed for accurate fit zone calculations")
+        cur.close()
+        conn.close()
+        return insights
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Database analysis failed: {str(e)}")
 
 if __name__ == "__main__":
     import uvicorn
