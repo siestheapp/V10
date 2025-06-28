@@ -29,19 +29,26 @@ struct ClosetView: View {
                 }
                 .tag(2)
             
+            // Shop Tab
+            ShopView()
+                .tabItem {
+                    Label("Shop", systemImage: "bag")
+                }
+                .tag(3)
+            
             // Fit Tab
             UserMeasurementProfileView()
                 .tabItem {
                     Label("Fit", systemImage: "ruler")
                 }
-                .tag(3)
+                .tag(4)
             
             // Account Tab (replacing Match)
             AccountScreen()
                 .tabItem {
                     Label("Match", systemImage: "link")
                 }
-                .tag(4)
+                .tag(5)
         }
         .overlay(
             Group {

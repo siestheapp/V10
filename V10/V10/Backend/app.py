@@ -1388,6 +1388,184 @@ def get_overall_feedback_description(feedback: dict) -> str:
     else:
         return "Too loose"
 
+@app.post("/shop/recommendations")
+async def get_shop_recommendations(request: dict):
+    """Get personalized shopping recommendations based on user's fit zones"""
+    try:
+        user_id = request.get("user_id")
+        category = request.get("category")
+        filters = request.get("filters", {})
+        limit = request.get("limit", 20)
+        
+        if not user_id:
+            raise HTTPException(status_code=400, detail="User ID is required")
+        
+        # Get user's fit zones
+        user_profile = await get_user_measurement_profile(user_id)
+        
+        # Get recommendations based on fit zones
+        recommendations = await get_product_recommendations(
+            user_profile, 
+            category, 
+            filters, 
+            limit
+        )
+        
+        return {
+            "recommendations": recommendations,
+            "total_count": len(recommendations),
+            "has_more": len(recommendations) >= limit
+        }
+        
+    except Exception as e:
+        print(f"Error getting shop recommendations: {str(e)}")
+        raise HTTPException(status_code=500, detail=str(e))
+
+async def get_product_recommendations(user_profile: dict, category: str = None, filters: dict = None, limit: int = 20) -> list:
+    """Get product recommendations based on user's fit zones"""
+    
+    # For now, return mock data that matches the user's fit zones
+    # In a real implementation, this would query a product database
+    
+    user_chest_good = user_profile["chest"]["good"]
+    
+    # Mock product database with measurements
+    mock_products = [
+        {
+            "id": "1",
+            "name": "Brenan Polo Shirt",
+            "brand": "Theory",
+            "price": 89.0,
+            "image_url": "https://via.placeholder.com/300x400/4A90E2/FFFFFF?text=Theory+Polo",
+            "product_url": "https://www.theory.com/us/en/mens/polo-shirts/brenan-polo-shirt/",
+            "category": "Tops",
+            "measurements": {
+                "chest": "40-42",
+                "sleeve": "24-25",
+                "length": "28-29"
+            },
+            "available_sizes": ["XS", "S", "M", "L", "XL"],
+            "description": "A refined polo shirt in soft cotton piqué with a modern fit."
+        },
+        {
+            "id": "2",
+            "name": "Classic Fit Oxford Shirt",
+            "brand": "J.Crew",
+            "price": 69.50,
+            "image_url": "https://via.placeholder.com/300x400/50C878/FFFFFF?text=J.Crew+Oxford",
+            "product_url": "https://www.jcrew.com/p/mens_category/shirts/oxford/classic-fit-oxford-shirt/",
+            "category": "Tops",
+            "measurements": {
+                "chest": "42-44",
+                "sleeve": "25-26",
+                "length": "29-30"
+            },
+            "available_sizes": ["XS", "S", "M", "L", "XL", "XXL"],
+            "description": "Our most popular oxford shirt in a classic fit."
+        },
+        {
+            "id": "3",
+            "name": "Merino Wool Sweater",
+            "brand": "Banana Republic",
+            "price": 79.99,
+            "image_url": "https://via.placeholder.com/300x400/FF6B35/FFFFFF?text=BR+Wool+Sweater",
+            "product_url": "https://bananarepublic.gap.com/browse/product.do?pid=123456",
+            "category": "Tops",
+            "measurements": {
+                "chest": "40-42",
+                "sleeve": "24-25",
+                "length": "27-28"
+            },
+            "available_sizes": ["S", "M", "L", "XL"],
+            "description": "Soft merino wool sweater with a relaxed fit."
+        },
+        {
+            "id": "4",
+            "name": "Performance Tech Tee",
+            "brand": "Lululemon",
+            "price": 58.0,
+            "image_url": "https://via.placeholder.com/300x400/000000/FFFFFF?text=Lulu+Tech+Tee",
+            "product_url": "https://shop.lululemon.com/p/mens-tops/performance-tech-tee-2/",
+            "category": "Tops",
+            "measurements": {
+                "chest": "38-40",
+                "sleeve": "23-24",
+                "length": "26-27"
+            },
+            "available_sizes": ["XS", "S", "M", "L", "XL", "XXL"],
+            "description": "Lightweight performance fabric with moisture-wicking technology."
+        },
+        {
+            "id": "5",
+            "name": "Down Sweater Jacket",
+            "brand": "Patagonia",
+            "price": 199.0,
+            "image_url": "https://via.placeholder.com/300x400/1E3A8A/FFFFFF?text=Patagonia+Down",
+            "product_url": "https://www.patagonia.com/product/mens-down-sweater-jacket/84240.html",
+            "category": "Outerwear",
+            "measurements": {
+                "chest": "40-42",
+                "sleeve": "24-25",
+                "length": "28-29"
+            },
+            "available_sizes": ["XS", "S", "M", "L", "XL", "XXL"],
+            "description": "Lightweight, windproof shell with 800-fill-power goose down insulation."
+        }
+    ]
+    
+    # Filter by category if specified
+    if category and category != "All":
+        mock_products = [p for p in mock_products if p["category"] == category]
+    
+    # Calculate fit confidence and recommended size for each product
+    recommendations = []
+    for product in mock_products[:limit]:
+        chest_range = product["measurements"]["chest"]
+        chest_min, chest_max = map(float, chest_range.split("-"))
+        chest_avg = (chest_min + chest_max) / 2
+        
+        # Calculate fit confidence based on how well it matches user's good range
+        if user_chest_good["min"] <= chest_avg <= user_chest_good["max"]:
+            fit_confidence = 0.95  # Perfect match
+            recommended_size = "M"  # Default to M for good fit
+        elif user_chest_good["min"] - 2 <= chest_avg <= user_chest_good["max"] + 2:
+            fit_confidence = 0.85  # Close match
+            recommended_size = "L" if chest_avg > user_chest_good["max"] else "S"
+        else:
+            fit_confidence = 0.70  # Poor match
+            recommended_size = "XL" if chest_avg > user_chest_good["max"] + 2 else "XS"
+        
+        # Apply price filter if specified
+        if filters and "priceRange" in filters:
+            price_range = filters["priceRange"]
+            if not (price_range[0] <= product["price"] <= price_range[1]):
+                continue
+        
+        # Apply brand filter if specified
+        if filters and "brands" in filters and filters["brands"]:
+            if product["brand"] not in filters["brands"]:
+                continue
+        
+        recommendations.append({
+            "id": product["id"],
+            "name": product["name"],
+            "brand": product["brand"],
+            "price": product["price"],
+            "imageUrl": product["image_url"],
+            "productUrl": product["product_url"],
+            "category": product["category"],
+            "fitConfidence": fit_confidence,
+            "recommendedSize": recommended_size,
+            "measurements": {k: f"{v}\"" for k, v in product["measurements"].items()},
+            "availableSizes": product["available_sizes"],
+            "description": product["description"]
+        })
+    
+    # Sort by fit confidence (highest first)
+    recommendations.sort(key=lambda x: x["fitConfidence"], reverse=True)
+    
+    return recommendations
+
 if __name__ == "__main__":
     import uvicorn
     uvicorn.run(
