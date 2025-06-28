@@ -7,6 +7,10 @@ struct ClosetGarment: Identifiable, Codable {
     let size: String
     let measurements: [String: String]
     let fitFeedback: String?
+    let chestFit: String?
+    let sleeveFit: String?
+    let neckFit: String?
+    let waistFit: String?
     let createdAt: String?
     let ownsGarment: Bool
     let productName: String?
@@ -14,6 +18,10 @@ struct ClosetGarment: Identifiable, Codable {
     enum CodingKeys: String, CodingKey {
         case id, brand, category, size, measurements
         case fitFeedback = "fitFeedback"
+        case chestFit = "chestFit"
+        case sleeveFit = "sleeveFit"
+        case neckFit = "neckFit"
+        case waistFit = "waistFit"
         case createdAt = "createdAt"
         case ownsGarment = "ownsGarment"
         case productName = "productName"
@@ -148,40 +156,65 @@ struct GarmentRow: View {
     
     var body: some View {
         VStack(alignment: .leading, spacing: 4) {
-            Text(garment.brand)
-                .font(.headline)
-            
-            if let productName = garment.productName {
-                Text(productName)
-                    .font(.subheadline)
-                    .foregroundColor(.gray)
+            HStack {
+                VStack(alignment: .leading, spacing: 2) {
+                    Text(garment.brand)
+                        .font(.headline)
+                    
+                    if let productName = garment.productName {
+                        Text(productName)
+                            .font(.subheadline)
+                            .foregroundColor(.gray)
+                    }
+                }
+                
+                Spacer()
+                
+                // Feedback indicator
+                if let feedback = garment.fitFeedback {
+                    HStack(spacing: 4) {
+                        Image(systemName: "checkmark.circle.fill")
+                            .foregroundColor(.green)
+                            .font(.caption)
+                        Text(feedback)
+                            .font(.caption)
+                            .foregroundColor(.green)
+                    }
+                } else {
+                    HStack(spacing: 4) {
+                        Image(systemName: "exclamationmark.circle")
+                            .foregroundColor(.orange)
+                            .font(.caption)
+                        Text("Add feedback")
+                            .font(.caption)
+                            .foregroundColor(.orange)
+                    }
+                }
             }
             
             HStack {
                 Text(garment.size)
                     .font(.subheadline)
-                if let feedback = garment.fitFeedback {
-                    Text("(\(feedback))")
-                        .font(.caption)
-                        .foregroundColor(.gray)
-                }
-            }
-            
-            // Show measurements that are available
-            if let chest = garment.measurements["chest"] {
-                HStack {
-                    Text("Chest: \(chest)")
-                        .font(.caption)
-                        .foregroundColor(.gray)
-                    
-                    let additionalMeasurements = garment.measurements.filter { key, _ in
-                        key != "chest"
-                    }.count
-                    
-                    if additionalMeasurements > 0 {
-                        Text("+ \(additionalMeasurements) more")
+                    .foregroundColor(.gray)
+                
+                Spacer()
+                
+                // Show measurements that are available
+                if let chest = garment.measurements["chest"] {
+                    HStack(spacing: 8) {
+                        Text("Chest: \(chest)")
                             .font(.caption)
-                            .foregroundColor(.blue)
+                            .foregroundColor(.gray)
+                        
+                        let additionalMeasurements = garment.measurements.filter { key, _ in
+                            key != "chest"
+                        }.count
+                        
+                        if additionalMeasurements > 0 {
+                            Text("+ \(additionalMeasurements) more")
+                                .font(.caption)
+                                .foregroundColor(.blue)
+                        }
                     }
                 }
             }

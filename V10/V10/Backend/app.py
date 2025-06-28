@@ -182,13 +182,18 @@ async def get_closet(user_id: int):
                 ug.fit_feedback,
                 ug.created_at,
                 ug.owns_garment,
-                ug.product_name
+                ug.product_name,
+                uff.chest_fit,
+                uff.sleeve_fit,
+                uff.neck_fit,
+                uff.waist_fit
             FROM user_garments ug
             JOIN brands b ON ug.brand_id = b.id
             LEFT JOIN size_guides_v2 sg ON 
                 ug.brand_id = sg.brand_id AND 
                 ug.size_label = sg.size_label AND
                 ug.category = sg.category
+            LEFT JOIN user_fit_feedback uff ON ug.id = uff.garment_id
             WHERE ug.user_id = %s 
             AND ug.owns_garment = true
             ORDER BY ug.category, ug.created_at DESC
@@ -238,6 +243,10 @@ async def get_closet(user_id: int):
                 "size": g["size"],
                 "measurements": measurements,
                 "fitFeedback": g["fit_feedback"],
+                "chestFit": g["chest_fit"],
+                "sleeveFit": g["sleeve_fit"],
+                "neckFit": g["neck_fit"],
+                "waistFit": g["waist_fit"],
                 "createdAt": g["created_at"].isoformat() if g["created_at"] else None,
                 "ownsGarment": bool(g["owns_garment"]),
                 "productName": g["product_name"]
@@ -883,6 +892,501 @@ def format_recent_garments(garments):
     for brand, category, size, feedback in garments:
         formatted.append(f"- {brand} {category}, Size {size}" + (f" (Feedback: {feedback})" if feedback else ""))
     return "\n".join(formatted)
+
+@app.post("/garment/process-url")
+async def process_garment_url(request: dict):
+    """Process a garment URL to extract brand and product information"""
+    try:
+        product_url = request.get("product_url")
+        user_id = request.get("user_id")
+        
+        if not product_url:
+            raise HTTPException(status_code=400, detail="Product URL is required")
+        
+        # Extract brand from URL
+        brand_info = extract_brand_from_url(product_url)
+        if not brand_info:
+            raise HTTPException(status_code=400, detail="Could not identify brand from URL")
+        
+        # Get brand size guide information
+        brand_measurements = await get_brand_measurements_for_feedback(brand_info["brand_id"])
+        
+        return {
+            "brand": brand_info["brand_name"],
+            "brand_id": brand_info["brand_id"],
+            "product_url": product_url,
+            "available_measurements": brand_measurements["measurements"],
+            "feedback_options": brand_measurements["feedbackOptions"],
+            "next_step": "size_selection"
+        }
+        
+    except Exception as e:
+        print(f"Error processing garment URL: {str(e)}")
+        raise HTTPException(status_code=500, detail=str(e))
+
+@app.post("/garment/submit-with-feedback")
+async def submit_garment_with_feedback(request: dict):
+    """Submit a garment with size and feedback to update user's measurement profile"""
+    try:
+        user_id = request.get("user_id")
+        brand_id = request.get("brand_id")
+        size_label = request.get("size_label")
+        product_url = request.get("product_url")
+        feedback = request.get("feedback")  # Dict of measurement -> feedback_value
+        
+        if not all([user_id, brand_id, size_label, feedback]):
+            raise HTTPException(status_code=400, detail="Missing required fields")
+        
+        # Get brand size guide for this size
+        size_measurements = await get_size_measurements(brand_id, size_label)
+        
+        # Create garment entry
+        garment_id = await create_garment_entry(user_id, brand_id, size_label, product_url)
+        
+        # Store feedback for each measurement
+        for measurement_name, feedback_value in feedback.items():
+            if measurement_name in size_measurements:
+                measurement_value = size_measurements[measurement_name]
+                await store_measurement_feedback(garment_id, measurement_name, measurement_value, feedback_value)
+        
+        # Recalculate user's measurement profile
+        await recalculate_user_measurement_profile(user_id)
+        
+        return {
+            "garment_id": garment_id,
+            "status": "success",
+            "message": "Garment and feedback saved successfully"
+        }
+        
+    except Exception as e:
+        print(f"Error submitting garment with feedback: {str(e)}")
+        raise HTTPException(status_code=500, detail=str(e))
+
+@app.get("/user/{user_id}/size-recommendation")
+async def get_size_recommendation(user_id: str, brand_id: int, product_url: str):
+    """Get size recommendation for a user based on their measurement profile"""
+    try:
+        # Get user's measurement profile
+        user_profile = await get_user_measurement_profile(user_id)
+        
+        # Get brand size guide
+        brand_sizes = await get_brand_size_guide(brand_id)
+        
+        # Calculate best size match
+        recommendation = calculate_size_recommendation(user_profile, brand_sizes)
+        
+        return {
+            "recommended_size": recommendation["size"],
+            "confidence": recommendation["confidence"],
+            "reasoning": recommendation["reasoning"],
+            "alternative_sizes": recommendation["alternatives"]
+        }
+        
+    except Exception as e:
+        print(f"Error getting size recommendation: {str(e)}")
+        raise HTTPException(status_code=500, detail=str(e))
+
+# Helper functions
+def extract_brand_from_url(url: str) -> dict:
+    """Extract brand information from a product URL"""
+    try:
+        parsed = urlparse(url)
+        domain = parsed.netloc.lower()
+        
+        # Brand detection logic
+        if "uniqlo.com" in domain:
+            return {"brand_name": "Uniqlo", "brand_id": 1}
+        elif "jcrew.com" in domain:
+            return {"brand_name": "J.Crew", "brand_id": 2}
+        elif "bananarepublic.com" in domain:
+            return {"brand_name": "Banana Republic", "brand_id": 3}
+        elif "theory.com" in domain:
+            return {"brand_name": "Theory", "brand_id": 4}
+        elif "patagonia.com" in domain:
+            return {"brand_name": "Patagonia", "brand_id": 5}
+        elif "lululemon.com" in domain:
+            return {"brand_name": "Lululemon", "brand_id": 6}
+        else:
+            # Try to extract from database
+            conn = get_db()
+            cur = conn.cursor()
+            try:
+                cur.execute("""
+                    SELECT id, name FROM brands 
+                    WHERE LOWER(name) IN (
+                        SELECT LOWER(unnest(string_to_array(%s, '.')))
+                    )
+                """, (domain,))
+                result = cur.fetchone()
+                if result:
+                    return {"brand_name": result["name"], "brand_id": result["id"]}
+            finally:
+                cur.close()
+                conn.close()
+        
+        return None
+    except Exception as e:
+        print(f"Error extracting brand from URL: {str(e)}")
+        return None
+
+async def get_brand_measurements_for_feedback(brand_id: int) -> dict:
+    """Get available measurements for feedback collection"""
+    async with pool.acquire() as conn:
+        size_guide = await conn.fetchrow("""
+            SELECT 
+                chest_min, chest_max,
+                neck_min, neck_max,
+                sleeve_min, sleeve_max,
+                waist_min, waist_max
+            FROM size_guides_v2 
+            WHERE brand_id = $1 
+            LIMIT 1
+        """, brand_id)
+        
+        measurements = ['overall']  # Always include overall
+        if size_guide:
+            if size_guide.get('chest_min') is not None and size_guide.get('chest_max') is not None:
+                measurements.append('chest')
+            if size_guide.get('neck_min') is not None and size_guide.get('neck_max') is not None:
+                measurements.append('neck')
+            if size_guide.get('sleeve_min') is not None and size_guide.get('sleeve_max') is not None:
+                measurements.append('sleeve')
+            if size_guide.get('waist_min') is not None and size_guide.get('waist_max') is not None:
+                measurements.append('waist')
+        
+        return {
+            "measurements": measurements,
+            "feedbackOptions": [
+                {"value": 1, "label": "Too tight"},
+                {"value": 2, "label": "Tight but I like it"},
+                {"value": 3, "label": "Good"},
+                {"value": 4, "label": "Loose but I like it"},
+                {"value": 5, "label": "Too loose"}
+            ]
+        }
+
+async def get_size_measurements(brand_id: int, size_label: str) -> dict:
+    """Get measurements for a specific brand and size"""
+    async with pool.acquire() as conn:
+        measurements = await conn.fetchrow("""
+            SELECT 
+                chest_min, chest_max,
+                neck_min, neck_max,
+                sleeve_min, sleeve_max,
+                waist_min, waist_max
+            FROM size_guides_v2 
+            WHERE brand_id = $1 AND size_label = $2
+        """, brand_id, size_label)
+        
+        if not measurements:
+            return {}
+        
+        result = {}
+        if measurements.get('chest_min') is not None and measurements.get('chest_max') is not None:
+            result['chest'] = f"{measurements['chest_min']}-{measurements['chest_max']}"
+        if measurements.get('neck_min') is not None and measurements.get('neck_max') is not None:
+            result['neck'] = f"{measurements['neck_min']}-{measurements['neck_max']}"
+        if measurements.get('sleeve_min') is not None and measurements.get('sleeve_max') is not None:
+            result['sleeve'] = f"{measurements['sleeve_min']}-{measurements['sleeve_max']}"
+        if measurements.get('waist_min') is not None and measurements.get('waist_max') is not None:
+            result['waist'] = f"{measurements['waist_min']}-{measurements['waist_max']}"
+        
+        return result
+
+async def create_garment_entry(user_id: int, brand_id: int, size_label: str, product_url: str) -> int:
+    """Create a new garment entry for the user"""
+    async with pool.acquire() as conn:
+        garment_id = await conn.fetchval("""
+            INSERT INTO user_garments (
+                user_id, 
+                brand_id,
+                category,
+                size_label,
+                product_link,
+                owns_garment
+            ) VALUES ($1, $2, $3, $4, $5, $6)
+            RETURNING id
+        """, user_id, brand_id, 'Tops', size_label, product_url, True)
+        
+        return garment_id
+
+async def store_measurement_feedback(garment_id: int, measurement_name: str, measurement_value: str, feedback_value: int):
+    """Store feedback for a specific measurement"""
+    async with pool.acquire() as conn:
+        await conn.execute("""
+            INSERT INTO user_fit_feedback (
+                garment_id,
+                measurement_name,
+                measurement_value,
+                feedback_value,
+                created_at
+            ) VALUES ($1, $2, $3, $4, NOW())
+        """, garment_id, measurement_name, measurement_value, feedback_value)
+
+async def recalculate_user_measurement_profile(user_id: int):
+    """Recalculate user's measurement profile based on all feedback"""
+    # This would trigger the FitZoneCalculator to recalculate
+    # and update the user_fit_zones table
+    calculator = FitZoneCalculator(str(user_id))
+    garments = get_user_garments(str(user_id))
+    fit_zone = calculator.calculate_chest_fit_zone(garments)
+    
+    # Save updated fit zones
+    save_fit_zone(str(user_id), 'Tops', fit_zone)
+
+async def get_user_measurement_profile(user_id: str) -> dict:
+    """Get user's current measurement profile"""
+    conn = get_db()
+    cur = conn.cursor()
+    
+    try:
+        # Get fit zones
+        cur.execute("""
+            SELECT 
+                tight_min, tight_max,
+                good_min, good_max,
+                relaxed_min, relaxed_max
+            FROM user_fit_zones
+            WHERE user_id = %s AND category = 'Tops'
+        """, (user_id,))
+        
+        fit_zones = cur.fetchone()
+        
+        return {
+            "chest": {
+                "tight": {"min": float(fit_zones['tight_min']) if fit_zones else 36.0, "max": float(fit_zones['tight_max']) if fit_zones else 39.0},
+                "good": {"min": float(fit_zones['good_min']) if fit_zones else 39.0, "max": float(fit_zones['good_max']) if fit_zones else 44.0},
+                "relaxed": {"min": float(fit_zones['relaxed_min']) if fit_zones else 44.0, "max": float(fit_zones['relaxed_max']) if fit_zones else 47.0}
+            }
+        }
+    finally:
+        cur.close()
+        conn.close()
+
+async def get_brand_size_guide(brand_id: int) -> list:
+    """Get size guide for a brand"""
+    async with pool.acquire() as conn:
+        sizes = await conn.fetch("""
+            SELECT 
+                size_label,
+                chest_min, chest_max,
+                sleeve_min, sleeve_max,
+                waist_min, waist_max,
+                neck_min, neck_max
+            FROM size_guides_v2 
+            WHERE brand_id = $1
+            ORDER BY size_label
+        """, brand_id)
+        
+        return [dict(size) for size in sizes]
+
+def calculate_size_recommendation(user_profile: dict, brand_sizes: list) -> dict:
+    """Calculate the best size recommendation for a user"""
+    user_chest_good = user_profile["chest"]["good"]
+    
+    best_match = None
+    best_confidence = 0
+    alternatives = []
+    
+    for size in brand_sizes:
+        if size.get('chest_min') is not None and size.get('chest_max') is not None:
+            # Calculate average chest measurement
+            avg_val = (float(size['chest_min']) + float(size['chest_max'])) / 2
+            
+            # Calculate how well this size matches user's good range
+            if user_chest_good["min"] <= avg_val <= user_chest_good["max"]:
+                confidence = 0.9  # Perfect match
+            elif user_chest_good["min"] - 2 <= avg_val <= user_chest_good["max"] + 2:
+                confidence = 0.7  # Close match
+            else:
+                confidence = 0.3  # Poor match
+            
+            if confidence > best_confidence:
+                best_confidence = confidence
+                best_match = size["size_label"]
+            
+            alternatives.append({
+                "size": size["size_label"],
+                "confidence": confidence,
+                "measurements": {
+                    "chest": f"{size['chest_min']}-{size['chest_max']}" if size.get('chest_min') and size.get('chest_max') else None,
+                    "sleeve": f"{size['sleeve_min']}-{size['sleeve_max']}" if size.get('sleeve_min') and size.get('sleeve_max') else None,
+                    "waist": f"{size['waist_min']}-{size['waist_max']}" if size.get('waist_min') and size.get('waist_max') else None,
+                    "neck": f"{size['neck_min']}-{size['neck_max']}" if size.get('neck_min') and size.get('neck_max') else None
+                }
+            })
+    
+    # Sort alternatives by confidence
+    alternatives.sort(key=lambda x: x["confidence"], reverse=True)
+    
+    return {
+        "size": best_match,
+        "confidence": best_confidence,
+        "reasoning": f"Based on your chest measurement preference of {user_chest_good['min']}-{user_chest_good['max']} inches",
+        "alternatives": alternatives[:3]  # Top 3 alternatives
+    }
+
+@app.get("/fit_feedback_options")
+async def get_fit_feedback_options():
+    """Provide fit feedback options for dropdown"""
+    return {
+        "feedbackOptions": [
+            {"value": 1, "label": "Too tight"},
+            {"value": 2, "label": "Tight but I like it"},
+            {"value": 3, "label": "Good"},
+            {"value": 4, "label": "Loose but I like it"},
+            {"value": 5, "label": "Too loose"}
+        ]
+    }
+
+@app.post("/garment/{garment_id}/feedback")
+async def update_garment_feedback(garment_id: int, request: dict):
+    """Update feedback for an existing garment"""
+    try:
+        feedback = request.get("feedback")  # Dict of measurement -> feedback_value
+        user_id = request.get("user_id")
+        
+        if not feedback or not user_id:
+            raise HTTPException(status_code=400, detail="Missing feedback or user_id")
+        
+        async with pool.acquire() as conn:
+            # Verify the garment belongs to the user
+            garment = await conn.fetchrow("""
+                SELECT id, brand_id, size_label FROM user_garments 
+                WHERE id = $1 AND user_id = $2
+            """, garment_id, user_id)
+            
+            if not garment:
+                raise HTTPException(status_code=404, detail="Garment not found or doesn't belong to user")
+            
+            # Convert numeric feedback values to text descriptions
+            feedback_text = convert_feedback_to_text(feedback)
+            
+            # Check if feedback already exists for this garment
+            existing_feedback = await conn.fetchrow("""
+                SELECT id FROM user_fit_feedback 
+                WHERE garment_id = $1
+            """, garment_id)
+            
+            if existing_feedback:
+                # Update existing feedback
+                await conn.execute("""
+                    UPDATE user_fit_feedback 
+                    SET 
+                        overall_fit = $1,
+                        chest_fit = $2,
+                        sleeve_fit = $3,
+                        neck_fit = $4,
+                        waist_fit = $5
+                    WHERE garment_id = $6
+                """, 
+                    feedback_text.get('overall'),
+                    feedback_text.get('chest'),
+                    feedback_text.get('sleeve'),
+                    feedback_text.get('neck'),
+                    feedback_text.get('waist'),
+                    garment_id
+                )
+            else:
+                # Insert new feedback
+                await conn.execute("""
+                    INSERT INTO user_fit_feedback (
+                        user_id,
+                        garment_id,
+                        overall_fit,
+                        chest_fit,
+                        sleeve_fit,
+                        neck_fit,
+                        waist_fit
+                    ) VALUES ($1, $2, $3, $4, $5, $6, $7)
+                """, 
+                    user_id,
+                    garment_id,
+                    feedback_text.get('overall'),
+                    feedback_text.get('chest'),
+                    feedback_text.get('sleeve'),
+                    feedback_text.get('neck'),
+                    feedback_text.get('waist')
+                )
+            # Always update fit_feedback in user_garments to match latest overall_fit
+            await conn.execute("""
+                UPDATE user_garments
+                SET fit_feedback = $1
+                WHERE id = $2
+            """, feedback_text.get('overall'), garment_id)
+        
+        return {
+            "status": "success",
+            "message": "Feedback updated successfully"
+        }
+        
+    except Exception as e:
+        print(f"Error updating garment feedback: {str(e)}")
+        raise HTTPException(status_code=500, detail=str(e))
+
+def convert_feedback_to_text(feedback: dict) -> dict:
+    """Convert numeric feedback values to text descriptions, with special handling for neck_fit."""
+    feedback_mapping = {
+        1: "Too Tight",
+        2: "Tight but I Like It", 
+        3: "Good Fit",
+        4: "Loose but I Like It",
+        5: "Too Loose"
+    }
+    neck_mapping = {
+        1: "Too Tight",
+        2: "Too Tight",
+        3: "Good Fit",
+        4: "Too Loose",
+        5: "Too Loose"
+    }
+    
+    result = {}
+    for measurement, value in feedback.items():
+        if measurement == 'neck':
+            if value in neck_mapping:
+                result['neck'] = neck_mapping[value]
+        elif value in feedback_mapping:
+            result[measurement] = feedback_mapping[value]
+    
+    # Calculate overall feedback based on average
+    if result:
+        avg_value = sum(feedback.values()) / len(feedback.values())
+        if avg_value <= 1.5:
+            result['overall'] = "Too Tight"
+        elif avg_value <= 2.5:
+            result['overall'] = "Tight but I Like It"
+        elif avg_value <= 3.5:
+            result['overall'] = "Good Fit"
+        elif avg_value <= 4.5:
+            result['overall'] = "Loose but I Like It"
+        else:
+            result['overall'] = "Too Loose"
+    
+    return result
+
+def get_overall_feedback_description(feedback: dict) -> str:
+    """Convert feedback values to a human-readable description"""
+    if not feedback:
+        return ""
+    
+    # Get the most common feedback value
+    values = list(feedback.values())
+    if not values:
+        return ""
+    
+    avg_value = sum(values) / len(values)
+    
+    if avg_value <= 1.5:
+        return "Too tight"
+    elif avg_value <= 2.5:
+        return "Tight but I like it"
+    elif avg_value <= 3.5:
+        return "Good"
+    elif avg_value <= 4.5:
+        return "Loose but I like it"
+    else:
+        return "Too loose"
 
 if __name__ == "__main__":
     import uvicorn

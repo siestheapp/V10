@@ -3,6 +3,7 @@ import SwiftUI
 struct GarmentDetailView: View {
     let garment: ClosetGarment
     @Binding var isPresented: Bool
+    @State private var showingFeedbackView = false
     
     var body: some View {
         NavigationView {
@@ -44,10 +45,50 @@ struct GarmentDetailView: View {
                     }
                 }
                 
-                // Fit Feedback
-                if let feedback = garment.fitFeedback {
-                    Text("Feedback: \(feedback)")
+                // Fit Feedback Section
+                VStack(alignment: .leading, spacing: 8) {
+                    Text("Fit Feedback")
+                        .font(.headline)
+                    
+                    if let feedback = garment.fitFeedback {
+                        Text("Overall: \(feedback)")
+                            .font(.subheadline)
+                            .foregroundColor(.blue)
+                    } else {
+                        Text("No feedback yet")
+                            .font(.subheadline)
+                            .foregroundColor(.gray)
+                    }
+                    if let chest = garment.chestFit, !chest.isEmpty {
+                        Text("Chest: \(chest)")
+                            .font(.subheadline)
+                    }
+                    if let sleeve = garment.sleeveFit, !sleeve.isEmpty {
+                        Text("Sleeve: \(sleeve)")
+                            .font(.subheadline)
+                    }
+                    if let neck = garment.neckFit, !neck.isEmpty {
+                        Text("Neck: \(neck)")
+                            .font(.subheadline)
+                    }
+                    if let waist = garment.waistFit, !waist.isEmpty {
+                        Text("Waist: \(waist)")
+                            .font(.subheadline)
+                    }
+                    Button(action: {
+                        showingFeedbackView = true
+                    }) {
+                        HStack {
+                            Image(systemName: "square.and.pencil")
+                            Text(garment.fitFeedback == nil ? "Add Feedback" : "Update Feedback")
+                        }
                         .font(.subheadline)
+                        .foregroundColor(.white)
+                        .frame(maxWidth: .infinity)
+                        .padding()
+                        .background(Color.blue)
+                        .cornerRadius(8)
+                    }
                 }
                 
                 Spacer()
@@ -56,6 +97,12 @@ struct GarmentDetailView: View {
             .navigationBarItems(trailing: Button("Done") {
                 isPresented = false
             })
+            .sheet(isPresented: $showingFeedbackView) {
+                GarmentFeedbackView(
+                    garment: garment,
+                    isPresented: $showingFeedbackView
+                )
+            }
         }
     }
 }
@@ -73,6 +120,10 @@ struct GarmentDetailView: View {
                 "waist": "32-34"
             ],
             fitFeedback: "Good Fit",
+            chestFit: nil,
+            sleeveFit: nil,
+            neckFit: nil,
+            waistFit: nil,
             createdAt: "2024-02-18",
             ownsGarment: true,
             productName: "Classic Oxford Shirt"

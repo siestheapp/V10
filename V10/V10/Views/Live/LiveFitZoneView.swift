@@ -48,6 +48,7 @@ struct LiveFitZoneView: View {
             errorMessage = "Invalid URL"
             return
         }
+        print("🔍 LiveFitZoneView: Loading from \(url)")
         
         URLSession.shared.dataTask(with: url) { data, response, error in
             DispatchQueue.main.async {
@@ -55,12 +56,18 @@ struct LiveFitZoneView: View {
                 
                 if let error = error {
                     errorMessage = error.localizedDescription
+                    print("❌ LiveFitZoneView: Network error:", error)
                     return
                 }
                 
                 guard let data = data else {
                     errorMessage = "No data received"
+                    print("⚠️ LiveFitZoneView: No data received")
                     return
+                }
+                
+                if let jsonString = String(data: data, encoding: .utf8) {
+                    print("📄 LiveFitZoneView Raw JSON:", jsonString)
                 }
                 
                 do {
