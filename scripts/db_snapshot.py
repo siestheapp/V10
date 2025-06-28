@@ -9,6 +9,7 @@ import json
 import os
 from datetime import datetime
 from typing import Dict, List, Any
+import pytz
 
 # Database configuration - match the one used in app.py
 DB_CONFIG = {
@@ -17,6 +18,10 @@ DB_CONFIG = {
     "password": "",
     "host": "localhost"
 }
+
+def get_est_timestamp():
+    eastern = pytz.timezone('US/Eastern')
+    return datetime.now(eastern)
 
 def get_db_connection():
     """Create database connection"""
@@ -131,7 +136,7 @@ def get_database_snapshot() -> Dict[str, Any]:
     cursor = conn.cursor()
     
     snapshot = {
-        'timestamp': datetime.now().isoformat(),
+        'timestamp': get_est_timestamp().isoformat(),
         'database_name': 'tailor2',
         'tables': {},
         'relationships': get_table_relationships(cursor),
@@ -211,7 +216,7 @@ def get_database_snapshot() -> Dict[str, Any]:
 def save_snapshot(snapshot: Dict[str, Any], filename: str = None):
     """Save snapshot to JSON file"""
     if not filename:
-        timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
+        timestamp = get_est_timestamp().strftime("%Y%m%d_%H%M%S")
         filename = f"database_snapshots/database_snapshot_{timestamp}.json"
     
     os.makedirs('database_snapshots', exist_ok=True)
@@ -250,7 +255,7 @@ def print_summary(snapshot: Dict[str, Any]):
 def save_snapshot_to_markdown(snapshot_data: dict, filename: str = None):
     """Save database snapshot to a markdown file for AI analysis"""
     if not filename:
-        timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
+        timestamp = get_est_timestamp().strftime("%Y%m%d_%H%M%S")
         filename = f"database_snapshots/database_evolution_{timestamp}.md"
     
     # Ensure directory exists
@@ -262,7 +267,7 @@ def save_snapshot_to_markdown(snapshot_data: dict, filename: str = None):
     sample_data = snapshot_data.get('sample_data', {})
     
     # Create markdown content
-    markdown_content = f"""# Database Snapshot - {datetime.now().strftime("%Y-%m-%d %H:%M:%S")}
+    markdown_content = f"""# Database Snapshot - {get_est_timestamp().strftime("%Y-%m-%d %H:%M:%S")}
 
 ## 📊 Database Overview
 - **Total Users**: {table_counts.get('users', 0)}
@@ -410,7 +415,7 @@ if __name__ == "__main__":
         snapshot_data = get_database_snapshot()
         
         # Save as JSON (existing functionality)
-        timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
+        timestamp = get_est_timestamp().strftime("%Y%m%d_%H%M%S")
         json_filename = f"database_snapshots/database_snapshot_{timestamp}.json"
         
         os.makedirs("database_snapshots", exist_ok=True)

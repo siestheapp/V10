@@ -24,6 +24,7 @@ This file summarizes key check constraints and allowed values for important tabl
   - waist_min, waist_max
   - hip_min, hip_max
   - measurements_available (text[])
+  - center_back_length: DOUBLE PRECISION, nullable. Present if brand size guide includes back length (e.g., NN07).
 - **Check constraints:**
   - `chest_max >= chest_min`
   - `waist_max >= waist_min`
@@ -72,6 +73,20 @@ VALUES (16, 'collar', 'neck');
 - Example: Map 'collar' (Ted Baker) to 'neck' (database standard).
 
 **Source:** See `SCHEMA_20250628_001920.sql` for the full CREATE TABLE statement and all constraints.
+
+---
+
+## size_guide_column_history Table
+
+- **Columns:**
+  - id: SERIAL PRIMARY KEY
+  - column_name: TEXT, not null
+  - brand_id: INTEGER, references brands(id)
+  - brand_name: TEXT
+  - date_added: TIMESTAMP, default now()
+  - reason: TEXT
+  - added_by: TEXT
+  - source_url: TEXT
 
 ---
 

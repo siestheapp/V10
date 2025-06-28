@@ -14,6 +14,7 @@ import sys
 from datetime import datetime
 from pathlib import Path
 import difflib
+import pytz
 
 # Database configuration
 DB_CONFIG = {
@@ -22,6 +23,10 @@ DB_CONFIG = {
     "password": "",
     "host": "localhost"
 }
+
+def get_est_timestamp():
+    eastern = pytz.timezone('US/Eastern')
+    return datetime.now(eastern)
 
 def get_schema_dump():
     """Get current schema as SQL string"""
@@ -49,7 +54,7 @@ def get_schema_dump():
 def save_schema_snapshot(schema_sql: str, timestamp: str = None):
     """Save schema snapshot to file"""
     if not timestamp:
-        timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
+        timestamp = get_est_timestamp().strftime("%Y%m%d_%H%M%S")
     
     filename = f"database_snapshots/SCHEMA_{timestamp}.sql"
     
@@ -117,7 +122,7 @@ def update_evolution_markdown(timestamp: str, diff: str, has_changes: bool):
             existing_content = f.read()
     
     # Create new entry
-    date_str = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+    date_str = get_est_timestamp().strftime("%Y-%m-%d %H:%M:%S")
     
     if has_changes:
         new_entry = f"""
@@ -193,7 +198,7 @@ def main():
         return
     
     # Get timestamp
-    timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
+    timestamp = get_est_timestamp().strftime("%Y%m%d_%H%M%S")
     
     # Save current schema snapshot
     snapshot_file = save_schema_snapshot(current_schema, timestamp)

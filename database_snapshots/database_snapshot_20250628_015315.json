@@ -1,0 +1,1057 @@
+{
+  "timestamp": "2025-06-28T01:53:15.035713",
+  "database_name": "tailor2",
+  "tables": {
+    "users": {
+      "row_count": 1,
+      "schema": {
+        "table_name": "users",
+        "columns": [
+          {
+            "name": "id",
+            "type": "integer",
+            "nullable": false,
+            "default": "nextval('users_id_seq'::regclass)"
+          },
+          {
+            "name": "created_at",
+            "type": "timestamp without time zone",
+            "nullable": true,
+            "default": "CURRENT_TIMESTAMP"
+          },
+          {
+            "name": "email",
+            "type": "text",
+            "nullable": true,
+            "default": null
+          },
+          {
+            "name": "gender",
+            "type": "text",
+            "nullable": true,
+            "default": null
+          },
+          {
+            "name": "unit_preference",
+            "type": "text",
+            "nullable": true,
+            "default": "'in'::text"
+          },
+          {
+            "name": "test_column",
+            "type": "text",
+            "nullable": true,
+            "default": null
+          }
+        ]
+      },
+      "sample_data": [
+        {
+          "id": 1,
+          "created_at": "2025-02-17 23:48:08.770592",
+          "email": "testuser@example.com",
+          "gender": "Men",
+          "unit_preference": "in",
+          "test_column": null
+        }
+      ]
+    },
+    "user_garments": {
+      "row_count": 4,
+      "schema": {
+        "table_name": "user_garments",
+        "columns": [
+          {
+            "name": "id",
+            "type": "integer",
+            "nullable": false,
+            "default": "nextval('user_garments_id_seq'::regclass)"
+          },
+          {
+            "name": "user_id",
+            "type": "integer",
+            "nullable": false,
+            "default": null
+          },
+          {
+            "name": "brand_id",
+            "type": "integer",
+            "nullable": false,
+            "default": null
+          },
+          {
+            "name": "category",
+            "type": "text",
+            "nullable": false,
+            "default": null
+          },
+          {
+            "name": "size_label",
+            "type": "text",
+            "nullable": false,
+            "default": null
+          },
+          {
+            "name": "chest_range",
+            "type": "text",
+            "nullable": false,
+            "default": null
+          },
+          {
+            "name": "fit_feedback",
+            "type": "text",
+            "nullable": true,
+            "default": null
+          },
+          {
+            "name": "created_at",
+            "type": "timestamp without time zone",
+            "nullable": true,
+            "default": "CURRENT_TIMESTAMP"
+          },
+          {
+            "name": "owns_garment",
+            "type": "boolean",
+            "nullable": false,
+            "default": "false"
+          },
+          {
+            "name": "product_name",
+            "type": "text",
+            "nullable": true,
+            "default": null
+          },
+          {
+            "name": "product_link",
+            "type": "text",
+            "nullable": true,
+            "default": null
+          },
+          {
+            "name": "brand_name",
+            "type": "character varying",
+            "nullable": false,
+            "default": null
+          }
+        ]
+      },
+      "sample_data": [
+        {
+          "id": 30,
+          "user_id": 1,
+          "brand_id": 9,
+          "category": "Tops",
+          "size_label": "L",
+          "chest_range": "41-44",
+          "fit_feedback": "Too Tight",
+          "created_at": "2025-02-22 01:13:34.380441",
+          "owns_garment": true,
+          "product_name": "Soft Wash Long-Sleeve T-Shirt",
+          "product_link": "https://bananarepublic.gap.com/browse/product.do?pid=800139112&vid=1#pdp-page-content",
+          "brand_name": "Banana Republic"
+        },
+        {
+          "id": 3,
+          "user_id": 1,
+          "brand_id": 2,
+          "category": "Tops",
+          "size_label": "XL",
+          "chest_range": "47",
+          "fit_feedback": "Loose but I Like It",
+          "created_at": "2025-02-18 00:22:32.857724",
+          "owns_garment": true,
+          "product_name": null,
+          "product_link": null,
+          "brand_name": "Patagonia"
+        },
+        {
+          "id": 1,
+          "user_id": 1,
+          "brand_id": 1,
+          "category": "Tops",
+          "size_label": "M",
+          "chest_range": "39-40",
+          "fit_feedback": "Good Fit",
+          "created_at": "2025-02-17 23:52:16.031871",
+          "owns_garment": true,
+          "product_name": "Evolution Long-Sleeve Polo Shirt",
+          "product_link": "https://shop.lululemon.com/p/men-ls-tops/Evolution-Long-Sleeve-Polo-Shirt/_/prod11560102",
+          "brand_name": "Lululemon"
+        }
+      ]
+    },
+    "user_fit_feedback": {
+      "row_count": 4,
+      "schema": {
+        "table_name": "user_fit_feedback",
+        "columns": [
+          {
+            "name": "id",
+            "type": "integer",
+            "nullable": false,
+            "default": "nextval('user_fit_feedback_id_seq'::regclass)"
+          },
+          {
+            "name": "user_id",
+            "type": "integer",
+            "nullable": false,
+            "default": null
+          },
+          {
+            "name": "garment_id",
+            "type": "integer",
+            "nullable": false,
+            "default": null
+          },
+          {
+            "name": "overall_fit",
+            "type": "text",
+            "nullable": true,
+            "default": null
+          },
+          {
+            "name": "chest_fit",
+            "type": "text",
+            "nullable": true,
+            "default": null
+          },
+          {
+            "name": "sleeve_fit",
+            "type": "text",
+            "nullable": true,
+            "default": null
+          },
+          {
+            "name": "neck_fit",
+            "type": "text",
+            "nullable": true,
+            "default": null
+          },
+          {
+            "name": "waist_fit",
+            "type": "text",
+            "nullable": true,
+            "default": null
+          },
+          {
+            "name": "brand_id",
+            "type": "integer",
+            "nullable": true,
+            "default": null
+          },
+          {
+            "name": "brand_name",
+            "type": "character varying",
+            "nullable": true,
+            "default": null
+          },
+          {
+            "name": "product_name",
+            "type": "character varying",
+            "nullable": true,
+            "default": null
+          },
+          {
+            "name": "chest_code",
+            "type": "integer",
+            "nullable": true,
+            "default": null
+          },
+          {
+            "name": "shoulder_code",
+            "type": "integer",
+            "nullable": true,
+            "default": null
+          },
+          {
+            "name": "sleeve_code",
+            "type": "integer",
+            "nullable": true,
+            "default": null
+          },
+          {
+            "name": "length_code",
+            "type": "integer",
+            "nullable": true,
+            "default": null
+          },
+          {
+            "name": "neck_code",
+            "type": "integer",
+            "nullable": true,
+            "default": null
+          },
+          {
+            "name": "waist_code",
+            "type": "integer",
+            "nullable": true,
+            "default": null
+          }
+        ]
+      },
+      "sample_data": [
+        {
+          "id": 6,
+          "user_id": 1,
+          "garment_id": 3,
+          "overall_fit": "Loose but I Like It",
+          "chest_fit": "Loose but I Like It",
+          "sleeve_fit": "Loose but I Like It",
+          "neck_fit": null,
+          "waist_fit": "Loose but I Like It",
+          "brand_id": 2,
+          "brand_name": "Patagonia",
+          "product_name": null,
+          "chest_code": 5,
+          "shoulder_code": null,
+          "sleeve_code": 5,
+          "length_code": null,
+          "neck_code": null,
+          "waist_code": 5
+        },
+        {
+          "id": 3,
+          "user_id": 1,
+          "garment_id": 1,
+          "overall_fit": "Good Fit",
+          "chest_fit": "Good Fit",
+          "sleeve_fit": null,
+          "neck_fit": null,
+          "waist_fit": null,
+          "brand_id": 1,
+          "brand_name": "Lululemon",
+          "product_name": "Evolution Long-Sleeve Polo Shirt",
+          "chest_code": 1,
+          "shoulder_code": null,
+          "sleeve_code": null,
+          "length_code": null,
+          "neck_code": null,
+          "waist_code": null
+        },
+        {
+          "id": 8,
+          "user_id": 1,
+          "garment_id": 7,
+          "overall_fit": "Tight but I Like It",
+          "chest_fit": "Tight but I Like It",
+          "sleeve_fit": null,
+          "neck_fit": null,
+          "waist_fit": null,
+          "brand_id": null,
+          "brand_name": "Theory",
+          "product_name": "Brenan Polo Shirt in Cotton-Linen",
+          "chest_code": 3,
+          "shoulder_code": null,
+          "sleeve_code": null,
+          "length_code": null,
+          "neck_code": null,
+          "waist_code": null
+        }
+      ]
+    },
+    "user_fit_zones": {
+      "row_count": 1,
+      "schema": {
+        "table_name": "user_fit_zones",
+        "columns": [
+          {
+            "name": "id",
+            "type": "integer",
+            "nullable": false,
+            "default": "nextval('user_fit_zones_id_seq'::regclass)"
+          },
+          {
+            "name": "user_id",
+            "type": "integer",
+            "nullable": false,
+            "default": null
+          },
+          {
+            "name": "category",
+            "type": "text",
+            "nullable": false,
+            "default": null
+          },
+          {
+            "name": "tight_min",
+            "type": "numeric",
+            "nullable": true,
+            "default": null
+          },
+          {
+            "name": "good_min",
+            "type": "numeric",
+            "nullable": true,
+            "default": null
+          },
+          {
+            "name": "good_max",
+            "type": "numeric",
+            "nullable": true,
+            "default": null
+          },
+          {
+            "name": "relaxed_max",
+            "type": "numeric",
+            "nullable": true,
+            "default": null
+          },
+          {
+            "name": "tight_max",
+            "type": "numeric",
+            "nullable": true,
+            "default": null
+          },
+          {
+            "name": "relaxed_min",
+            "type": "numeric",
+            "nullable": true,
+            "default": null
+          }
+        ]
+      },
+      "sample_data": [
+        {
+          "id": 1,
+          "user_id": 1,
+          "category": "Tops",
+          "tight_min": "35.89",
+          "good_min": "38.315",
+          "good_max": "40.685",
+          "relaxed_max": "48.41",
+          "tight_max": "37",
+          "relaxed_min": "47"
+        }
+      ]
+    },
+    "user_body_measurements": {
+      "row_count": 0,
+      "schema": {
+        "table_name": "user_body_measurements",
+        "columns": [
+          {
+            "name": "id",
+            "type": "integer",
+            "nullable": false,
+            "default": "nextval('user_body_measurements_id_seq'::regclass)"
+          },
+          {
+            "name": "user_id",
+            "type": "integer",
+            "nullable": true,
+            "default": null
+          },
+          {
+            "name": "measurement_type",
+            "type": "text",
+            "nullable": false,
+            "default": null
+          },
+          {
+            "name": "calculated_min",
+            "type": "numeric",
+            "nullable": true,
+            "default": null
+          },
+          {
+            "name": "calculated_max",
+            "type": "numeric",
+            "nullable": true,
+            "default": null
+          },
+          {
+            "name": "confidence_score",
+            "type": "numeric",
+            "nullable": true,
+            "default": null
+          },
+          {
+            "name": "calculation_date",
+            "type": "timestamp without time zone",
+            "nullable": true,
+            "default": "CURRENT_TIMESTAMP"
+          },
+          {
+            "name": "data_points",
+            "type": "integer",
+            "nullable": true,
+            "default": null
+          }
+        ]
+      },
+      "sample_data": []
+    },
+    "product_measurements": {
+      "row_count": 1,
+      "schema": {
+        "table_name": "product_measurements",
+        "columns": [
+          {
+            "name": "id",
+            "type": "integer",
+            "nullable": false,
+            "default": "nextval('product_measurements_id_seq'::regclass)"
+          },
+          {
+            "name": "product_code",
+            "type": "character varying",
+            "nullable": false,
+            "default": null
+          },
+          {
+            "name": "brand_id",
+            "type": "integer",
+            "nullable": true,
+            "default": null
+          },
+          {
+            "name": "size",
+            "type": "character varying",
+            "nullable": false,
+            "default": null
+          },
+          {
+            "name": "chest_range",
+            "type": "character varying",
+            "nullable": true,
+            "default": null
+          },
+          {
+            "name": "length_range",
+            "type": "character varying",
+            "nullable": true,
+            "default": null
+          },
+          {
+            "name": "sleeve_range",
+            "type": "character varying",
+            "nullable": true,
+            "default": null
+          },
+          {
+            "name": "name",
+            "type": "character varying",
+            "nullable": true,
+            "default": null
+          }
+        ]
+      },
+      "sample_data": [
+        {
+          "id": 1,
+          "product_code": "475352",
+          "brand_id": 10,
+          "size": "L",
+          "chest_range": "41-44",
+          "length_range": "27-28",
+          "sleeve_range": "25-26",
+          "name": "Waffle Crew Neck T-Shirt"
+        }
+      ]
+    },
+    "brands": {
+      "row_count": 12,
+      "schema": {
+        "table_name": "brands",
+        "columns": [
+          {
+            "name": "id",
+            "type": "integer",
+            "nullable": false,
+            "default": "nextval('brands_id_seq'::regclass)"
+          },
+          {
+            "name": "name",
+            "type": "text",
+            "nullable": false,
+            "default": null
+          },
+          {
+            "name": "default_unit",
+            "type": "text",
+            "nullable": true,
+            "default": "'in'::text"
+          },
+          {
+            "name": "size_guide_url",
+            "type": "text",
+            "nullable": true,
+            "default": null
+          },
+          {
+            "name": "measurement_type",
+            "type": "character varying",
+            "nullable": true,
+            "default": "'brand_level'::character varying"
+          },
+          {
+            "name": "gender",
+            "type": "text",
+            "nullable": true,
+            "default": null
+          }
+        ]
+      },
+      "sample_data": [
+        {
+          "id": 1,
+          "name": "Lululemon",
+          "default_unit": "in",
+          "size_guide_url": "https://shop.lululemon.com/help/size-guide/mens",
+          "measurement_type": "brand_level",
+          "gender": "Men"
+        },
+        {
+          "id": 2,
+          "name": "Patagonia",
+          "default_unit": "in",
+          "size_guide_url": "https://www.patagonia.com/guides/size-fit/mens/",
+          "measurement_type": "brand_level",
+          "gender": "Men"
+        },
+        {
+          "id": 3,
+          "name": "Theory",
+          "default_unit": "in",
+          "size_guide_url": "https://www.theory.com/size-guide/",
+          "measurement_type": "brand_level",
+          "gender": "Men"
+        }
+      ]
+    },
+    "size_guides_v2": {
+      "row_count": 68,
+      "schema": {
+        "table_name": "size_guides_v2",
+        "columns": [
+          {
+            "name": "id",
+            "type": "integer",
+            "nullable": false,
+            "default": "nextval('size_guides_v2_id_seq'::regclass)"
+          },
+          {
+            "name": "brand",
+            "type": "text",
+            "nullable": false,
+            "default": null
+          },
+          {
+            "name": "brand_id",
+            "type": "integer",
+            "nullable": true,
+            "default": null
+          },
+          {
+            "name": "gender",
+            "type": "text",
+            "nullable": false,
+            "default": null
+          },
+          {
+            "name": "category",
+            "type": "text",
+            "nullable": false,
+            "default": null
+          },
+          {
+            "name": "size_label",
+            "type": "text",
+            "nullable": false,
+            "default": null
+          },
+          {
+            "name": "unit",
+            "type": "text",
+            "nullable": false,
+            "default": null
+          },
+          {
+            "name": "data_quality",
+            "type": "text",
+            "nullable": true,
+            "default": null
+          },
+          {
+            "name": "chest_min",
+            "type": "numeric",
+            "nullable": true,
+            "default": null
+          },
+          {
+            "name": "chest_max",
+            "type": "numeric",
+            "nullable": true,
+            "default": null
+          },
+          {
+            "name": "sleeve_min",
+            "type": "numeric",
+            "nullable": true,
+            "default": null
+          },
+          {
+            "name": "sleeve_max",
+            "type": "numeric",
+            "nullable": true,
+            "default": null
+          },
+          {
+            "name": "neck_min",
+            "type": "numeric",
+            "nullable": true,
+            "default": null
+          },
+          {
+            "name": "neck_max",
+            "type": "numeric",
+            "nullable": true,
+            "default": null
+          },
+          {
+            "name": "waist_min",
+            "type": "numeric",
+            "nullable": true,
+            "default": null
+          },
+          {
+            "name": "waist_max",
+            "type": "numeric",
+            "nullable": true,
+            "default": null
+          },
+          {
+            "name": "hip_min",
+            "type": "numeric",
+            "nullable": true,
+            "default": null
+          },
+          {
+            "name": "hip_max",
+            "type": "numeric",
+            "nullable": true,
+            "default": null
+          },
+          {
+            "name": "measurements_available",
+            "type": "ARRAY",
+            "nullable": true,
+            "default": null
+          }
+        ]
+      },
+      "sample_data": [
+        {
+          "id": 1,
+          "brand": "Theory",
+          "brand_id": 3,
+          "gender": "Men",
+          "category": "Tops",
+          "size_label": "XS",
+          "unit": "in",
+          "data_quality": "brand_standard",
+          "chest_min": "34.00",
+          "chest_max": "36.00",
+          "sleeve_min": "33.00",
+          "sleeve_max": "33.50",
+          "neck_min": null,
+          "neck_max": null,
+          "waist_min": null,
+          "waist_max": null,
+          "hip_min": null,
+          "hip_max": null,
+          "measurements_available": [
+            "chest",
+            "sleeve"
+          ]
+        },
+        {
+          "id": 2,
+          "brand": "Theory",
+          "brand_id": 3,
+          "gender": "Men",
+          "category": "Tops",
+          "size_label": "S",
+          "unit": "in",
+          "data_quality": "brand_standard",
+          "chest_min": "36.00",
+          "chest_max": "38.00",
+          "sleeve_min": "33.50",
+          "sleeve_max": "34.00",
+          "neck_min": null,
+          "neck_max": null,
+          "waist_min": null,
+          "waist_max": null,
+          "hip_min": null,
+          "hip_max": null,
+          "measurements_available": [
+            "chest",
+            "sleeve"
+          ]
+        },
+        {
+          "id": 3,
+          "brand": "Theory",
+          "brand_id": 3,
+          "gender": "Men",
+          "category": "Tops",
+          "size_label": "M",
+          "unit": "in",
+          "data_quality": "brand_standard",
+          "chest_min": "38.00",
+          "chest_max": "40.00",
+          "sleeve_min": "34.00",
+          "sleeve_max": "34.50",
+          "neck_min": null,
+          "neck_max": null,
+          "waist_min": null,
+          "waist_max": null,
+          "hip_min": null,
+          "hip_max": null,
+          "measurements_available": [
+            "chest",
+            "sleeve"
+          ]
+        }
+      ]
+    }
+  },
+  "relationships": [
+    {
+      "table": "size_guide_mappings",
+      "column": "universal_category",
+      "references_table": "universal_categories",
+      "references_column": "category"
+    },
+    {
+      "table": "size_guides",
+      "column": "brand_id",
+      "references_table": "brands",
+      "references_column": "id"
+    },
+    {
+      "table": "size_guide_sources",
+      "column": "brand_id",
+      "references_table": "brands",
+      "references_column": "id"
+    },
+    {
+      "table": "brand_automap",
+      "column": "brand_id",
+      "references_table": "brands",
+      "references_column": "id"
+    },
+    {
+      "table": "user_garments",
+      "column": "user_id",
+      "references_table": "users",
+      "references_column": "id"
+    },
+    {
+      "table": "user_garments",
+      "column": "brand_id",
+      "references_table": "brands",
+      "references_column": "id"
+    },
+    {
+      "table": "user_fit_zones",
+      "column": "user_id",
+      "references_table": "users",
+      "references_column": "id"
+    },
+    {
+      "table": "user_fit_feedback",
+      "column": "user_id",
+      "references_table": "users",
+      "references_column": "id"
+    },
+    {
+      "table": "user_fit_feedback",
+      "column": "garment_id",
+      "references_table": "user_garments",
+      "references_column": "id"
+    },
+    {
+      "table": "user_garment_inputs",
+      "column": "user_id",
+      "references_table": "users",
+      "references_column": "id"
+    },
+    {
+      "table": "user_garment_inputs",
+      "column": "brand_id",
+      "references_table": "brands",
+      "references_column": "id"
+    },
+    {
+      "table": "processing_logs",
+      "column": "input_id",
+      "references_table": "user_garment_inputs",
+      "references_column": "id"
+    },
+    {
+      "table": "user_body_measurements",
+      "column": "user_id",
+      "references_table": "users",
+      "references_column": "id"
+    },
+    {
+      "table": "product_measurements",
+      "column": "brand_id",
+      "references_table": "brands",
+      "references_column": "id"
+    },
+    {
+      "table": "user_fit_feedback",
+      "column": "chest_code",
+      "references_table": "feedback_codes",
+      "references_column": "code"
+    },
+    {
+      "table": "user_fit_feedback",
+      "column": "shoulder_code",
+      "references_table": "feedback_codes",
+      "references_column": "code"
+    },
+    {
+      "table": "user_fit_feedback",
+      "column": "sleeve_code",
+      "references_table": "feedback_codes",
+      "references_column": "code"
+    },
+    {
+      "table": "user_fit_feedback",
+      "column": "length_code",
+      "references_table": "feedback_codes",
+      "references_column": "code"
+    },
+    {
+      "table": "user_fit_feedback",
+      "column": "neck_code",
+      "references_table": "feedback_codes",
+      "references_column": "code"
+    },
+    {
+      "table": "user_fit_feedback",
+      "column": "waist_code",
+      "references_table": "feedback_codes",
+      "references_column": "code"
+    },
+    {
+      "table": "user_garments_v2",
+      "column": "overall_code",
+      "references_table": "feedback_codes",
+      "references_column": "code"
+    },
+    {
+      "table": "user_garments_v2",
+      "column": "chest_code",
+      "references_table": "feedback_codes",
+      "references_column": "code"
+    },
+    {
+      "table": "user_garments_v2",
+      "column": "shoulder_code",
+      "references_table": "feedback_codes",
+      "references_column": "code"
+    },
+    {
+      "table": "user_garments_v2",
+      "column": "sleeve_code",
+      "references_table": "feedback_codes",
+      "references_column": "code"
+    },
+    {
+      "table": "user_garments_v2",
+      "column": "length_code",
+      "references_table": "feedback_codes",
+      "references_column": "code"
+    },
+    {
+      "table": "user_garments_v2",
+      "column": "neck_code",
+      "references_table": "feedback_codes",
+      "references_column": "code"
+    },
+    {
+      "table": "user_garments_v2",
+      "column": "waist_code",
+      "references_table": "feedback_codes",
+      "references_column": "code"
+    },
+    {
+      "table": "user_garments_v2",
+      "column": "hip_code",
+      "references_table": "feedback_codes",
+      "references_column": "code"
+    },
+    {
+      "table": "user_garments_v2",
+      "column": "inseam_code",
+      "references_table": "feedback_codes",
+      "references_column": "code"
+    },
+    {
+      "table": "dress_size_guide",
+      "column": "brand_id",
+      "references_table": "brands",
+      "references_column": "id"
+    },
+    {
+      "table": "dress_category_mapping",
+      "column": "brand_id",
+      "references_table": "brands",
+      "references_column": "id"
+    },
+    {
+      "table": "dress_product_override",
+      "column": "brand_id",
+      "references_table": "brands",
+      "references_column": "id"
+    }
+  ],
+  "insights": {
+    "total_users": 1,
+    "garments_per_user": {
+      "average": 4.0,
+      "max": 4,
+      "min": 4
+    },
+    "popular_brands": [
+      {
+        "brand": "Banana Republic",
+        "count": 1
+      },
+      {
+        "brand": "Theory",
+        "count": 1
+      },
+      {
+        "brand": "Patagonia",
+        "count": 1
+      },
+      {
+        "brand": "Lululemon",
+        "count": 1
+      }
+    ],
+    "fit_feedback_distribution": [
+      {
+        "type": "Good Fit",
+        "count": 1
+      },
+      {
+        "type": "Loose but I Like It",
+        "count": 1
+      },
+      {
+        "type": "Too Tight",
+        "count": 1
+      },
+      {
+        "type": "Tight but I Like It",
+        "count": 1
+      }
+    ]
+  }
+}
