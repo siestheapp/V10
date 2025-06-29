@@ -18,6 +18,7 @@ from dotenv import load_dotenv
 from sqlalchemy import text
 import subprocess
 import sys
+from body_measurement_estimator import BodyMeasurementEstimator
 
 # Load environment variables from .env file
 load_dotenv()
@@ -1636,6 +1637,23 @@ def trigger_db_snapshot():
         subprocess.Popen([sys.executable, "scripts/db_snapshot.py"])
         # Also trigger schema evolution
         trigger_schema_evolution()
+
+@app.get("/user/{user_id}/body-measurements")
+async def get_user_body_measurements(user_id: str):
+    try:
+        # Initialize estimator with database config
+        estimator = BodyMeasurementEstimator(DB_CONFIG)
+        
+        # Estimate chest measurement using the new interface
+        chest_estimate = estimator.estimate_chest_measurement(int(user_id))
+        
+        if chest_estimate is None:
+            return {"estimated_chest": None, "unit": "in", "message": "No sufficient data to estimate chest measurement"}
+        
+        return {"estimated_chest": round(chest_estimate, 2), "unit": "in"}
+    except Exception as e:
+        print(f"Error in get_user_body_measurements: {str(e)}")
+        raise HTTPException(status_code=500, detail=str(e))
 
 if __name__ == "__main__":
     import uvicorn

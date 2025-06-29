@@ -28,6 +28,11 @@
   - Ran db_snapshot.py and schema_evolution.py to capture current state
   - Created comprehensive database change workflow documentation
 
+- Added backend estimator (`body_measurement_estimator.py`) to calculate estimated chest measurement from user garment and fit feedback data.
+- Updated FastAPI backend endpoint `/user/{user_id}/body-measurements` to use the estimator and return the estimated chest measurement.
+- Created a SwiftUI `BodyScreen` with a ViewModel to fetch and display the estimated chest measurement in the iOS app.
+- Verified end-to-end functionality: user can now see their estimated chest measurement on the Body screen in the app.
+
 **Database Change Workflow Established:**
 1. Make schema changes (SQL)
 2. Update SCHEMA_EVOLUTION.md and DATABASE_CONSTRAINTS.md manually
