@@ -187,4 +187,114 @@ class BodyMeasurementEstimator:
         lower = int(n * 0.1)
         upper = int(n * 0.9)
         trimmed = estimates[lower:upper] if n > 4 else estimates
-        return round(statistics.median(trimmed), 2) 
+        return round(statistics.median(trimmed), 2)
+
+    def estimate_neck_measurement(self, user_id: int) -> Optional[float]:
+        """
+        Estimate neck measurement based on user's garment data and fit feedback.
+        """
+        try:
+            conn = self.get_connection()
+            cursor = conn.cursor()
+            query = """
+                SELECT 
+                    b.name as brand,
+                    ug.category as garment_name,
+                    ug.neck_range,
+                    ug.size_label as size,
+                    ug.owns_garment,
+                    ug.fit_feedback,
+                    uff.neck_fit as neck_feedback
+                FROM user_garments ug
+                JOIN brands b ON ug.brand_id = b.id
+                LEFT JOIN user_fit_feedback uff ON ug.id = uff.garment_id
+                WHERE ug.user_id = %s 
+                AND ug.owns_garment = true
+                AND ug.neck_range IS NOT NULL
+                AND (ug.fit_feedback IS NOT NULL OR uff.neck_fit IS NOT NULL)
+                ORDER BY ug.created_at DESC
+            """
+            cursor.execute(query, (user_id,))
+            garments = cursor.fetchall()
+            if not garments:
+                self.logger.info(f"No garments with neck for user {user_id}")
+                return None
+            measurements = []
+            for garment in garments:
+                brand, garment_name, neck_range, size, owns_garment, fit_feedback, neck_feedback = garment
+                neck_value = self._parse_chest_range(neck_range)
+                if neck_value is None:
+                    continue
+                fit_type = self._categorize_fit(neck_feedback)
+                if fit_type is None:
+                    continue
+                measurements.append({'neck_value': neck_value, 'fit_type': fit_type, 'brand': brand, 'size': size})
+            if not measurements:
+                return None
+            fit_groups = {'tight': [], 'good': [], 'relaxed': []}
+            for measurement in measurements:
+                fit_type = measurement['fit_type']
+                if fit_type in fit_groups:
+                    fit_groups[fit_type].append(measurement['neck_value'])
+            estimated_neck = self._calculate_weighted_average(fit_groups)
+            cursor.close()
+            conn.close()
+            return estimated_neck
+        except Exception as e:
+            self.logger.error(f"Error estimating neck measurement for user {user_id}: {str(e)}")
+            return None
+
+    def estimate_sleeve_measurement(self, user_id: int) -> Optional[float]:
+        """
+        Estimate sleeve measurement based on user's garment data and fit feedback.
+        """
+        try:
+            conn = self.get_connection()
+            cursor = conn.cursor()
+            query = """
+                SELECT 
+                    b.name as brand,
+                    ug.category as garment_name,
+                    ug.sleeve_range,
+                    ug.size_label as size,
+                    ug.owns_garment,
+                    ug.fit_feedback,
+                    uff.sleeve_fit as sleeve_feedback
+                FROM user_garments ug
+                JOIN brands b ON ug.brand_id = b.id
+                LEFT JOIN user_fit_feedback uff ON ug.id = uff.garment_id
+                WHERE ug.user_id = %s 
+                AND ug.owns_garment = true
+                AND ug.sleeve_range IS NOT NULL
+                AND (ug.fit_feedback IS NOT NULL OR uff.sleeve_fit IS NOT NULL)
+                ORDER BY ug.created_at DESC
+            """
+            cursor.execute(query, (user_id,))
+            garments = cursor.fetchall()
+            if not garments:
+                self.logger.info(f"No garments with sleeve for user {user_id}")
+                return None
+            measurements = []
+            for garment in garments:
+                brand, garment_name, sleeve_range, size, owns_garment, fit_feedback, sleeve_feedback = garment
+                sleeve_value = self._parse_chest_range(sleeve_range)
+                if sleeve_value is None:
+                    continue
+                fit_type = self._categorize_fit(sleeve_feedback)
+                if fit_type is None:
+                    continue
+                measurements.append({'sleeve_value': sleeve_value, 'fit_type': fit_type, 'brand': brand, 'size': size})
+            if not measurements:
+                return None
+            fit_groups = {'tight': [], 'good': [], 'relaxed': []}
+            for measurement in measurements:
+                fit_type = measurement['fit_type']
+                if fit_type in fit_groups:
+                    fit_groups[fit_type].append(measurement['sleeve_value'])
+            estimated_sleeve = self._calculate_weighted_average(fit_groups)
+            cursor.close()
+            conn.close()
+            return estimated_sleeve
+        except Exception as e:
+            self.logger.error(f"Error estimating sleeve measurement for user {user_id}: {str(e)}")
+            return None 

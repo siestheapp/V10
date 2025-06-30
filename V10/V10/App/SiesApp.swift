@@ -43,16 +43,10 @@ struct SiesApp: App {
                                 Label("Shop", systemImage: "bag")
                             }
                         
-                        ChatView()
+                        MoreView()
                             .environmentObject(userSettings)
                             .tabItem {
-                                Label("Ask AI", systemImage: "bubble.left.and.bubble.right.fill")
-                            }
-                        
-                        AccountScreen()
-                            .environmentObject(userSettings)
-                            .tabItem {
-                                Label("Account", systemImage: "person")
+                                Label("More", systemImage: "ellipsis")
                             }
                     }
                 }
