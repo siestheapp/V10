@@ -67,3 +67,39 @@
 - Next time: Try ingesting another brand (e.g., Abercrombie) using the new workflow
 - Consider prototyping a brand check/insert script or mapping engine
 - Use this log to quickly get up to speed at the start of each session 
+
+## [2025-06-29] Session Summary
+
+**What we did:**
+- **Patagonia Measurement Instructions:**
+  - Added Patagonia measurement instructions to `measurement_instructions` table (brand_id: 2) for chest, arm length, waist, and hips, including standardized terms and official instructions.
+  - Used the correct admin and brand IDs, and verified the presence of timestamps in the schema.
+
+- **Banana Republic Size Guide Ingestion:**
+  - Confirmed correct table names in tailor3 (`size_guides`, `size_guide_entries`).
+  - Inserted new size guide for Banana Republic Men's Shirts & Sweaters (brand_id: 5, category_id: 1, created_by: 1, source_url: https://bananarepublic.gap.com/browse/info.do?cid=35404).
+  - Parsed and inserted all size rows (XXS–XXL) with min/max/range columns for waist, chest, neck, sleeve, and belt, using the normalized schema.
+  - Provided ready-to-paste SQL for each entry, clarified column mapping, and explained how to split ranges into min/max values.
+
+- **Schema & Troubleshooting:**
+  - Clarified the difference between tailor2 and tailor3 table names (e.g., `size_guides_v2` vs. `size_guides`).
+  - Used `TAILOR3_SCHEMA.md` as the source of truth for table/column names and constraints.
+  - Helped debug SQL errors related to placeholder values and syntax, and provided corrected SQL for direct use in psql.
+
+**Notes:**
+- Always use actual numeric IDs in SQL, not placeholders like BRAND_ID or CATEGORY_ID.
+- Use the normalized schema's min/max/range columns for all measurement fields.
+- Reference official brand URLs for source attribution in size guides and instructions.
+- If unsure about a table or column, check `TAILOR3_SCHEMA.md` for the latest schema.
+- Next time: Consider automating the range-to-min/max parsing for faster ingestion. 
+
+## 2024-06-30 - NN.07 Clive 3323 Tee Size Guide Ingestion & Schema Update
+
+- Ingested NN.07 Clive 3323 Tee size guide (brand_id: 6, size_guide_id: 9) as product-level guide.
+- Created subcategory "Long Sleeve Tees" (subcategory_id: 1) under "Tops".
+- Inserted size guide entries with full chest (doubled from 1/2 chest) and sleeve (CBL to cuff, +9").
+- Added measurement instructions for 1/2 Chest Width, Center Back Length, and Sleeve Length.
+- Added standardization_log entries for chest and sleeve transformations.
+- Inserted raw size guide with fit_type = 'Unspecified' after updating schema constraint.
+- Updated schema: allowed 'Unspecified' as a fit_type in both raw_size_guides and size_guides.
+- Updated fit_type in both tables to 'Unspecified' for this guide for consistency. 
