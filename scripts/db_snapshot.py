@@ -11,12 +11,13 @@ from datetime import datetime
 from typing import Dict, List, Any
 import pytz
 
-# Database configuration - match the one used in app.py
+# Database configuration - connect to Supabase (pooled connection)
 DB_CONFIG = {
-    "database": "tailor2",
-    "user": "seandavey",
-    "password": "",
-    "host": "localhost"
+    "database": "postgres",
+    "user": "postgres.lbilxlkchzpducggkrxx",
+    "password": "efvTower12",
+    "host": "aws-0-us-east-2.pooler.supabase.com",
+    "port": "6543"
 }
 
 def get_est_timestamp():
@@ -94,6 +95,14 @@ def get_user_insights(cursor) -> Dict[str, Any]:
     cursor.execute("SELECT COUNT(*) FROM users")
     insights['total_users'] = cursor.fetchone()[0]
     
+    # Brand count
+    cursor.execute("SELECT COUNT(*) FROM brands")
+    insights['total_brands'] = cursor.fetchone()[0]
+    
+    # Size guides count
+    cursor.execute("SELECT COUNT(*) FROM size_guides")
+    insights['total_size_guides'] = cursor.fetchone()[0]
+    
     # Garments per user
     cursor.execute("""
         SELECT user_id, COUNT(*) as garment_count 
@@ -119,11 +128,12 @@ def get_user_insights(cursor) -> Dict[str, Any]:
     """)
     insights['popular_brands'] = [{'brand': row[0], 'count': row[1]} for row in cursor.fetchall()]
     
-    # Fit feedback distribution
+    # Fit feedback distribution (using feedback_codes table)
     cursor.execute("""
-        SELECT overall_fit, COUNT(*) as count 
-        FROM user_fit_feedback 
-        GROUP BY overall_fit 
+        SELECT fc.feedback_text, COUNT(*) as count 
+        FROM user_garment_feedback ugf
+        JOIN feedback_codes fc ON ugf.feedback_code_id = fc.id
+        GROUP BY fc.feedback_text 
         ORDER BY count DESC
     """)
     insights['fit_feedback_distribution'] = [{'type': row[0], 'count': row[1]} for row in cursor.fetchall()]
@@ -137,7 +147,7 @@ def get_database_snapshot() -> Dict[str, Any]:
     
     snapshot = {
         'timestamp': get_est_timestamp().isoformat(),
-        'database_name': 'tailor2',
+        'database_name': 'tailor3',
         'tables': {},
         'relationships': get_table_relationships(cursor),
         'insights': get_user_insights(cursor)
@@ -146,13 +156,19 @@ def get_database_snapshot() -> Dict[str, Any]:
     # Get table schemas
     tables = [
         'users',
-        'user_garments', 
-        'user_fit_feedback',
-        'user_fit_zones',
-        'user_body_measurements',
-        'product_measurements',
+        'admins',
+        'body_measurements',
         'brands',
-        'size_guides_v2'
+        'categories',
+        'subcategories',
+        'size_guides',
+        'size_guide_entries',
+        'raw_size_guides',
+        'standardization_log',
+        'user_garments',
+        'user_garment_feedback',
+        'feedback_codes',
+        'fit_zones'
     ]
     
     for table in tables:
@@ -173,40 +189,70 @@ def get_database_snapshot() -> Dict[str, Any]:
     # Sample data from key tables
     sample_data = {}
     
-    # Sample user_garments
+    # Sample users
     cursor.execute("""
-        SELECT ug.id, ug.user_id, b.name as brand_name, ug.category, ug.size_label, 
-               ug.chest_range, ug.created_at, uff.overall_fit
-        FROM user_garments ug
-        JOIN brands b ON ug.brand_id = b.id
-        LEFT JOIN user_fit_feedback uff ON ug.id = uff.garment_id
-        LIMIT 5
+        SELECT id, email, gender, created_at FROM users LIMIT 5
     """)
-    sample_data['user_garments'] = cursor.fetchall()
-    
-    # Sample user_fit_feedback
-    cursor.execute("""
-        SELECT garment_id, overall_fit, chest_fit, sleeve_fit, neck_fit, waist_fit
-        FROM user_fit_feedback
-        LIMIT 5
-    """)
-    sample_data['user_fit_feedback'] = cursor.fetchall()
-    
+    sample_data['users'] = cursor.fetchall()
+
     # Sample brands
     cursor.execute("""
-        SELECT id, name, measurement_type
-        FROM brands
-        LIMIT 10
+        SELECT id, name, default_unit FROM brands LIMIT 5
     """)
     sample_data['brands'] = cursor.fetchall()
-    
-    # Sample size_guides_v2
+
+    # Sample size_guides
     cursor.execute("""
-        SELECT brand_id, category, size_label, chest_min, chest_max, sleeve_min, sleeve_max
-        FROM size_guides_v2
-        LIMIT 5
+        SELECT id, brand_id, gender, category_id, fit_type, guide_level, version, unit FROM size_guides LIMIT 5
     """)
-    sample_data['size_guides_v2'] = cursor.fetchall()
+    sample_data['size_guides'] = cursor.fetchall()
+
+    # Sample size_guide_entries
+    cursor.execute("""
+        SELECT id, size_guide_id, size_label, chest_min, chest_max, waist_min, waist_max, sleeve_min, sleeve_max, neck_min, neck_max, hip_min, hip_max FROM size_guide_entries LIMIT 5
+    """)
+    sample_data['size_guide_entries'] = cursor.fetchall()
+
+    # Sample user_garments
+    cursor.execute("""
+        SELECT id, user_id, brand_id, category_id, subcategory_id, gender, size_label, fit_type, unit, product_name, created_at FROM user_garments LIMIT 5
+    """)
+    sample_data['user_garments'] = cursor.fetchall()
+
+    # Sample user_garment_feedback
+    cursor.execute("""
+        SELECT id, user_garment_id, dimension, feedback_code_id, created_at FROM user_garment_feedback LIMIT 5
+    """)
+    sample_data['user_garment_feedback'] = cursor.fetchall()
+
+    # Sample fit_zones
+    cursor.execute("""
+        SELECT id, user_id, category_id, subcategory_id, dimension, fit_type, min_value, max_value, unit, created_at FROM fit_zones LIMIT 5
+    """)
+    sample_data['fit_zones'] = cursor.fetchall()
+
+    # Print sample data
+    print("\nSample users:")
+    for row in sample_data.get('users', [])[:3]:
+        print(row)
+    print("\nSample brands:")
+    for row in sample_data.get('brands', [])[:3]:
+        print(row)
+    print("\nSample size_guides:")
+    for row in sample_data.get('size_guides', [])[:3]:
+        print(row)
+    print("\nSample size_guide_entries:")
+    for row in sample_data.get('size_guide_entries', [])[:3]:
+        print(row)
+    print("\nSample user_garments:")
+    for row in sample_data.get('user_garments', [])[:3]:
+        print(row)
+    print("\nSample user_garment_feedback:")
+    for row in sample_data.get('user_garment_feedback', [])[:3]:
+        print(row)
+    print("\nSample fit_zones:")
+    for row in sample_data.get('fit_zones', [])[:3]:
+        print(row)
     
     cursor.close()
     conn.close()
@@ -242,15 +288,22 @@ def print_summary(snapshot: Dict[str, Any]):
     print("\nUser Insights:")
     insights = snapshot['insights']
     print(f"  Total Users: {insights['total_users']}")
-    print(f"  Avg Garments per User: {insights['garments_per_user']['average']:.1f}")
+    print(f"  Total Brands: {insights['total_brands']}")
+    print(f"  Total Size Guides: {insights['total_size_guides']}")
+    
+    print("\nGarments per User:")
+    garment_counts = insights['garments_per_user']
+    print(f"  Average: {garment_counts['average']}")
+    print(f"  Max: {garment_counts['max']}")
+    print(f"  Min: {garment_counts['min']}")
     
     print("\nPopular Brands:")
     for brand in insights['popular_brands'][:5]:
         print(f"  {brand['brand']}: {brand['count']} garments")
     
     print("\nFit Feedback Distribution:")
-    for feedback in insights['fit_feedback_distribution']:
-        print(f"  {feedback['type']}: {feedback['count']}")
+    for feedback in insights['fit_feedback_distribution'][:5]:
+        print(f"  {feedback['type']}: {feedback['count']} garments")
 
 def save_snapshot_to_markdown(snapshot_data: dict, filename: str = None):
     """Save database snapshot to a markdown file for AI analysis"""
@@ -271,15 +324,13 @@ def save_snapshot_to_markdown(snapshot_data: dict, filename: str = None):
 
 ## 📊 Database Overview
 - **Total Users**: {table_counts.get('users', 0)}
-- **Total Garments**: {table_counts.get('user_garments', 0)}
-- **Total Fit Feedback**: {table_counts.get('user_fit_feedback', 0)}
 - **Total Brands**: {table_counts.get('brands', 0)}
-- **Total Size Guides**: {table_counts.get('size_guides_v2', 0)}
+- **Total Size Guides**: {table_counts.get('size_guides', 0)}
 
 ## 👥 User Insights
-- **Active Users**: {insights.get('total_users', 0)}
-- **Average Garments per User**: {insights.get('garments_per_user', {}).get('average', 0):.1f}
-- **Max Garments per User**: {insights.get('garments_per_user', {}).get('max', 0)}
+- **Garments per User**: {insights['garments_per_user']}
+- **Popular Brands**: {insights['popular_brands']}
+- **Fit Feedback Distribution**: {insights['fit_feedback_distribution']}
 
 ## 🏷️ Popular Brands
 """
@@ -289,12 +340,12 @@ def save_snapshot_to_markdown(snapshot_data: dict, filename: str = None):
         markdown_content += f"- **{brand.get('brand', 'Unknown')}**: {brand.get('count', 0)} garments\n"
     
     markdown_content += f"""
-## 📏 Fit Feedback Distribution
+## 📏 Size Guide Distribution
 """
     
-    # Add fit feedback distribution
-    for feedback in insights.get('fit_feedback_distribution', []):
-        markdown_content += f"- **{feedback.get('type', 'Unknown')}**: {feedback.get('count', 0)} garments\n"
+    # Add size guide distribution
+    for guide in insights.get('size_guides', []):
+        markdown_content += f"- **{guide.get('brand_id', 'Unknown')}**: {guide.get('guide_level', 'Unknown')} (Size {guide.get('size_label', 'Unknown')})\n"
     
     markdown_content += f"""
 ## 🔍 Sample Data
@@ -304,26 +355,26 @@ def save_snapshot_to_markdown(snapshot_data: dict, filename: str = None):
     
     # Add sample garments
     for garment in sample_data.get('user_garments', [])[:3]:
-        markdown_content += f"- **{garment.get('brand_name', 'Unknown')}** {garment.get('category', 'Unknown')} (Size {garment.get('size_label', 'Unknown')}): {garment.get('chest_range', 'Unknown')} - {garment.get('overall_fit', 'No feedback')}\n"
+        markdown_content += f"- **{garment.get('brand_name', 'Unknown')}** {garment.get('category_id', 'Unknown')} (Size {garment.get('size_label', 'Unknown')}): {garment.get('chest_range', 'Unknown')} - {garment.get('overall_fit', 'No feedback')}\n"
     
     markdown_content += f"""
 ### Recent Fit Feedback
 """
     
     # Add sample feedback
-    for feedback in sample_data.get('user_fit_feedback', [])[:3]:
-        markdown_content += f"- Garment {feedback.get('garment_id', 'Unknown')}: {feedback.get('overall_fit', 'Unknown')} (Chest: {feedback.get('chest_fit', 'Unknown')}, Sleeve: {feedback.get('sleeve_fit', 'Unknown')})\n"
+    for feedback in sample_data.get('user_garment_feedback', [])[:3]:
+        markdown_content += f"- Garment {feedback.get('user_garment_id', 'Unknown')}: {feedback.get('dimension', 'Unknown')} (Feedback Code: {feedback.get('feedback_code_id', 'Unknown')})\n"
     
     markdown_content += f"""
 ## 🚀 Development Insights
 
 ### Data Quality
-- **User Engagement**: {insights.get('total_users', 0)} active users
-- **Feedback Quality**: {table_counts.get('user_fit_feedback', 0)} feedback entries
 - **Brand Diversity**: {table_counts.get('brands', 0)} brands in system
+- **Size Guide Coverage**: {table_counts.get('size_guides', 0)} size guides
+- **Fit Zone Calculations**: {table_counts.get('fit_zones', 0)} fit zones
 
 ### Growth Opportunities
-- More garments needed for better fit zone calculations
+- More size guides needed for better fit zone calculations
 - Additional fit feedback will improve recommendation accuracy
 - Expanding brand catalog will enhance size guide coverage
 
@@ -369,8 +420,8 @@ This file tracks how the V10 database evolves over time, providing context for A
     summary_content += f"""
 ## 📊 Key Metrics Over Time
 
-| Date | Users | Garments | Fit Feedback | Brands | Avg Garments/User |
-|------|-------|----------|--------------|--------|-------------------|
+| Date | Brands | Size Guides | Fit Zones | Avg Garments/User |
+|------|--------|------------|-----------|-------------------|
 """
     
     # Add metrics from each snapshot (simplified for now)
