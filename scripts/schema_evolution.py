@@ -56,20 +56,20 @@ def save_schema_snapshot(schema_sql: str, timestamp: str = None):
     if not timestamp:
         timestamp = get_est_timestamp().strftime("%Y%m%d_%H%M%S")
     
-    filename = f"database_snapshots/SCHEMA_{timestamp}.sql"
+    filename = f"supabase/snapshots/2025-06-29/SCHEMA_{timestamp}.sql"
     
     # Ensure directory exists
-    os.makedirs("database_snapshots", exist_ok=True)
+    os.makedirs("supabase/snapshots/2025-06-29", exist_ok=True)
     
     with open(filename, 'w') as f:
         f.write(schema_sql)
     
-    print(f"✅ Schema snapshot saved: {filename}")
+    print(f"\u2705 Schema snapshot saved: {filename}")
     return filename
 
 def get_previous_schema():
     """Get the most recent schema snapshot"""
-    schema_dir = Path("database_snapshots")
+    schema_dir = Path("supabase/snapshots/2025-06-29")
     if not schema_dir.exists():
         return None
     
@@ -110,10 +110,10 @@ def generate_schema_diff(old_schema: str, new_schema: str) -> str:
 
 def update_evolution_markdown(timestamp: str, diff: str, has_changes: bool):
     """Update SCHEMA_EVOLUTION.md with new entry"""
-    evolution_file = "database_snapshots/SCHEMA_EVOLUTION.md"
+    evolution_file = "supabase/snapshots/2025-06-29/SCHEMA_EVOLUTION.md"
     
     # Ensure directory exists
-    os.makedirs("database_snapshots", exist_ok=True)
+    os.makedirs("supabase/snapshots/2025-06-29", exist_ok=True)
     
     # Read existing content
     existing_content = ""
@@ -185,7 +185,7 @@ This file is automatically updated whenever schema_evolution.py is run. It:
     with open(evolution_file, 'w') as f:
         f.write(updated_content)
     
-    print(f"✅ Schema evolution updated: {evolution_file}")
+    print(f"\u2705 Schema evolution updated: {evolution_file}")
 
 def main():
     """Main function to track schema evolution"""
