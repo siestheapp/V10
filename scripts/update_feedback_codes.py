@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """
-Add missing feedback codes for progressive feedback system
+Update feedback codes for the new 5-point satisfaction scale system
 """
 
 import psycopg2
@@ -14,35 +14,34 @@ DB_CONFIG = {
     "port": "6543"
 }
 
-def add_feedback_codes():
-    """Add missing feedback codes for the 5-point progressive system"""
+def update_feedback_codes():
+    """Update feedback codes for the new 5-point satisfaction system"""
     conn = psycopg2.connect(**DB_CONFIG)
     cursor = conn.cursor()
     
     # Check existing feedback codes
-    cursor.execute("SELECT feedback_text FROM feedback_codes ORDER BY feedback_text")
-    existing_codes = [row[0] for row in cursor.fetchall()]
+    cursor.execute("SELECT id, feedback_text, feedback_type, is_positive FROM feedback_codes ORDER BY feedback_text")
+    existing_codes = cursor.fetchall()
     print("Existing feedback codes:")
-    for code in existing_codes:
-        print(f"  - {code}")
+    for code_id, text, feedback_type, is_positive in existing_codes:
+        status = "✅" if is_positive else "❌" if is_positive is False else "❓"
+        print(f"  {status} {code_id}: {text} ({feedback_type})")
     
-    # Define the feedback codes we need for the progressive system
+    # Define the new 5-point satisfaction scale codes
     new_codes = [
-        ("Perfect", "fit", True),
-        ("Slightly Tight", "fit", False),
-        ("Slightly Loose", "fit", False),
+        ("Good Fit", "fit", True),
+        ("Tight but I Like It", "fit", True),
+        ("Loose but I Like It", "fit", True),
+        ("Too Tight", "fit", False),
         ("Too Loose", "fit", False),
-        ("N/A", "other", None),
-        ("Perfect Length", "length", True),
-        ("Too Long", "length", False),
-        ("Too Short", "length", False),
     ]
     
-    print("\nAdding missing feedback codes...")
+    print("\nUpdating feedback codes for 5-point satisfaction scale...")
     
     for feedback_text, feedback_type, is_positive in new_codes:
         # Check if code already exists
-        if feedback_text not in existing_codes:
+        existing_texts = [code[1] for code in existing_codes]
+        if feedback_text not in existing_texts:
             try:
                 cursor.execute("""
                     INSERT INTO feedback_codes (feedback_text, feedback_type, is_positive)
@@ -69,4 +68,4 @@ def add_feedback_codes():
     conn.close()
 
 if __name__ == "__main__":
-    add_feedback_codes() 
+    update_feedback_codes() 

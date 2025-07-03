@@ -363,57 +363,69 @@ def progressive_feedback(garment_id):
         flash('Garment not found', 'error')
         return redirect(url_for('index'))
     
-    # Get overall fit codes (5-point scale)
+    # Get overall fit codes (5-point satisfaction scale)
     cursor.execute("""
         SELECT id, feedback_text FROM feedback_codes 
-        WHERE feedback_text IN ('Too Tight', 'Slightly Tight', 'Perfect', 'Slightly Loose', 'Too Loose')
+        WHERE feedback_text IN ('Good Fit', 'Tight but I Like It', 'Loose but I Like It', 'Too Tight', 'Too Loose')
         ORDER BY 
             CASE feedback_text
-                WHEN 'Too Tight' THEN 1
-                WHEN 'Slightly Tight' THEN 2
-                WHEN 'Perfect' THEN 3
-                WHEN 'Slightly Loose' THEN 4
+                WHEN 'Good Fit' THEN 1
+                WHEN 'Tight but I Like It' THEN 2
+                WHEN 'Loose but I Like It' THEN 3
+                WHEN 'Too Tight' THEN 4
                 WHEN 'Too Loose' THEN 5
             END
     """)
     overall_fit_codes = cursor.fetchall()
     
-    # Get dimension-specific fit codes
+    # Get dimension-specific fit codes (same 5-point satisfaction scale)
     cursor.execute("""
         SELECT id, feedback_text FROM feedback_codes 
-        WHERE feedback_type = 'fit' AND feedback_text NOT IN ('Perfect', 'N/A')
-        ORDER BY feedback_text
+        WHERE feedback_text IN ('Good Fit', 'Tight but I Like It', 'Loose but I Like It', 'Too Tight', 'Too Loose')
+        ORDER BY 
+            CASE feedback_text
+                WHEN 'Good Fit' THEN 1
+                WHEN 'Tight but I Like It' THEN 2
+                WHEN 'Loose but I Like It' THEN 3
+                WHEN 'Too Tight' THEN 4
+                WHEN 'Too Loose' THEN 5
+            END
     """)
     dimension_fit_codes = cursor.fetchall()
     
-    # Get available dimensions based on size guide
+    # Get available dimensions based on size guide measurements
     available_dimensions = []
     if garment['size_guide_id']:
         cursor.execute("""
-            SELECT DISTINCT dimension_name 
+            SELECT chest_min, chest_max, chest_range,
+                   waist_min, waist_max, waist_range,
+                   sleeve_min, sleeve_max, sleeve_range,
+                   neck_min, neck_max, neck_range,
+                   hip_min, hip_max, hip_range,
+                   center_back_length
             FROM size_guide_entries 
-            WHERE size_guide_id = %s
-        """, (garment['size_guide_id'],))
-        size_guide_dimensions = [row[0] for row in cursor.fetchall()]
+            WHERE size_guide_id = %s AND size_label = %s
+            LIMIT 1
+        """, (garment['size_guide_id'], garment['size_label']))
+        entry = cursor.fetchone()
         
-        # Map size guide dimensions to our feedback dimensions
-        dimension_mapping = {
-            'chest': 'chest',
-            'waist': 'waist', 
-            'sleeve': 'sleeve',
-            'neck': 'neck',
-            'hip': 'hip',
-            'length': 'length',
-            'inseam': 'length'
-        }
-        
-        for sg_dim in size_guide_dimensions:
-            if sg_dim.lower() in dimension_mapping:
-                mapped_dim = dimension_mapping[sg_dim.lower()]
-                if mapped_dim not in available_dimensions:
-                    available_dimensions.append(mapped_dim)
+        if entry:
+            # Check which dimensions have measurements
+            dimensions_to_check = [
+                ('chest', [entry['chest_min'], entry['chest_max'], entry['chest_range']]),
+                ('waist', [entry['waist_min'], entry['waist_max'], entry['waist_range']]),
+                ('sleeve', [entry['sleeve_min'], entry['sleeve_max'], entry['sleeve_range']]),
+                ('neck', [entry['neck_min'], entry['neck_max'], entry['neck_range']]),
+                ('hip', [entry['hip_min'], entry['hip_max'], entry['hip_range']]),
+                ('length', [entry['center_back_length']])
+            ]
+            
+            for dim_name, values in dimensions_to_check:
+                # If any of the measurement values exist, include this dimension
+                if any(val is not None for val in values):
+                    available_dimensions.append(dim_name)
     
-    # Default dimensions if no size guide
+    # Default dimensions if no size guide or no measurements
     if not available_dimensions:
         available_dimensions = ['chest', 'waist', 'length']
     
@@ -455,11 +467,11 @@ def submit_progressive_feedback(garment_id):
         # Log overall feedback
         log_feedback_submission(user_id, garment_id, 'overall', overall_feedback_text)
         
-        # Process dimension-specific feedback (if any)
+        # Process dimension-specific feedback (optional - user can leave blank)
         dimensions = ['chest', 'waist', 'sleeve', 'neck', 'hip', 'length']
         for dimension in dimensions:
             dimension_feedback = request.form.get(f'dimension_{dimension}')
-            if dimension_feedback and dimension_feedback != 'na':
+            if dimension_feedback:  # Only process if user selected something
                 # Insert dimension feedback
                 cursor.execute("""
                     INSERT INTO user_garment_feedback (user_garment_id, dimension, feedback_code_id)
