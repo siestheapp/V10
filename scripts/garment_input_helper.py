@@ -1,4 +1,5 @@
 import psycopg2
+from db_change_logger import log_user_creation, log_garment_addition, log_feedback_submission, log_brand_addition
 
 # Database connection info (from db_snapshot.py)
 DB_CONFIG = {
@@ -23,7 +24,13 @@ def get_or_create_id(cursor, table, column, value, extra_columns=None, extra_val
         cursor.execute(f"INSERT INTO {table} ({columns}) VALUES ({placeholders}) RETURNING id", values)
     else:
         cursor.execute(f"INSERT INTO {table} ({column}) VALUES (%s) RETURNING id", (value,))
-    return cursor.fetchone()[0]
+    new_id = cursor.fetchone()[0]
+    
+    # Log the creation if it's a brand
+    if table == "brands":
+        log_brand_addition(value, new_id)
+    
+    return new_id
 
 def get_user_id(cursor, email):
     cursor.execute("SELECT id FROM users WHERE email = %s", (email,))
