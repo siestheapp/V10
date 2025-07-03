@@ -149,15 +149,55 @@ def add_garment():
                     return redirect(url_for('add_garment'))
                 subcategory_id = subcategory_result[0]
             
-            # Insert garment
+            # Find matching size guide and entry
+            size_guide_id = None
+            size_guide_entry_id = None
+            
+            # Look up size guide based on brand, category, gender, fit_type
+            if subcategory_id:
+                cursor.execute("""
+                    SELECT id FROM size_guides 
+                    WHERE brand_id = %s AND category_id = %s AND gender = %s 
+                    AND (fit_type = %s OR fit_type = 'Unspecified')
+                    AND subcategory_id = %s
+                    ORDER BY CASE WHEN fit_type = %s THEN 1 ELSE 2 END
+                    LIMIT 1
+                """, (brand_id, category_id, gender, fit_type, subcategory_id, fit_type))
+            else:
+                cursor.execute("""
+                    SELECT id FROM size_guides 
+                    WHERE brand_id = %s AND category_id = %s AND gender = %s 
+                    AND (fit_type = %s OR fit_type = 'Unspecified')
+                    AND subcategory_id IS NULL
+                    ORDER BY CASE WHEN fit_type = %s THEN 1 ELSE 2 END
+                    LIMIT 1
+                """, (brand_id, category_id, gender, fit_type, fit_type))
+            
+            size_guide_result = cursor.fetchone()
+            if size_guide_result:
+                size_guide_id = size_guide_result[0]
+                
+                # Look up specific size entry
+                cursor.execute("""
+                    SELECT id FROM size_guide_entries 
+                    WHERE size_guide_id = %s AND size_label = %s
+                    LIMIT 1
+                """, (size_guide_id, size_label))
+                
+                entry_result = cursor.fetchone()
+                if entry_result:
+                    size_guide_entry_id = entry_result[0]
+
+            # Insert garment with size guide links
             cursor.execute("""
                 INSERT INTO user_garments (
                     user_id, brand_id, category_id, subcategory_id, gender, 
-                    size_label, fit_type, unit, product_name, product_url, owns_garment
-                ) VALUES (%s, %s, %s, %s, %s, %s, %s, 'in', %s, %s, true)
+                    size_label, fit_type, unit, product_name, product_url, owns_garment,
+                    size_guide_id, size_guide_entry_id
+                ) VALUES (%s, %s, %s, %s, %s, %s, %s, 'in', %s, %s, true, %s, %s)
                 RETURNING id
             """, (user_id, brand_id, category_id, subcategory_id, gender, 
-                  size_label, fit_type, product_name, product_url))
+                  size_label, fit_type, product_name, product_url, size_guide_id, size_guide_entry_id))
             
             garment_id = cursor.fetchone()[0]
             
@@ -168,11 +208,16 @@ def add_garment():
             cursor.close()
             conn.close()
             
-            # Create success message
-            if product_name:
-                flash(f'Garment "{product_name}" added successfully!', 'success')
+            # Create success message with measurement linking status
+            base_message = f'Garment "{product_name}" added successfully!' if product_name else 'Garment added successfully!'
+            
+            if size_guide_entry_id:
+                flash(f'{base_message} ✅ Linked to size guide measurements for accurate fit recommendations.', 'success')
+            elif size_guide_id:
+                flash(f'{base_message} ⚠️ Size guide found but your specific size ({size_label}) not available in our database.', 'warning')
             else:
-                flash(f'Garment added successfully!', 'success')
+                flash(f'{base_message} ⚠️ No size guide found for this brand/category combination. Fit recommendations may be limited.', 'warning')
+            
             return redirect(url_for('view_garment', garment_id=garment_id))
             
         except Exception as e:
@@ -214,15 +259,22 @@ def view_garment(garment_id):
     conn = get_db_connection()
     cursor = conn.cursor(cursor_factory=RealDictCursor)
     
-    # Get garment details
+    # Get garment details with measurements
     cursor.execute("""
         SELECT ug.*, b.name as brand_name, c.name as category_name, 
-               sc.name as subcategory_name, u.email as user_email
+               sc.name as subcategory_name, u.email as user_email,
+               sge.chest_min, sge.chest_max, sge.chest_range,
+               sge.waist_min, sge.waist_max, sge.waist_range,
+               sge.sleeve_min, sge.sleeve_max, sge.sleeve_range,
+               sge.neck_min, sge.neck_max, sge.neck_range,
+               sge.hip_min, sge.hip_max, sge.hip_range,
+               sge.center_back_length
         FROM user_garments ug
         JOIN brands b ON ug.brand_id = b.id
         JOIN categories c ON ug.category_id = c.id
         LEFT JOIN subcategories sc ON ug.subcategory_id = sc.id
         JOIN users u ON ug.user_id = u.id
+        LEFT JOIN size_guide_entries sge ON ug.size_guide_entry_id = sge.id
         WHERE ug.id = %s
     """, (garment_id,))
     garment = cursor.fetchone()
@@ -287,6 +339,152 @@ def add_feedback(garment_id):
         flash(f'Error adding feedback: {str(e)}', 'error')
     
     return redirect(url_for('view_garment', garment_id=garment_id))
+
+@app.route('/progressive_feedback/<int:garment_id>')
+def progressive_feedback(garment_id):
+    """Progressive feedback interface for a garment"""
+    conn = get_db_connection()
+    cursor = conn.cursor(cursor_factory=RealDictCursor)
+    
+    # Get garment details
+    cursor.execute("""
+        SELECT ug.*, b.name as brand_name, c.name as category_name, 
+               sc.name as subcategory_name, u.email as user_email
+        FROM user_garments ug
+        JOIN brands b ON ug.brand_id = b.id
+        JOIN categories c ON ug.category_id = c.id
+        LEFT JOIN subcategories sc ON ug.subcategory_id = sc.id
+        JOIN users u ON ug.user_id = u.id
+        WHERE ug.id = %s
+    """, (garment_id,))
+    garment = cursor.fetchone()
+    
+    if not garment:
+        flash('Garment not found', 'error')
+        return redirect(url_for('index'))
+    
+    # Get overall fit codes (5-point scale)
+    cursor.execute("""
+        SELECT id, feedback_text FROM feedback_codes 
+        WHERE feedback_text IN ('Too Tight', 'Slightly Tight', 'Perfect', 'Slightly Loose', 'Too Loose')
+        ORDER BY 
+            CASE feedback_text
+                WHEN 'Too Tight' THEN 1
+                WHEN 'Slightly Tight' THEN 2
+                WHEN 'Perfect' THEN 3
+                WHEN 'Slightly Loose' THEN 4
+                WHEN 'Too Loose' THEN 5
+            END
+    """)
+    overall_fit_codes = cursor.fetchall()
+    
+    # Get dimension-specific fit codes
+    cursor.execute("""
+        SELECT id, feedback_text FROM feedback_codes 
+        WHERE feedback_type = 'fit' AND feedback_text NOT IN ('Perfect', 'N/A')
+        ORDER BY feedback_text
+    """)
+    dimension_fit_codes = cursor.fetchall()
+    
+    # Get available dimensions based on size guide
+    available_dimensions = []
+    if garment['size_guide_id']:
+        cursor.execute("""
+            SELECT DISTINCT dimension_name 
+            FROM size_guide_entries 
+            WHERE size_guide_id = %s
+        """, (garment['size_guide_id'],))
+        size_guide_dimensions = [row[0] for row in cursor.fetchall()]
+        
+        # Map size guide dimensions to our feedback dimensions
+        dimension_mapping = {
+            'chest': 'chest',
+            'waist': 'waist', 
+            'sleeve': 'sleeve',
+            'neck': 'neck',
+            'hip': 'hip',
+            'length': 'length',
+            'inseam': 'length'
+        }
+        
+        for sg_dim in size_guide_dimensions:
+            if sg_dim.lower() in dimension_mapping:
+                mapped_dim = dimension_mapping[sg_dim.lower()]
+                if mapped_dim not in available_dimensions:
+                    available_dimensions.append(mapped_dim)
+    
+    # Default dimensions if no size guide
+    if not available_dimensions:
+        available_dimensions = ['chest', 'waist', 'length']
+    
+    cursor.close()
+    conn.close()
+    
+    return render_template('progressive_feedback.html', 
+                         garment=garment,
+                         overall_fit_codes=overall_fit_codes,
+                         dimension_fit_codes=dimension_fit_codes,
+                         available_dimensions=available_dimensions)
+
+@app.route('/submit_progressive_feedback/<int:garment_id>', methods=['POST'])
+def submit_progressive_feedback(garment_id):
+    """Submit progressive feedback for a garment"""
+    try:
+        conn = get_db_connection()
+        cursor = conn.cursor()
+        
+        # Get user_id for logging
+        cursor.execute("SELECT user_id FROM user_garments WHERE id = %s", (garment_id,))
+        user_id = cursor.fetchone()[0]
+        
+        # Get overall fit feedback
+        overall_fit_code_id = request.form.get('overall_fit')
+        if not overall_fit_code_id:
+            return jsonify({'success': False, 'message': 'Overall fit is required'})
+        
+        # Insert overall feedback
+        cursor.execute("""
+            INSERT INTO user_garment_feedback (user_garment_id, dimension, feedback_code_id)
+            VALUES (%s, %s, %s)
+        """, (garment_id, 'overall', overall_fit_code_id))
+        
+        # Get overall feedback text for logging
+        cursor.execute("SELECT feedback_text FROM feedback_codes WHERE id = %s", (overall_fit_code_id,))
+        overall_feedback_text = cursor.fetchone()[0]
+        
+        # Log overall feedback
+        log_feedback_submission(user_id, garment_id, 'overall', overall_feedback_text)
+        
+        # Process dimension-specific feedback (if any)
+        dimensions = ['chest', 'waist', 'sleeve', 'neck', 'hip', 'length']
+        for dimension in dimensions:
+            dimension_feedback = request.form.get(f'dimension_{dimension}')
+            if dimension_feedback and dimension_feedback != 'na':
+                # Insert dimension feedback
+                cursor.execute("""
+                    INSERT INTO user_garment_feedback (user_garment_id, dimension, feedback_code_id)
+                    VALUES (%s, %s, %s)
+                """, (garment_id, dimension, dimension_feedback))
+                
+                # Get dimension feedback text for logging
+                cursor.execute("SELECT feedback_text FROM feedback_codes WHERE id = %s", (dimension_feedback,))
+                dimension_feedback_text = cursor.fetchone()[0]
+                
+                # Log dimension feedback
+                log_feedback_submission(user_id, garment_id, dimension, dimension_feedback_text)
+        
+        conn.commit()
+        cursor.close()
+        conn.close()
+        
+        return jsonify({
+            'success': True, 
+            'message': 'Progressive feedback submitted successfully!',
+            'redirect_url': url_for('view_garment', garment_id=garment_id)
+        })
+        
+    except Exception as e:
+        return jsonify({'success': False, 'message': f'Error submitting feedback: {str(e)}'})
 
 @app.route('/api/feedback_codes')
 def get_feedback_codes():

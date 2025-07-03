@@ -3,7 +3,7 @@ import SwiftUI
 struct UserMeasurementProfileView: View {
     @State private var measurements: [MeasurementSummary] = []
     @State private var isLoading = true
-    @State private var errorMessage: String?
+    @State private var  errorMessage: String?
     @State private var showingOwnedOnly = false
     @State private var fitZoneRanges: FitZoneRanges? = nil
     
