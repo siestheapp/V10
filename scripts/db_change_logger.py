@@ -160,6 +160,158 @@ def log_size_guide_addition(brand_name: str, gender: str, category: str, size_gu
         }
     )
 
+def log_size_guide_entry_addition(size_guide_id: int, size_label: str, entry_id: int, measurements: dict = None):
+    """Log size guide entry addition"""
+    details = {
+        "description": f"Added size entry: {size_label} to size guide {size_guide_id}",
+        "size_guide_id": size_guide_id,
+        "size_label": size_label,
+        "entry_id": entry_id
+    }
+    
+    if measurements:
+        details["measurements"] = measurements
+    
+    log_change(
+        "INSERT",
+        "size_guide_entries",
+        details
+    )
+
+def log_raw_size_guide_addition(brand_name: str, gender: str, category: str, raw_guide_id: int):
+    """Log raw size guide addition"""
+    log_change(
+        "INSERT",
+        "raw_size_guides",
+        {
+            "description": f"Added raw size guide: {brand_name} {gender} {category}",
+            "brand_name": brand_name,
+            "gender": gender,
+            "category": category,
+            "raw_guide_id": raw_guide_id
+        }
+    )
+
+def setup_automatic_logging():
+    """Set up database triggers for automatic change logging"""
+    conn = get_db_connection()
+    cursor = conn.cursor()
+    
+    try:
+        # Create function to log size guide changes
+        cursor.execute("""
+            CREATE OR REPLACE FUNCTION log_size_guide_changes()
+            RETURNS TRIGGER AS $$
+            DECLARE
+                brand_name TEXT;
+                category_name TEXT;
+                change_details JSONB;
+            BEGIN
+                -- Get brand and category names
+                SELECT b.name INTO brand_name FROM brands b WHERE b.id = NEW.brand_id;
+                SELECT c.name INTO category_name FROM categories c WHERE c.id = NEW.category_id;
+                
+                -- Build change details
+                change_details = jsonb_build_object(
+                    'description', 'Size guide ' || TG_OP || ': ' || brand_name || ' ' || NEW.gender || ' ' || category_name,
+                    'brand_name', brand_name,
+                    'gender', NEW.gender,
+                    'category', category_name,
+                    'size_guide_id', NEW.id,
+                    'fit_type', NEW.fit_type,
+                    'source_url', NEW.source_url
+                );
+                
+                -- Insert into change log (simplified approach)
+                INSERT INTO admin_activity_log (admin_id, action_type, table_name, record_id, description, details)
+                VALUES (
+                    COALESCE(NEW.created_by, 1),
+                    TG_OP,
+                    'size_guides',
+                    NEW.id,
+                    change_details->>'description',
+                    change_details
+                );
+                
+                RETURN NEW;
+            END;
+            $$ LANGUAGE plpgsql;
+        """)
+        
+        # Create function to log size guide entry changes
+        cursor.execute("""
+            CREATE OR REPLACE FUNCTION log_size_guide_entry_changes()
+            RETURNS TRIGGER AS $$
+            DECLARE
+                size_guide_info RECORD;
+                change_details JSONB;
+            BEGIN
+                -- Get size guide info
+                SELECT sg.brand_id, sg.gender, sg.category_id, b.name as brand_name, c.name as category_name
+                INTO size_guide_info
+                FROM size_guides sg
+                JOIN brands b ON sg.brand_id = b.id
+                JOIN categories c ON sg.category_id = c.id
+                WHERE sg.id = NEW.size_guide_id;
+                
+                -- Build change details
+                change_details = jsonb_build_object(
+                    'description', 'Size entry ' || TG_OP || ': ' || NEW.size_label || ' for ' || size_guide_info.brand_name,
+                    'size_guide_id', NEW.size_guide_id,
+                    'size_label', NEW.size_label,
+                    'entry_id', NEW.id,
+                    'brand_name', size_guide_info.brand_name,
+                    'category', size_guide_info.category_name,
+                    'measurements', jsonb_build_object(
+                        'chest', CASE WHEN NEW.chest_min IS NOT NULL OR NEW.chest_max IS NOT NULL THEN NEW.chest_min || '-' || NEW.chest_max END,
+                        'waist', CASE WHEN NEW.waist_min IS NOT NULL OR NEW.waist_max IS NOT NULL THEN NEW.waist_min || '-' || NEW.waist_max END,
+                        'sleeve', CASE WHEN NEW.sleeve_min IS NOT NULL OR NEW.sleeve_max IS NOT NULL THEN NEW.sleeve_min || '-' || NEW.sleeve_max END,
+                        'neck', CASE WHEN NEW.neck_min IS NOT NULL OR NEW.neck_max IS NOT NULL THEN NEW.neck_min || '-' || NEW.neck_max END
+                    )
+                );
+                
+                -- Insert into change log
+                INSERT INTO admin_activity_log (admin_id, action_type, table_name, record_id, description, details)
+                VALUES (
+                    COALESCE(NEW.created_by, 1),
+                    TG_OP,
+                    'size_guide_entries',
+                    NEW.id,
+                    change_details->>'description',
+                    change_details
+                );
+                
+                RETURN NEW;
+            END;
+            $$ LANGUAGE plpgsql;
+        """)
+        
+        # Create triggers (drop if they exist first)
+        cursor.execute("DROP TRIGGER IF EXISTS trigger_log_size_guides ON size_guides;")
+        cursor.execute("DROP TRIGGER IF EXISTS trigger_log_size_guide_entries ON size_guide_entries;")
+        
+        cursor.execute("""
+            CREATE TRIGGER trigger_log_size_guides
+            AFTER INSERT OR UPDATE OR DELETE ON size_guides
+            FOR EACH ROW EXECUTE FUNCTION log_size_guide_changes();
+        """)
+        
+        cursor.execute("""
+            CREATE TRIGGER trigger_log_size_guide_entries
+            AFTER INSERT OR UPDATE OR DELETE ON size_guide_entries
+            FOR EACH ROW EXECUTE FUNCTION log_size_guide_entry_changes();
+        """)
+        
+        conn.commit()
+        print("✅ Automatic change logging triggers created successfully!")
+        
+    except Exception as e:
+        conn.rollback()
+        print(f"❌ Error setting up automatic logging: {e}")
+    finally:
+        cursor.close()
+        conn.close()
+
 def get_recent_changes(limit: int = 20) -> List[Dict]:
     """Get recent changes from the summary log"""
     summary_file = Path("supabase/change_logs/db_changes_summary.jsonl")
@@ -265,10 +417,11 @@ def main():
     import sys
     
     if len(sys.argv) < 2:
-        print("Usage: python db_change_logger.py [recent|stats|log]")
+        print("Usage: python db_change_logger.py [recent|stats|log|setup]")
         print("  recent [N] - Show recent changes (default 10)")
         print("  stats      - Show change statistics")
         print("  log        - Interactive logging mode")
+        print("  setup      - Set up automatic change logging triggers")
         return
     
     command = sys.argv[1]
@@ -283,6 +436,10 @@ def main():
     elif command == "log":
         print("Interactive logging mode - use the log_* functions in your code")
         print("Example: log_user_creation('user@example.com', 'Male', 123)")
+    
+    elif command == "setup":
+        print("Setting up automatic change logging triggers...")
+        setup_automatic_logging()
     
     else:
         print(f"Unknown command: {command}")

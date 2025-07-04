@@ -261,3 +261,18 @@ The solution creates an **automatic brand dimension registry** by querying acros
 - `scripts/fix_garment_links.py`
 - `scripts/test_parameterized_query.py`
 - `scripts/manual_fix_garment.py` 
+
+## [2025-07-04] Session Summary – Faherty Size Guide & Dynamic Dropdown
+
+**What we did:**
+- Added Faherty as a brand (brand_id: 8) and ingested the full men's tops size guide (size_guide_id: 10) with all measurements (neck, chest, waist, sleeve) for sizes XS–XXXL.
+- Used official Faherty size chart: https://fahertybrand.com/pages/size-guide?srsltid=AfmBOorv1ix_wQbpy1-Hg7dc2IlMdCqDDshVnXxkHYHQm4N76-CzTmhC
+- Inserted all size guide entries into `size_guide_entries`.
+- Optionally logged the raw size guide in `raw_size_guides` for provenance.
+- Updated the web app to enable dynamic size dropdowns based on brand, category, and gender (fit type no longer required).
+- Committed all changes to git.
+
+**Result:**
+- Faherty men's tops are now fully supported in the system.
+- Users see the correct size options when adding a Faherty garment.
+- All changes are tracked in version control. 
