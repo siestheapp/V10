@@ -308,3 +308,56 @@ The solution creates an **automatic brand dimension registry** by querying acros
 - This implementation ensures that all changes to size guides are logged, providing a complete audit trail for future reference and compliance.
 - The automatic logging system is designed to be scalable and can be extended to other tables and operations as needed.
 - Future sessions should include a review of the change log to ensure that all changes are expected and accounted for. 
+
+## [2025-07-04] Session Summary – Major Codebase Reorganization
+
+**What we did:**
+- **Identified major redundancies:** Multiple database snapshot locations, scattered test files, massive archive files, nested V10 directories
+- **Reorganized project structure:** Created logical directory hierarchy with clear separation of concerns
+- **Moved test scripts:** Relocated 10 test/debug scripts from `scripts/` to dedicated `tests/` directory
+- **Consolidated database files:** Moved old schemas (tailor2) and redundant snapshots to `database/old_schemas/`
+- **Organized archive:** Separated large files (>100MB) and old code into `archive/large_files/` and `archive/old_code/`
+- **Restructured iOS app:** Moved from nested `V10/V10/` structure to clean `ios_app/` directory
+- **Added comprehensive documentation:** Created README files for all major directories
+
+**New project structure:**
+```
+V10/
+├── ios_app/                 # iOS application (SwiftUI)
+├── scripts/                 # Web applications and utilities
+├── tests/                   # Test and debugging scripts
+├── database/                # Database-related files
+│   ├── backups/             # Database backups
+│   ├── snapshots/           # Current snapshots
+│   └── old_schemas/         # Legacy schemas
+├── supabase/                # Current database (tailor3)
+├── archive/                 # Archived files
+│   ├── large_files/         # Large files (>100MB)
+│   └── old_code/            # Old code files
+└── venv/                    # Python virtual environment
+```
+
+**Files moved:**
+- **Test scripts:** 10 files moved to `tests/` (test_*.py, debug_*.py, manual_*.py, etc.)
+- **Database files:** tailor2 schema, old snapshots moved to `database/old_schemas/`
+- **Archive files:** 5.6GB zip file and old code files organized
+- **iOS app:** Complete restructure from nested V10/V10/ to clean ios_app/
+
+**Benefits:**
+- **Cleaner scripts directory:** Only contains active web applications and utilities
+- **Better organization:** Logical separation of concerns
+- **Easier navigation:** Clear directory structure with README files
+- **Reduced confusion:** Eliminated nested V10 directories
+- **Better maintainability:** Test scripts separated from production code
+
+**Files created:**
+- `README.md` - Main project documentation
+- `tests/README.md` - Test scripts documentation
+- `database/README.md` - Database organization guide
+- `archive/README.md` - Archive structure guide
+- `ios_app/README.md` - iOS app documentation
+
+**Git impact:**
+- 186 files changed
+- 23,115 deletions (mostly redundant files)
+- 2,312 insertions (new README files and organization) 
