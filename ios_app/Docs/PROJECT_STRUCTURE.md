@@ -68,13 +68,13 @@ Shows real-time measurement updates and fit zones:
    - Allows browsing past submissions
 
 ## Database Structure
-The `tailor2` database contains:
+The `tailor3` database contains:
 - User profiles and measurements
 - Brand information and size guides
 - Garment submissions and feedback
 - Calculated fit zones
 
-Would you like me to continue with the rest of the files? We can go through:
-- `tailor2.session.sql`
-- `database_backup_feb19_2312.sql`
-- `tailor2_dump.sql`
+## Database Files
+- Database snapshots in `supabase/snapshots/`
+- Schema evolution in `supabase/`
+- Current schema in `supabase/schema.sql`

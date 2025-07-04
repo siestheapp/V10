@@ -14,8 +14,8 @@
             "server": "localhost",
             "port": 5432,
             "driver": "PostgreSQL",
-            "name": "tailor2",
-            "database": "tailor2",
+                    "name": "tailor3",
+        "database": "tailor3",
             "username": "seandavey"
         }
     ]

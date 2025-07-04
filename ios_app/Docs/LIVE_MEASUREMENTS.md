@@ -15,7 +15,7 @@ The Live Measurements feature provides real-time feedback on how garment measure
 
 ## Backend Endpoints
 
-### Fit Zone Data (app.py - tailor2 database)
+### Fit Zone Data (app.py - Supabase tailor3 database)
 
 ```python
 @app.get("/user/{user_id}/measurements")
@@ -64,7 +64,7 @@ async def get_user_measurements(user_id: str):
 }
 ```
 
-### Ideal Measurements (app.py - tailor2 database)
+### Ideal Measurements (app.py - Supabase tailor3 database)
 
 ```python
 @app.get("/user/{user_id}/ideal_measurements")

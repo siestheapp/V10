@@ -2,7 +2,7 @@ import Foundation
 
 struct AppConfig {    // Changed from Config to AppConfig
     // Base URL for API endpoints
-    static let baseURL: String = "http://localhost:8006"
+    static let baseURL: String = "http://localhost:5001"
     
     // Uniqlo URL template for product pages
     static let uniqloURLTemplate: String = "https://www.uniqlo.com/us/en/products/E{product_code}-000"
