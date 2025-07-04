@@ -1,4 +1,4 @@
-# New FastAPI application using Supabase tailor3 schema
+# New FastAPI application using tailor2 schema
 from fastapi import FastAPI, HTTPException
 from pydantic import BaseModel
 import psycopg2
@@ -38,7 +38,7 @@ openai_client = openai.OpenAI(
 
 # Database configuration
 DB_CONFIG = {
-    "database": "tailor3",
+    "database": "tailor2",
     "user": "seandavey",
     "password": "",
     "host": "localhost"
@@ -1671,6 +1671,6 @@ if __name__ == "__main__":
     uvicorn.run(
         "app:app",  # Use string format
         host="0.0.0.0",
-        port=5001,  # User interface port
+        port=8006,  # Backend API port
         reload=True
     ) 
