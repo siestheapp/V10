@@ -201,3 +201,63 @@ This approach accommodates the reality that users have different fit preferences
 - Implement the original 7-point feedback system in the web interface
 - Update progressive feedback UI to use satisfaction-based codes
 - Continue testing with real user data to validate recommendation accuracy 
+
+## [2025-07-03 02:00] Session Summary - Dimension Detection Bug Fix
+
+**Issue Discovered:**
+User reported that sleeve dimension was missing from progressive feedback form for Banana Republic shirt, even though we have sleeve data for that brand. This revealed a critical flaw in the dimension detection system where dimensions were "falling through the cracks."
+
+**Root Cause Analysis:**
+1. **Original Flawed Logic:** System was checking measurements only for the **specific size** (e.g., "L") rather than checking what dimensions exist **across all sizes** for a brand
+2. **Compounding Issue:** Garment 1 (Banana Republic shirt) had `size_guide_id = NULL`, so it was falling back to default dimensions `['chest', 'waist', 'length']` instead of using brand-specific dimensions
+3. **Data Validation:** Confirmed Banana Republic has complete sleeve data (7/7 entries have sleeve measurements) but system wasn't detecting it
+
+**Investigation Process:**
+- Created `test_brand_dimensions.py` to analyze what dimensions exist for each brand
+- Found Banana Republic has: Chest (7/7), Waist (7/7), Sleeve (7/7), Neck (7/7), Hip (0/7), Length (0/7)
+- Created `test_garment_details.py` to debug specific garment linking issues
+- Discovered garment 1 was added before measurement linking system was implemented
+- Created `debug_size_guides.py` to test SQL queries and identify cursor/transaction issues
+
+**Solution Implemented:**
+1. **Fixed Dimension Detection SQL:** Updated `web_garment_manager.py` to use brand-wide dimension registry:
+   ```sql
+   SELECT 
+       CASE WHEN COUNT(CASE WHEN chest_min IS NOT NULL OR chest_max IS NOT NULL OR chest_range IS NOT NULL THEN 1 END) > 0 THEN 'chest' END as chest,
+       CASE WHEN COUNT(CASE WHEN sleeve_min IS NOT NULL OR sleeve_max IS NOT NULL OR sleeve_range IS NOT NULL THEN 1 END) > 0 THEN 'sleeve' END as sleeve,
+       ...
+   FROM size_guide_entries 
+   WHERE size_guide_id = [brand_size_guide_id]
+   ```
+
+2. **Fixed Data Iteration Logic:** Changed from iterating over RealDictRow object to iterating over `.values()` to properly extract non-None dimensions
+
+3. **Fixed Missing Garment Links:** Created `manual_fix_garment.py` to link garment 1 to proper size guide:
+   - Linked garment 1 to size guide 8 (Banana Republic Tops Male Regular)
+   - Linked to size guide entry 25 (size L with measurements)
+
+**Debugging Tools Created:**
+- `scripts/test_brand_dimensions.py` - Analyzes dimensions available for each brand
+- `scripts/test_garment_details.py` - Debug specific garment linking and dimension detection
+- `scripts/debug_size_guides.py` - Test size guide queries and data integrity
+- `scripts/fix_garment_links.py` - Automated tool to fix garments missing size guide links
+- `scripts/test_parameterized_query.py` - Debug SQL parameterization issues
+- `scripts/manual_fix_garment.py` - Manual fix for specific garment
+
+**Result:**
+✅ **Fixed!** Progressive feedback form now correctly shows **chest, waist, sleeve, neck** dimensions for Banana Republic shirt, eliminating the "falling through cracks" issue.
+
+**Technical Insight:**
+The solution creates an **automatic brand dimension registry** by querying across ALL size entries for a brand to determine which dimensions have data, ensuring comprehensive dimension detection regardless of specific size availability.
+
+**Files Modified:**
+- `scripts/web_garment_manager.py` - Fixed dimension detection logic
+- Database: Updated garment 1 with proper size guide links
+
+**Files Created:**
+- `scripts/test_brand_dimensions.py`
+- `scripts/test_garment_details.py` 
+- `scripts/debug_size_guides.py`
+- `scripts/fix_garment_links.py`
+- `scripts/test_parameterized_query.py`
+- `scripts/manual_fix_garment.py` 

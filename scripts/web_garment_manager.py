@@ -243,15 +243,26 @@ def add_garment():
     # Get subcategories for dropdown
     cursor.execute("SELECT id, name FROM subcategories ORDER BY name")
     subcategories = cursor.fetchall()
-    
-    # Get existing sizes from user_garments
-    cursor.execute("SELECT DISTINCT size_label FROM user_garments WHERE size_label IS NOT NULL ORDER BY size_label")
-    existing_sizes = [row['size_label'] for row in cursor.fetchall()]
-    
+
+    # Determine default brand, category, gender, fit_type for initial size list
+    default_brand_id = brands[0]['id'] if brands else None
+    default_category_id = categories[0]['id'] if categories else None
+    default_gender = 'Male'  # or another default if you prefer
+    default_fit_type = 'Regular'  # or another default if you prefer
+    available_sizes = []
+    if default_brand_id and default_category_id:
+        cursor.execute("""
+            SELECT sge.size_label FROM size_guides sg
+            JOIN size_guide_entries sge ON sg.id = sge.size_guide_id
+            WHERE sg.brand_id = %s AND sg.category_id = %s AND sg.gender = %s AND (sg.fit_type = %s OR sg.fit_type = 'Unspecified')
+            ORDER BY sge.size_label
+        """, (default_brand_id, default_category_id, default_gender, default_fit_type))
+        available_sizes = [row['size_label'] for row in cursor.fetchall()]
+
     cursor.close()
     conn.close()
     
-    return render_template('add_garment.html', users=users, brands=brands, categories=categories, subcategories=subcategories, existing_sizes=existing_sizes)
+    return render_template('add_garment.html', users=users, brands=brands, categories=categories, subcategories=subcategories, available_sizes=available_sizes)
 
 @app.route('/garment/<int:garment_id>')
 def view_garment(garment_id):
@@ -396,34 +407,26 @@ def progressive_feedback(garment_id):
     # Get available dimensions based on size guide measurements
     available_dimensions = []
     if garment['size_guide_id']:
+        # NEW APPROACH: Check what dimensions exist across ALL sizes for this brand
+        # This is more reliable than checking just the specific size
         cursor.execute("""
-            SELECT chest_min, chest_max, chest_range,
-                   waist_min, waist_max, waist_range,
-                   sleeve_min, sleeve_max, sleeve_range,
-                   neck_min, neck_max, neck_range,
-                   hip_min, hip_max, hip_range,
-                   center_back_length
+            SELECT 
+                CASE WHEN COUNT(CASE WHEN chest_min IS NOT NULL OR chest_max IS NOT NULL OR chest_range IS NOT NULL THEN 1 END) > 0 THEN 'chest' END as chest,
+                CASE WHEN COUNT(CASE WHEN waist_min IS NOT NULL OR waist_max IS NOT NULL OR waist_range IS NOT NULL THEN 1 END) > 0 THEN 'waist' END as waist,
+                CASE WHEN COUNT(CASE WHEN sleeve_min IS NOT NULL OR sleeve_max IS NOT NULL OR sleeve_range IS NOT NULL THEN 1 END) > 0 THEN 'sleeve' END as sleeve,
+                CASE WHEN COUNT(CASE WHEN neck_min IS NOT NULL OR neck_max IS NOT NULL OR neck_range IS NOT NULL THEN 1 END) > 0 THEN 'neck' END as neck,
+                CASE WHEN COUNT(CASE WHEN hip_min IS NOT NULL OR hip_max IS NOT NULL OR hip_range IS NOT NULL THEN 1 END) > 0 THEN 'hip' END as hip,
+                CASE WHEN COUNT(CASE WHEN center_back_length IS NOT NULL THEN 1 END) > 0 THEN 'length' END as length
             FROM size_guide_entries 
-            WHERE size_guide_id = %s AND size_label = %s
-            LIMIT 1
-        """, (garment['size_guide_id'], garment['size_label']))
-        entry = cursor.fetchone()
+            WHERE size_guide_id = %s
+        """, (garment['size_guide_id'],))
         
-        if entry:
-            # Check which dimensions have measurements
-            dimensions_to_check = [
-                ('chest', [entry['chest_min'], entry['chest_max'], entry['chest_range']]),
-                ('waist', [entry['waist_min'], entry['waist_max'], entry['waist_range']]),
-                ('sleeve', [entry['sleeve_min'], entry['sleeve_max'], entry['sleeve_range']]),
-                ('neck', [entry['neck_min'], entry['neck_max'], entry['neck_range']]),
-                ('hip', [entry['hip_min'], entry['hip_max'], entry['hip_range']]),
-                ('length', [entry['center_back_length']])
-            ]
-            
-            for dim_name, values in dimensions_to_check:
-                # If any of the measurement values exist, include this dimension
-                if any(val is not None for val in values):
-                    available_dimensions.append(dim_name)
+        dimensions_result = cursor.fetchone()
+        if dimensions_result:
+            # Add all dimensions that exist for this brand (only non-None values)
+            for dim in dimensions_result.values():
+                if dim is not None:
+                    available_dimensions.append(dim)
     
     # Default dimensions if no size guide or no measurements
     if not available_dimensions:
@@ -511,6 +514,65 @@ def get_feedback_codes():
     conn.close()
     
     return jsonify([dict(code) for code in feedback_codes])
+
+@app.route('/get_sizes')
+def get_sizes():
+    brand_name = request.args.get('brand_name')
+    category_name = request.args.get('category_name')
+    gender = request.args.get('gender')
+    # fit_type is ignored
+    subcategory_name = request.args.get('subcategory_name')
+
+    conn = get_db_connection()
+    cursor = conn.cursor(cursor_factory=RealDictCursor)
+
+    # Get brand ID
+    cursor.execute("SELECT id FROM brands WHERE name = %s", (brand_name,))
+    brand_result = cursor.fetchone()
+    if not brand_result:
+        return jsonify({'sizes': []})
+    brand_id = brand_result['id']
+
+    # Get category ID
+    cursor.execute("SELECT id FROM categories WHERE name = %s", (category_name,))
+    category_result = cursor.fetchone()
+    if not category_result:
+        return jsonify({'sizes': []})
+    category_id = category_result['id']
+
+    # Get subcategory ID if provided
+    subcategory_id = None
+    if subcategory_name:
+        cursor.execute("SELECT id FROM subcategories WHERE name = %s", (subcategory_name,))
+        subcategory_result = cursor.fetchone()
+        if subcategory_result:
+            subcategory_id = subcategory_result['id']
+
+    # Find matching size guide (ignore fit_type)
+    if subcategory_id:
+        cursor.execute("""
+            SELECT id FROM size_guides 
+            WHERE brand_id = %s AND category_id = %s AND gender = %s 
+            AND subcategory_id = %s
+            ORDER BY id LIMIT 1
+        """, (brand_id, category_id, gender, subcategory_id))
+    else:
+        cursor.execute("""
+            SELECT id FROM size_guides 
+            WHERE brand_id = %s AND category_id = %s AND gender = %s 
+            AND subcategory_id IS NULL
+            ORDER BY id LIMIT 1
+        """, (brand_id, category_id, gender))
+    size_guide_result = cursor.fetchone()
+    sizes = []
+    if size_guide_result:
+        size_guide_id = size_guide_result['id']
+        cursor.execute("SELECT size_label FROM size_guide_entries WHERE size_guide_id = %s ORDER BY size_label", (size_guide_id,))
+        sizes = [row['size_label'] for row in cursor.fetchall()]
+
+    cursor.close()
+    conn.close()
+    return jsonify({'sizes': sizes})
 
 if __name__ == '__main__':
     app.run(debug=True, host='0.0.0.0', port=5001) 

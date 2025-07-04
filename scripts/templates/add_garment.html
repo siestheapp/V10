@@ -80,7 +80,7 @@
                                 <label for="size_label" class="form-label">Size *</label>
                                 <select class="form-select" id="size_label" name="size_label" required>
                                     <option value="">Select size...</option>
-                                    {% for size in existing_sizes %}
+                                    {% for size in available_sizes %}
                                     <option value="{{ size }}">{{ size }}</option>
                                     {% endfor %}
                                     <option value="Other">Other (specify below)</option>
@@ -142,45 +142,43 @@
     // Show/hide "Other" input fields
     document.addEventListener('DOMContentLoaded', function() {
         const brandSelect = document.getElementById('brand_name');
-        const otherBrandInput = document.getElementById('other-brand-input');
-        
         const categorySelect = document.getElementById('category_name');
-        const otherCategoryInput = document.getElementById('other-category-input');
-        
         const subcategorySelect = document.getElementById('subcategory_name');
-        const otherSubcategoryInput = document.getElementById('other-subcategory-input');
-        
+        const genderSelect = document.getElementById('gender');
         const sizeSelect = document.getElementById('size_label');
         const otherSizeInput = document.getElementById('other-size-input');
-        
-        // Brand
-        brandSelect.addEventListener('change', function() {
-            if (this.value === 'Other') {
-                otherBrandInput.style.display = 'block';
-            } else {
-                otherBrandInput.style.display = 'none';
+
+        // Helper to update size dropdown
+        function updateSizes() {
+            const brand = brandSelect.value;
+            const category = categorySelect.value;
+            const gender = genderSelect.value;
+            const subcategory = subcategorySelect.value;
+            if (!brand || !category || !gender) {
+                sizeSelect.innerHTML = '<option value="">Select size...</option><option value="Other">Other (specify below)</option>';
+                return;
             }
-        });
-        
-        // Category
-        categorySelect.addEventListener('change', function() {
-            if (this.value === 'Other') {
-                otherCategoryInput.style.display = 'block';
-            } else {
-                otherCategoryInput.style.display = 'none';
-            }
-        });
-        
-        // Subcategory
-        subcategorySelect.addEventListener('change', function() {
-            if (this.value === 'Other') {
-                otherSubcategoryInput.style.display = 'block';
-            } else {
-                otherSubcategoryInput.style.display = 'none';
-            }
-        });
-        
-        // Size
+            fetch(`/get_sizes?brand_name=${encodeURIComponent(brand)}&category_name=${encodeURIComponent(category)}&gender=${encodeURIComponent(gender)}&subcategory_name=${encodeURIComponent(subcategory)}`)
+                .then(response => response.json())
+                .then(data => {
+                    let options = '<option value="">Select size...</option>';
+                    if (data.sizes && data.sizes.length > 0) {
+                        data.sizes.forEach(size => {
+                            options += `<option value="${size}">${size}</option>`;
+                        });
+                    }
+                    options += '<option value="Other">Other (specify below)</option>';
+                    sizeSelect.innerHTML = options;
+                });
+        }
+
+        // Listen for changes
+        brandSelect.addEventListener('change', updateSizes);
+        categorySelect.addEventListener('change', updateSizes);
+        subcategorySelect.addEventListener('change', updateSizes);
+        genderSelect.addEventListener('change', updateSizes);
+
+        // Show/hide "Other" input fields
         sizeSelect.addEventListener('change', function() {
             if (this.value === 'Other') {
                 otherSizeInput.style.display = 'block';
