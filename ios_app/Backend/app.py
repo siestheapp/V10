@@ -23,18 +23,20 @@ from body_measurement_estimator import BodyMeasurementEstimator
 # Load environment variables from .env file
 load_dotenv()
 
-# Set up OpenAI API key
+# Set up OpenAI API key (optional for development)
 api_key = os.getenv("OPENAI_API_KEY")
-if not api_key:
-    raise ValueError("OPENAI_API_KEY environment variable not set")
+openai_client = None
 
-# Initialize OpenAI client
-openai_client = openai.OpenAI(
-    api_key=api_key,
-    base_url="https://api.openai.com/v1",  # Explicitly set the base URL
-    max_retries=3,  # Add retries
-    timeout=30.0  # Increase timeout
-)
+if api_key and api_key != "your-api-key-here":
+    # Initialize OpenAI client only if valid key is provided
+    openai_client = openai.OpenAI(
+        api_key=api_key,
+        base_url="https://api.openai.com/v1",  # Explicitly set the base URL
+        max_retries=3,  # Add retries
+        timeout=30.0  # Increase timeout
+    )
+else:
+    print("Warning: OpenAI API key not set. Chat features will be disabled.")
 
 # Database configuration
 DB_CONFIG = {
@@ -851,24 +853,29 @@ async def chat_measurements(request: ChatRequest):
         Your goal is to help users find the right measurements for their garments.
         Be specific about which measurements are needed and how to take them accurately."""
 
-        try:
-            print("Attempting to call OpenAI API...")
-            response = openai_client.chat.completions.create(
-                model="gpt-3.5-turbo",
-                messages=[
-                    {"role": "system", "content": system_context},
-                    {"role": "user", "content": request.message}
-                ]
-            )
-            return {"response": response.choices[0].message.content}
-        except openai.OpenAIError as e:
-            print(f"OpenAI API error: {str(e)}")
-            # Provide a helpful fallback response based on database info
-            if measurements:
-                fallback_response = f"For {measurements[0]['category']}, you will need the following measurements: {', '.join(measurements[0]['measurements_available'])}."
-            else:
-                fallback_response = "To get accurate measurements, please specify the type of garment (e.g., shirt, pants, jacket) and I can tell you which measurements you need."
-            return {"response": fallback_response}
+        if openai_client:
+            try:
+                print("Attempting to call OpenAI API...")
+                response = openai_client.chat.completions.create(
+                    model="gpt-3.5-turbo",
+                    messages=[
+                        {"role": "system", "content": system_context},
+                        {"role": "user", "content": request.message}
+                    ]
+                )
+                return {"response": response.choices[0].message.content}
+            except Exception as e:
+                print(f"OpenAI API error: {str(e)}")
+                # Fall through to fallback response
+        else:
+            print("OpenAI client not available, using fallback response")
+        
+        # Provide a helpful fallback response based on database info
+        if measurements:
+            fallback_response = f"For {measurements[0]['category']}, you will need the following measurements: {', '.join(measurements[0]['measurements_available'])}."
+        else:
+            fallback_response = "To get accurate measurements, please specify the type of garment (e.g., shirt, pants, jacket) and I can tell you which measurements you need."
+        return {"response": fallback_response}
             
     except Exception as e:
         print(f"Unexpected error: {str(e)}")
