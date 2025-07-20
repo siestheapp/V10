@@ -177,37 +177,51 @@ async def get_closet(user_id: int):
             SELECT 
                 ug.id as garment_id,
                 b.name as brand_name,
-                ug.category,
+                c.name as category,
                 ug.size_label as size,
-                ug.chest_range,
-                sg.sleeve_min,
-                sg.sleeve_max,
-                sg.waist_min,
-                sg.waist_max,
-                sg.neck_min,
-                sg.neck_max,
+                sge.chest_min,
+                sge.chest_max,
+                sge.sleeve_min,
+                sge.sleeve_max,
+                sge.waist_min,
+                sge.waist_max,
+                sge.neck_min,
+                sge.neck_max,
                 ug.fit_feedback,
                 ug.created_at,
                 ug.owns_garment,
                 ug.product_name,
-                uff.chest_fit,
-                uff.sleeve_fit,
-                uff.neck_fit,
-                uff.waist_fit
+                uff_overall.feedback_code_id as overall_feedback_code,
+                uff_chest.feedback_code_id as chest_feedback_code,
+                uff_sleeve.feedback_code_id as sleeve_feedback_code,
+                uff_neck.feedback_code_id as neck_feedback_code,
+                uff_waist.feedback_code_id as waist_feedback_code
             FROM user_garments ug
             JOIN brands b ON ug.brand_id = b.id
-            LEFT JOIN size_guides_v2 sg ON 
-                ug.brand_id = sg.brand_id AND 
-                ug.size_label = sg.size_label AND
-                ug.category = sg.category
-            LEFT JOIN user_fit_feedback uff ON ug.id = uff.garment_id
+            LEFT JOIN categories c ON ug.category_id = c.id
+            LEFT JOIN size_guide_entries_with_brand sge ON 
+                ug.size_guide_entry_id = sge.id
+            LEFT JOIN user_garment_feedback uff_overall ON 
+                ug.id = uff_overall.user_garment_id AND uff_overall.dimension = 'overall'
+            LEFT JOIN user_garment_feedback uff_chest ON 
+                ug.id = uff_chest.user_garment_id AND uff_chest.dimension = 'chest'
+            LEFT JOIN user_garment_feedback uff_sleeve ON 
+                ug.id = uff_sleeve.user_garment_id AND uff_sleeve.dimension = 'sleeve'
+            LEFT JOIN user_garment_feedback uff_neck ON 
+                ug.id = uff_neck.user_garment_id AND uff_neck.dimension = 'neck'
+            LEFT JOIN user_garment_feedback uff_waist ON 
+                ug.id = uff_waist.user_garment_id AND uff_waist.dimension = 'waist'
             WHERE ug.user_id = %s 
             AND ug.owns_garment = true
-            ORDER BY ug.category, ug.created_at DESC
+            ORDER BY c.name, ug.created_at DESC
         """, (user_id,))
         
         garments = cur.fetchall()
         print(f"Raw SQL results: {garments}")  # Debug log
+        
+        # Get feedback codes for mapping
+        cur.execute("SELECT id, feedback_text FROM feedback_codes")
+        feedback_codes = {row['id']: row['feedback_text'] for row in cur.fetchall()}
         
         def format_measurement(value):
             """Format a measurement value without trailing .00 for integers"""
@@ -215,13 +229,23 @@ async def get_closet(user_id: int):
                 return str(int(value)) if value.is_integer() else f"{value:.2f}"
             return str(value)
         
+        def get_feedback_text(feedback_code_id):
+            """Get feedback text from feedback code ID"""
+            if feedback_code_id and feedback_code_id in feedback_codes:
+                return feedback_codes[feedback_code_id]
+            return None
+        
         formatted_garments = []
         for g in garments:
             measurements = {}
             
             # Add chest measurement if available
-            if g["chest_range"]:
-                measurements["chest"] = str(g["chest_range"])
+            if g["chest_min"] is not None and g["chest_max"] is not None:
+                chest_min = format_measurement(float(g["chest_min"]))
+                chest_max = format_measurement(float(g["chest_max"]))
+                measurements["chest"] = f"{chest_min}-{chest_max}"
+            elif g["chest_min"] is not None:
+                measurements["chest"] = format_measurement(float(g["chest_min"]))
             
             # Add sleeve measurement if available
             if g["sleeve_min"] is not None and g["sleeve_max"] is not None:
@@ -250,10 +274,10 @@ async def get_closet(user_id: int):
                 "size": g["size"],
                 "measurements": measurements,
                 "fitFeedback": g["fit_feedback"],
-                "chestFit": g["chest_fit"],
-                "sleeveFit": g["sleeve_fit"],
-                "neckFit": g["neck_fit"],
-                "waistFit": g["waist_fit"],
+                "chestFit": get_feedback_text(g["chest_feedback_code"]),
+                "sleeveFit": get_feedback_text(g["sleeve_feedback_code"]),
+                "neckFit": get_feedback_text(g["neck_feedback_code"]),
+                "waistFit": get_feedback_text(g["waist_feedback_code"]),
                 "createdAt": g["created_at"].isoformat() if g["created_at"] else None,
                 "ownsGarment": bool(g["owns_garment"]),
                 "productName": g["product_name"]
@@ -341,18 +365,28 @@ def get_user_garments(user_id: str) -> list:
         cur.execute("""
             SELECT 
                 b.name as brand,
-                ug.category as garment_name,
-                ug.chest_range,
+                c.name as garment_name,
+                sge.chest_min,
+                sge.chest_max,
+                CASE 
+                    WHEN sge.chest_min = sge.chest_max THEN sge.chest_min::text
+                    ELSE sge.chest_min::text || '-' || sge.chest_max::text
+                END as chest_range,
                 ug.size_label as size,
                 ug.owns_garment,
-                ug.fit_feedback,  -- Use the actual column name
-                uff.chest_fit as chest_feedback
+                ug.fit_feedback,
+                fc.feedback_text as chest_feedback
             FROM user_garments ug
             JOIN brands b ON ug.brand_id = b.id
-            LEFT JOIN user_fit_feedback uff ON ug.id = uff.garment_id
+            LEFT JOIN categories c ON ug.category_id = c.id
+            LEFT JOIN size_guide_entries_with_brand sge ON 
+                ug.size_guide_entry_id = sge.id
+            LEFT JOIN user_garment_feedback uff_chest ON 
+                ug.id = uff_chest.user_garment_id AND uff_chest.dimension = 'chest'
+            LEFT JOIN feedback_codes fc ON uff_chest.feedback_code_id = fc.id
             WHERE ug.user_id = %s
             AND ug.owns_garment = true
-            AND ug.chest_range IS NOT NULL
+            AND sge.chest_min IS NOT NULL
         """, (user_id,))
         
         garments = cur.fetchall()
@@ -1425,18 +1459,41 @@ async def get_shop_recommendations(request: dict):
         conn = get_db()
         cur = conn.cursor(cursor_factory=RealDictCursor)
         cur.execute("""
-            SELECT ug.id, ug.brand_id, b.name as brand_name, ug.size_label, ug.category, ug.product_name,
-                   uff.overall_fit, uff.chest_fit, uff.sleeve_fit, uff.neck_fit, uff.waist_fit
+            SELECT ug.id, ug.brand_id, b.name as brand_name, ug.size_label, c.name as category, ug.product_name,
+                   uff_overall.feedback_code_id as overall_feedback_code,
+                   uff_chest.feedback_code_id as chest_feedback_code,
+                   uff_sleeve.feedback_code_id as sleeve_feedback_code,
+                   uff_neck.feedback_code_id as neck_feedback_code,
+                   uff_waist.feedback_code_id as waist_feedback_code
             FROM user_garments ug
             JOIN brands b ON ug.brand_id = b.id
-            LEFT JOIN user_fit_feedback uff ON ug.id = uff.garment_id
+            LEFT JOIN categories c ON ug.category_id = c.id
+            LEFT JOIN user_garment_feedback uff_overall ON 
+                ug.id = uff_overall.user_garment_id AND uff_overall.dimension = 'overall'
+            LEFT JOIN user_garment_feedback uff_chest ON 
+                ug.id = uff_chest.user_garment_id AND uff_chest.dimension = 'chest'
+            LEFT JOIN user_garment_feedback uff_sleeve ON 
+                ug.id = uff_sleeve.user_garment_id AND uff_sleeve.dimension = 'sleeve'
+            LEFT JOIN user_garment_feedback uff_neck ON 
+                ug.id = uff_neck.user_garment_id AND uff_neck.dimension = 'neck'
+            LEFT JOIN user_garment_feedback uff_waist ON 
+                ug.id = uff_waist.user_garment_id AND uff_waist.dimension = 'waist'
             WHERE ug.user_id = %s AND ug.owns_garment = true
             ORDER BY ug.created_at DESC
         """, (user_id,))
         garments = cur.fetchall()
 
+        # Get feedback codes for mapping
+        cur.execute("SELECT id, feedback_text FROM feedback_codes")
+        feedback_codes = {row['id']: row['feedback_text'] for row in cur.fetchall()}
+        
         # Filter for 'Good Fit' garments
-        good_fit_garments = [g for g in garments if (g.get('overall_fit') or '').lower() in ['good fit', 'good']]
+        good_fit_garments = []
+        for g in garments:
+            overall_feedback = feedback_codes.get(g.get('overall_feedback_code'), '')
+            if 'good fit' in overall_feedback.lower():
+                good_fit_garments.append(g)
+        
         if not good_fit_garments:
             # Fallback: use any owned garment
             good_fit_garments = garments
