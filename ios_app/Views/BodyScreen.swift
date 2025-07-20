@@ -6,7 +6,7 @@ class BodyMeasurementViewModel: ObservableObject {
     @Published var error: String?
 
     func fetchBodyMeasurements() {
-        guard let url = URL(string: "http://localhost:8006/user/1/body-measurements") else { return }
+        guard let url = URL(string: "http://localhost:8006/user/2/body-measurements") else { return }
         isLoading = true
         error = nil
 

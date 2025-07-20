@@ -32,12 +32,12 @@ struct TestScreen: View {
                         }
                     }
                     
-                    // Database Fit Zones Section (from /test/user/1)
+                    // Database Fit Zones Section (from /test/user/2)
                     GroupBox("Database Fit Zones") {
                         VStack(alignment: .leading, spacing: 8) {
                             Text("Direct from user_fit_zones table:")
                                 .font(.headline)
-                            Text("SELECT * FROM user_fit_zones WHERE user_id = 1")
+                            Text("SELECT * FROM user_fit_zones WHERE user_id = 2")
                                 .font(.caption)
                                 .foregroundColor(.gray)
                             
@@ -50,7 +50,7 @@ struct TestScreen: View {
                         }
                     }
                     
-                    // Live Calculated Fit Zones Section (from /user/1/measurements)
+                    // Live Calculated Fit Zones Section (from /user/2/measurements)
                     GroupBox("Live Calculated Fit Zones") {
                         VStack(alignment: .leading, spacing: 8) {
                             Text("From FitZoneCalculator:")
@@ -193,7 +193,7 @@ struct LiveMeasurementsResponse: Decodable {
 
 // API Function
 func fetchUserTestData() async throws -> UserTestData {
-    let url = URL(string: "http://localhost:8006/test/user/1")!
+    let url = URL(string: "http://localhost:8006/test/user/2")!
     let (data, _) = try await URLSession.shared.data(from: url)
     let decoder = JSONDecoder()
     return try decoder.decode(UserTestData.self, from: data)
@@ -201,7 +201,7 @@ func fetchUserTestData() async throws -> UserTestData {
 
 // Add new API function
 func fetchLiveMeasurements() async throws -> LiveMeasurementsResponse {
-    let url = URL(string: "http://localhost:8006/user/1/measurements")!
+    let url = URL(string: "http://localhost:8006/user/2/measurements")!
     let (data, _) = try await URLSession.shared.data(from: url)
     let decoder = JSONDecoder()
     return try decoder.decode(LiveMeasurementsResponse.self, from: data)

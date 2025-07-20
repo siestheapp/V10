@@ -8,6 +8,6 @@ struct AppConfig {    // Changed from Config to AppConfig
     static let uniqloURLTemplate: String = "https://www.uniqlo.com/us/en/products/E{product_code}-000"
     
     // User configuration
-    static let defaultUserId: String = "18"  // Changed from "1" to "18"
+    static let defaultUserId: String = "2"  // Changed from "18" to "2"
     static let defaultUserName: String = "testuser@example.com"
 } 
