@@ -40,10 +40,11 @@ else:
 
 # Database configuration
 DB_CONFIG = {
-    "database": "tailor2",
-    "user": "seandavey",
-    "password": "",
-    "host": "localhost"
+    "database": "postgres",
+    "user": "postgres.lbilxlkchzpducggkrxx",
+    "password": "efvTower12",
+    "host": "aws-0-us-east-2.pooler.supabase.com",
+    "port": "6543"
 }
 
 def get_db_connection():
