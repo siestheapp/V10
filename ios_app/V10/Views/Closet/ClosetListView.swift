@@ -115,8 +115,16 @@ struct ClosetListView: View {
     }
     
     private func loadGarments() {
-        guard let url = URL(string: "\(Config.baseURL)/user/\(Config.defaultUserId)/closet") else {
-            errorMessage = "Invalid URL"
+        print("🔧 Debug Config values:")
+        print("   Config.baseURL = \(Config.baseURL)")
+        print("   Config.defaultUserId = \(Config.defaultUserId)")
+        
+        let urlString = "\(Config.baseURL)/user/\(Config.defaultUserId)/closet"
+        print("🔍 Loading garments from: \(urlString)")
+        
+        guard let url = URL(string: urlString) else {
+            errorMessage = "Invalid URL: \(urlString)"
+            print("❌ Invalid URL: \(urlString)")
             return
         }
         
@@ -126,24 +134,31 @@ struct ClosetListView: View {
                 
                 if let error = error {
                     self.errorMessage = error.localizedDescription
+                    print("❌ Network error: \(error.localizedDescription)")
                     return
+                }
+                
+                if let httpResponse = response as? HTTPURLResponse {
+                    print("📡 HTTP Status: \(httpResponse.statusCode)")
                 }
                 
                 guard let data = data else {
                     self.errorMessage = "No data received"
+                    print("❌ No data received")
                     return
                 }
                 
                 // Add debug logging
                 if let rawString = String(data: data, encoding: .utf8) {
-                    print("Raw response data: \(rawString)")
+                    print("📦 Raw response data: \(rawString)")
                 }
                 
                 do {
                     let garments = try JSONDecoder().decode([ClosetGarment].self, from: data)
+                    print("✅ Successfully decoded \(garments.count) garments")
                     self.garments = garments
                 } catch {
-                    print("Decoding error details: \(error)")
+                    print("❌ Decoding error details: \(error)")
                     self.errorMessage = "Failed to decode response: \(error.localizedDescription)"
                 }
             }

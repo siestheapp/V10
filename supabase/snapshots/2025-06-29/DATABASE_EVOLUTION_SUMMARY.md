@@ -20,16 +20,17 @@ This file tracks how the V10 database evolves over time, providing context for A
 - [2025-07-15 12:07](./database_evolution_20250715_120724.md) - Database snapshot
 - [2025-07-20 17:13](./database_evolution_20250720_171326.md) - Database snapshot
 - [2025-07-20 17:21](./database_evolution_20250720_172114.md) - Database snapshot
+- [2025-07-21 18:31](./database_evolution_20250721_183108.md) - Database snapshot
 
 ## 📊 Key Metrics Over Time
 
 | Date | Brands | Size Guides | Fit Zones | Avg Garments/User |
 |------|--------|------------|-----------|-------------------|
-| 2025-07-04 | [View](./database_evolution_20250704_013055.md) | | | | |
 | 2025-07-04 | [View](./database_evolution_20250704_013255.md) | | | | |
 | 2025-07-15 | [View](./database_evolution_20250715_120724.md) | | | | |
 | 2025-07-20 | [View](./database_evolution_20250720_171326.md) | | | | |
 | 2025-07-20 | [View](./database_evolution_20250720_172114.md) | | | | |
+| 2025-07-21 | [View](./database_evolution_20250721_183108.md) | | | | |
 
 ## 🎯 Development Insights
 
