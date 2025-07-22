@@ -191,26 +191,26 @@ async def get_closet(user_id: int):
                 ug.created_at,
                 ug.owns_garment,
                 ug.product_name,
-                uff_overall.feedback_code_id as overall_feedback_code,
-                uff_chest.feedback_code_id as chest_feedback_code,
-                uff_sleeve.feedback_code_id as sleeve_feedback_code,
-                uff_neck.feedback_code_id as neck_feedback_code,
-                uff_waist.feedback_code_id as waist_feedback_code
+                (SELECT feedback_code_id FROM user_garment_feedback 
+                 WHERE user_garment_id = ug.id AND dimension = 'overall' 
+                 ORDER BY created_at DESC LIMIT 1) as overall_feedback_code,
+                (SELECT feedback_code_id FROM user_garment_feedback 
+                 WHERE user_garment_id = ug.id AND dimension = 'chest' 
+                 ORDER BY created_at DESC LIMIT 1) as chest_feedback_code,
+                (SELECT feedback_code_id FROM user_garment_feedback 
+                 WHERE user_garment_id = ug.id AND dimension = 'sleeve' 
+                 ORDER BY created_at DESC LIMIT 1) as sleeve_feedback_code,
+                (SELECT feedback_code_id FROM user_garment_feedback 
+                 WHERE user_garment_id = ug.id AND dimension = 'neck' 
+                 ORDER BY created_at DESC LIMIT 1) as neck_feedback_code,
+                (SELECT feedback_code_id FROM user_garment_feedback 
+                 WHERE user_garment_id = ug.id AND dimension = 'waist' 
+                 ORDER BY created_at DESC LIMIT 1) as waist_feedback_code
             FROM user_garments ug
             JOIN brands b ON ug.brand_id = b.id
             LEFT JOIN categories c ON ug.category_id = c.id
             LEFT JOIN size_guide_entries_with_brand sge ON 
                 ug.size_guide_entry_id = sge.id
-            LEFT JOIN user_garment_feedback uff_overall ON 
-                ug.id = uff_overall.user_garment_id AND uff_overall.dimension = 'overall'
-            LEFT JOIN user_garment_feedback uff_chest ON 
-                ug.id = uff_chest.user_garment_id AND uff_chest.dimension = 'chest'
-            LEFT JOIN user_garment_feedback uff_sleeve ON 
-                ug.id = uff_sleeve.user_garment_id AND uff_sleeve.dimension = 'sleeve'
-            LEFT JOIN user_garment_feedback uff_neck ON 
-                ug.id = uff_neck.user_garment_id AND uff_neck.dimension = 'neck'
-            LEFT JOIN user_garment_feedback uff_waist ON 
-                ug.id = uff_waist.user_garment_id AND uff_waist.dimension = 'waist'
             WHERE ug.user_id = %s 
             AND ug.owns_garment = true
             ORDER BY c.name, ug.created_at DESC
