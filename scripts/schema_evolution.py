@@ -16,12 +16,13 @@ from pathlib import Path
 import difflib
 import pytz
 
-# Database configuration
+# Database configuration - Updated to use Supabase tailor3
 DB_CONFIG = {
-    "database": "tailor2",
-    "user": "seandavey",
-    "password": "",
-    "host": "localhost"
+    "database": "postgres",
+    "user": "postgres.lbilxlkchzpducggkrxx",
+    "password": "efvTower12",
+    "host": "aws-0-us-east-2.pooler.supabase.com",
+    "port": "6543"
 }
 
 def get_est_timestamp():
@@ -35,6 +36,7 @@ def get_schema_dump():
             "pg_dump",
             "-U", DB_CONFIG["user"],
             "-h", DB_CONFIG["host"],
+            "-p", DB_CONFIG["port"],
             "-d", DB_CONFIG["database"],
             "--schema-only",
             "--no-owner",

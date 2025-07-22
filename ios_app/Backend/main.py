@@ -1,3 +1,17 @@
+"""
+ALTERNATIVE BACKEND FILE - NOT CURRENTLY IN USE
+
+This file contains an alternative FastAPI implementation that uses a local v10_app database.
+The main backend uses app.py with Supabase tailor3 database.
+
+To use this alternative backend:
+1. Update database configuration to use Supabase tailor3
+2. Run: uvicorn main:app --host 0.0.0.0 --port 8007 --reload
+3. Update iOS app to use port 8007
+
+Current active backend: app.py (port 8006)
+"""
+
 from fastapi import FastAPI, HTTPException
 from pydantic import BaseModel
 import psycopg2
@@ -13,12 +27,13 @@ import asyncpg
 # Create the FastAPI app first
 app = FastAPI()
 
-# Database connection settings
+# Database connection settings - Updated to use Supabase tailor3
 DB_CONFIG = {
-    "database": "v10_app",  # Changed from dbname to database for asyncpg
-    "user": "v10_user",
-    "password": "",  # Add your password if needed
-    "host": "localhost"
+    "database": "postgres",
+    "user": "postgres.lbilxlkchzpducggkrxx",
+    "password": "efvTower12",
+    "host": "aws-0-us-east-2.pooler.supabase.com",
+    "port": "6543"
 }
 
 # Create a connection pool
@@ -37,10 +52,11 @@ async def shutdown():
 # Keep the old get_db() function for non-async endpoints
 def get_db():
     return psycopg2.connect(
-        dbname="v10_app",  # psycopg2 uses dbname
-        user="v10_user",
-        password="",
-        host="localhost",
+        dbname="postgres",  # psycopg2 uses dbname
+        user="postgres.lbilxlkchzpducggkrxx",
+        password="efvTower12",
+        host="aws-0-us-east-2.pooler.supabase.com",
+        port="6543",
         cursor_factory=RealDictCursor
     )
 
