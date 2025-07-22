@@ -6,6 +6,6 @@ struct Config {
     static let uniqloURLTemplate = "https://www.uniqlo.com/us/en/products/E{product_code}-000"
     
     // Add default user configuration
-    static let defaultUserId = "2"  // Restored to working user ID
-    static let defaultUserName = "testuser@example.com"
+    static let defaultUserId = "1"  // Updated to user_id=1 after cleanup
+    static let defaultUserName = "user1@example.com"
 } 

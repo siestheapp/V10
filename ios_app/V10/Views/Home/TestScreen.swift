@@ -32,12 +32,12 @@ struct TestScreen: View {
                         }
                     }
                     
-                    // Database Fit Zones Section (from /test/user/2)
+                    // Database Fit Zones Section (from /test/user/1)
                     GroupBox("Database Fit Zones") {
                         VStack(alignment: .leading, spacing: 8) {
                             Text("Direct from user_fit_zones table:")
                                 .font(.headline)
-                            Text("SELECT * FROM user_fit_zones WHERE user_id = 2")
+                            Text("SELECT * FROM user_fit_zones WHERE user_id = 1")
                                 .font(.caption)
                                 .foregroundColor(.gray)
                             
@@ -193,7 +193,7 @@ struct LiveMeasurementsResponse: Decodable {
 
 // API Function
 func fetchUserTestData() async throws -> UserTestData {
-    let url = URL(string: "http://localhost:8006/test/user/2")!
+                let url = URL(string: "http://localhost:8006/test/user/1")!
     let (data, _) = try await URLSession.shared.data(from: url)
     let decoder = JSONDecoder()
     return try decoder.decode(UserTestData.self, from: data)

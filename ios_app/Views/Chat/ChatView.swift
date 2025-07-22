@@ -85,7 +85,7 @@ struct ChatView: View {
                 request.timeoutInterval = 30 // Increased timeout
                 
                 // Use default user ID if not set
-                let userId = userSettings.userId == 0 ? 2 : userSettings.userId
+                let userId = userSettings.userId == 0 ? 1 : userSettings.userId
                 
                 let body = [
                     "message": userMessage,
