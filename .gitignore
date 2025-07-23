@@ -12,3 +12,6 @@ __pycache__/
 !supabase/schema.sql
 *.txt
 *.zip
+
+# Ignore all .specstory files and directories
+.specstory/
