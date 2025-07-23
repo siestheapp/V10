@@ -15,6 +15,7 @@ struct ClosetGarment: Identifiable, Codable {
     let ownsGarment: Bool
     let productName: String?
     let imageUrl: String?
+    let productUrl: String?
     
     enum CodingKeys: String, CodingKey {
         case id, brand, category, size, measurements
@@ -27,6 +28,7 @@ struct ClosetGarment: Identifiable, Codable {
         case ownsGarment = "ownsGarment"
         case productName = "productName"
         case imageUrl = "imageUrl"
+        case productUrl = "productUrl"
     }
 }
 
