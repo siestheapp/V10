@@ -44,6 +44,28 @@ struct GarmentFeedbackView: View {
                 .frame(maxWidth: .infinity, alignment: .leading)
                 .padding(.horizontal)
                 
+                // Overall Feedback Selection
+                VStack(alignment: .leading, spacing: 12) {
+                    Text("How does this garment fit overall?")
+                        .font(.headline)
+                    LazyVGrid(columns: Array(repeating: GridItem(.flexible()), count: 2), spacing: 8) {
+                        ForEach(feedbackOptions, id: \.0) { option in
+                            Button(action: {
+                                selectedFeedback["overall"] = option.0
+                            }) {
+                                Text(option.1)
+                                    .font(.caption)
+                                    .frame(maxWidth: .infinity)
+                                    .padding(.vertical, 12)
+                                    .background(selectedFeedback["overall"] == option.0 ? Color.blue : Color.gray.opacity(0.2))
+                                    .foregroundColor(selectedFeedback["overall"] == option.0 ? .white : .black)
+                                    .cornerRadius(8)
+                            }
+                        }
+                    }
+                }
+                .padding(.horizontal)
+                
                 // Feedback Selection
                 ScrollView {
                     VStack(alignment: .leading, spacing: 20) {
