@@ -194,6 +194,7 @@ async def get_closet(user_id: int):
                 ug.created_at,
                 ug.owns_garment,
                 ug.product_name,
+                ug.image_url,
                 (SELECT feedback_code_id FROM user_garment_feedback 
                  WHERE user_garment_id = ug.id AND dimension = 'overall' 
                  ORDER BY created_at DESC LIMIT 1) as overall_feedback_code,
@@ -277,7 +278,8 @@ async def get_closet(user_id: int):
                 "waistFit": get_feedback_text(g["waist_feedback_code"]),
                 "createdAt": g["created_at"].isoformat() if g["created_at"] else None,
                 "ownsGarment": bool(g["owns_garment"]),
-                "productName": g["product_name"]
+                "productName": g["product_name"],
+                "imageUrl": g["image_url"]
             }
             formatted_garments.append(garment)
         

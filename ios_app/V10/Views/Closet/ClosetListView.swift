@@ -14,6 +14,7 @@ struct ClosetGarment: Identifiable, Codable {
     let createdAt: String?
     let ownsGarment: Bool
     let productName: String?
+    let imageUrl: String?
     
     enum CodingKeys: String, CodingKey {
         case id, brand, category, size, measurements
@@ -25,6 +26,7 @@ struct ClosetGarment: Identifiable, Codable {
         case createdAt = "createdAt"
         case ownsGarment = "ownsGarment"
         case productName = "productName"
+        case imageUrl = "imageUrl"
     }
 }
 
@@ -174,6 +176,34 @@ struct GarmentRow: View {
     var body: some View {
         VStack(alignment: .leading, spacing: 4) {
             HStack {
+                // Garment image
+                if let imageUrl = garment.imageUrl, let url = URL(string: imageUrl) {
+                    AsyncImage(url: url) { image in
+                        image
+                            .resizable()
+                            .aspectRatio(contentMode: .fill)
+                    } placeholder: {
+                        Rectangle()
+                            .fill(Color.gray.opacity(0.3))
+                            .overlay(
+                                Image(systemName: "tshirt")
+                                    .foregroundColor(.gray)
+                            )
+                    }
+                    .frame(width: 60, height: 60)
+                    .clipShape(RoundedRectangle(cornerRadius: 8))
+                } else {
+                    // Placeholder when no image
+                    Rectangle()
+                        .fill(Color.gray.opacity(0.3))
+                        .frame(width: 60, height: 60)
+                        .clipShape(RoundedRectangle(cornerRadius: 8))
+                        .overlay(
+                            Image(systemName: "tshirt")
+                                .foregroundColor(.gray)
+                        )
+                }
+                
                 VStack(alignment: .leading, spacing: 2) {
                     Text(garment.brand)
                         .font(.headline)
