@@ -72,11 +72,6 @@ struct ClosetListView: View {
                             }
                         }
                         .listStyle(PlainListStyle())
-
-                        // Debug label always visible below the list
-                        Text("DEBUG: ios_app/V10/Views/Closet/ClosetListView.swift")
-                            .foregroundColor(.red)
-                            .font(.caption)
                     }
                 }
             }

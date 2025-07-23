@@ -6,7 +6,6 @@ struct GarmentDetailView: View {
     @State private var showingFeedbackView = false
     
     var body: some View {
-        Text("DEBUG: ios_app/V10/Views/Closet/GarmentDetailView.swift")
         NavigationView {
             VStack(alignment: .leading, spacing: 16) {
                 // Brand and Product Name
