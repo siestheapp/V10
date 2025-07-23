@@ -407,8 +407,7 @@ def progressive_feedback(garment_id):
     # Get available dimensions based on size guide measurements
     available_dimensions = []
     if garment['size_guide_id']:
-        # NEW APPROACH: Check what dimensions exist across ALL sizes for this brand
-        # This is more reliable than checking just the specific size
+        # Check what dimensions exist across ALL sizes for this brand
         cursor.execute("""
             SELECT 
                 CASE WHEN COUNT(CASE WHEN chest_min IS NOT NULL OR chest_max IS NOT NULL OR chest_range IS NOT NULL THEN 1 END) > 0 THEN 'chest' END as chest,
@@ -430,7 +429,7 @@ def progressive_feedback(garment_id):
     
     # Default dimensions if no size guide or no measurements
     if not available_dimensions:
-        available_dimensions = ['chest', 'waist', 'length']
+        available_dimensions = ['chest', 'waist']
     
     cursor.close()
     conn.close()

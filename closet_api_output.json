@@ -1,0 +1,57 @@
+[
+  {
+    "id": 4,
+    "brand": "Lululemon",
+    "category": "Tops",
+    "size": "M",
+    "measurements": {
+      "chest": "39-40"
+    },
+    "fitFeedback": "Good Fit",
+    "chestFit": "Good Fit",
+    "sleeveFit": null,
+    "neckFit": null,
+    "waistFit": null,
+    "createdAt": "2025-07-04T04:30:28.504936",
+    "ownsGarment": true,
+    "productName": "Evolution Long-Sleeve Polo Shirt"
+  },
+  {
+    "id": 3,
+    "brand": "Patagonia",
+    "category": "Tops",
+    "size": "XL",
+    "measurements": {
+      "chest": "47-47",
+      "sleeve": "36-36"
+    },
+    "fitFeedback": "Good Fit",
+    "chestFit": "Loose but I Like It",
+    "sleeveFit": "Loose but I Like It",
+    "neckFit": null,
+    "waistFit": null,
+    "createdAt": "2025-07-03T02:22:55.438545",
+    "ownsGarment": true,
+    "productName": "Men's Long-Sleeved Capilene Cool Daily Shirt"
+  },
+  {
+    "id": 1,
+    "brand": "Banana Republic",
+    "category": "Tops",
+    "size": "L",
+    "measurements": {
+      "chest": "41-44",
+      "sleeve": "35-35",
+      "waist": "34-35",
+      "neck": "16-16.50"
+    },
+    "fitFeedback": "Good Fit",
+    "chestFit": "Good Fit",
+    "sleeveFit": "Good Fit",
+    "neckFit": "Good Fit",
+    "waistFit": null,
+    "createdAt": "2025-07-01T05:40:39.420586",
+    "ownsGarment": true,
+    "productName": "Soft Wash Long-Sleeve T-Shirt"
+  }
+]

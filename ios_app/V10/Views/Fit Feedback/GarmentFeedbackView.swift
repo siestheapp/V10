@@ -22,6 +22,7 @@ struct GarmentFeedbackView: View {
     }
     
     var body: some View {
+        Text("DEBUG: V10/Views/Fit Feedback")
         NavigationView {
             VStack(spacing: 20) {
                 // Garment Info Header

@@ -29,6 +29,7 @@ struct FitFeedbackView: View {
     ]
 
     var body: some View {
+        Text("DEBUG: FitFeedbackView")
         VStack(spacing: 20) {
             Text("Fit Feedback")
                 .font(.largeTitle)

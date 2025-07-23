@@ -8,6 +8,7 @@ struct FeedbackSheet: View {
     @State private var customFeedback: String = ""
     
     var body: some View {
+        Text("DEBUG: FeedbackSheet")
         NavigationView {
             Form {
                 Section(header: Text("GARMENT INFO")) {

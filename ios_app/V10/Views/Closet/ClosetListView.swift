@@ -50,27 +50,34 @@ struct ClosetListView: View {
                     Text(error)
                         .foregroundColor(.red)
                 } else {
-                    List {
-                        ForEach(Array(garmentsByCategory.keys.sorted()), id: \.self) { category in
-                            Section {
-                                ForEach(garmentsByCategory[category] ?? []) { garment in
-                                    GarmentRow(garment: garment)
-                                        .contentShape(Rectangle())
-                                        .onTapGesture {
-                                            selectedGarment = garment
-                                        }
+                    VStack {
+                        List {
+                            ForEach(Array(garmentsByCategory.keys.sorted()), id: \.self) { category in
+                                Section {
+                                    ForEach(garmentsByCategory[category] ?? []) { garment in
+                                        GarmentRow(garment: garment)
+                                            .contentShape(Rectangle())
+                                            .onTapGesture {
+                                                selectedGarment = garment
+                                            }
+                                    }
+                                } header: {
+                                    Text(category)
+                                        .font(.title2)
+                                        .fontWeight(.bold)
+                                        .foregroundColor(.primary)
+                                        .textCase(nil)
+                                        .padding(.vertical, 8)
                                 }
-                            } header: {
-                                Text(category)
-                                    .font(.title2)
-                                    .fontWeight(.bold)
-                                    .foregroundColor(.primary)
-                                    .textCase(nil)
-                                    .padding(.vertical, 8)
                             }
                         }
+                        .listStyle(PlainListStyle())
+
+                        // Debug label always visible below the list
+                        Text("DEBUG: ios_app/V10/Views/Closet/ClosetListView.swift")
+                            .foregroundColor(.red)
+                            .font(.caption)
                     }
-                    .listStyle(PlainListStyle())
                 }
             }
             .navigationTitle("My Closet")

@@ -187,6 +187,9 @@ async def get_closet(user_id: int):
                 sge.waist_max,
                 sge.neck_min,
                 sge.neck_max,
+                sge.hip_min,
+                sge.hip_max,
+                sge.center_back_length,
                 ug.fit_feedback,
                 ug.created_at,
                 ug.owns_garment,
@@ -205,7 +208,10 @@ async def get_closet(user_id: int):
                  ORDER BY created_at DESC LIMIT 1) as neck_feedback_code,
                 (SELECT feedback_code_id FROM user_garment_feedback 
                  WHERE user_garment_id = ug.id AND dimension = 'waist' 
-                 ORDER BY created_at DESC LIMIT 1) as waist_feedback_code
+                 ORDER BY created_at DESC LIMIT 1) as waist_feedback_code,
+                (SELECT feedback_code_id FROM user_garment_feedback 
+                 WHERE user_garment_id = ug.id AND dimension = 'hip' 
+                 ORDER BY created_at DESC LIMIT 1) as hip_feedback_code
             FROM user_garments ug
             JOIN brands b ON ug.brand_id = b.id
             LEFT JOIN categories c ON ug.category_id = c.id
@@ -239,33 +245,24 @@ async def get_closet(user_id: int):
         for g in garments:
             measurements = {}
             
-            # Add chest measurement if available
-            if g["chest_min"] is not None and g["chest_max"] is not None:
-                chest_min = format_measurement(float(g["chest_min"]))
-                chest_max = format_measurement(float(g["chest_max"]))
-                measurements["chest"] = f"{chest_min}-{chest_max}"
-            elif g["chest_min"] is not None:
-                measurements["chest"] = format_measurement(float(g["chest_min"]))
-            
-            # Add sleeve measurement if available
-            if g["sleeve_min"] is not None and g["sleeve_max"] is not None:
-                sleeve_min = format_measurement(float(g["sleeve_min"]))
-                sleeve_max = format_measurement(float(g["sleeve_max"]))
-                measurements["sleeve"] = f"{sleeve_min}-{sleeve_max}"
-            
-            # Add waist measurement if available
-            if g["waist_min"] is not None and g["waist_max"] is not None:
-                waist_min = format_measurement(float(g["waist_min"]))
-                waist_max = format_measurement(float(g["waist_max"]))
-                measurements["waist"] = f"{waist_min}-{waist_max}"
-                
-            # Add neck measurement if available
-            if g["neck_min"] is not None and g["neck_max"] is not None:
-                neck_min = format_measurement(float(g["neck_min"]))
-                neck_max = format_measurement(float(g["neck_max"]))
-                measurements["neck"] = f"{neck_min}-{neck_max}"
-            elif g["neck_min"] is not None:
-                measurements["neck"] = format_measurement(float(g["neck_min"]))
+            # Build measurements dictionary for all possible dimensions
+            dimension_columns = [
+                ("chest", "chest_min", "chest_max"),
+                ("waist", "waist_min", "waist_max"),
+                ("sleeve", "sleeve_min", "sleeve_max"),
+                ("neck", "neck_min", "neck_max"),
+                ("hip", "hip_min", "hip_max"),
+                ("length", "center_back_length", "center_back_length")
+            ]
+            for dim, min_col, max_col in dimension_columns:
+                min_val = g.get(min_col)
+                max_val = g.get(max_col)
+                if min_val is not None and max_val is not None:
+                    measurements[dim] = f"{format_measurement(float(min_val))}-{format_measurement(float(max_val))}"
+                elif min_val is not None:
+                    measurements[dim] = format_measurement(float(min_val))
+                elif max_val is not None:
+                    measurements[dim] = format_measurement(float(max_val))
             
             garment = {
                 "id": g["garment_id"],
@@ -273,7 +270,7 @@ async def get_closet(user_id: int):
                 "category": g["category"],
                 "size": g["size"],
                 "measurements": measurements,
-                "fitFeedback": g["fit_feedback"],
+                "fitFeedback": get_feedback_text(g["overall_feedback_code"]),
                 "chestFit": get_feedback_text(g["chest_feedback_code"]),
                 "sleeveFit": get_feedback_text(g["sleeve_feedback_code"]),
                 "neckFit": get_feedback_text(g["neck_feedback_code"]),

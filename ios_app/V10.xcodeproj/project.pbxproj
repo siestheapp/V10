@@ -10,9 +10,22 @@
 		594B81152D3FEEBA0019B846 /* V10.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = V10.app; sourceTree = BUILT_PRODUCTS_DIR; };
 /* End PBXFileReference section */
 
+/* Begin PBXFileSystemSynchronizedBuildFileExceptionSet section */
+		592427B42E310E270008F05A /* Exceptions for "V10" folder in "V10" target */ = {
+			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
+			membershipExceptions = (
+				Info.plist,
+			);
+			target = 594B81142D3FEEBA0019B846 /* V10 */;
+		};
+/* End PBXFileSystemSynchronizedBuildFileExceptionSet section */
+
 /* Begin PBXFileSystemSynchronizedRootGroup section */
 		594B81172D3FEEBA0019B846 /* V10 */ = {
 			isa = PBXFileSystemSynchronizedRootGroup;
+			exceptions = (
+				592427B42E310E270008F05A /* Exceptions for "V10" folder in "V10" target */,
+			);
 			path = V10;
 			sourceTree = "<group>";
 		};
