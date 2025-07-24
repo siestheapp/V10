@@ -124,8 +124,8 @@ class BodyMeasurementEstimator:
     
     def estimate_chest_measurement(self, user_id: int) -> Optional[float]:
         """
-        Estimate chest measurement based on user's garment data and fit feedback.
-        This is the most reliable measurement since garment chest closely correlates with body chest.
+        Estimate body chest circumference from garment chest measurements.
+        This converts garment chest measurements to body chest measurements that match what a tailor would measure.
         """
         try:
             conn = self.get_connection()
@@ -224,7 +224,8 @@ class BodyMeasurementEstimator:
             # Calculate weighted average of body measurements
             estimated_chest = self._calculate_confidence_weighted_average(body_measurements)
             
-            self.logger.info(f"Final estimated chest measurement for user {user_id}: {estimated_chest}\"")
+            self.logger.info(f"Final estimated body chest circumference for user {user_id}: {estimated_chest:.1f}\"")
+            self.logger.info(f"NOTE: This represents body chest circumference that a tailor would measure.")
             
             cursor.close()
             conn.close()
@@ -311,8 +312,8 @@ class BodyMeasurementEstimator:
     
     def estimate_neck_measurement(self, user_id: int) -> Optional[float]:
         """
-        Estimate neck measurement using both specific neck feedback AND inferring from overall fit.
-        If user rates a garment "Good Fit" overall, we assume the neck is also acceptable.
+        Estimate body neck circumference from garment neck measurements.
+        This converts garment neck openings to body neck measurements that match what a tailor would measure.
         """
         try:
             conn = self.get_connection()
@@ -368,8 +369,8 @@ class BodyMeasurementEstimator:
             self.logger.info(f"  - {specific_feedback_count} with specific neck feedback")
             self.logger.info(f"  - {inferred_feedback_count} inferred from overall 'Good Fit'")
             
-            # Process each garment
-            body_measurements = []
+            # Process each garment to estimate body neck circumference
+            body_neck_measurements = []
             for garment in garments:
                 (brand, product_name, size_label, neck_min, neck_max, neck_range, 
                  guide_level, neck_feedback, overall_feedback, feedback_source) = garment
@@ -392,50 +393,53 @@ class BodyMeasurementEstimator:
                 else:
                     continue
                 
-                # For neck, we use smaller deltas since garment neck opening != body neck circumference
-                neck_feedback_delta = self.FEEDBACK_DELTAS.get(feedback_to_use, 0.0) * 0.3  # Reduce impact
+                # CONVERSION TO BODY NECK CIRCUMFERENCE:
+                # Garment neck openings are designed to fit over the head, so they're typically
+                # 2-3" larger than body neck circumference for dress shirts
                 
-                # Also use ease-based conversion
-                if feedback_to_use == "Good Fit":
-                    fit_type = 'regular_fit'
-                elif feedback_to_use in ["Tight but I Like It", "Too Tight"]:
-                    fit_type = 'tight_fit'
-                elif feedback_to_use in ["Loose but I Like It", "Slightly Loose"]:
-                    fit_type = 'loose_fit'
-                else:
-                    fit_type = 'regular_fit'
+                neck_ease = 2.5  # Standard ease between garment neck opening and body neck
                 
-                # For neck, ease conversion is less reliable, so we weight it less
-                body_estimate_ease = self.garment_to_body_measurement(garment_neck, fit_type)
-                body_estimate_feedback = garment_neck + neck_feedback_delta
+                # Adjust ease based on feedback about fit
+                if feedback_to_use == "Too Tight" or feedback_to_use == "Tight but I Like It":
+                    # If neck feels tight, garment opening is closer to body size
+                    adjusted_ease = neck_ease - 0.75
+                elif feedback_to_use == "Too Loose" or feedback_to_use == "Loose but I Like It":
+                    # If neck feels loose, garment opening is much larger than body
+                    adjusted_ease = neck_ease + 0.75
+                elif feedback_to_use == "Slightly Loose":
+                    adjusted_ease = neck_ease + 0.25
+                else:  # Good Fit
+                    adjusted_ease = neck_ease
                 
-                # Weight the feedback method more heavily for neck since ease is less reliable
-                body_estimate_combined = (body_estimate_feedback * 0.7 + body_estimate_ease * 0.3)
+                # Calculate body neck circumference: Garment neck - ease
+                body_neck_estimate = garment_neck - adjusted_ease
                 
                 base_confidence = self._calculate_confidence(feedback_to_use, len(garments), guide_level)
-                final_confidence = base_confidence * confidence_multiplier * 0.6  # Overall lower confidence for neck
+                final_confidence = base_confidence * confidence_multiplier * 0.7  # Lower confidence for neck conversion
                 
-                body_measurements.append({
-                    'measurement': body_estimate_combined,
-                    'garment_measurement': garment_neck,
+                body_neck_measurements.append({
+                    'measurement': body_neck_estimate,
+                    'garment_neck': garment_neck,
+                    'neck_ease': adjusted_ease,
                     'feedback': feedback_to_use,
                     'feedback_source': feedback_source,
-                    'feedback_delta': neck_feedback_delta,
                     'brand': brand,
                     'product': product_name,
                     'size': size_label,
                     'confidence': final_confidence
                 })
+                
+                self.logger.info(f"    Garment neck: {garment_neck}\", Ease: {adjusted_ease}\", "
+                               f"Body neck estimate: {body_neck_estimate:.1f}\"")
             
-            if not body_measurements:
+            if not body_neck_measurements:
                 return None
             
-            estimated_neck = self._calculate_confidence_weighted_average(body_measurements)
+            estimated_neck = self._calculate_confidence_weighted_average(body_neck_measurements)
             
-            self.logger.info(f"Estimated neck measurement for user {user_id}: {estimated_neck:.1f}\". "
+            self.logger.info(f"Estimated body neck circumference for user {user_id}: {estimated_neck:.1f}\". "
                            f"Based on {specific_feedback_count} specific + {inferred_feedback_count} inferred feedback points.")
-            self.logger.warning(f"NOTE: Neck estimates are less reliable than chest estimates. "
-                              f"Garment neck measurements ≠ body neck circumference.")
+            self.logger.info(f"NOTE: This represents body neck circumference that a tailor would measure.")
             
             cursor.close()
             conn.close()
@@ -448,9 +452,8 @@ class BodyMeasurementEstimator:
 
     def estimate_sleeve_measurement(self, user_id: int) -> Optional[float]:
         """
-        Estimate sleeve measurement using both specific sleeve feedback AND inferring from overall fit.
-        If user rates a garment "Good Fit" overall, we assume the sleeve is also acceptable.
-        Note: This estimates garment sleeve length preference, not body arm measurements.
+        Estimate body arm length (shoulder to wrist) from garment sleeve measurements.
+        This converts garment sleeve lengths to body arm measurements that match what a tailor would measure.
         """
         try:
             conn = self.get_connection()
@@ -506,8 +509,8 @@ class BodyMeasurementEstimator:
             self.logger.info(f"  - {specific_feedback_count} with specific sleeve feedback")
             self.logger.info(f"  - {inferred_feedback_count} inferred from overall 'Good Fit'")
             
-            # Process each garment
-            sleeve_measurements = []
+            # Process each garment to estimate body arm length
+            body_arm_measurements = []
             for garment in garments:
                 (brand, product_name, size_label, sleeve_min, sleeve_max, sleeve_range, 
                  guide_level, sleeve_feedback, overall_feedback, feedback_source) = garment
@@ -530,57 +533,61 @@ class BodyMeasurementEstimator:
                 else:
                     continue
                 
-                # For sleeve length preference, use feedback deltas
-                sleeve_feedback_delta = self.FEEDBACK_DELTAS.get(feedback_to_use, 0.0)
+                # CONVERSION TO BODY ARM LENGTH:
+                # For "Good Fit" sleeves, subtract typical sleeve ease (1.5-2")
+                # Adjust based on feedback about length preference
                 
-                # Also use ease-based conversion (though less applicable for sleeve length)
-                if feedback_to_use == "Good Fit":
-                    fit_type = 'regular_fit'
-                elif feedback_to_use in ["Tight but I Like It", "Too Tight"]:
-                    fit_type = 'tight_fit'
-                elif feedback_to_use in ["Loose but I Like It", "Slightly Loose"]:
-                    fit_type = 'loose_fit'
-                else:
-                    fit_type = 'regular_fit'
+                sleeve_ease = 1.75  # Standard sleeve ease for arm length conversion
                 
-                # For sleeve, the ease conversion is less meaningful, so we weight feedback more heavily
-                sleeve_estimate_feedback = garment_sleeve + sleeve_feedback_delta
-                sleeve_estimate_ease = self.garment_to_body_measurement(garment_sleeve, fit_type)
+                # Adjust ease based on feedback
+                if feedback_to_use == "Too Tight" or feedback_to_use == "Tight but I Like It":
+                    # If sleeve feels tight/short, they prefer longer sleeves, so less ease
+                    adjusted_ease = sleeve_ease - 0.5
+                elif feedback_to_use == "Too Loose" or feedback_to_use == "Loose but I Like It":
+                    # If sleeve feels loose/long, they prefer shorter sleeves, so more ease
+                    adjusted_ease = sleeve_ease + 0.5
+                elif feedback_to_use == "Slightly Loose":
+                    adjusted_ease = sleeve_ease + 0.25
+                else:  # Good Fit
+                    adjusted_ease = sleeve_ease
                 
-                # Weight the feedback method much more heavily for sleeve since ease is not very applicable
-                sleeve_estimate_combined = (sleeve_estimate_feedback * 0.8 + sleeve_estimate_ease * 0.2)
+                # Calculate body arm length: Garment sleeve - ease
+                body_arm_estimate = garment_sleeve - adjusted_ease
                 
                 base_confidence = self._calculate_confidence(feedback_to_use, len(garments), guide_level)
-                final_confidence = base_confidence * confidence_multiplier * 0.8  # Moderate confidence for sleeve
+                final_confidence = base_confidence * confidence_multiplier
                 
-                sleeve_measurements.append({
-                    'measurement': sleeve_estimate_combined,
-                    'garment_measurement': garment_sleeve,
+                body_arm_measurements.append({
+                    'measurement': body_arm_estimate,
+                    'garment_sleeve': garment_sleeve,
+                    'sleeve_ease': adjusted_ease,
                     'feedback': feedback_to_use,
                     'feedback_source': feedback_source,
-                    'feedback_delta': sleeve_feedback_delta,
                     'brand': brand,
                     'product': product_name,
                     'size': size_label,
                     'confidence': final_confidence
                 })
+                
+                self.logger.info(f"    Garment sleeve: {garment_sleeve}\", Ease: {adjusted_ease}\", "
+                               f"Body arm estimate: {body_arm_estimate:.1f}\"")
             
-            if not sleeve_measurements:
+            if not body_arm_measurements:
                 return None
             
-            estimated_sleeve = self._calculate_confidence_weighted_average(sleeve_measurements)
+            estimated_arm_length = self._calculate_confidence_weighted_average(body_arm_measurements)
             
-            self.logger.info(f"Estimated sleeve length preference for user {user_id}: {estimated_sleeve:.1f}\". "
+            self.logger.info(f"Estimated body arm length for user {user_id}: {estimated_arm_length:.1f}\". "
                            f"Based on {specific_feedback_count} specific + {inferred_feedback_count} inferred feedback points.")
-            self.logger.info(f"NOTE: This represents preferred garment sleeve length, not body arm measurements.")
+            self.logger.info(f"NOTE: This represents body arm length (shoulder to wrist) that a tailor would measure.")
             
             cursor.close()
             conn.close()
             
-            return estimated_sleeve
+            return estimated_arm_length
             
         except Exception as e:
-            self.logger.error(f"Error estimating sleeve measurement for user {user_id}: {str(e)}")
+            self.logger.error(f"Error estimating arm length for user {user_id}: {str(e)}")
             return None
     
     def _parse_measurement(self, min_val: Optional[float], max_val: Optional[float], range_str: Optional[str]) -> Optional[float]:
