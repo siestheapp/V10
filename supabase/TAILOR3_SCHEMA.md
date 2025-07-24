@@ -3,7 +3,7 @@
 ## Overview
 This document describes the complete database schema for the V10 app (tailor3), including tables, relationships, and data structures. This schema is more normalized and scalable than tailor2, supporting richer ingestion, analytics, user action tracking with undo functionality, and future expansion.
 
-**Current Status**: 18 tables, 7 views, with comprehensive action tracking and undo capabilities.
+**Current Status**: 18 tables, 9 views, with comprehensive action tracking, undo capabilities, and measurement coverage analysis.
 
 ## Database: `tailor3` (PostgreSQL)
 
@@ -262,6 +262,24 @@ Simplified view of user garments for basic queries.
 #### `user_latest_feedback_by_dimension`
 Shows the most recent feedback by dimension for each user garment.
 
+#### `brand_user_measurement_comparison`
+Comprehensive view comparing what measurements each brand offers vs what users have provided feedback for. Includes:
+- `brand_measurements_available` - dimensions covered by brand's size guide
+- `user_measurements_entered` - dimensions user has provided feedback for
+- `user_dimension_feedback_missing` - what brand offers but user hasn't provided
+- `user_has_brand_missing` - what user provided but brand doesn't offer (e.g., "overall")
+- `matching_measurements` - overlap between brand and user
+- `coverage_percentage` - completion percentage of user feedback
+- `has_overlap` - boolean indicating if there's any overlap
+
+#### `brand_measurement_coverage_summary`
+Aggregated statistics by brand showing:
+- `total_garments` - number of garments per brand
+- `avg_coverage_percentage` - average feedback completion rate
+- `fully_covered_garments` - count of 100% complete garments
+- `no_coverage_garments` - count of 0% complete garments
+- `most_missing_dimension` - most commonly missing feedback dimension
+
 ---
 
 ## Key Schema Features
@@ -316,6 +334,8 @@ Shows the most recent feedback by dimension for each user garment.
 - ✅ Added `image_url` field to `user_garments` for product images
 - ✅ Created `user_action_history` view for easy action querying
 - ✅ Implemented complete audit trail for user feedback changes
+- ✅ Added measurement coverage analysis views (`brand_user_measurement_comparison`, `brand_measurement_coverage_summary`)
+- ✅ Dynamic calculation of user feedback completeness vs brand size guide coverage
 
 ## Future Improvements Needed
 - Add more measurement types and garment attributes as needed

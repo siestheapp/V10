@@ -149,6 +149,7 @@ def get_database_snapshot() -> Dict[str, Any]:
         'timestamp': get_est_timestamp().isoformat(),
         'database_name': 'tailor3',
         'tables': {},
+        'views': {},
         'relationships': get_table_relationships(cursor),
         'insights': get_user_insights(cursor)
     }
@@ -187,6 +188,40 @@ def get_database_snapshot() -> Dict[str, Any]:
         except Exception as e:
             print(f"Error processing table {table}: {e}")
             snapshot['tables'][table] = {'error': str(e)}
+    
+    # Get view information
+    views = [
+        'user_action_history',
+        'size_guide_entries_with_brand',
+        'user_feedback_by_dimension',
+        'user_garments_actual_feedback',
+        'user_garments_feedback_summary',
+        'user_garments_simple',
+        'user_latest_feedback_by_dimension',
+        'brand_user_measurement_comparison',
+        'brand_measurement_coverage_summary'
+    ]
+    
+    for view in views:
+        try:
+            # Get view definition
+            cursor.execute("""
+                SELECT definition 
+                FROM pg_views 
+                WHERE viewname = %s AND schemaname = 'public'
+            """, (view,))
+            definition = cursor.fetchone()
+            
+            # Get sample data from view
+            sample_data = get_sample_data(cursor, view, 3)
+            
+            snapshot['views'][view] = {
+                'definition': definition[0] if definition else None,
+                'sample_data': sample_data
+            }
+        except Exception as e:
+            print(f"Error processing view {view}: {e}")
+            snapshot['views'][view] = {'error': str(e)}
     
     # Sample data from key tables
     sample_data = {}
@@ -274,6 +309,27 @@ def get_database_snapshot() -> Dict[str, Any]:
     for row in sample_data.get('user_actions', [])[:3]:
         print(row)
     
+    # Sample data from new measurement views
+    cursor.execute("""
+        SELECT brand_name, product_name, user_dimension_feedback_missing, coverage_percentage 
+        FROM brand_user_measurement_comparison 
+        LIMIT 3
+    """)
+    measurement_comparison = cursor.fetchall()
+    print("\nSample brand_user_measurement_comparison:")
+    for row in measurement_comparison:
+        print(row)
+    
+    cursor.execute("""
+        SELECT brand_name, total_garments, avg_coverage_percentage, most_missing_dimension
+        FROM brand_measurement_coverage_summary 
+        LIMIT 3
+    """)
+    coverage_summary = cursor.fetchall()
+    print("\nSample brand_measurement_coverage_summary:")
+    for row in coverage_summary:
+        print(row)
+    
     cursor.close()
     conn.close()
     
@@ -304,6 +360,14 @@ def print_summary(snapshot: Dict[str, Any]):
     for table_name, table_data in snapshot['tables'].items():
         if 'row_count' in table_data:
             print(f"  {table_name}: {table_data['row_count']} rows")
+    
+    print("\nViews Available:")
+    for view_name, view_data in snapshot.get('views', {}).items():
+        if 'error' not in view_data:
+            sample_count = len(view_data.get('sample_data', []))
+            print(f"  {view_name}: {sample_count} sample rows")
+        else:
+            print(f"  {view_name}: ERROR")
     
     print("\nUser Insights:")
     insights = snapshot['insights']
