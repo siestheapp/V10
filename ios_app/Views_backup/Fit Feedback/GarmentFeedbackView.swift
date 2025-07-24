@@ -228,7 +228,9 @@ struct GarmentFeedbackView: View {
             waistFit: nil,
             createdAt: "2024-02-18",
             ownsGarment: true,
-            productName: "Classic Oxford Shirt"
+            productName: "Classic Oxford Shirt",
+            imageUrl: nil,
+            productUrl: nil
         ),
         isPresented: .constant(true)
     )
