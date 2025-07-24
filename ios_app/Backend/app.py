@@ -1913,23 +1913,23 @@ async def get_user_body_measurements(user_id: str):
     try:
         # Initialize estimator with database config
         estimator = BodyMeasurementEstimator(DB_CONFIG)
-        # Estimate chest, neck, and sleeve measurements
+        # Estimate chest, neck, and arm length measurements
         chest_estimate = estimator.estimate_chest_measurement(int(user_id))
         neck_estimate = estimator.estimate_neck_measurement(int(user_id))
-        sleeve_estimate = estimator.estimate_sleeve_measurement(int(user_id))
+        arm_length_estimate = estimator.estimate_sleeve_measurement(int(user_id))
         # If all are None, return message
-        if chest_estimate is None and neck_estimate is None and sleeve_estimate is None:
+        if chest_estimate is None and neck_estimate is None and arm_length_estimate is None:
             return {
                 "estimated_chest": None,
                 "estimated_neck": None,
-                "estimated_sleeve": None,
+                "estimated_arm_length": None,
                 "unit": "in",
                 "message": "No sufficient data to estimate body measurements"
             }
         return {
             "estimated_chest": round(chest_estimate, 2) if chest_estimate is not None else None,
             "estimated_neck": round(neck_estimate, 2) if neck_estimate is not None else None,
-            "estimated_sleeve": round(sleeve_estimate, 2) if sleeve_estimate is not None else None,
+            "estimated_arm_length": round(arm_length_estimate, 2) if arm_length_estimate is not None else None,
             "unit": "in"
         }
     except Exception as e:

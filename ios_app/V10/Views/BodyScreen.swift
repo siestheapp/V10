@@ -3,7 +3,7 @@ import SwiftUI
 class BodyMeasurementViewModel: ObservableObject {
     @Published var estimatedChest: String = ""
     @Published var estimatedNeck: String = ""
-    @Published var estimatedSleeve: String = ""
+    @Published var estimatedArmLength: String = ""
     @Published var isLoading = false
     @Published var error: String?
     @Published var hasData = false
@@ -60,12 +60,12 @@ class BodyMeasurementViewModel: ObservableObject {
                             self.estimatedNeck = String(format: "%.1f in", neck)
                         }
                         
-                        if let sleeve = json["estimated_sleeve"] as? Double {
-                            self.estimatedSleeve = String(format: "%.1f in", sleeve)
+                        if let armLength = json["estimated_arm_length"] as? Double {
+                            self.estimatedArmLength = String(format: "%.1f in", armLength)
                         }
                         
                         // Check if we have any measurements
-                        if !self.estimatedChest.isEmpty || !self.estimatedNeck.isEmpty || !self.estimatedSleeve.isEmpty {
+                        if !self.estimatedChest.isEmpty || !self.estimatedNeck.isEmpty || !self.estimatedArmLength.isEmpty {
                             self.hasData = true
                         } else {
                             self.error = "No measurement data available"
@@ -121,7 +121,7 @@ struct BodyScreen: View {
                 VStack(spacing: 20) {
                     MeasurementCard(title: "Chest", value: viewModel.estimatedChest, icon: "person.fill")
                     MeasurementCard(title: "Neck", value: viewModel.estimatedNeck, icon: "person.crop.circle")
-                    MeasurementCard(title: "Arm Length", value: viewModel.estimatedSleeve, icon: "ruler")
+                    MeasurementCard(title: "Arm Length", value: viewModel.estimatedArmLength, icon: "ruler")
                     
                     Text("Based on your garment feedback")
                         .font(.caption)
