@@ -97,7 +97,7 @@ def add_garment():
             user_email = request.form['user_email']
             brand_name = request.form['brand_name']
             category_name = request.form['category_name']
-            subcategory_name = request.form.get('subcategory_name', '')
+            subcategory_name = request.form.get('subcategory_name', '').strip()
             gender = request.form['gender']
             size_label = request.form['size_label']
             
