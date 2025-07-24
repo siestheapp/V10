@@ -3,6 +3,7 @@ import SwiftUI
 struct GarmentFeedbackView: View {
     let garment: ClosetGarment
     @Binding var isPresented: Bool
+    var onFeedbackSubmitted: (() -> Void)? = nil
     @State private var selectedFeedback: [String: Int] = [:]
     @State private var isSubmitting = false
     @State private var showConfirmation = false
@@ -19,6 +20,49 @@ struct GarmentFeedbackView: View {
     // Available measurements for this garment
     private var availableMeasurements: [String] {
         return Array(garment.measurements.keys).sorted()
+    }
+    
+    // Convert feedback text to numeric value
+    private func feedbackTextToValue(_ feedbackText: String?) -> Int? {
+        guard let text = feedbackText else { return nil }
+        
+        switch text {
+        case "Too Tight": return 1
+        case "Tight but I Like It": return 2
+        case "Good", "Good Fit": return 3
+        case "Loose but I Like It": return 4
+        case "Too Loose": return 5
+        default: return nil
+        }
+    }
+    
+    // Pre-populate existing feedback values
+    private func loadExistingFeedback() {
+        var existingFeedback: [String: Int] = [:]
+        
+        // Load overall feedback
+        if let overallValue = feedbackTextToValue(garment.fitFeedback) {
+            existingFeedback["overall"] = overallValue
+        }
+        
+        // Load dimension-specific feedback
+        if let chestValue = feedbackTextToValue(garment.chestFit) {
+            existingFeedback["chest"] = chestValue
+        }
+        
+        if let sleeveValue = feedbackTextToValue(garment.sleeveFit) {
+            existingFeedback["sleeve"] = sleeveValue
+        }
+        
+        if let neckValue = feedbackTextToValue(garment.neckFit) {
+            existingFeedback["neck"] = neckValue
+        }
+        
+        if let waistValue = feedbackTextToValue(garment.waistFit) {
+            existingFeedback["waist"] = waistValue
+        }
+        
+        selectedFeedback = existingFeedback
     }
     
     var body: some View {
@@ -43,70 +87,83 @@ struct GarmentFeedbackView: View {
                 .frame(maxWidth: .infinity, alignment: .leading)
                 .padding(.horizontal)
                 
-                // Overall Feedback Selection
+                // Overall Feedback Section
                 VStack(alignment: .leading, spacing: 12) {
-                    Text("How does this garment fit overall?")
+                    Text("Overall Fit")
                         .font(.headline)
-                    LazyVGrid(columns: Array(repeating: GridItem(.flexible()), count: 2), spacing: 8) {
+                        .padding(.horizontal)
+                    
+                    VStack(spacing: 8) {
                         ForEach(feedbackOptions, id: \.0) { option in
                             Button(action: {
                                 selectedFeedback["overall"] = option.0
                             }) {
-                                Text(option.1)
-                                    .font(.caption)
-                                    .frame(maxWidth: .infinity)
-                                    .padding(.vertical, 12)
-                                    .background(selectedFeedback["overall"] == option.0 ? Color.blue : Color.gray.opacity(0.2))
-                                    .foregroundColor(selectedFeedback["overall"] == option.0 ? .white : .black)
-                                    .cornerRadius(8)
+                                HStack {
+                                    Text(option.1)
+                                        .foregroundColor(selectedFeedback["overall"] == option.0 ? .white : .primary)
+                                    Spacer()
+                                    if selectedFeedback["overall"] == option.0 {
+                                        Image(systemName: "checkmark")
+                                            .foregroundColor(.white)
+                                    }
+                                }
+                                .padding()
+                                .background(
+                                    selectedFeedback["overall"] == option.0 
+                                    ? Color.blue 
+                                    : Color(.systemGray6)
+                                )
+                                .cornerRadius(8)
                             }
                         }
                     }
+                    .padding(.horizontal)
                 }
-                .padding(.horizontal)
                 
-                // Feedback Selection
+                // Measurements Feedback Section
                 ScrollView {
-                    VStack(alignment: .leading, spacing: 20) {
+                    LazyVStack(alignment: .leading, spacing: 20) {
                         ForEach(availableMeasurements, id: \.self) { measurement in
                             VStack(alignment: .leading, spacing: 12) {
                                 HStack {
-                                    Text("How does it fit in the \(measurement)?")
+                                    Text("\(measurement.capitalized) Fit")
                                         .font(.headline)
-                                    
                                     Spacer()
-                                    
                                     if let measurementValue = garment.measurements[measurement] {
                                         Text(measurementValue)
-                                            .font(.caption)
+                                            .font(.subheadline)
                                             .foregroundColor(.gray)
-                                            .padding(.horizontal, 8)
-                                            .padding(.vertical, 4)
-                                            .background(Color.gray.opacity(0.1))
-                                            .cornerRadius(4)
                                     }
                                 }
                                 
-                                LazyVGrid(columns: Array(repeating: GridItem(.flexible()), count: 2), spacing: 8) {
+                                VStack(spacing: 8) {
                                     ForEach(feedbackOptions, id: \.0) { option in
                                         Button(action: {
                                             selectedFeedback[measurement] = option.0
                                         }) {
-                                            Text(option.1)
-                                                .font(.caption)
-                                                .frame(maxWidth: .infinity)
-                                                .padding(.vertical, 12)
-                                                .background(selectedFeedback[measurement] == option.0 ? Color.blue : Color.gray.opacity(0.2))
-                                                .foregroundColor(selectedFeedback[measurement] == option.0 ? .white : .black)
-                                                .cornerRadius(8)
+                                            HStack {
+                                                Text(option.1)
+                                                    .foregroundColor(selectedFeedback[measurement] == option.0 ? .white : .primary)
+                                                Spacer()
+                                                if selectedFeedback[measurement] == option.0 {
+                                                    Image(systemName: "checkmark")
+                                                        .foregroundColor(.white)
+                                                }
+                                            }
+                                            .padding()
+                                            .background(
+                                                selectedFeedback[measurement] == option.0 
+                                                ? Color.blue 
+                                                : Color(.systemGray6)
+                                            )
+                                            .cornerRadius(8)
                                         }
                                     }
                                 }
                             }
-                            .padding(.vertical, 8)
+                            .padding(.horizontal)
                         }
                     }
-                    .padding(.horizontal)
                 }
                 
                 // Submit Button
@@ -148,10 +205,14 @@ struct GarmentFeedbackView: View {
             }
             .alert("Feedback Submitted", isPresented: $showConfirmation) {
                 Button("OK") {
+                    onFeedbackSubmitted?()
                     isPresented = false
                 }
             } message: {
                 Text("Your feedback has been saved successfully!")
+            }
+            .onAppear {
+                loadExistingFeedback()
             }
         }
     }

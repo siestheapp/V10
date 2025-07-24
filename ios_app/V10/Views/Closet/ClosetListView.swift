@@ -98,7 +98,11 @@ struct ClosetListView: View {
                     isPresented: Binding(
                         get: { selectedGarment != nil },
                         set: { if !$0 { selectedGarment = nil } }
-                    )
+                    ),
+                    onGarmentUpdated: {
+                        // Refresh garment data when feedback is updated
+                        loadGarments()
+                    }
                 )
             }
             .sheet(isPresented: $showingFinds) {

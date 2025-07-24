@@ -3,6 +3,7 @@ import SwiftUI
 struct GarmentDetailView: View {
     let garment: ClosetGarment
     @Binding var isPresented: Bool
+    var onGarmentUpdated: (() -> Void)? = nil  // Add callback
     @State private var showingFeedbackView = false
     
     var body: some View {
@@ -101,7 +102,11 @@ struct GarmentDetailView: View {
             .sheet(isPresented: $showingFeedbackView) {
                 GarmentFeedbackView(
                     garment: garment,
-                    isPresented: $showingFeedbackView
+                    isPresented: $showingFeedbackView,
+                    onFeedbackSubmitted: {
+                        // Call the callback to refresh parent view
+                        onGarmentUpdated?()
+                    }
                 )
             }
         }

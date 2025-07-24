@@ -3,6 +3,7 @@ import SwiftUI
 struct GarmentFeedbackView: View {
     let garment: ClosetGarment
     @Binding var isPresented: Bool
+    var onFeedbackSubmitted: (() -> Void)? = nil  // Add callback
     @State private var selectedFeedback: [String: Int] = [:]
     @State private var isSubmitting = false
     @State private var showConfirmation = false
@@ -149,6 +150,8 @@ struct GarmentFeedbackView: View {
             }
             .alert("Feedback Submitted", isPresented: $showConfirmation) {
                 Button("OK") {
+                    // Call the callback to refresh parent view
+                    onFeedbackSubmitted?()
                     isPresented = false
                 }
             } message: {
