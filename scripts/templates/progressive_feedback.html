@@ -30,7 +30,6 @@
                                 <span class="badge bg-primary me-2">1</span>
                                 Overall, how does this garment fit?
                             </h6>
-                            
                             <div class="row">
                                 {% for code in overall_fit_codes %}
                                 <div class="col-md-6 col-lg-4 mb-3">
@@ -38,32 +37,30 @@
                                         <input class="form-check-input" type="radio" name="overall_fit" 
                                                id="overall_{{ code.id }}" value="{{ code.id }}" 
                                                onchange="handleOverallFitChange(this)">
-                                        <label class="form-check-label" for="overall_{{ code.id }}">
-                                            <div class="card h-100 fit-option">
-                                                <div class="card-body text-center">
-                                                    {% if code.feedback_text == 'Good Fit' %}
-                                                        <i class="fas fa-check-circle text-success fa-2x mb-2"></i>
-                                                    {% elif code.feedback_text == 'Tight but I Like It' %}
-                                                        <i class="fas fa-heart text-warning fa-2x mb-2"></i>
-                                                    {% elif code.feedback_text == 'Loose but I Like It' %}
-                                                        <i class="fas fa-heart text-info fa-2x mb-2"></i>
-                                                    {% elif code.feedback_text == 'Too Tight' %}
-                                                        <i class="fas fa-compress-arrows-alt text-danger fa-2x mb-2"></i>
-                                                    {% elif code.feedback_text == 'Too Loose' %}
-                                                        <i class="fas fa-expand-arrows-alt text-secondary fa-2x mb-2"></i>
-                                                    {% endif %}
-                                                    <h6>{{ code.feedback_text }}</h6>
-                                                </div>
+                                        <div class="card h-100 fit-option">
+                                            <div class="card-body text-center">
+                                                {% if code.feedback_text == 'Good Fit' %}
+                                                    <i class="fas fa-check-circle text-success fa-2x mb-2"></i>
+                                                {% elif code.feedback_text == 'Tight but I Like It' %}
+                                                    <i class="fas fa-heart text-warning fa-2x mb-2"></i>
+                                                {% elif code.feedback_text == 'Loose but I Like It' %}
+                                                    <i class="fas fa-heart text-info fa-2x mb-2"></i>
+                                                {% elif code.feedback_text == 'Too Tight' %}
+                                                    <i class="fas fa-compress-arrows-alt text-danger fa-2x mb-2"></i>
+                                                {% elif code.feedback_text == 'Too Loose' %}
+                                                    <i class="fas fa-expand-arrows-alt text-secondary fa-2x mb-2"></i>
+                                                {% endif %}
+                                                <h6>{{ code.feedback_text }}</h6>
                                             </div>
-                                        </label>
+                                        </div>
                                     </div>
                                 </div>
                                 {% endfor %}
                             </div>
                         </div>
 
-                        <!-- Step 2: Specific Dimensions (Always shown after overall selection) -->
-                        <div class="feedback-step" id="step2" style="display: none;">
+                        <!-- Step 2: Specific Dimensions (Always shown) -->
+                        <div class="feedback-step" id="step2">
                             <hr class="my-4">
                             <h6 class="mb-3">
                                 <span class="badge bg-secondary me-2">2</span>
@@ -73,7 +70,6 @@
                                 Rate each dimension based on your size guide measurements. 
                                 Leave blank if you don't have an opinion about that dimension.
                             </p>
-                            
                             <div id="dimensionFeedback">
                                 {% for dimension in available_dimensions %}
                                 <div class="dimension-group mb-4" data-dimension="{{ dimension }}">
@@ -88,20 +84,18 @@
                                                        value="{{ code.id }}">
                                                 <label class="form-check-label" for="{{ dimension }}_{{ code.id }}">
                                                     <div class="card fit-option-small">
-                                                        <div class="card-body text-center p-2">
-                                                            {% if code.feedback_text == 'Good Fit' %}
-                                                                <i class="fas fa-check-circle text-success me-1"></i>
-                                                            {% elif code.feedback_text == 'Tight but I Like It' %}
-                                                                <i class="fas fa-heart text-warning me-1"></i>
-                                                            {% elif code.feedback_text == 'Loose but I Like It' %}
-                                                                <i class="fas fa-heart text-info me-1"></i>
-                                                            {% elif code.feedback_text == 'Too Tight' %}
-                                                                <i class="fas fa-compress-arrows-alt text-danger me-1"></i>
-                                                            {% elif code.feedback_text == 'Too Loose' %}
-                                                                <i class="fas fa-expand-arrows-alt text-secondary me-1"></i>
-                                                            {% endif %}
-                                                            <small>{{ code.feedback_text }}</small>
-                                                        </div>
+                                                        {% if code.feedback_text == 'Good Fit' %}
+                                                            <i class="fas fa-check-circle text-success me-1"></i>
+                                                        {% elif code.feedback_text == 'Tight but I Like It' %}
+                                                            <i class="fas fa-heart text-warning me-1"></i>
+                                                        {% elif code.feedback_text == 'Loose but I Like It' %}
+                                                            <i class="fas fa-heart text-info me-1"></i>
+                                                        {% elif code.feedback_text == 'Too Tight' %}
+                                                            <i class="fas fa-compress-arrows-alt text-danger me-1"></i>
+                                                        {% elif code.feedback_text == 'Too Loose' %}
+                                                            <i class="fas fa-expand-arrows-alt text-secondary me-1"></i>
+                                                        {% endif %}
+                                                        <small>{{ code.feedback_text }}</small>
                                                     </div>
                                                 </label>
                                             </div>
@@ -181,12 +175,7 @@
 
 <script>
 function handleOverallFitChange(radio) {
-    const step2 = document.getElementById('step2');
     const submitBtn = document.getElementById('submitBtn');
-    
-    // Always show step 2 after overall selection
-    step2.style.display = 'block';
-    
     // Enable submit button since overall fit is selected
     submitBtn.disabled = false;
     submitBtn.innerHTML = '<i class="fas fa-paper-plane"></i> Submit Feedback';

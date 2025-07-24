@@ -1,5 +1,6 @@
 """
 Estimate user body measurements (e.g., chest, sleeve, waist) from garment data and fit feedback.
+Updated for tailor3 database schema.
 """
 import statistics
 import psycopg2
@@ -26,34 +27,34 @@ class BodyMeasurementEstimator:
     def estimate_chest_measurement(self, user_id: int) -> Optional[float]:
         """
         Estimate chest measurement based on user's garment data and fit feedback.
-        
-        Algorithm:
-        1. Get all garments the user owns with chest measurements and fit feedback
-        2. Group by fit type (tight, good, relaxed)
-        3. Calculate weighted average based on fit preference
-        4. Return estimated chest measurement
+        Updated for tailor3 schema.
         """
         try:
             conn = self.get_connection()
             cursor = conn.cursor()
             
             # Get user's garments with chest measurements and fit feedback
+            # Updated query for tailor3 schema
             query = """
                 SELECT 
                     b.name as brand,
-                    ug.category as garment_name,
-                    ug.chest_range,
-                    ug.size_label as size,
+                    ug.product_name,
+                    ug.size_label,
                     ug.owns_garment,
-                    ug.fit_feedback,
-                    uff.chest_fit as chest_feedback
+                    sge.chest_min,
+                    sge.chest_max,
+                    sge.chest_range,
+                    ugf.dimension,
+                    fc.feedback_text as feedback
                 FROM user_garments ug
                 JOIN brands b ON ug.brand_id = b.id
-                LEFT JOIN user_fit_feedback uff ON ug.id = uff.garment_id
+                LEFT JOIN size_guide_entries sge ON ug.size_guide_entry_id = sge.id
+                LEFT JOIN user_garment_feedback ugf ON ug.id = ugf.user_garment_id
+                LEFT JOIN feedback_codes fc ON ugf.feedback_code_id = fc.id
                 WHERE ug.user_id = %s 
                 AND ug.owns_garment = true
-                AND ug.chest_range IS NOT NULL
-                AND (ug.fit_feedback IS NOT NULL OR uff.chest_fit IS NOT NULL)
+                AND (sge.chest_min IS NOT NULL OR sge.chest_max IS NOT NULL OR sge.chest_range IS NOT NULL)
+                AND ugf.dimension = 'chest'
                 ORDER BY ug.created_at DESC
             """
             
@@ -61,24 +62,26 @@ class BodyMeasurementEstimator:
             garments = cursor.fetchall()
             
             if not garments:
-                self.logger.info(f"No garments found for user {user_id}")
+                self.logger.info(f"No garments with chest measurements found for user {user_id}")
                 return None
             
-            self.logger.info(f"Found {len(garments)} garments for user {user_id}")
+            self.logger.info(f"Found {len(garments)} garments with chest measurements for user {user_id}")
             
             # Process each garment to extract chest measurement and fit type
             measurements = []
             
             for garment in garments:
-                brand, garment_name, chest_range, size, owns_garment, fit_feedback, chest_feedback = garment
+                brand, product_name, size_label, owns_garment, chest_min, chest_max, chest_range, dimension, feedback = garment
                 
-                # Parse chest range to get a single value (use average if range)
-                chest_value = self._parse_chest_range(chest_range)
+                # Parse chest measurement to get a single value
+                chest_value = self._parse_chest_measurement(chest_min, chest_max, chest_range)
+                
                 if chest_value is None:
                     continue
                 
                 # Determine fit type from feedback
-                fit_type = self._categorize_fit(chest_feedback)
+                fit_type = self._categorize_fit(feedback)
+                
                 if fit_type is None:
                     continue
                 
@@ -86,11 +89,12 @@ class BodyMeasurementEstimator:
                     'chest_value': chest_value,
                     'fit_type': fit_type,
                     'brand': brand,
-                    'size': size
+                    'product': product_name,
+                    'size': size_label
                 })
             
             if not measurements:
-                self.logger.info(f"No valid measurements found for user {user_id}")
+                self.logger.info(f"No valid chest measurements found for user {user_id}")
                 return None
             
             # Group measurements by fit type
@@ -115,30 +119,46 @@ class BodyMeasurementEstimator:
             self.logger.error(f"Error estimating chest measurement for user {user_id}: {str(e)}")
             return None
     
-    def _parse_chest_range(self, chest_range: str) -> Optional[float]:
-        """Parse chest range string to get average value"""
+    def _parse_chest_measurement(self, chest_min: Optional[float], chest_max: Optional[float], chest_range: Optional[str]) -> Optional[float]:
+        """Parse chest measurement to get average value"""
         try:
-            if '-' in chest_range:
-                # Range like "39-40" or "36.0-38.0"
-                parts = chest_range.split('-')
-                min_val = float(parts[0].strip())
-                max_val = float(parts[1].strip())
+            if chest_min is not None and chest_max is not None:
+                # Convert Decimal to float if needed
+                min_val = float(chest_min) if chest_min is not None else None
+                max_val = float(chest_max) if chest_max is not None else None
                 return (min_val + max_val) / 2
+            elif chest_range is not None:
+                if '-' in chest_range:
+                    parts = chest_range.split('-')
+                    min_val = float(parts[0].strip())
+                    max_val = float(parts[1].strip())
+                    return (min_val + max_val) / 2
+                else:
+                    return float(chest_range.strip())
+            elif chest_min is not None:
+                return float(chest_min)
+            elif chest_max is not None:
+                return float(chest_max)
             else:
-                # Single value like "47" or "41.00"
-                return float(chest_range.strip())
+                return None
         except (ValueError, IndexError):
             return None
     
     def _categorize_fit(self, feedback: str) -> Optional[str]:
         """Categorize fit feedback into tight, good, or relaxed"""
+        if not feedback:
+            return None
+            
         feedback_lower = feedback.lower()
         
-        if any(word in feedback_lower for word in ['tight', 'too tight']):
+        # Tight category
+        if any(word in feedback_lower for word in ['too tight', 'tight but i like it', 'slightly tight']):
             return 'tight'
+        # Good category  
         elif any(word in feedback_lower for word in ['good fit', 'perfect']):
             return 'good'
-        elif any(word in feedback_lower for word in ['loose', 'relaxed', 'comfortable']):
+        # Relaxed/Loose category
+        elif any(word in feedback_lower for word in ['loose', 'relaxed', 'comfortable', 'too loose', 'slightly loose', 'loose but i like it']):
             return 'relaxed'
         else:
             return None
@@ -164,82 +184,81 @@ class BodyMeasurementEstimator:
         
         return total_weighted_sum / total_weight
 
-    def estimate_chest(self):
-        estimates = []
-        for g in self.garments:
-            feedback = g.get('fit_feedback')
-            chest_range = g.get('chest_range')
-            if not feedback or not chest_range:
-                continue
-            # Use min value if range, else float
-            if '-' in chest_range:
-                chest = float(chest_range.split('-')[0])
-            else:
-                chest = float(chest_range)
-            delta = self.FEEDBACK_DELTAS.get(feedback)
-            if delta is not None:
-                estimates.append(chest - delta)
-        if not estimates:
-            return None
-        # Remove outliers (simple: 10th-90th percentile)
-        estimates.sort()
-        n = len(estimates)
-        lower = int(n * 0.1)
-        upper = int(n * 0.9)
-        trimmed = estimates[lower:upper] if n > 4 else estimates
-        return round(statistics.median(trimmed), 2)
-
     def estimate_neck_measurement(self, user_id: int) -> Optional[float]:
         """
         Estimate neck measurement based on user's garment data and fit feedback.
+        Updated for tailor3 schema.
         """
         try:
             conn = self.get_connection()
             cursor = conn.cursor()
+            
             query = """
                 SELECT 
                     b.name as brand,
-                    ug.category as garment_name,
-                    ug.neck_range,
-                    ug.size_label as size,
+                    ug.product_name,
+                    ug.size_label,
                     ug.owns_garment,
-                    ug.fit_feedback,
-                    uff.neck_fit as neck_feedback
+                    sge.neck_min,
+                    sge.neck_max,
+                    sge.neck_range,
+                    ugf.dimension,
+                    fc.feedback_text as feedback
                 FROM user_garments ug
                 JOIN brands b ON ug.brand_id = b.id
-                LEFT JOIN user_fit_feedback uff ON ug.id = uff.garment_id
+                LEFT JOIN size_guide_entries sge ON ug.size_guide_entry_id = sge.id
+                LEFT JOIN user_garment_feedback ugf ON ug.id = ugf.user_garment_id
+                LEFT JOIN feedback_codes fc ON ugf.feedback_code_id = fc.id
                 WHERE ug.user_id = %s 
                 AND ug.owns_garment = true
-                AND ug.neck_range IS NOT NULL
-                AND (ug.fit_feedback IS NOT NULL OR uff.neck_fit IS NOT NULL)
+                AND (sge.neck_min IS NOT NULL OR sge.neck_max IS NOT NULL OR sge.neck_range IS NOT NULL)
+                AND ugf.dimension = 'neck'
                 ORDER BY ug.created_at DESC
             """
+            
             cursor.execute(query, (user_id,))
             garments = cursor.fetchall()
+            
             if not garments:
-                self.logger.info(f"No garments with neck for user {user_id}")
+                self.logger.info(f"No garments with neck measurements found for user {user_id}")
                 return None
+            
             measurements = []
             for garment in garments:
-                brand, garment_name, neck_range, size, owns_garment, fit_feedback, neck_feedback = garment
-                neck_value = self._parse_chest_range(neck_range)
+                brand, product_name, size_label, owns_garment, neck_min, neck_max, neck_range, dimension, feedback = garment
+                
+                neck_value = self._parse_chest_measurement(neck_min, neck_max, neck_range)
                 if neck_value is None:
                     continue
-                fit_type = self._categorize_fit(neck_feedback)
+                
+                fit_type = self._categorize_fit(feedback)
                 if fit_type is None:
                     continue
-                measurements.append({'neck_value': neck_value, 'fit_type': fit_type, 'brand': brand, 'size': size})
+                
+                measurements.append({
+                    'neck_value': neck_value,
+                    'fit_type': fit_type,
+                    'brand': brand,
+                    'product': product_name,
+                    'size': size_label
+                })
+            
             if not measurements:
                 return None
+            
             fit_groups = {'tight': [], 'good': [], 'relaxed': []}
             for measurement in measurements:
                 fit_type = measurement['fit_type']
                 if fit_type in fit_groups:
                     fit_groups[fit_type].append(measurement['neck_value'])
+            
             estimated_neck = self._calculate_weighted_average(fit_groups)
+            
             cursor.close()
             conn.close()
+            
             return estimated_neck
+            
         except Exception as e:
             self.logger.error(f"Error estimating neck measurement for user {user_id}: {str(e)}")
             return None
@@ -247,54 +266,78 @@ class BodyMeasurementEstimator:
     def estimate_sleeve_measurement(self, user_id: int) -> Optional[float]:
         """
         Estimate sleeve measurement based on user's garment data and fit feedback.
+        Updated for tailor3 schema.
         """
         try:
             conn = self.get_connection()
             cursor = conn.cursor()
+            
             query = """
                 SELECT 
                     b.name as brand,
-                    ug.category as garment_name,
-                    ug.sleeve_range,
-                    ug.size_label as size,
+                    ug.product_name,
+                    ug.size_label,
                     ug.owns_garment,
-                    ug.fit_feedback,
-                    uff.sleeve_fit as sleeve_feedback
+                    sge.sleeve_min,
+                    sge.sleeve_max,
+                    sge.sleeve_range,
+                    ugf.dimension,
+                    fc.feedback_text as feedback
                 FROM user_garments ug
                 JOIN brands b ON ug.brand_id = b.id
-                LEFT JOIN user_fit_feedback uff ON ug.id = uff.garment_id
+                LEFT JOIN size_guide_entries sge ON ug.size_guide_entry_id = sge.id
+                LEFT JOIN user_garment_feedback ugf ON ug.id = ugf.user_garment_id
+                LEFT JOIN feedback_codes fc ON ugf.feedback_code_id = fc.id
                 WHERE ug.user_id = %s 
                 AND ug.owns_garment = true
-                AND ug.sleeve_range IS NOT NULL
-                AND (ug.fit_feedback IS NOT NULL OR uff.sleeve_fit IS NOT NULL)
+                AND (sge.sleeve_min IS NOT NULL OR sge.sleeve_max IS NOT NULL OR sge.sleeve_range IS NOT NULL)
+                AND ugf.dimension = 'sleeve'
                 ORDER BY ug.created_at DESC
             """
+            
             cursor.execute(query, (user_id,))
             garments = cursor.fetchall()
+            
             if not garments:
-                self.logger.info(f"No garments with sleeve for user {user_id}")
+                self.logger.info(f"No garments with sleeve measurements found for user {user_id}")
                 return None
+            
             measurements = []
             for garment in garments:
-                brand, garment_name, sleeve_range, size, owns_garment, fit_feedback, sleeve_feedback = garment
-                sleeve_value = self._parse_chest_range(sleeve_range)
+                brand, product_name, size_label, owns_garment, sleeve_min, sleeve_max, sleeve_range, dimension, feedback = garment
+                
+                sleeve_value = self._parse_chest_measurement(sleeve_min, sleeve_max, sleeve_range)
                 if sleeve_value is None:
                     continue
-                fit_type = self._categorize_fit(sleeve_feedback)
+                
+                fit_type = self._categorize_fit(feedback)
                 if fit_type is None:
                     continue
-                measurements.append({'sleeve_value': sleeve_value, 'fit_type': fit_type, 'brand': brand, 'size': size})
+                
+                measurements.append({
+                    'sleeve_value': sleeve_value,
+                    'fit_type': fit_type,
+                    'brand': brand,
+                    'product': product_name,
+                    'size': size_label
+                })
+            
             if not measurements:
                 return None
+            
             fit_groups = {'tight': [], 'good': [], 'relaxed': []}
             for measurement in measurements:
                 fit_type = measurement['fit_type']
                 if fit_type in fit_groups:
                     fit_groups[fit_type].append(measurement['sleeve_value'])
+            
             estimated_sleeve = self._calculate_weighted_average(fit_groups)
+            
             cursor.close()
             conn.close()
+            
             return estimated_sleeve
+            
         except Exception as e:
             self.logger.error(f"Error estimating sleeve measurement for user {user_id}: {str(e)}")
             return None 
