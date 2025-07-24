@@ -152,38 +152,41 @@ def add_garment():
             # Find matching size guide and entry
             size_guide_id = None
             size_guide_entry_id = None
-            
+
             # Look up size guide based on brand, category, gender, fit_type
-            if subcategory_id:
-                cursor.execute("""
-                    SELECT id FROM size_guides 
-                    WHERE brand_id = %s AND category_id = %s AND gender = %s 
-                    AND (fit_type = %s OR fit_type = 'Unspecified')
-                    AND subcategory_id = %s
-                    ORDER BY CASE WHEN fit_type = %s THEN 1 ELSE 2 END
-                    LIMIT 1
-                """, (brand_id, category_id, gender, fit_type, subcategory_id, fit_type))
-            else:
-                cursor.execute("""
-                    SELECT id FROM size_guides 
-                    WHERE brand_id = %s AND category_id = %s AND gender = %s 
-                    AND (fit_type = %s OR fit_type = 'Unspecified')
-                    AND subcategory_id IS NULL
-                    ORDER BY CASE WHEN fit_type = %s THEN 1 ELSE 2 END
-                    LIMIT 1
-                """, (brand_id, category_id, gender, fit_type, fit_type))
-            
-            size_guide_result = cursor.fetchone()
+            def find_size_guide(cursor, brand_id, category_id, gender, fit_type, subcategory_id):
+                if subcategory_id:
+                    cursor.execute("""
+                        SELECT id FROM size_guides 
+                        WHERE brand_id = %s AND category_id = %s AND gender = %s 
+                        AND fit_type = %s
+                        AND subcategory_id = %s
+                        ORDER BY id LIMIT 1
+                    """, (brand_id, category_id, gender, fit_type, subcategory_id))
+                else:
+                    cursor.execute("""
+                        SELECT id FROM size_guides 
+                        WHERE brand_id = %s AND category_id = %s AND gender = %s 
+                        AND fit_type = %s
+                        AND subcategory_id IS NULL
+                        ORDER BY id LIMIT 1
+                    """, (brand_id, category_id, gender, fit_type))
+                return cursor.fetchone()
+
+            # Try the user's fit_type first
+            size_guide_result = find_size_guide(cursor, brand_id, category_id, gender, fit_type, subcategory_id)
+            # If not found and fit_type is NA, try Regular as fallback
+            if not size_guide_result and fit_type == 'NA':
+                size_guide_result = find_size_guide(cursor, brand_id, category_id, gender, 'Regular', subcategory_id)
+
             if size_guide_result:
                 size_guide_id = size_guide_result[0]
-                
                 # Look up specific size entry
                 cursor.execute("""
                     SELECT id FROM size_guide_entries 
                     WHERE size_guide_id = %s AND size_label = %s
                     LIMIT 1
                 """, (size_guide_id, size_label))
-                
                 entry_result = cursor.fetchone()
                 if entry_result:
                     size_guide_entry_id = entry_result[0]
@@ -572,6 +575,121 @@ def get_sizes():
     cursor.close()
     conn.close()
     return jsonify({'sizes': sizes})
+
+@app.route('/edit_garment/<int:garment_id>', methods=['GET', 'POST'])
+def edit_garment(garment_id):
+    conn = get_db_connection()
+    cursor = conn.cursor(cursor_factory=RealDictCursor)
+    if request.method == 'POST':
+        # Get form data
+        user_email = request.form['user_email']
+        brand_name = request.form['brand_name']
+        category_name = request.form['category_name']
+        subcategory_name = request.form.get('subcategory_name', '').strip()
+        gender = request.form['gender']
+        size_label = request.form['size_label']
+        fit_type = request.form['fit_type']
+        product_name = request.form['product_name'].strip()
+        product_url = request.form.get('product_url', '')
+        # Get IDs
+        cursor.execute("SELECT id FROM users WHERE email = %s", (user_email,))
+        user_id = cursor.fetchone()['id']
+        cursor.execute("SELECT id FROM brands WHERE name = %s", (brand_name,))
+        brand_id = cursor.fetchone()['id']
+        cursor.execute("SELECT id FROM categories WHERE name = %s", (category_name,))
+        category_id = cursor.fetchone()['id']
+        subcategory_id = None
+        if subcategory_name:
+            cursor.execute("SELECT id FROM subcategories WHERE name = %s", (subcategory_name,))
+            subcategory_result = cursor.fetchone()
+            if subcategory_result:
+                subcategory_id = subcategory_result['id']
+        # Find matching size guide and entry (reuse logic from add_garment)
+        def find_size_guide(cursor, brand_id, category_id, gender, fit_type, subcategory_id):
+            if subcategory_id:
+                cursor.execute("""
+                    SELECT id FROM size_guides 
+                    WHERE brand_id = %s AND category_id = %s AND gender = %s 
+                    AND fit_type = %s
+                    AND subcategory_id = %s
+                    ORDER BY id LIMIT 1
+                """, (brand_id, category_id, gender, fit_type, subcategory_id))
+            else:
+                cursor.execute("""
+                    SELECT id FROM size_guides 
+                    WHERE brand_id = %s AND category_id = %s AND gender = %s 
+                    AND fit_type = %s
+                    AND subcategory_id IS NULL
+                    ORDER BY id LIMIT 1
+                """, (brand_id, category_id, gender, fit_type))
+            return cursor.fetchone()
+        size_guide_result = find_size_guide(cursor, brand_id, category_id, gender, fit_type, subcategory_id)
+        if not size_guide_result and fit_type == 'NA':
+            size_guide_result = find_size_guide(cursor, brand_id, category_id, gender, 'Regular', subcategory_id)
+        size_guide_id = size_guide_result['id'] if size_guide_result else None
+        size_guide_entry_id = None
+        if size_guide_id:
+            cursor.execute("SELECT id FROM size_guide_entries WHERE size_guide_id = %s AND size_label = %s LIMIT 1", (size_guide_id, size_label))
+            entry_result = cursor.fetchone()
+            if entry_result:
+                size_guide_entry_id = entry_result['id']
+        # Update garment
+        cursor.execute("""
+            UPDATE user_garments SET
+                user_id = %s,
+                brand_id = %s,
+                category_id = %s,
+                subcategory_id = %s,
+                gender = %s,
+                size_label = %s,
+                fit_type = %s,
+                product_name = %s,
+                product_url = %s,
+                size_guide_id = %s,
+                size_guide_entry_id = %s
+            WHERE id = %s
+        """, (user_id, brand_id, category_id, subcategory_id, gender, size_label, fit_type, product_name, product_url, size_guide_id, size_guide_entry_id, garment_id))
+        conn.commit()
+        cursor.close()
+        conn.close()
+        flash('Garment updated successfully!', 'success')
+        return redirect(url_for('view_garment', garment_id=garment_id))
+    # GET: load garment and show form
+    cursor.execute("SELECT * FROM user_garments WHERE id = %s", (garment_id,))
+    garment = cursor.fetchone()
+    # Get dropdowns
+    cursor.execute("SELECT id, email FROM users ORDER BY email")
+    users = cursor.fetchall()
+    cursor.execute("SELECT id, name FROM brands ORDER BY name")
+    brands = cursor.fetchall()
+    cursor.execute("SELECT id, name FROM categories ORDER BY name")
+    categories = cursor.fetchall()
+    cursor.execute("SELECT id, name FROM subcategories ORDER BY name")
+    subcategories = cursor.fetchall()
+    # For available_sizes, reuse logic from add_garment
+    available_sizes = []
+    if garment['brand_id'] and garment['category_id']:
+        cursor.execute("""
+            SELECT sge.size_label FROM size_guides sg
+            JOIN size_guide_entries sge ON sg.id = sge.size_guide_id
+            WHERE sg.brand_id = %s AND sg.category_id = %s AND sg.gender = %s AND (sg.fit_type = %s OR sg.fit_type = 'NA')
+            ORDER BY sge.size_label
+        """, (garment['brand_id'], garment['category_id'], garment['gender'], garment['fit_type']))
+        available_sizes = [row['size_label'] for row in cursor.fetchall()]
+    cursor.close()
+    conn.close()
+    return render_template('add_garment.html', users=users, brands=brands, categories=categories, subcategories=subcategories, available_sizes=available_sizes, garment=garment, edit_mode=True)
+
+@app.route('/delete_garment/<int:garment_id>', methods=['POST'])
+def delete_garment(garment_id):
+    conn = get_db_connection()
+    cursor = conn.cursor()
+    cursor.execute("DELETE FROM user_garments WHERE id = %s", (garment_id,))
+    conn.commit()
+    cursor.close()
+    conn.close()
+    flash('Garment deleted successfully!', 'success')
+    return redirect(url_for('index'))
 
 if __name__ == '__main__':
     app.run(debug=True, host='0.0.0.0', port=5001) 
