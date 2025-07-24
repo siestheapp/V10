@@ -1,7 +1,9 @@
 # V10 Database Schema Documentation (tailor3)
 
 ## Overview
-This document describes the complete database schema for the V10 app (tailor3), including tables, relationships, and data structures. This schema is more normalized and scalable than tailor2, supporting richer ingestion, analytics, and future expansion.
+This document describes the complete database schema for the V10 app (tailor3), including tables, relationships, and data structures. This schema is more normalized and scalable than tailor2, supporting richer ingestion, analytics, user action tracking with undo functionality, and future expansion.
+
+**Current Status**: 18 tables, 7 views, with comprehensive action tracking and undo capabilities.
 
 ## Database: `tailor3` (PostgreSQL)
 
@@ -140,6 +142,36 @@ This document describes the complete database schema for the V10 app (tailor3), 
 
 ---
 
+### User Action Tracking Tables
+
+#### `user_sessions`
+- `id` (SERIAL PRIMARY KEY)
+- `user_id` (INTEGER, REFERENCES users(id) ON DELETE CASCADE)
+- `session_id` (UUID, DEFAULT gen_random_uuid())
+- `device_type` (TEXT, CHECK: 'iOS', 'Android', 'Web', 'Unknown')
+- `app_version` (TEXT)
+- `started_at` (TIMESTAMP, DEFAULT CURRENT_TIMESTAMP)
+- `ended_at` (TIMESTAMP)
+- `action_count` (INTEGER, DEFAULT 0)
+- `duration_seconds` (INTEGER)
+
+#### `user_actions`
+- `id` (SERIAL PRIMARY KEY)
+- `user_id` (INTEGER, REFERENCES users(id) ON DELETE CASCADE)
+- `session_id` (UUID)
+- `action_type` (TEXT, NOT NULL, CHECK: 'submit_feedback', 'update_feedback', 'delete_feedback', 'add_garment', 'update_garment', 'delete_garment', 'view_garment', 'view_closet', 'app_open', 'app_close', 'scan_item', 'view_product', 'search', 'filter', 'undo_action')
+- `target_table` (TEXT) -- 'user_garment_feedback', 'user_garments', etc.
+- `target_id` (INTEGER) -- record ID that was changed
+- `previous_values` (JSONB) -- what it was before (for undo)
+- `new_values` (JSONB) -- what it became
+- `metadata` (JSONB) -- extra context (screen, duration, etc.)
+- `is_undone` (BOOLEAN, DEFAULT FALSE)
+- `undone_at` (TIMESTAMP)
+- `undone_by_action_id` (INTEGER, REFERENCES user_actions(id))
+- `created_at` (TIMESTAMP, DEFAULT CURRENT_TIMESTAMP)
+
+---
+
 ### User Garment & Feedback Tables
 
 #### `user_garments`
@@ -155,6 +187,7 @@ This document describes the complete database schema for the V10 app (tailor3), 
 - `product_name` (TEXT)
 - `product_url` (TEXT)
 - `product_code` (TEXT)
+- `image_url` (TEXT)
 - `tag_photo_path` (TEXT)
 - `owns_garment` (BOOLEAN, DEFAULT true)
 - `size_guide_id` (INTEGER, REFERENCES size_guides(id))
@@ -202,6 +235,35 @@ This document describes the complete database schema for the V10 app (tailor3), 
 
 ---
 
+### Views
+
+#### `user_action_history`
+A comprehensive view for querying user actions with human-readable descriptions:
+- Joins `user_actions` with `users` table
+- Includes user email and action descriptions
+- Ordered by creation time (most recent first)
+- Used for action history lookups and undo functionality
+
+#### `size_guide_entries_with_brand`
+Joins size guide entries with brand information for easier querying.
+
+#### `user_feedback_by_dimension`
+Provides user feedback organized by dimension for analysis.
+
+#### `user_garments_actual_feedback`
+Shows user garments with their actual feedback values.
+
+#### `user_garments_feedback_summary`
+Summarizes feedback data for user garments.
+
+#### `user_garments_simple`
+Simplified view of user garments for basic queries.
+
+#### `user_latest_feedback_by_dimension`
+Shows the most recent feedback by dimension for each user garment.
+
+---
+
 ## Key Schema Features
 
 ### Unique Constraints
@@ -220,6 +282,8 @@ This document describes the complete database schema for the V10 app (tailor3), 
 - Subcategories cascade delete when category is deleted
 - Raw size guides cascade delete when brand is deleted
 - All admin-created content references admin users for audit trail
+- User actions and sessions cascade delete when user is deleted
+- User actions can reference other actions for undo tracking (self-referencing)
 
 ### Check Constraints
 - Gender values: 'Male', 'Female', 'Unisex'
@@ -228,24 +292,41 @@ This document describes the complete database schema for the V10 app (tailor3), 
 - Feedback types: 'fit', 'length', 'other'
 - Admin roles: 'admin', 'moderator', 'contributor'
 - Guide levels: 'brand_level', 'category_level', 'product_level'
+- Device types: 'iOS', 'Android', 'Web', 'Unknown'
+- Action types: 'submit_feedback', 'update_feedback', 'delete_feedback', 'add_garment', 'update_garment', 'delete_garment', 'view_garment', 'view_closet', 'app_open', 'app_close', 'scan_item', 'view_product', 'search', 'filter', 'undo_action'
+
+### Performance Indexes
+- **user_actions**: 
+  - `idx_user_actions_user_created` on (user_id, created_at DESC) for recent action lookups
+  - `idx_user_actions_target` on (target_table, target_id) for finding actions on specific records
+  - `idx_user_actions_undone` on (is_undone) WHERE is_undone = FALSE for finding undoable actions
+- **user_sessions**:
+  - `idx_user_sessions_user_started` on (user_id, started_at DESC) for session history
 
 ---
 
 ## Known Issues & Limitations
 - Some measurement types (e.g., shoulder, rise) not yet supported in all tables
-- No historical tracking of measurement changes (except via snapshot scripts)
-- Analytics tables are minimal; more user behavior tracking may be needed
 - Size standardization is ongoing; mappings may be incomplete for some brands
+- Action tracking currently focuses on feedback; could be expanded to more user interactions
+
+## Recent Improvements (2025-07-24)
+- ✅ Added comprehensive user action tracking with undo functionality
+- ✅ Added user session management for analytics
+- ✅ Added `image_url` field to `user_garments` for product images
+- ✅ Created `user_action_history` view for easy action querying
+- ✅ Implemented complete audit trail for user feedback changes
 
 ## Future Improvements Needed
 - Add more measurement types and garment attributes as needed
-- Expand analytics and user event tracking
+- Expand action tracking to cover more user interactions (app navigation, search, etc.)
 - Automate ingestion and mapping workflows
-- Add audit/history tables for key entities
+- Add more analytics views and dashboards
 - Continue to normalize and modularize as new use cases arise
 
 ---
 
 *Schema based on: `supabase/tailor3_schema_2025-06-29_231849_clean.sql`*
+*Updated: 2025-07-24 with action tracking tables and undo functionality*
 
 *For detailed constraints, triggers, and sample inserts, see also: DATABASE_CONSTRAINTS.md, SCHEMA_EVOLUTION.md, and session_log_tailor3.md.* 

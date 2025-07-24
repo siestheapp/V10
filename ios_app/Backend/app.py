@@ -55,7 +55,7 @@ def get_db_connection():
 async def lifespan(app: FastAPI):
     # Setup
     global pool
-    pool = await asyncpg.create_pool(**DB_CONFIG)
+    pool = await asyncpg.create_pool(**DB_CONFIG, statement_cache_size=0)
     print("Connected to database")
     yield
     # Cleanup
@@ -153,7 +153,7 @@ class ChatMessage(BaseModel):
 
 # Connection Functions
 async def get_pool():
-    return await asyncpg.create_pool(**DB_CONFIG)
+    return await asyncpg.create_pool(**DB_CONFIG, statement_cache_size=0)
 
 def get_db():
     return psycopg2.connect(
@@ -758,7 +758,7 @@ async def get_test_user_data(user_id: str):
                 ug.size_label,
                 COALESCE(uff.overall_fit, ug.fit_feedback) as feedback
             FROM user_garments ug
-            LEFT JOIN user_fit_feedback uff ON ug.id = uff.garment_id
+            LEFT JOIN user_garment_feedback uff ON ug.id = uff.user_garment_id
             WHERE ug.user_id = %s AND ug.owns_garment = true
             ORDER BY ug.created_at DESC
             LIMIT 5
@@ -1162,15 +1162,31 @@ async def create_garment_entry(user_id: int, brand_id: int, size_label: str, pro
 async def store_measurement_feedback(garment_id: int, measurement_name: str, measurement_value: str, feedback_value: int):
     """Store feedback for a specific measurement"""
     async with pool.acquire() as conn:
-        await conn.execute("""
-            INSERT INTO user_fit_feedback (
-                garment_id,
-                measurement_name,
-                measurement_value,
-                feedback_value,
-                created_at
-            ) VALUES ($1, $2, $3, $4, NOW())
-        """, garment_id, measurement_name, measurement_value, feedback_value)
+        # Convert feedback_value to feedback text
+        feedback_mapping = {
+            1: "Too Tight",
+            2: "Tight but I Like It", 
+            3: "Good Fit",
+            4: "Loose but I Like It",
+            5: "Too Loose"
+        }
+        
+        feedback_text = feedback_mapping.get(feedback_value, "Good Fit")
+        
+        # Get feedback code ID
+        feedback_code = await conn.fetchrow("""
+            SELECT id FROM feedback_codes 
+            WHERE feedback_text = $1
+        """, feedback_text)
+        
+        if feedback_code:
+            await conn.execute("""
+                INSERT INTO user_garment_feedback (
+                    user_garment_id,
+                    dimension,
+                    feedback_code_id
+                ) VALUES ($1, $2, $3)
+            """, garment_id, measurement_name, feedback_code['id'])
 
 async def recalculate_user_measurement_profile(user_id: int):
     """Recalculate user's measurement profile based on all feedback"""
@@ -1290,13 +1306,20 @@ async def get_fit_feedback_options():
 
 @app.post("/garment/{garment_id}/feedback")
 async def update_garment_feedback(garment_id: int, request: dict):
-    """Update feedback for an existing garment"""
+    """Update feedback with action tracking and undo support"""
     try:
         feedback = request.get("feedback")  # Dict of measurement -> feedback_value
         user_id = request.get("user_id")
+        session_id = request.get("session_id")  # Optional session tracking
         
         if not feedback or not user_id:
             raise HTTPException(status_code=400, detail="Missing feedback or user_id")
+        
+        # Convert user_id to integer if it's a string
+        try:
+            user_id = int(user_id)
+        except (ValueError, TypeError):
+            raise HTTPException(status_code=400, detail="Invalid user_id format")
         
         async with pool.acquire() as conn:
             # Verify the garment belongs to the user
@@ -1308,71 +1331,250 @@ async def update_garment_feedback(garment_id: int, request: dict):
             if not garment:
                 raise HTTPException(status_code=404, detail="Garment not found or doesn't belong to user")
             
+            # Get current feedback values BEFORE changing them (for undo)
+            current_feedback = await conn.fetch("""
+                SELECT ugf.dimension, fc.feedback_text, ugf.id
+                FROM user_garment_feedback ugf
+                JOIN feedback_codes fc ON ugf.feedback_code_id = fc.id
+                WHERE ugf.user_garment_id = $1
+            """, garment_id)
+            
+            # Store previous values for undo
+            previous_values = {
+                row['dimension']: {
+                    'feedback_text': row['feedback_text'],
+                    'feedback_id': row['id']
+                }
+                for row in current_feedback
+            }
+            
             # Convert numeric feedback values to text descriptions
             feedback_text = convert_feedback_to_text(feedback)
             
-            # Check if feedback already exists for this garment
-            existing_feedback = await conn.fetchrow("""
-                SELECT id FROM user_fit_feedback 
-                WHERE garment_id = $1
+            # Delete old feedback entries
+            await conn.execute("""
+                DELETE FROM user_garment_feedback 
+                WHERE user_garment_id = $1
             """, garment_id)
             
-            if existing_feedback:
-                # Update existing feedback
-                await conn.execute("""
-                    UPDATE user_fit_feedback 
-                    SET 
-                        overall_fit = $1,
-                        chest_fit = $2,
-                        sleeve_fit = $3,
-                        neck_fit = $4,
-                        waist_fit = $5
-                    WHERE garment_id = $6
-                """, 
-                    feedback_text.get('overall'),
-                    feedback_text.get('chest'),
-                    feedback_text.get('sleeve'),
-                    feedback_text.get('neck'),
-                    feedback_text.get('waist'),
-                    garment_id
-                )
-            else:
-                # Insert new feedback
-                await conn.execute("""
-                    INSERT INTO user_fit_feedback (
-                        user_id,
-                        garment_id,
-                        overall_fit,
-                        chest_fit,
-                        sleeve_fit,
-                        neck_fit,
-                        waist_fit
-                    ) VALUES ($1, $2, $3, $4, $5, $6, $7)
-                """, 
-                    user_id,
-                    garment_id,
-                    feedback_text.get('overall'),
-                    feedback_text.get('chest'),
-                    feedback_text.get('sleeve'),
-                    feedback_text.get('neck'),
-                    feedback_text.get('waist')
-                )
-            # Always update fit_feedback in user_garments to match latest overall_fit
+            # Insert new feedback entries and collect new values
+            new_values = {}
+            for dimension, feedback_text_value in feedback_text.items():
+                if feedback_text_value:
+                    # Get feedback code ID
+                    feedback_code = await conn.fetchrow("""
+                        SELECT id FROM feedback_codes 
+                        WHERE feedback_text = $1
+                    """, feedback_text_value)
+                    
+                    if feedback_code:
+                        # Insert new feedback
+                        new_id = await conn.fetchval("""
+                            INSERT INTO user_garment_feedback (
+                                user_garment_id,
+                                dimension,
+                                feedback_code_id
+                            ) VALUES ($1, $2, $3) RETURNING id
+                        """, 
+                            garment_id,
+                            dimension,
+                            feedback_code['id']
+                        )
+                        
+                        new_values[dimension] = {
+                            'feedback_text': feedback_text_value,
+                            'feedback_id': new_id
+                        }
+            
+            # Update fit_feedback in user_garments
             await conn.execute("""
                 UPDATE user_garments
                 SET fit_feedback = $1
                 WHERE id = $2
             """, feedback_text.get('overall'), garment_id)
+            
+            # Log the action for undo support
+            action_id = await conn.fetchval("""
+                INSERT INTO user_actions (
+                    user_id, session_id, action_type, target_table, target_id,
+                    previous_values, new_values, metadata
+                ) VALUES ($1, $2, $3, $4, $5, $6, $7, $8) RETURNING id
+            """, 
+                user_id, 
+                session_id, 
+                'update_feedback', 
+                'user_garment_feedback', 
+                garment_id,
+                json.dumps(previous_values),
+                json.dumps(new_values),
+                json.dumps({
+                    'dimensions_changed': list(feedback.keys()),
+                    'screen': 'garment_detail'
+                })
+            )
         
         trigger_db_snapshot()
         
         return {
             "status": "success",
-            "message": "Feedback updated successfully"
+            "message": "Feedback updated successfully",
+            "action_id": action_id,
+            "can_undo": True
         }
         
     except Exception as e:
         print(f"Error updating garment feedback: {str(e)}")
+        raise HTTPException(status_code=500, detail=str(e))
+
+@app.post("/actions/{action_id}/undo")
+async def undo_action(action_id: int, request: dict):
+    """Undo a specific user action"""
+    try:
+        user_id = request.get("user_id")
+        
+        if not user_id:
+            raise HTTPException(status_code=400, detail="Missing user_id")
+        
+        async with pool.acquire() as conn:
+            # Get the action to undo
+            action = await conn.fetchrow("""
+                SELECT * FROM user_actions 
+                WHERE id = $1 AND user_id = $2 AND is_undone = FALSE
+            """, action_id, user_id)
+            
+            if not action:
+                raise HTTPException(status_code=404, detail="Action not found or already undone")
+            
+            # Only support undoing feedback updates for now
+            if action['action_type'] != 'update_feedback':
+                raise HTTPException(status_code=400, detail="This action type cannot be undone")
+            
+            target_id = action['target_id']  # garment_id
+            previous_values = action['previous_values']
+            
+            # Parse JSON if it's a string
+            if isinstance(previous_values, str):
+                previous_values = json.loads(previous_values)
+            
+            # Delete current feedback
+            await conn.execute("""
+                DELETE FROM user_garment_feedback 
+                WHERE user_garment_id = $1
+            """, target_id)
+            
+            # Restore previous feedback if it existed
+            if previous_values:
+                for dimension, data in previous_values.items():
+                    feedback_code = await conn.fetchrow("""
+                        SELECT id FROM feedback_codes 
+                        WHERE feedback_text = $1
+                    """, data['feedback_text'])
+                    
+                    if feedback_code:
+                        await conn.execute("""
+                            INSERT INTO user_garment_feedback (
+                                user_garment_id, dimension, feedback_code_id
+                            ) VALUES ($1, $2, $3)
+                        """, target_id, dimension, feedback_code['id'])
+                
+                # Update user_garments.fit_feedback to match overall
+                overall_feedback = previous_values.get('overall', {}).get('feedback_text')
+                await conn.execute("""
+                    UPDATE user_garments 
+                    SET fit_feedback = $1 
+                    WHERE id = $2
+                """, overall_feedback, target_id)
+            else:
+                # No previous feedback existed, clear the field
+                await conn.execute("""
+                    UPDATE user_garments 
+                    SET fit_feedback = NULL 
+                    WHERE id = $1
+                """, target_id)
+            
+            # Create undo action record
+            undo_action_id = await conn.fetchval("""
+                INSERT INTO user_actions (
+                    user_id, action_type, target_table, target_id,
+                    previous_values, new_values, metadata
+                ) VALUES ($1, $2, $3, $4, $5, $6, $7) RETURNING id
+            """, 
+                user_id, 
+                'undo_action', 
+                'user_garment_feedback', 
+                target_id,
+                action['new_values'],
+                action['previous_values'],
+                json.dumps({'undoes_action_id': action_id})
+            )
+            
+            # Mark original action as undone
+            await conn.execute("""
+                UPDATE user_actions 
+                SET is_undone = TRUE, 
+                    undone_at = CURRENT_TIMESTAMP, 
+                    undone_by_action_id = $1
+                WHERE id = $2
+            """, undo_action_id, action_id)
+        
+        trigger_db_snapshot()
+        
+        return {
+            "status": "success",
+            "message": "Action undone successfully",
+            "undo_action_id": undo_action_id
+        }
+        
+    except Exception as e:
+        print(f"Error undoing action: {str(e)}")
+        raise HTTPException(status_code=500, detail=str(e))
+
+@app.get("/user/{user_id}/actions/recent")
+async def get_recent_actions(user_id: int, limit: int = 10):
+    """Get user's recent actions that can be undone"""
+    try:
+        async with pool.acquire() as conn:
+            actions = await conn.fetch("""
+                SELECT 
+                    ua.id,
+                    ua.action_type,
+                    ua.target_table,
+                    ua.target_id,
+                    ua.metadata,
+                    ua.created_at,
+                    ua.is_undone,
+                    -- Get garment info for feedback actions
+                    CASE 
+                        WHEN ua.action_type = 'update_feedback' THEN
+                            (SELECT ug.product_name FROM user_garments ug WHERE ug.id = ua.target_id)
+                        ELSE NULL
+                    END as garment_name
+                FROM user_actions ua
+                WHERE ua.user_id = $1 
+                AND ua.action_type IN ('update_feedback', 'add_garment', 'delete_garment')
+                AND ua.is_undone = FALSE
+                ORDER BY ua.created_at DESC
+                LIMIT $2
+            """, user_id, limit)
+            
+            return {
+                "status": "success",
+                "actions": [
+                    {
+                        "id": action['id'],
+                        "action_type": action['action_type'],
+                        "target_id": action['target_id'],
+                        "garment_name": action['garment_name'],
+                        "created_at": action['created_at'].isoformat(),
+                        "can_undo": not action['is_undone'],
+                        "description": f"Updated feedback for {action['garment_name'] or 'garment'}" if action['action_type'] == 'update_feedback' else action['action_type']
+                    }
+                    for action in actions
+                ]
+            }
+    
+    except Exception as e:
+        print(f"Error getting recent actions: {str(e)}")
         raise HTTPException(status_code=500, detail=str(e))
 
 def convert_feedback_to_text(feedback: dict) -> dict:
@@ -1607,7 +1809,7 @@ def get_database_insights():
         tables = [
             'users',
             'user_garments',
-            'user_fit_feedback',
+            'user_garment_feedback',
             'user_fit_zones',
             'user_body_measurements',
             'product_measurements',
@@ -1640,9 +1842,11 @@ def get_database_insights():
         popular_brands = cur.fetchall()
         # Fit feedback distribution
         cur.execute("""
-            SELECT overall_fit, COUNT(*) as count 
-            FROM user_fit_feedback 
-            GROUP BY overall_fit 
+            SELECT fc.feedback_text, COUNT(*) as count 
+            FROM user_garment_feedback ugf
+            JOIN feedback_codes fc ON ugf.feedback_code_id = fc.id
+            WHERE ugf.dimension = 'overall'
+            GROUP BY fc.feedback_text 
             ORDER BY count DESC
         """)
         fit_distribution = cur.fetchall()
@@ -1684,7 +1888,7 @@ def get_database_insights():
             insights["recommendations"]["data_quality"].append("Consider adding more sample garments for better fit zone calculations")
         if table_counts['brands'] < 10:
             insights["recommendations"]["features"].append("Expand brand catalog for better recommendations")
-        if table_counts['user_fit_feedback'] < 50:
+        if table_counts['user_garment_feedback'] < 50:
             insights["recommendations"]["data_quality"].append("More fit feedback needed for accurate fit zone calculations")
         cur.close()
         conn.close()

@@ -168,7 +168,9 @@ def get_database_snapshot() -> Dict[str, Any]:
         'user_garments',
         'user_garment_feedback',
         'feedback_codes',
-        'fit_zones'
+        'fit_zones',
+        'user_sessions',
+        'user_actions'
     ]
     
     for table in tables:
@@ -231,6 +233,18 @@ def get_database_snapshot() -> Dict[str, Any]:
     """)
     sample_data['fit_zones'] = cursor.fetchall()
 
+    # Sample user_sessions
+    cursor.execute("""
+        SELECT id, user_id, session_id, device_type, app_version, started_at, ended_at, action_count FROM user_sessions LIMIT 5
+    """)
+    sample_data['user_sessions'] = cursor.fetchall()
+
+    # Sample user_actions
+    cursor.execute("""
+        SELECT id, user_id, session_id, action_type, target_table, target_id, is_undone, created_at FROM user_actions LIMIT 5
+    """)
+    sample_data['user_actions'] = cursor.fetchall()
+
     # Print sample data
     print("\nSample users:")
     for row in sample_data.get('users', [])[:3]:
@@ -252,6 +266,12 @@ def get_database_snapshot() -> Dict[str, Any]:
         print(row)
     print("\nSample fit_zones:")
     for row in sample_data.get('fit_zones', [])[:3]:
+        print(row)
+    print("\nSample user_sessions:")
+    for row in sample_data.get('user_sessions', [])[:3]:
+        print(row)
+    print("\nSample user_actions:")
+    for row in sample_data.get('user_actions', [])[:3]:
         print(row)
     
     cursor.close()
