@@ -89,81 +89,68 @@ struct GarmentFeedbackView: View {
                 
                 // Overall Feedback Section
                 VStack(alignment: .leading, spacing: 12) {
-                    Text("Overall Fit")
+                    Text("How does this garment fit overall?")
                         .font(.headline)
-                        .padding(.horizontal)
-                    
-                    VStack(spacing: 8) {
+                    LazyVGrid(columns: Array(repeating: GridItem(.flexible()), count: 2), spacing: 8) {
                         ForEach(feedbackOptions, id: \.0) { option in
                             Button(action: {
                                 selectedFeedback["overall"] = option.0
                             }) {
-                                HStack {
-                                    Text(option.1)
-                                        .foregroundColor(selectedFeedback["overall"] == option.0 ? .white : .primary)
-                                    Spacer()
-                                    if selectedFeedback["overall"] == option.0 {
-                                        Image(systemName: "checkmark")
-                                            .foregroundColor(.white)
-                                    }
-                                }
-                                .padding()
-                                .background(
-                                    selectedFeedback["overall"] == option.0 
-                                    ? Color.blue 
-                                    : Color(.systemGray6)
-                                )
-                                .cornerRadius(8)
+                                Text(option.1)
+                                    .font(.caption)
+                                    .frame(maxWidth: .infinity)
+                                    .padding(.vertical, 12)
+                                    .background(selectedFeedback["overall"] == option.0 ? Color.blue : Color.gray.opacity(0.2))
+                                    .foregroundColor(selectedFeedback["overall"] == option.0 ? .white : .black)
+                                    .cornerRadius(8)
                             }
                         }
                     }
-                    .padding(.horizontal)
                 }
+                .padding(.horizontal)
                 
-                // Measurements Feedback Section
+                // Feedback Selection
                 ScrollView {
-                    LazyVStack(alignment: .leading, spacing: 20) {
+                    VStack(alignment: .leading, spacing: 20) {
                         ForEach(availableMeasurements, id: \.self) { measurement in
                             VStack(alignment: .leading, spacing: 12) {
                                 HStack {
-                                    Text("\(measurement.capitalized) Fit")
+                                    Text("How does it fit in the \(measurement)?")
                                         .font(.headline)
+                                    
                                     Spacer()
+                                    
                                     if let measurementValue = garment.measurements[measurement] {
                                         Text(measurementValue)
-                                            .font(.subheadline)
+                                            .font(.caption)
                                             .foregroundColor(.gray)
+                                            .padding(.horizontal, 8)
+                                            .padding(.vertical, 4)
+                                            .background(Color.gray.opacity(0.1))
+                                            .cornerRadius(4)
                                     }
                                 }
                                 
-                                VStack(spacing: 8) {
+                                LazyVGrid(columns: Array(repeating: GridItem(.flexible()), count: 2), spacing: 8) {
                                     ForEach(feedbackOptions, id: \.0) { option in
                                         Button(action: {
                                             selectedFeedback[measurement] = option.0
                                         }) {
-                                            HStack {
-                                                Text(option.1)
-                                                    .foregroundColor(selectedFeedback[measurement] == option.0 ? .white : .primary)
-                                                Spacer()
-                                                if selectedFeedback[measurement] == option.0 {
-                                                    Image(systemName: "checkmark")
-                                                        .foregroundColor(.white)
-                                                }
-                                            }
-                                            .padding()
-                                            .background(
-                                                selectedFeedback[measurement] == option.0 
-                                                ? Color.blue 
-                                                : Color(.systemGray6)
-                                            )
-                                            .cornerRadius(8)
+                                            Text(option.1)
+                                                .font(.caption)
+                                                .frame(maxWidth: .infinity)
+                                                .padding(.vertical, 12)
+                                                .background(selectedFeedback[measurement] == option.0 ? Color.blue : Color.gray.opacity(0.2))
+                                                .foregroundColor(selectedFeedback[measurement] == option.0 ? .white : .black)
+                                                .cornerRadius(8)
                                         }
                                     }
                                 }
                             }
-                            .padding(.horizontal)
+                            .padding(.vertical, 8)
                         }
                     }
+                    .padding(.horizontal)
                 }
                 
                 // Submit Button

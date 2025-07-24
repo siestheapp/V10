@@ -158,8 +158,9 @@ struct GarmentDetailView: View {
                     garment: garment,
                     isPresented: $showingFeedbackView,
                     onFeedbackSubmitted: {
-                        // Call the callback to refresh parent view
+                        // Refresh parent view and close detail view
                         onGarmentUpdated?()
+                        isPresented = false  // Close the detail view
                     }
                 )
             }
