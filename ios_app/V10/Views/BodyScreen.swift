@@ -121,7 +121,7 @@ struct BodyScreen: View {
                 VStack(spacing: 20) {
                     MeasurementCard(title: "Chest", value: viewModel.estimatedChest, icon: "person.fill")
                     MeasurementCard(title: "Neck", value: viewModel.estimatedNeck, icon: "person.crop.circle")
-                    MeasurementCard(title: "Sleeve", value: viewModel.estimatedSleeve, icon: "hand.raised.fill")
+                    MeasurementCard(title: "Arm Length", value: viewModel.estimatedSleeve, icon: "ruler")
                     
                     Text("Based on your garment feedback")
                         .font(.caption)
