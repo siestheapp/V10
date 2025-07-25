@@ -437,20 +437,21 @@ def save_fit_zone(user_id: str, category: str, fit_zone: dict):
         conn.close()
 
 def format_measurements_response(garments, fit_zone):
+    # Handle new statistical zone format
+    def get_zone_range(zone_key, default_min, default_max):
+        if zone_key in fit_zone and fit_zone[zone_key]['min'] is not None:
+            return {
+                "min": fit_zone[zone_key]['min'],
+                "max": fit_zone[zone_key]['max']
+            }
+        else:
+            return {"min": default_min, "max": default_max}
+    
     return {
         "Tops": {
-            "tightRange": {
-                "min": fit_zone['tight_range']['min'] or 36.0,
-                "max": fit_zone['tight_range']['max'] or 39.0
-            },
-            "goodRange": {
-                "min": fit_zone['good_range']['min'] or 39.0,
-                "max": fit_zone['good_range']['max'] or 41.0
-            },
-            "relaxedRange": {
-                "min": fit_zone['relaxed_range']['min'] or 41.0,
-                "max": fit_zone['relaxed_range']['max'] or 47.0
-            },
+            "tightRange": get_zone_range('tight', 36.0, 39.0),
+            "goodRange": get_zone_range('good', 39.0, 41.0),
+            "relaxedRange": get_zone_range('relaxed', 41.0, 47.0),
             "garments": [
                 {
                     "brand": g["brand"],
