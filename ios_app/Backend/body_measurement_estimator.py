@@ -122,39 +122,50 @@ class BodyMeasurementEstimator:
             'explanation': f"Garment ({garment_measurement}\") - Body ({user_body_measurement}\") = {ease}\" ease"
         }
     
-    def estimate_chest_measurement(self, user_id: int) -> Optional[float]:
+    def estimate_chest_measurement(self, user_id: int) -> Optional[dict]:
         """
         Estimate body chest circumference from garment chest measurements.
         This converts garment chest measurements to body chest measurements that match what a tailor would measure.
+        Returns both the estimate and detailed breakdown of garments used.
         """
         try:
             conn = self.get_connection()
             cursor = conn.cursor()
             
-            # Get user's garments with chest measurements and fit feedback
+            # Get user's garments with chest measurements and fit feedback (most recent feedback only)
             query = """
+                WITH latest_feedback AS (
+                    SELECT 
+                        ug.id as user_garment_id,
+                        b.name as brand,
+                        ug.product_name,
+                        ug.size_label,
+                        ug.owns_garment,
+                        sge.chest_min,
+                        sge.chest_max,
+                        sge.chest_range,
+                        sg.guide_level,
+                        ugf.dimension,
+                        fc.feedback_text as feedback,
+                        ugf.created_at as feedback_date,
+                        ROW_NUMBER() OVER (PARTITION BY ug.id, ugf.dimension ORDER BY ugf.created_at DESC) as rn
+                    FROM user_garments ug
+                    JOIN brands b ON ug.brand_id = b.id
+                    LEFT JOIN size_guide_entries sge ON ug.size_guide_entry_id = sge.id
+                    LEFT JOIN size_guides sg ON sge.size_guide_id = sg.id
+                    LEFT JOIN user_garment_feedback ugf ON ug.id = ugf.user_garment_id
+                    LEFT JOIN feedback_codes fc ON ugf.feedback_code_id = fc.id
+                    WHERE ug.user_id = %s 
+                    AND ug.owns_garment = true
+                    AND (sge.chest_min IS NOT NULL OR sge.chest_max IS NOT NULL OR sge.chest_range IS NOT NULL)
+                    AND ugf.dimension = 'chest'
+                )
                 SELECT 
-                    b.name as brand,
-                    ug.product_name,
-                    ug.size_label,
-                    ug.owns_garment,
-                    sge.chest_min,
-                    sge.chest_max,
-                    sge.chest_range,
-                    sg.guide_level,
-                    ugf.dimension,
-                    fc.feedback_text as feedback
-                FROM user_garments ug
-                JOIN brands b ON ug.brand_id = b.id
-                LEFT JOIN size_guide_entries sge ON ug.size_guide_entry_id = sge.id
-                LEFT JOIN size_guides sg ON sge.size_guide_id = sg.id
-                LEFT JOIN user_garment_feedback ugf ON ug.id = ugf.user_garment_id
-                LEFT JOIN feedback_codes fc ON ugf.feedback_code_id = fc.id
-                WHERE ug.user_id = %s 
-                AND ug.owns_garment = true
-                AND (sge.chest_min IS NOT NULL OR sge.chest_max IS NOT NULL OR sge.chest_range IS NOT NULL)
-                AND ugf.dimension = 'chest'
-                ORDER BY ug.created_at DESC
+                    brand, product_name, size_label, owns_garment, 
+                    chest_min, chest_max, chest_range, guide_level, dimension, feedback, feedback_date
+                FROM latest_feedback 
+                WHERE rn = 1
+                ORDER BY user_garment_id DESC
             """
             
             cursor.execute(query, (user_id,))
@@ -168,14 +179,37 @@ class BodyMeasurementEstimator:
             
             # Process each garment to calculate estimated body measurement
             body_measurements = []
+            garment_details = []
             
             for garment in garments:
-                brand, product_name, size_label, owns_garment, chest_min, chest_max, chest_range, guide_level, dimension, feedback = garment
+                brand, product_name, size_label, owns_garment, chest_min, chest_max, chest_range, guide_level, dimension, feedback, feedback_date = garment
                 
                 # Parse garment chest measurement
                 garment_chest = self._parse_measurement(chest_min, chest_max, chest_range)
                 if garment_chest is None:
                     continue
+                
+                # Create detailed entry for transparency
+                chest_range_display = ""
+                if chest_min is not None and chest_max is not None:
+                    if chest_min == chest_max:
+                        chest_range_display = f"{chest_min}\""
+                    else:
+                        chest_range_display = f"{chest_min}-{chest_max}\""
+                elif chest_range:
+                    chest_range_display = chest_range
+                else:
+                    chest_range_display = f"{garment_chest}\""
+                
+                garment_details.append({
+                    'brand': brand,
+                    'product_name': product_name or "Unknown Product",
+                    'size': size_label,
+                    'measurement_display': chest_range_display,
+                    'feedback': feedback or "No feedback",
+                    'guide_level': guide_level or "unknown",
+                    'feedback_date': feedback_date.isoformat() if feedback_date else None
+                })
                 
                 # Method 1: Use feedback-based adjustment (current approach)
                 feedback_delta = self.FEEDBACK_DELTAS.get(feedback, 0.0)
@@ -230,7 +264,11 @@ class BodyMeasurementEstimator:
             cursor.close()
             conn.close()
             
-            return estimated_chest
+            return {
+                'estimate': estimated_chest,
+                'garment_details': garment_details,
+                'data_points': len(garment_details)
+            }
             
         except Exception as e:
             self.logger.error(f"Error estimating chest measurement for user {user_id}: {str(e)}")
@@ -310,7 +348,7 @@ class BodyMeasurementEstimator:
             self.logger.error(f"Error getting size recommendations: {str(e)}")
             return []
     
-    def estimate_neck_measurement(self, user_id: int) -> Optional[float]:
+    def estimate_neck_measurement(self, user_id: int) -> Optional[dict]:
         """
         Estimate body neck circumference from garment neck measurements.
         This converts garment neck openings to body neck measurements that match what a tailor would measure.
@@ -319,40 +357,53 @@ class BodyMeasurementEstimator:
             conn = self.get_connection()
             cursor = conn.cursor()
             
-            # Query for garments with neck measurements and EITHER neck feedback OR overall "Good Fit"
+            # Query for garments with neck measurements and EITHER neck feedback OR overall "Good Fit" (deduplicated)
             query = """
+                WITH latest_feedback AS (
+                    SELECT 
+                        ug.id as user_garment_id,
+                        b.name as brand,
+                        ug.product_name,
+                        ug.size_label,
+                        sge.neck_min,
+                        sge.neck_max,
+                        sge.neck_range,
+                        sg.guide_level,
+                        neck_fc.feedback_text as neck_feedback,
+                        overall_fc.feedback_text as overall_feedback,
+                        CASE 
+                            WHEN neck_fc.feedback_text IS NOT NULL THEN 'specific'
+                            WHEN overall_fc.feedback_text = 'Good Fit' THEN 'inferred'
+                            ELSE 'none'
+                        END as feedback_source,
+                        COALESCE(neck_ugf.created_at, overall_ugf.created_at) as feedback_date,
+                        ROW_NUMBER() OVER (PARTITION BY ug.id ORDER BY 
+                            CASE WHEN neck_fc.feedback_text IS NOT NULL THEN 1 ELSE 2 END,
+                            COALESCE(neck_ugf.created_at, overall_ugf.created_at) DESC
+                        ) as rn
+                    FROM user_garments ug
+                    JOIN brands b ON ug.brand_id = b.id
+                    LEFT JOIN size_guide_entries sge ON ug.size_guide_entry_id = sge.id
+                    LEFT JOIN size_guides sg ON sge.size_guide_id = sg.id
+                    -- Get specific neck feedback
+                    LEFT JOIN user_garment_feedback neck_ugf ON ug.id = neck_ugf.user_garment_id AND neck_ugf.dimension = 'neck'
+                    LEFT JOIN feedback_codes neck_fc ON neck_ugf.feedback_code_id = neck_fc.id
+                    -- Get overall feedback
+                    LEFT JOIN user_garment_feedback overall_ugf ON ug.id = overall_ugf.user_garment_id AND overall_ugf.dimension = 'overall'
+                    LEFT JOIN feedback_codes overall_fc ON overall_ugf.feedback_code_id = overall_fc.id
+                    WHERE ug.user_id = %s 
+                    AND ug.owns_garment = true
+                    AND (sge.neck_min IS NOT NULL OR sge.neck_max IS NOT NULL OR sge.neck_range IS NOT NULL)
+                    AND (neck_fc.feedback_text IS NOT NULL OR overall_fc.feedback_text = 'Good Fit')
+                )
                 SELECT 
-                    b.name as brand,
-                    ug.product_name,
-                    ug.size_label,
-                    sge.neck_min,
-                    sge.neck_max,
-                    sge.neck_range,
-                    sg.guide_level,
-                    neck_fc.feedback_text as neck_feedback,
-                    overall_fc.feedback_text as overall_feedback,
-                    CASE 
-                        WHEN neck_fc.feedback_text IS NOT NULL THEN 'specific'
-                        WHEN overall_fc.feedback_text = 'Good Fit' THEN 'inferred'
-                        ELSE 'none'
-                    END as feedback_source
-                FROM user_garments ug
-                JOIN brands b ON ug.brand_id = b.id
-                LEFT JOIN size_guide_entries sge ON ug.size_guide_entry_id = sge.id
-                LEFT JOIN size_guides sg ON sge.size_guide_id = sg.id
-                -- Get specific neck feedback
-                LEFT JOIN user_garment_feedback neck_ugf ON ug.id = neck_ugf.user_garment_id AND neck_ugf.dimension = 'neck'
-                LEFT JOIN feedback_codes neck_fc ON neck_ugf.feedback_code_id = neck_fc.id
-                -- Get overall feedback
-                LEFT JOIN user_garment_feedback overall_ugf ON ug.id = overall_ugf.user_garment_id AND overall_ugf.dimension = 'overall'
-                LEFT JOIN feedback_codes overall_fc ON overall_ugf.feedback_code_id = overall_fc.id
-                WHERE ug.user_id = %s 
-                AND ug.owns_garment = true
-                AND (sge.neck_min IS NOT NULL OR sge.neck_max IS NOT NULL OR sge.neck_range IS NOT NULL)
-                AND (neck_fc.feedback_text IS NOT NULL OR overall_fc.feedback_text = 'Good Fit')
+                    brand, product_name, size_label, neck_min, neck_max, neck_range, 
+                    guide_level, neck_feedback, overall_feedback, feedback_source, feedback_date
+                FROM latest_feedback 
+                WHERE rn = 1
                 ORDER BY 
-                    CASE WHEN neck_fc.feedback_text IS NOT NULL THEN 1 ELSE 2 END, -- Prioritize specific feedback
-                    ug.created_at DESC
+                    CASE WHEN neck_feedback IS NOT NULL THEN 1 ELSE 2 END,
+                    user_garment_id DESC
             """
             
             cursor.execute(query, (user_id,))
@@ -371,9 +422,10 @@ class BodyMeasurementEstimator:
             
             # Process each garment to estimate body neck circumference
             body_neck_measurements = []
+            garment_details = []
             for garment in garments:
                 (brand, product_name, size_label, neck_min, neck_max, neck_range, 
-                 guide_level, neck_feedback, overall_feedback, feedback_source) = garment
+                 guide_level, neck_feedback, overall_feedback, feedback_source, feedback_date) = garment
                 
                 garment_neck = self._parse_measurement(neck_min, neck_max, neck_range)
                 if garment_neck is None:
@@ -411,6 +463,29 @@ class BodyMeasurementEstimator:
                 else:  # Good Fit
                     adjusted_ease = neck_ease
                 
+                # Create detailed entry for transparency
+                neck_range_display = ""
+                if neck_min is not None and neck_max is not None:
+                    if neck_min == neck_max:
+                        neck_range_display = f"{neck_min}\""
+                    else:
+                        neck_range_display = f"{neck_min}-{neck_max}\""
+                elif neck_range:
+                    neck_range_display = neck_range
+                else:
+                    neck_range_display = f"{garment_neck}\""
+                
+                garment_details.append({
+                    'brand': brand,
+                    'product_name': product_name or "Unknown Product", 
+                    'size': size_label,
+                    'measurement_display': neck_range_display,
+                    'feedback': feedback_to_use,
+                    'feedback_source': feedback_source,
+                    'guide_level': guide_level or "unknown",
+                    'feedback_date': feedback_date.isoformat() if feedback_date else None
+                })
+                
                 # Calculate body neck circumference: Garment neck - ease
                 body_neck_estimate = garment_neck - adjusted_ease
                 
@@ -444,13 +519,17 @@ class BodyMeasurementEstimator:
             cursor.close()
             conn.close()
             
-            return estimated_neck
+            return {
+                'estimate': estimated_neck,
+                'garment_details': garment_details,
+                'data_points': len(garment_details)
+            }
             
         except Exception as e:
             self.logger.error(f"Error estimating neck measurement for user {user_id}: {str(e)}")
             return None
 
-    def estimate_sleeve_measurement(self, user_id: int) -> Optional[float]:
+    def estimate_sleeve_measurement(self, user_id: int) -> Optional[dict]:
         """
         Estimate body arm length (shoulder to wrist) from garment sleeve measurements.
         This converts garment sleeve lengths to body arm measurements that match what a tailor would measure.
@@ -459,40 +538,53 @@ class BodyMeasurementEstimator:
             conn = self.get_connection()
             cursor = conn.cursor()
             
-            # Query for garments with sleeve measurements and EITHER sleeve feedback OR overall "Good Fit"
+            # Query for garments with sleeve measurements and EITHER sleeve feedback OR overall "Good Fit" (deduplicated)
             query = """
+                WITH latest_feedback AS (
+                    SELECT 
+                        ug.id as user_garment_id,
+                        b.name as brand,
+                        ug.product_name,
+                        ug.size_label,
+                        sge.sleeve_min,
+                        sge.sleeve_max,
+                        sge.sleeve_range,
+                        sg.guide_level,
+                        sleeve_fc.feedback_text as sleeve_feedback,
+                        overall_fc.feedback_text as overall_feedback,
+                        CASE 
+                            WHEN sleeve_fc.feedback_text IS NOT NULL THEN 'specific'
+                            WHEN overall_fc.feedback_text = 'Good Fit' THEN 'inferred'
+                            ELSE 'none'
+                        END as feedback_source,
+                        COALESCE(sleeve_ugf.created_at, overall_ugf.created_at) as feedback_date,
+                        ROW_NUMBER() OVER (PARTITION BY ug.id ORDER BY 
+                            CASE WHEN sleeve_fc.feedback_text IS NOT NULL THEN 1 ELSE 2 END,
+                            COALESCE(sleeve_ugf.created_at, overall_ugf.created_at) DESC
+                        ) as rn
+                    FROM user_garments ug
+                    JOIN brands b ON ug.brand_id = b.id
+                    LEFT JOIN size_guide_entries sge ON ug.size_guide_entry_id = sge.id
+                    LEFT JOIN size_guides sg ON sge.size_guide_id = sg.id
+                    -- Get specific sleeve feedback
+                    LEFT JOIN user_garment_feedback sleeve_ugf ON ug.id = sleeve_ugf.user_garment_id AND sleeve_ugf.dimension = 'sleeve'
+                    LEFT JOIN feedback_codes sleeve_fc ON sleeve_ugf.feedback_code_id = sleeve_fc.id
+                    -- Get overall feedback
+                    LEFT JOIN user_garment_feedback overall_ugf ON ug.id = overall_ugf.user_garment_id AND overall_ugf.dimension = 'overall'
+                    LEFT JOIN feedback_codes overall_fc ON overall_ugf.feedback_code_id = overall_fc.id
+                    WHERE ug.user_id = %s 
+                    AND ug.owns_garment = true
+                    AND (sge.sleeve_min IS NOT NULL OR sge.sleeve_max IS NOT NULL OR sge.sleeve_range IS NOT NULL)
+                    AND (sleeve_fc.feedback_text IS NOT NULL OR overall_fc.feedback_text = 'Good Fit')
+                )
                 SELECT 
-                    b.name as brand,
-                    ug.product_name,
-                    ug.size_label,
-                    sge.sleeve_min,
-                    sge.sleeve_max,
-                    sge.sleeve_range,
-                    sg.guide_level,
-                    sleeve_fc.feedback_text as sleeve_feedback,
-                    overall_fc.feedback_text as overall_feedback,
-                    CASE 
-                        WHEN sleeve_fc.feedback_text IS NOT NULL THEN 'specific'
-                        WHEN overall_fc.feedback_text = 'Good Fit' THEN 'inferred'
-                        ELSE 'none'
-                    END as feedback_source
-                FROM user_garments ug
-                JOIN brands b ON ug.brand_id = b.id
-                LEFT JOIN size_guide_entries sge ON ug.size_guide_entry_id = sge.id
-                LEFT JOIN size_guides sg ON sge.size_guide_id = sg.id
-                -- Get specific sleeve feedback
-                LEFT JOIN user_garment_feedback sleeve_ugf ON ug.id = sleeve_ugf.user_garment_id AND sleeve_ugf.dimension = 'sleeve'
-                LEFT JOIN feedback_codes sleeve_fc ON sleeve_ugf.feedback_code_id = sleeve_fc.id
-                -- Get overall feedback
-                LEFT JOIN user_garment_feedback overall_ugf ON ug.id = overall_ugf.user_garment_id AND overall_ugf.dimension = 'overall'
-                LEFT JOIN feedback_codes overall_fc ON overall_ugf.feedback_code_id = overall_fc.id
-                WHERE ug.user_id = %s 
-                AND ug.owns_garment = true
-                AND (sge.sleeve_min IS NOT NULL OR sge.sleeve_max IS NOT NULL OR sge.sleeve_range IS NOT NULL)
-                AND (sleeve_fc.feedback_text IS NOT NULL OR overall_fc.feedback_text = 'Good Fit')
+                    brand, product_name, size_label, sleeve_min, sleeve_max, sleeve_range,
+                    guide_level, sleeve_feedback, overall_feedback, feedback_source, feedback_date
+                FROM latest_feedback 
+                WHERE rn = 1
                 ORDER BY 
-                    CASE WHEN sleeve_fc.feedback_text IS NOT NULL THEN 1 ELSE 2 END, -- Prioritize specific feedback
-                    ug.created_at DESC
+                    CASE WHEN sleeve_feedback IS NOT NULL THEN 1 ELSE 2 END,
+                    user_garment_id DESC
             """
             
             cursor.execute(query, (user_id,))
@@ -511,9 +603,10 @@ class BodyMeasurementEstimator:
             
             # Process each garment to estimate body arm length
             body_arm_measurements = []
+            garment_details = []
             for garment in garments:
                 (brand, product_name, size_label, sleeve_min, sleeve_max, sleeve_range, 
-                 guide_level, sleeve_feedback, overall_feedback, feedback_source) = garment
+                 guide_level, sleeve_feedback, overall_feedback, feedback_source, feedback_date) = garment
                 
                 garment_sleeve = self._parse_measurement(sleeve_min, sleeve_max, sleeve_range)
                 if garment_sleeve is None:
@@ -551,6 +644,29 @@ class BodyMeasurementEstimator:
                 else:  # Good Fit
                     adjusted_ease = sleeve_ease
                 
+                # Create detailed entry for transparency
+                sleeve_range_display = ""
+                if sleeve_min is not None and sleeve_max is not None:
+                    if sleeve_min == sleeve_max:
+                        sleeve_range_display = f"{sleeve_min}\""
+                    else:
+                        sleeve_range_display = f"{sleeve_min}-{sleeve_max}\""
+                elif sleeve_range:
+                    sleeve_range_display = sleeve_range
+                else:
+                    sleeve_range_display = f"{garment_sleeve}\""
+                
+                garment_details.append({
+                    'brand': brand,
+                    'product_name': product_name or "Unknown Product",
+                    'size': size_label,
+                    'measurement_display': sleeve_range_display,
+                    'feedback': feedback_to_use,
+                    'feedback_source': feedback_source,
+                    'guide_level': guide_level or "unknown",
+                    'feedback_date': feedback_date.isoformat() if feedback_date else None
+                })
+                
                 # Calculate body arm length: Garment sleeve - ease
                 body_arm_estimate = garment_sleeve - adjusted_ease
                 
@@ -584,7 +700,11 @@ class BodyMeasurementEstimator:
             cursor.close()
             conn.close()
             
-            return estimated_arm_length
+            return {
+                'estimate': estimated_arm_length,
+                'garment_details': garment_details,
+                'data_points': len(garment_details)
+            }
             
         except Exception as e:
             self.logger.error(f"Error estimating arm length for user {user_id}: {str(e)}")

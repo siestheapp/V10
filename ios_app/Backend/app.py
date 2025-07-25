@@ -1913,10 +1913,16 @@ async def get_user_body_measurements(user_id: str):
     try:
         # Initialize estimator with database config
         estimator = BodyMeasurementEstimator(DB_CONFIG)
-        # Estimate chest, neck, and arm length measurements
-        chest_estimate = estimator.estimate_chest_measurement(int(user_id))
-        neck_estimate = estimator.estimate_neck_measurement(int(user_id))
-        arm_length_estimate = estimator.estimate_sleeve_measurement(int(user_id))
+        # Estimate chest, neck, and arm length measurements (now returns detailed data)
+        chest_data = estimator.estimate_chest_measurement(int(user_id))
+        neck_data = estimator.estimate_neck_measurement(int(user_id))
+        arm_length_data = estimator.estimate_sleeve_measurement(int(user_id))
+        
+        # Extract estimates from detailed data
+        chest_estimate = chest_data['estimate'] if chest_data else None
+        neck_estimate = neck_data['estimate'] if neck_data else None
+        arm_length_estimate = arm_length_data['estimate'] if arm_length_data else None
+        
         # If all are None, return message
         if chest_estimate is None and neck_estimate is None and arm_length_estimate is None:
             return {
@@ -1930,7 +1936,10 @@ async def get_user_body_measurements(user_id: str):
             "estimated_chest": round(chest_estimate, 2) if chest_estimate is not None else None,
             "estimated_neck": round(neck_estimate, 2) if neck_estimate is not None else None,
             "estimated_arm_length": round(arm_length_estimate, 2) if arm_length_estimate is not None else None,
-            "unit": "in"
+            "unit": "in",
+            "chest_details": chest_data['garment_details'] if chest_data else [],
+            "neck_details": neck_data['garment_details'] if neck_data else [],
+            "arm_length_details": arm_length_data['garment_details'] if arm_length_data else []
         }
     except Exception as e:
         print(f"Error in get_user_body_measurements: {str(e)}")
