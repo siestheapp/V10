@@ -358,7 +358,7 @@ async def get_ideal_measurements(user_id: str):
 
 # Add these helper functions
 def get_user_garments(user_id: str) -> list:
-    """Get all owned garments for a user"""
+    """Get all owned garments for a user with detailed feedback as primary source"""
     conn = get_db()
     cur = conn.cursor()
     
@@ -375,23 +375,39 @@ def get_user_garments(user_id: str) -> list:
                 END as chest_range,
                 ug.size_label as size,
                 ug.owns_garment,
-                ug.fit_feedback,
-                fc.feedback_text as chest_feedback
+                -- Get detailed feedback for all dimensions
+                (SELECT fc.feedback_text 
+                 FROM user_garment_feedback ugf 
+                 JOIN feedback_codes fc ON ugf.feedback_code_id = fc.id
+                 WHERE ugf.user_garment_id = ug.id AND ugf.dimension = 'overall' 
+                 ORDER BY ugf.created_at DESC LIMIT 1) as fit_feedback,
+                (SELECT fc.feedback_text 
+                 FROM user_garment_feedback ugf 
+                 JOIN feedback_codes fc ON ugf.feedback_code_id = fc.id
+                 WHERE ugf.user_garment_id = ug.id AND ugf.dimension = 'chest' 
+                 ORDER BY ugf.created_at DESC LIMIT 1) as chest_feedback,
+                (SELECT fc.feedback_text 
+                 FROM user_garment_feedback ugf 
+                 JOIN feedback_codes fc ON ugf.feedback_code_id = fc.id
+                 WHERE ugf.user_garment_id = ug.id AND ugf.dimension = 'sleeve' 
+                 ORDER BY ugf.created_at DESC LIMIT 1) as sleeve_feedback,
+                (SELECT fc.feedback_text 
+                 FROM user_garment_feedback ugf 
+                 JOIN feedback_codes fc ON ugf.feedback_code_id = fc.id
+                 WHERE ugf.user_garment_id = ug.id AND ugf.dimension = 'neck' 
+                 ORDER BY ugf.created_at DESC LIMIT 1) as neck_feedback
             FROM user_garments ug
             JOIN brands b ON ug.brand_id = b.id
             LEFT JOIN categories c ON ug.category_id = c.id
             LEFT JOIN size_guide_entries_with_brand sge ON 
                 ug.size_guide_entry_id = sge.id
-            LEFT JOIN user_garment_feedback uff_chest ON 
-                ug.id = uff_chest.user_garment_id AND uff_chest.dimension = 'chest'
-            LEFT JOIN feedback_codes fc ON uff_chest.feedback_code_id = fc.id
             WHERE ug.user_id = %s
             AND ug.owns_garment = true
             AND sge.chest_min IS NOT NULL
         """, (user_id,))
         
         garments = cur.fetchall()
-        print(f"Found garments: {garments}")
+        print(f"Found garments with detailed feedback: {garments}")
         return garments
     except Exception as e:
         print(f"Error getting garments: {str(e)}")
