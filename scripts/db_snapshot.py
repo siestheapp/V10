@@ -24,6 +24,11 @@ def get_est_timestamp():
     eastern = pytz.timezone('US/Eastern')
     return datetime.now(eastern)
 
+def get_snapshot_dir():
+    """Get the snapshot directory based on current date"""
+    current_date = get_est_timestamp().strftime('%Y-%m-%d')
+    return f"supabase/snapshots/{current_date}"
+
 def get_db_connection():
     """Create database connection"""
     return psycopg2.connect(**DB_CONFIG)
@@ -339,10 +344,11 @@ def save_snapshot(snapshot: Dict[str, Any], filename: str = None):
     """Save snapshot to JSON file"""
     if not filename:
         timestamp = get_est_timestamp().strftime("%Y%m%d_%H%M%S")
-        filename = f"supabase/snapshots/2025-06-29/database_snapshot_{timestamp}.json"
+        snapshot_dir = get_snapshot_dir()
+    filename = f"{snapshot_dir}/database_snapshot_{timestamp}.json"
     
-    os.makedirs('supabase/snapshots/2025-06-29', exist_ok=True)
-    filepath = os.path.join('supabase/snapshots/2025-06-29', filename) if not filename.startswith('supabase/snapshots/2025-06-29') else filename
+    os.makedirs(snapshot_dir, exist_ok=True)
+    filepath = filename
     
     with open(filepath, 'w') as f:
         json.dump(snapshot, f, indent=2, default=str)
@@ -393,10 +399,12 @@ def save_snapshot_to_markdown(snapshot_data: dict, filename: str = None):
     """Save database snapshot to a markdown file for AI analysis"""
     if not filename:
         timestamp = get_est_timestamp().strftime("%Y%m%d_%H%M%S")
-        filename = f"supabase/snapshots/2025-06-29/database_evolution_{timestamp}.md"
+        snapshot_dir = get_snapshot_dir()
+        filename = f"{snapshot_dir}/database_evolution_{timestamp}.md"
     
     # Ensure directory exists
-    os.makedirs("supabase/snapshots/2025-06-29", exist_ok=True)
+    snapshot_dir = get_snapshot_dir()
+    os.makedirs(snapshot_dir, exist_ok=True)
     
     # Extract data from the actual snapshot structure
     table_counts = {table: data.get('row_count', 0) for table, data in snapshot_data['tables'].items()}
@@ -475,12 +483,13 @@ def save_snapshot_to_markdown(snapshot_data: dict, filename: str = None):
 
 def update_evolution_summary():
     """Update the main evolution summary file"""
-    summary_file = "supabase/snapshots/2025-06-29/DATABASE_EVOLUTION_SUMMARY.md"
+    snapshot_dir = get_snapshot_dir()
+    summary_file = f"{snapshot_dir}/DATABASE_EVOLUTION_SUMMARY.md"
     
     # Get all snapshot files
     snapshot_files = []
-    if os.path.exists("supabase/snapshots/2025-06-29"):
-        for file in os.listdir("supabase/snapshots/2025-06-29"):
+    if os.path.exists(snapshot_dir):
+        for file in os.listdir(snapshot_dir):
             if file.startswith("database_evolution_") and file.endswith(".md"):
                 snapshot_files.append(file)
     
@@ -551,9 +560,10 @@ if __name__ == "__main__":
         
         # Save as JSON (existing functionality)
         timestamp = get_est_timestamp().strftime("%Y%m%d_%H%M%S")
-        json_filename = f"supabase/snapshots/2025-06-29/database_snapshot_{timestamp}.json"
+        snapshot_dir = get_snapshot_dir()
+        json_filename = f"{snapshot_dir}/database_snapshot_{timestamp}.json"
         
-        os.makedirs("supabase/snapshots/2025-06-29", exist_ok=True)
+        os.makedirs(snapshot_dir, exist_ok=True)
         with open(json_filename, 'w') as f:
             json.dump(snapshot_data, f, indent=2, default=str)
         
@@ -568,7 +578,7 @@ if __name__ == "__main__":
         print("🎉 Database snapshot complete!")
         print(f"\ud83d\udcca JSON: {json_filename}")
         print(f"\ud83d\udcdd Markdown: {markdown_filename}")
-        print(f"\ud83d\udcc8 Summary: supabase/snapshots/2025-06-29/DATABASE_EVOLUTION_SUMMARY.md")
+        print(f"\ud83d\udcc8 Summary: {get_snapshot_dir()}/DATABASE_EVOLUTION_SUMMARY.md")
         
     except Exception as e:
         print(f"❌ Error taking snapshot: {str(e)}")
