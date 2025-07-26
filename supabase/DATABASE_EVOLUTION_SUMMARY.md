@@ -4,6 +4,7 @@ This file tracks how the V10 database evolves over time, providing context for A
 
 ## 📈 Evolution Timeline
 
+- [2025-07-25 Measurement Methodology](./snapshots/2025-07-25/database_evolution_20250725_measurement_methodology.md) - **Major Enhancement**: Measurement quality tracking system
 - [2025-06-29 23:26](./database_evolution_20250629_232654.md) - Database snapshot
 
 ## 📊 Key Metrics Over Time

@@ -29,132 +29,251 @@ def get_user1_complete_profile():
     
     profile = {}
     
-    # 1. User Profile
-    cur.execute('SELECT * FROM users WHERE id = 1')
-    user_row = cur.fetchone()
-    profile['user'] = dict(user_row) if user_row else None
+    # Get basic user info
+    cur.execute("SELECT id, email, created_at, gender, height_in, preferred_units FROM users WHERE id = 1")
+    user_info = cur.fetchone()
+    profile['user_info'] = dict(user_info) if user_info else None
     
-    # 2. Body Measurements
-    cur.execute('SELECT * FROM body_measurements WHERE user_id = 1 ORDER BY created_at DESC')
-    profile['body_measurements'] = [dict(row) for row in cur.fetchall()]
+    # Get body measurements (if available)
+    try:
+        cur.execute("""
+            SELECT chest, waist, neck, sleeve, hip, inseam, length, created_at 
+            FROM body_measurements 
+            WHERE user_id = 1 
+            ORDER BY created_at DESC
+            LIMIT 1
+        """)
+        measurement = cur.fetchone()
+        profile['body_measurements'] = dict(measurement) if measurement else None
+    except:
+        profile['body_measurements'] = None
     
-    # 3. Owned Garments with Details
-    cur.execute('''
+    # Get owned garments with comprehensive details
+    cur.execute("""
         SELECT 
             ug.id as garment_id,
-            b.name as brand_name,
+            b.name as brand,
+            c.name as category,
             ug.product_name,
             ug.size_label,
-            ug.fit_type,
-            c.name as category,
-            sc.name as subcategory,
-            ug.owns_garment,
-            ug.fit_feedback as overall_fit_feedback,
-            ug.feedback_timestamp,
-            ug.product_url,
             ug.created_at,
-            -- Size guide measurements
             sge.chest_min, sge.chest_max,
-            sge.waist_min, sge.waist_max, 
             sge.sleeve_min, sge.sleeve_max,
             sge.neck_min, sge.neck_max,
-            sge.center_back_length
+            sge.waist_min, sge.waist_max,
+            sge.center_back_length,
+            ug.fit_feedback as overall_fit_feedback
         FROM user_garments ug
-        LEFT JOIN brands b ON ug.brand_id = b.id
-        LEFT JOIN categories c ON ug.category_id = c.id  
-        LEFT JOIN subcategories sc ON ug.subcategory_id = sc.id
+        JOIN brands b ON ug.brand_id = b.id
+        LEFT JOIN categories c ON ug.category_id = c.id
         LEFT JOIN size_guide_entries sge ON ug.size_guide_entry_id = sge.id
         WHERE ug.user_id = 1 AND ug.owns_garment = true
         ORDER BY ug.created_at DESC
-    ''')
-    profile['garments'] = [dict(row) for row in cur.fetchall()]
+    """)
+    garments = cur.fetchall()
+    profile['owned_garments'] = [dict(g) for g in garments]
     
-    # 4. Detailed Feedback per Garment
-    profile['detailed_feedback'] = {}
-    for garment in profile['garments']:
-        cur.execute('''
+    # Get detailed feedback for each garment
+    cur.execute("""
+        SELECT 
+            ugf.user_garment_id,
+            ugf.dimension,
+            fc.feedback_text,
+            ugf.created_at
+        FROM user_garment_feedback ugf
+        JOIN feedback_codes fc ON ugf.feedback_code_id = fc.id
+        WHERE ugf.user_garment_id IN (
+            SELECT id FROM user_garments WHERE user_id = 1 AND owns_garment = true
+        )
+        ORDER BY ugf.user_garment_id, ugf.dimension
+    """)
+    feedback_data = cur.fetchall()
+    
+    # Group feedback by garment
+    detailed_feedback = {}
+    for fb in feedback_data:
+        garment_id = fb['user_garment_id']
+        if garment_id not in detailed_feedback:
+            detailed_feedback[garment_id] = []
+        detailed_feedback[garment_id].append(dict(fb))
+    
+    profile['detailed_feedback'] = detailed_feedback
+    
+    # Get complete size guide data for all brands user owns
+    cur.execute("""
+        SELECT DISTINCT b.id as brand_id, b.name as brand_name
+        FROM user_garments ug
+        JOIN brands b ON ug.brand_id = b.id
+        WHERE ug.user_id = 1 AND ug.owns_garment = true
+    """)
+    user_brands = cur.fetchall()
+    
+    size_guides = {}
+    for brand in user_brands:
+        cur.execute("""
             SELECT 
-                ugf.dimension,
-                fc.feedback_text,
-                ugf.created_at
-            FROM user_garment_feedback ugf
-            JOIN feedback_codes fc ON ugf.feedback_code_id = fc.id
-            WHERE ugf.user_garment_id = %s
-            ORDER BY ugf.created_at DESC
-        ''', (garment['garment_id'],))
-        profile['detailed_feedback'][garment['garment_id']] = [dict(row) for row in cur.fetchall()]
+                sge.size_label,
+                sge.chest_min, sge.chest_max,
+                sge.sleeve_min, sge.sleeve_max,
+                sge.neck_min, sge.neck_max,
+                sge.waist_min, sge.waist_max,
+                sge.center_back_length,
+                c.name as category
+            FROM size_guide_entries sge
+            JOIN size_guides sg ON sge.size_guide_id = sg.id
+            JOIN categories c ON sg.category_id = c.id
+            WHERE sg.brand_id = %s
+            ORDER BY c.name, 
+                CASE sge.size_label 
+                    WHEN 'XXS' THEN 1 WHEN 'XS' THEN 2 WHEN 'S' THEN 3 
+                    WHEN 'M' THEN 4 WHEN 'L' THEN 5 WHEN 'XL' THEN 6 
+                    WHEN 'XXL' THEN 7 WHEN 'XXXL' THEN 8 
+                    ELSE 9 
+                END
+        """, (brand['brand_id'],))
+        
+        brand_size_data = cur.fetchall()
+        size_guides[brand['brand_name']] = [dict(sg) for sg in brand_size_data]
     
-    # 5. User Actions/History
-    cur.execute('''
-        SELECT action_type, target_table, target_id, created_at, is_undone
+    profile['brand_size_guides'] = size_guides
+    
+    # Get recent user actions
+    cur.execute("""
+        SELECT action_type, target_table, target_id, is_undone, created_at
         FROM user_actions 
         WHERE user_id = 1 
         ORDER BY created_at DESC 
         LIMIT 20
-    ''')
-    profile['recent_actions'] = [dict(row) for row in cur.fetchall()]
+    """)
+    actions = cur.fetchall()
+    profile['recent_actions'] = [dict(a) for a in actions]
     
     cur.close()
     conn.close()
     
     return profile
 
-def generate_report():
-    # Get complete profile
-    profile = get_user1_complete_profile()
-    
+def format_report(profile):
     report = []
-    report.append('=== USER1 COMPLETE DATA PROFILE FOR AI ANALYSIS ===')
-    report.append(f'Generated: {datetime.now().strftime("%Y-%m-%d %H:%M:%S")}')
-    report.append('Purpose: Analyze how this data can improve clothing shopping experience around fit')
+    
+    # Header
+    report.append('# USER1 COMPLETE DATA PROFILE FOR AI ANALYSIS')
+    report.append('=' * 80)
+    report.append('Generated: ' + datetime.now().strftime('%Y-%m-%d %H:%M:%S'))
     report.append('')
     
-    # User Profile
-    report.append('1. USER PROFILE')
+    # Basic user info  
+    report.append('## 1. USER PROFILE')
     report.append('-' * 50)
-    if profile['user']:
-        user = profile['user']
-        report.append(f'User ID: {user["id"]}')
-        report.append(f'Email: {user["email"]}')
-        report.append(f'Gender: {user["gender"]}')  
-        report.append(f'Height: {user["height_in"]}" ({user["height_in"]/12:.1f} feet)')
-        report.append(f'Preferred Units: {user["preferred_units"]}')
-        report.append(f'Account Created: {user["created_at"]}')
+    if profile['user_info']:
+        user = profile['user_info']
+        report.append(f'User ID: {user.get("id", "N/A")}')
+        report.append(f'Email: {user.get("email", "N/A")}')
+        report.append(f'Gender: {user.get("gender", "N/A")}')
+        report.append(f'Height: {user.get("height_in", "N/A")}" ({user.get("height_in", 0)/12:.1f} feet)')
+        report.append(f'Preferred Units: {user.get("preferred_units", "N/A")}')
+        report.append(f'Account Created: {user.get("created_at", "N/A")}')
+    else:
+        report.append('No user profile found')
     report.append('')
     
-    # Body Measurements
-    report.append('2. BODY MEASUREMENTS')
+    # Body measurements
+    report.append('## 2. BODY MEASUREMENTS')
     report.append('-' * 50)
     if profile['body_measurements']:
-        for i, bm in enumerate(profile['body_measurements'], 1):
-            report.append(f'Measurement Set {i}:')
-            dimensions = ['chest', 'waist', 'neck', 'sleeve', 'hip', 'inseam', 'length']
-            for dim in dimensions:
-                if bm.get(dim):
-                    report.append(f'  {dim.capitalize()}: {bm[dim]}"')
-            report.append(f'  Confidence: {bm.get("confidence_score", "N/A")}')
-            report.append(f'  Source: {bm.get("source", "N/A")}')
-            report.append(f'  Created: {bm["created_at"]}')
-            report.append('')
+        measurements = profile['body_measurements']
+        for key in ['chest', 'waist', 'neck', 'sleeve', 'hip', 'inseam', 'length']:
+            if measurements.get(key):
+                report.append(f'{key.title()}: {measurements[key]}"')
+        report.append(f'Measured: {measurements.get("created_at", "Unknown")}')
     else:
-        report.append('No stored body measurements')
+        report.append('No body measurements found')
         report.append('Note: User relies on garment fit feedback for sizing guidance')
     report.append('')
     
-    # Garments with Analysis
-    report.append('3. OWNED GARMENTS WITH MEASUREMENTS')
+    # Brand Size Guides - CRUCIAL FOR AI ANALYSIS
+    report.append('## 3. BRAND SIZE GUIDE DATA')
     report.append('-' * 50)
-    total_garments = len(profile['garments'])
+    report.append('Complete sizing charts for all brands user1 owns garments from:')
+    report.append('')
+    
+    for brand_name, size_data in profile['brand_size_guides'].items():
+        report.append(f'### {brand_name.upper()}')
+        if size_data:
+            # Group by category
+            categories = {}
+            for entry in size_data:
+                cat = entry['category']
+                if cat not in categories:
+                    categories[cat] = []
+                categories[cat].append(entry)
+            
+            for category, entries in categories.items():
+                report.append(f'{category}:')
+                report.append('  Size | Chest      | Sleeve     | Neck       | Waist      | Length')
+                report.append('  -----|------------|------------|------------|------------|------------')
+                
+                for entry in entries:
+                    size = entry['size_label'].ljust(4)
+                    
+                    # Format measurements with proper handling of None values
+                    def format_range(min_val, max_val):
+                        if min_val is None:
+                            return 'N/A'.ljust(10)
+                        elif min_val == max_val:
+                            return f'{min_val}"'.ljust(10)
+                        else:
+                            return f'{min_val}-{max_val}"'.ljust(10)
+                    
+                    chest = format_range(entry['chest_min'], entry['chest_max'])
+                    sleeve = format_range(entry['sleeve_min'], entry['sleeve_max'])
+                    neck = format_range(entry['neck_min'], entry['neck_max'])
+                    waist = format_range(entry['waist_min'], entry['waist_max'])
+                    length = entry['center_back_length'] if entry['center_back_length'] else 'N/A'.ljust(10)
+                    
+                    report.append(f'  {size} | {chest} | {sleeve} | {neck} | {waist} | {length}')
+                report.append('')
+        else:
+            report.append('  No size guide data available')
+            report.append('')
+    
+    # Cross-brand sizing comparison
+    report.append('### CROSS-BRAND SIZING COMPARISON')
+    report.append('How the same size varies across brands (Chest measurements):')
+    
+    # Get all sizes user owns
+    user_sizes = set()
+    for garment in profile['owned_garments']:
+        user_sizes.add(garment['size_label'])
+    
+    for size in sorted(user_sizes):
+        report.append(f'**Size {size}:**')
+        for brand_name, size_data in profile['brand_size_guides'].items():
+            for entry in size_data:
+                if entry['size_label'] == size and entry['chest_min']:
+                    if entry['chest_min'] == entry['chest_max']:
+                        chest_range = f'{entry["chest_min"]}"'
+                    else:
+                        chest_range = f'{entry["chest_min"]}-{entry["chest_max"]}"'
+                    report.append(f'  {brand_name}: {chest_range}')
+                    break
+        report.append('')
+    
+    # Owned garments with measurements
+    report.append('## 4. OWNED GARMENTS WITH MEASUREMENTS')
+    report.append('-' * 50)
+    total_garments = len(profile['owned_garments'])
     report.append(f'Total Owned Garments: {total_garments}')
     report.append('')
     
+    # Shopping patterns
     brands = {}
     sizes = {}
     categories = {}
     
-    for i, g in enumerate(profile['garments'], 1):
+    for i, g in enumerate(profile['owned_garments'], 1):
         # Track patterns
-        brand = g['brand_name']
+        brand = g['brand']
         size = g['size_label'] 
         category = g['category']
         
@@ -162,31 +281,36 @@ def generate_report():
         sizes[size] = sizes.get(size, 0) + 1
         categories[category] = categories.get(category, 0) + 1
         
-        report.append(f'GARMENT {i}: {g["brand_name"]} - {g["product_name"]}')
-        report.append(f'  Size: {g["size_label"]} ({g["fit_type"]} fit)')
-        report.append(f'  Category: {g["category"]} > {g["subcategory"]}')
+        report.append(f'**GARMENT {i}: {g["brand"]} - {g["product_name"]}**')
+        report.append(f'  Size: {g["size_label"]}')
+        report.append(f'  Category: {g["category"] or "Unknown"}')
+        report.append('  Measurements:')
         
-        # Measurements with averages
-        measurements = {}
+        # Show actual measurements from size guide
+        measurements = []
         if g['chest_min'] and g['chest_max']:
-            chest_avg = (float(g['chest_min']) + float(g['chest_max'])) / 2
-            measurements['chest'] = f'{g["chest_min"]}"-{g["chest_max"]}" (avg: {chest_avg:.1f}")'
-        if g['sleeve_min'] and g['sleeve_max']:
-            sleeve_avg = (float(g['sleeve_min']) + float(g['sleeve_max'])) / 2
-            measurements['sleeve'] = f'{g["sleeve_min"]}"-{g["sleeve_max"]}" (avg: {sleeve_avg:.1f}")'
-        if g['neck_min'] and g['neck_max']:
-            neck_avg = (float(g['neck_min']) + float(g['neck_max'])) / 2
-            measurements['neck'] = f'{g["neck_min"]}"-{g["neck_max"]}" (avg: {neck_avg:.1f}")'
-        if g['waist_min'] and g['waist_max']:
-            waist_avg = (float(g['waist_min']) + float(g['waist_max'])) / 2
-            measurements['waist'] = f'{g["waist_min"]}"-{g["waist_max"]}" (avg: {waist_avg:.1f}")'
-        if g['center_back_length']:
-            measurements['length'] = f'{g["center_back_length"]}"'
+            if g['chest_min'] == g['chest_max']:
+                measurements.append(f'Chest: {g["chest_min"]}" (avg: {g["chest_min"]}")')
+            else:
+                avg = (float(g['chest_min']) + float(g['chest_max'])) / 2
+                measurements.append(f'Chest: {g["chest_min"]}-{g["chest_max"]}" (avg: {avg}")')
         
-        if measurements:
-            report.append('  Measurements:')
-            for dim, measurement in measurements.items():
-                report.append(f'    {dim.capitalize()}: {measurement}')
+        if g['sleeve_min'] and g['sleeve_max']:
+            if g['sleeve_min'] == g['sleeve_max']:
+                measurements.append(f'Sleeve: {g["sleeve_min"]}"')
+            else:
+                avg = (float(g['sleeve_min']) + float(g['sleeve_max'])) / 2
+                measurements.append(f'Sleeve: {g["sleeve_min"]}-{g["sleeve_max"]}" (avg: {avg}")')
+        
+        if g['neck_min'] and g['neck_max']:
+            if g['neck_min'] == g['neck_max']:
+                measurements.append(f'Neck: {g["neck_min"]}"')
+            else:
+                avg = (float(g['neck_min']) + float(g['neck_max'])) / 2
+                measurements.append(f'Neck: {g["neck_min"]}-{g["neck_max"]}" (avg: {avg}")')
+        
+        for measurement in measurements:
+            report.append(f'    {measurement}')
         
         # Get overall feedback from detailed feedback table
         overall_feedback = None
@@ -198,129 +322,136 @@ def generate_report():
         report.append(f'  Added: {g["created_at"]}')
         report.append('')
     
-    report.append('4. DETAILED FIT FEEDBACK BY DIMENSION')
+    # Detailed feedback section
+    report.append('## 5. DETAILED FIT FEEDBACK')
     report.append('-' * 50)
-    all_feedback = {}
+    
     for garment_id, feedback_list in profile['detailed_feedback'].items():
         if feedback_list:
-            garment_name = next((g['product_name'] for g in profile['garments'] if g['garment_id'] == garment_id), f'Garment {garment_id}')
-            brand_name = next((g['brand_name'] for g in profile['garments'] if g['garment_id'] == garment_id), 'Unknown')
+            garment_name = next((g['product_name'] for g in profile['owned_garments'] if g['garment_id'] == garment_id), f'Garment {garment_id}')
+            brand_name = next((g['brand'] for g in profile['owned_garments'] if g['garment_id'] == garment_id), 'Unknown')
             
-            report.append(f'{brand_name} - {garment_name}:')
+            report.append(f'**{brand_name} - {garment_name}:**')
             for fb in feedback_list:
-                dimension = fb['dimension'].capitalize()
-                feedback = fb['feedback_text']
-                report.append(f'  {dimension}: {feedback}')
-                
-                # Track all feedback patterns
-                if dimension not in all_feedback:
-                    all_feedback[dimension] = {}
-                if feedback not in all_feedback[dimension]:
-                    all_feedback[dimension][feedback] = 0
-                all_feedback[dimension][feedback] += 1
+                report.append(f'  {fb["dimension"].capitalize()}: {fb["feedback_text"]}')
             report.append('')
     
-    report.append('5. SHOPPING PATTERNS ANALYSIS')
-    report.append('-' * 50)
-    report.append('Brand Distribution:')
-    for brand, count in sorted(brands.items(), key=lambda x: x[1], reverse=True):
-        report.append(f'  {brand}: {count} garments')
-    
-    report.append('')
-    report.append('Size Distribution:')  
-    for size, count in sorted(sizes.items(), key=lambda x: x[1], reverse=True):
-        report.append(f'  {size}: {count} garments')
-    
-    report.append('')
-    report.append('Feedback Patterns:')
-    for dimension, feedback_dict in all_feedback.items():
-        report.append(f'  {dimension}:')
-        for feedback, count in sorted(feedback_dict.items(), key=lambda x: x[1], reverse=True):
-            report.append(f'    {feedback}: {count}x')
-    
-    report.append('')
-    report.append('6. CURRENT FIT ZONES (FROM ALGORITHM)')
+    # Current fit zones
+    report.append('## 6. CURRENT FIT ZONE CALCULATIONS')
     report.append('-' * 50)
     
-    # Calculate current fit zones using our algorithm
     try:
+        # Import the fit zone calculator
+        import sys
+        sys.path.append('ios_app/Backend')
         from fit_zone_calculator import FitZoneCalculator
         
         # Prepare garment data for calculator
         garment_list = []
-        for g in profile['garments']:
+        for g in profile['owned_garments']:
             if g['chest_min'] and g['chest_max']:
                 chest_range = f'{g["chest_min"]}-{g["chest_max"]}' if g['chest_min'] != g['chest_max'] else str(g['chest_min'])
                 
-                # Get chest feedback
+                # Get detailed feedback for this garment
                 chest_feedback = None
+                overall_feedback = None
                 for fb in profile['detailed_feedback'].get(g['garment_id'], []):
                     if fb['dimension'] == 'chest':
                         chest_feedback = fb['feedback_text']
-                        break
+                    elif fb['dimension'] == 'overall':
+                        overall_feedback = fb['feedback_text']
                 
                 garment_dict = {
-                    'brand': g['brand_name'],
+                    'brand': g['brand'],
                     'garment_name': g['product_name'], 
                     'chest_range': chest_range,
                     'size': g['size_label'],
-                    'fit_feedback': g['overall_fit_feedback'],
+                    'fit_feedback': overall_feedback,
                     'chest_feedback': chest_feedback
                 }
                 garment_list.append(garment_dict)
         
         if garment_list:
-            calculator = FitZoneCalculator('1')
+            calculator = FitZoneCalculator()
             zones = calculator.calculate_chest_fit_zone(garment_list)
             
-            report.append('Calculated Fit Zones for Chest:')
-            for zone_name, zone_data in zones.items():
-                if zone_data['min'] is not None and zone_data['max'] is not None:
-                    range_size = zone_data['max'] - zone_data['min'] 
-                    report.append(f'  {zone_name.capitalize()}: {zone_data["min"]:g}"-{zone_data["max"]:g}" (range: {range_size:g}")')
+            if zones:
+                report.append('**CURRENT CHEST FIT ZONES:**')
+                report.append(f'  Tight: {zones.get("tight", {}).get("min", "N/A")}-{zones.get("tight", {}).get("max", "N/A")}"')
+                report.append(f'  Good: {zones.get("good", {}).get("min", "N/A")}-{zones.get("good", {}).get("max", "N/A")}"')  
+                report.append(f'  Relaxed: {zones.get("relaxed", {}).get("min", "N/A")}-{zones.get("relaxed", {}).get("max", "N/A")}"')
+            else:
+                report.append('No fit zones calculated (insufficient data)')
+        else:
+            report.append('No garments with chest measurements available')
+            
     except Exception as e:
         report.append(f'Error calculating fit zones: {str(e)}')
     
     report.append('')
-    report.append('7. RECENT USER ACTIONS')
+    
+    # Shopping patterns analysis
+    report.append('## 7. SHOPPING PATTERNS ANALYSIS')
     report.append('-' * 50)
-    for action in profile['recent_actions'][:10]:
-        undo_status = " (UNDONE)" if action.get('is_undone') else ""
-        target_info = f" (ID: {action['target_id']})" if action.get('target_id') else ""
-        report.append(f'{action["created_at"]}: {action["action_type"]} on {action["target_table"]}{target_info}{undo_status}')
+    
+    report.append('**Brand Preferences:**')
+    for brand, count in sorted(brands.items(), key=lambda x: x[1], reverse=True):
+        report.append(f'  {brand}: {count} garments')
     
     report.append('')
-    report.append('8. KEY INSIGHTS & QUESTIONS FOR AI ANALYSIS')
+    report.append('**Size Distribution:**')
+    for size, count in sorted(sizes.items()):
+        report.append(f'  Size {size}: {count} garments')
+    
+    report.append('')
+    report.append('**Category Preferences:**')
+    for category, count in sorted(categories.items(), key=lambda x: x[1], reverse=True):
+        report.append(f'  {category}: {count} garments')
+    
+    report.append('')
+    
+    # Recent activity
+    report.append('## 8. RECENT USER ACTIONS')
     report.append('-' * 50)
-    report.append('Based on this data, please analyze:')
+    if profile['recent_actions']:
+        for action in profile['recent_actions'][:10]:  # Show last 10
+            status = '(UNDONE)' if action.get('is_undone') else ''
+            report.append(f'{action["created_at"]}: {action["action_type"]} on {action["target_table"]} (ID: {action.get("target_id", "N/A")}) {status}')
+    else:
+        report.append('No recent actions found')
+    
     report.append('')
-    report.append('A. FIT PREDICTION OPPORTUNITIES:')
-    report.append('- How can we better predict this user\'s fit preferences across dimensions?')
-    report.append('- What patterns exist in their brand/size relationships?')
-    report.append('- Which measurements are most critical for this user\'s fit satisfaction?')
+    
+    # Key insights for AI
+    report.append('## 9. KEY INSIGHTS & QUESTIONS FOR AI ANALYSIS')
+    report.append('-' * 50)
+    report.append('**Data Available for Analysis:**')
+    report.append('- Complete size guide data for all owned brands')
+    report.append('- User body measurements')
+    report.append('- Owned garments with specific size measurements')
+    report.append('- Multi-dimensional fit feedback (overall, chest, sleeve, neck)')
+    report.append('- Cross-brand sizing variations')
     report.append('')
-    report.append('B. SHOPPING EXPERIENCE IMPROVEMENTS:')
-    report.append('- How can we reduce sizing anxiety for this user?')
-    report.append('- What specific guidance would be most valuable when they shop?')
-    report.append('- How can we leverage their existing garment data for new purchases?')
+    report.append('**Key Questions:**')
+    report.append('1. How can we predict user1\'s size in new brands based on owned garment data?')
+    report.append('2. What patterns exist in their fit preferences across different measurements?')
+    report.append('3. How do their body measurements relate to their "Good Fit" feedback?')
+    report.append('4. Which brands consistently fit well vs. poorly for this user?')
+    report.append('5. Can we identify specific measurement ranges that correlate with positive feedback?')
+    report.append('6. How can we improve the fit zone algorithm using this comprehensive data?')
+    report.append('7. What size would user1 likely need in brands they don\'t own yet?')
+    report.append('8. Are there measurement dimensions that are more predictive of satisfaction?')
+    
     report.append('')
-    report.append('C. DATA GAPS & COLLECTION STRATEGIES:')
-    report.append('- What additional data would most improve fit predictions?')
-    report.append('- How can we collect more useful feedback without user friction?')
-    report.append('- What missing dimensions/measurements would be most valuable?')
-    report.append('')
-    report.append('D. PERSONALIZATION OPPORTUNITIES:')
-    report.append('- How can we create a personalized shopping experience for this user?')
-    report.append('- What are their implicit preferences we can infer from the data?')
-    report.append('- How can we anticipate their needs based on current patterns?')
-    report.append('')
-    report.append('=== END OF USER1 DATA PROFILE ===')
+    report.append('---')
+    report.append('END OF PROFILE')
     
     return '\n'.join(report)
 
 if __name__ == '__main__':
     try:
-        report = generate_report()
+        profile = get_user1_complete_profile()
+        report = format_report(profile)
         print(report)
     except Exception as e:
         print(f"Error generating report: {str(e)}")
