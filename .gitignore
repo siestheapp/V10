@@ -15,3 +15,17 @@ __pycache__/
 
 # Ignore all .specstory files and directories
 .specstory/
+
+# Temporary files and directories
+.temp/
+temp/
+*.tmp
+
+# Build directories
+build/
+dist/
+*.app/
+
+# Archive and backup patterns
+*.backup
+archive/*.zip

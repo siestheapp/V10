@@ -1,0 +1,1 @@
+../docs/database/DATABASE_CONFIG.md

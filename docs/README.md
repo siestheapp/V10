@@ -21,7 +21,7 @@ This directory contains project documentation organized by category.
 - `database/` - Database organization and old schemas
 
 ### **App Documentation**
-- `ios_app/` - iOS application documentation
+- `src/ios_app/` - iOS application documentation
 - `scripts/` - Web application documentation
 
 ## Documentation Standards

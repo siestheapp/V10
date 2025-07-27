@@ -6,7 +6,8 @@ A comprehensive garment fitting and recommendation system with iOS app and web a
 
 ```
 V10/
-├── ios_app/                 # iOS application (SwiftUI)
+├── src/
+│   └── ios_app/             # iOS application (SwiftUI)
 ├── scripts/                 # Web applications and utilities
 │   ├── web_garment_manager.py      # User web interface
 │   ├── admin_garment_manager.py    # Admin web interface
@@ -40,7 +41,7 @@ V10/
    - Admin Interface: http://localhost:5002 (admin/admin123)
 
 3. **iOS App:**
-   - Open `ios_app/V10.xcodeproj` in Xcode
+   - Open `src/ios_app/V10.xcodeproj` in Xcode
    - Build and run on device or simulator
 
 ## 📊 Database
