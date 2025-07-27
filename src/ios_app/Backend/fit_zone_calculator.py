@@ -126,17 +126,21 @@ class FitZoneCalculator:
             elif tight_max >= good_min:
                 zones['tight']['max'] = good_min - 0.5
         
-        # Same logic for good/relaxed boundary
-        if (zones.get('good', {}).get('max') is not None and 
-            zones.get('relaxed', {}).get('min') is not None):
-            
-            good_max = zones['good']['max']
-            relaxed_min = zones['relaxed']['min']
-            
-            if relaxed_min > good_max + 0.5:
-                zones['good']['max'] = relaxed_min
-            elif good_max >= relaxed_min:
-                zones['good']['max'] = relaxed_min - 0.5
+        # DISABLED: Gap-filling logic that artificially extends zones
+        # This was causing good zones to be extended to 46" when there's no data
+        # between the actual good-fit measurements (41.5") and loose measurements (46.5")
+        
+        # Same logic for good/relaxed boundary - COMMENTED OUT
+        # if (zones.get('good', {}).get('max') is not None and 
+        #     zones.get('relaxed', {}).get('min') is not None):
+        #     
+        #     good_max = zones['good']['max']
+        #     relaxed_min = zones['relaxed']['min']
+        #     
+        #     if relaxed_min > good_max + 0.5:
+        #         zones['good']['max'] = relaxed_min
+        #     elif good_max >= relaxed_min:
+        #         zones['good']['max'] = relaxed_min - 0.5
     
     def _get_confidence_weight(self, feedback: str) -> float:
         """Weight feedback by confidence level"""
@@ -154,6 +158,18 @@ class FitZoneCalculator:
             'Unknown': 0.2             # Very low confidence
         }
         return weights.get(feedback, 0.5)
+
+    def _get_care_adjusted_confidence(self, feedback: str, brand_name: str) -> float:
+        """Adjust confidence based on known brand care instruction issues"""
+        base_confidence = self._get_confidence_weight(feedback)
+        
+        # NN.07 care instruction issue: Users ignore "Do Not Tumble Dry" 
+        # causing cotton/modal blends to shrink and feel tighter over time
+        if brand_name == 'NN.07' and feedback in ['Tight but I Like It', 'Too Tight']:
+            print(f"  Reducing confidence for NN.07 tight rating (likely care-damaged): {base_confidence:.2f} → {base_confidence * 0.3:.2f}")
+            return base_confidence * 0.3  # Heavily discount tight ratings from NN.07
+        
+        return base_confidence
     
     def _get_measurement_methodology_confidence(self, brand_name: str, dimension: str = 'chest') -> float:
         """Get measurement confidence from methodology table"""
@@ -183,7 +199,7 @@ class FitZoneCalculator:
     
     def _get_combined_confidence(self, feedback: str, brand_name: str) -> float:
         """Combine feedback confidence with measurement methodology confidence"""
-        feedback_confidence = self._get_confidence_weight(feedback)
+        feedback_confidence = self._get_care_adjusted_confidence(feedback, brand_name)
         methodology_confidence = self._get_measurement_methodology_confidence(brand_name)
         
         # Multiply confidences: both feedback quality AND measurement quality matter

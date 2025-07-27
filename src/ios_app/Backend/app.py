@@ -296,6 +296,8 @@ async def get_closet(user_id: int):
 async def get_user_measurements(user_id: str):
     conn = None
     try:
+        print(f"🔍 API CALLED: /user/{user_id}/measurements")
+        
         # Get database connection for methodology confidence
         conn = get_db()
         
