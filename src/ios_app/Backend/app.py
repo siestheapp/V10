@@ -997,6 +997,151 @@ async def process_garment_url(request: dict):
         print(f"Error processing garment URL: {str(e)}")
         raise HTTPException(status_code=500, detail=str(e))
 
+@app.post("/garment/size-recommendation")
+async def get_garment_size_recommendation(request: dict):
+    """Process product URL and return comprehensive size recommendation across all dimensions"""
+    try:
+        product_url = request.get("product_url")
+        user_id = request.get("user_id", "1")  # Default to user 1
+        
+        if not product_url:
+            raise HTTPException(status_code=400, detail="Product URL is required")
+        
+        print(f"🔍 Getting comprehensive size recommendation for user {user_id}, URL: {product_url}")
+        
+        # Step 1: Extract brand from URL
+        brand_info = extract_brand_from_url(product_url)
+        if not brand_info:
+            raise HTTPException(status_code=400, detail="Could not identify brand from URL")
+        
+        print(f"📊 Identified brand: {brand_info['brand_name']} (ID: {brand_info['brand_id']})")
+        
+        # Step 2: Use direct garment-to-garment comparison (simpler and more accurate)
+        from direct_garment_comparator import DirectGarmentComparator
+        
+        db_config = {
+            "database": "postgres",
+            "user": "postgres.lbilxlkchzpducggkrxx",
+            "password": "efvTower12",
+            "host": "aws-0-us-east-2.pooler.supabase.com",
+            "port": "6543"
+        }
+        
+        comparator = DirectGarmentComparator(db_config)
+        
+        # Get direct size recommendations by comparing to user's existing garments
+        recommendations = comparator.get_direct_size_recommendations(
+            user_id=int(user_id),
+            brand_name=brand_info['brand_name'],
+            category="Tops"  # Use "Tops" to match database category name
+        )
+        
+        if not recommendations:
+            raise HTTPException(status_code=404, detail=f"No size recommendations available for {brand_info['brand_name']}")
+        
+        print(f"📏 Generated {len(recommendations)} direct comparison recommendations")
+        
+        # Convert recommendations to API response format
+        api_recommendations = []
+        for rec in recommendations:
+            # Build reference garment details
+            reference_summary = []
+            dimension_details = {}
+            
+            for dimension, comparison in rec.dimension_comparisons.items():
+                dimension_details[dimension] = {
+                    "predicted_fit": comparison['predicted_fit'],
+                    "target_measurement": comparison['target_measurement'],
+                    "reference_measurement": comparison['reference_measurement'],
+                    "reference_brand": comparison['reference_brand'],
+                    "reference_size": comparison['reference_size'],
+                    "range_comparison": comparison['range_comparison'],
+                    "similarity_score": comparison['similarity_score']
+                }
+                
+                # Add to summary for display  
+                reference_summary.append(f"{dimension}: {comparison['target_measurement']}")
+            
+            # Primary concerns are dimensions with concerning fit predictions
+            primary_concerns = [
+                dim for dim, comp in rec.dimension_comparisons.items() 
+                if comp['predicted_fit'] in ['Too Tight', 'Too Loose']
+            ]
+            
+            api_recommendations.append({
+                "size": rec.size_label,
+                "overall_fit_score": round(rec.overall_fit_score, 3),
+                "confidence": round(rec.confidence, 3),
+                "fit_type": "excellent" if rec.overall_fit_score >= 0.9 else 
+                           "good" if rec.overall_fit_score >= 0.7 else
+                           "acceptable" if rec.overall_fit_score >= 0.5 else "poor",
+                "available_dimensions": list(rec.dimension_comparisons.keys()),
+                "dimension_analysis": dimension_details,
+                "measurement_summary": ", ".join(reference_summary),
+                "reasoning": rec.reasoning,
+                "primary_concerns": primary_concerns,
+                "fit_description": _get_direct_fit_description(
+                    rec.overall_fit_score, primary_concerns, rec.reference_garments
+                )
+            })
+        
+        # Find the best recommendation
+        best_rec = recommendations[0]  # Already sorted by fit score
+        
+        # Get reference garments info for response
+        reference_garments = {}
+        for ref in best_rec.reference_garments:
+            ref_key = f"{ref.brand}_{ref.size_label}"
+            reference_garments[ref_key] = {
+                "brand": ref.brand,
+                "size": ref.size_label,
+                "product_name": ref.product_name,
+                "measurements": {dim: measurement_range.display_string for dim, measurement_range in ref.measurements.items()},
+                "feedback": ref.feedback,
+                "confidence": round(ref.confidence, 2)
+            }
+        
+        return {
+            "product_url": product_url,
+            "brand": brand_info["brand_name"],
+            "analysis_type": "direct_comparison",
+            "dimensions_analyzed": list(best_rec.dimension_comparisons.keys()),
+            "reference_garments": reference_garments,
+            "recommended_size": best_rec.size_label,
+            "recommended_fit_score": round(best_rec.overall_fit_score, 3),
+            "confidence": round(best_rec.confidence, 3),
+            "reasoning": best_rec.reasoning,
+            "primary_concerns": [
+                dim for dim, comp in best_rec.dimension_comparisons.items() 
+                if comp['predicted_fit'] in ['Too Tight', 'Too Loose']
+            ],
+            "comprehensive_analysis": True,
+            "all_sizes": api_recommendations
+        }
+        
+    except Exception as e:
+        print(f"Error getting comprehensive size recommendation: {str(e)}")
+        raise HTTPException(status_code=500, detail=str(e))
+
+
+def _get_direct_fit_description(fit_score: float, concerns: List[str], references: List) -> str:
+    """Generate human-readable fit description for direct comparison"""
+    if fit_score >= 0.9:
+        if concerns:
+            return f"Excellent match to your garments with minor concerns in {', '.join(concerns)}"
+        else:
+            return "Excellent match - very similar to your best-fitting garments"
+    elif fit_score >= 0.7:
+        if concerns:
+            return f"Good match with some concerns in {', '.join(concerns)}"
+        else:
+            return "Good match - similar to garments you like"
+    elif fit_score >= 0.5:
+        reference_names = [f"{r.brand} {r.size_label}" for r in references[:2]]
+        return f"Acceptable match (compare to your {', '.join(reference_names)})"
+    else:
+        return f"Poor match - significantly different from your existing garments"
+
 @app.post("/garment/submit-with-feedback")
 async def submit_garment_with_feedback(request: dict):
     """Submit a garment with size and feedback to update user's measurement profile"""

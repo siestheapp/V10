@@ -1,7 +1,7 @@
 // ScanTab.swift
 // Handles garment scanning & manual product entry.
 // - If the user scans a tag, stays on ScanTab & opens ScanGarmentView.swift.
-// - If the user pastes a product link & selects a size, navigates to FitFeedbackView.swift.
+// - If the user pastes a product link, gets smart size recommendation.
 
 import SwiftUI
 
@@ -12,112 +12,142 @@ struct ScanTab: View {
     @State private var showingBrandsView = false
     @State private var selectedImage: UIImage?
     @State private var productLink: String = ""
-    @State private var selectedSizeCategory: String = "Men's Tops"
-    @State private var selectedSize: String? = nil
+    @State private var sizeRecommendation: SizeRecommendationResponse?
+    @State private var isAnalyzing = false
+    @State private var analysisError: String?
     @State private var navigateToFitFeedback = false
-    @State private var navigateToScanGarment = false
-
-    let sizeCategories = ["Men's Tops", "Men's Bottoms", "Women's Tops", "Women's Bottoms", "Unisex", "Shoes"]
-    let sizeOptions = ["XS", "S", "M", "L", "XL", "XXL"]
 
     var body: some View {
         NavigationView {
-            VStack(spacing: 20) {
-                
-                // Title
-                Text("Scan")
-                    .font(.largeTitle)
-                    .fontWeight(.bold)
-                
-                // Scan Button
-                Button(action: {
-                    showingOptions = true
-                }) {
-                    Text("Scan a Tag")
-                        .font(.headline)
-                        .foregroundColor(.white)
-                        .frame(maxWidth: .infinity)
-                        .padding()
-                        .background(Color.blue)
-                        .cornerRadius(10)
+            VStack(spacing: 30) {
+                // Scan Tag Section
+                VStack(spacing: 15) {
+                    Text("Scan")
+                        .font(.largeTitle)
+                        .bold()
+                    
+                    Button(action: {
+                        showingOptions = true
+                    }) {
+                        Text("Scan a Tag")
+                            .font(.headline)
+                            .foregroundColor(.white)
+                            .frame(maxWidth: .infinity)
+                            .padding()
+                            .background(Color.blue)
+                            .cornerRadius(10)
+                    }
+                    .padding(.horizontal, 40)
+                    .sheet(isPresented: $showingImagePicker) {
+                        ImagePicker(image: $selectedImage)
+                    }
+                    .onChange(of: selectedImage) { newImage in
+                        if newImage != nil {
+                            showingScanView = true
+                        }
+                    }
+                    .sheet(isPresented: $showingScanView) {
+                        if let image = selectedImage {
+                            NavigationView {
+                                ScanGarmentView(
+                                    selectedImage: image,
+                                    isPresented: $showingScanView
+                                )
+                            }
+                        }
+                    }
                 }
-                .padding(.horizontal, 40)
-
-                // OR Divider
+                
+                // Divider
                 HStack {
                     Rectangle()
                         .frame(height: 1)
                         .foregroundColor(.gray)
                     Text("OR")
-                        .font(.subheadline)
                         .foregroundColor(.gray)
+                        .padding(.horizontal)
                     Rectangle()
                         .frame(height: 1)
                         .foregroundColor(.gray)
                 }
                 .padding(.horizontal, 40)
                 
-                // Find by Link
-                VStack(alignment: .leading, spacing: 10) {
-                    Text("Find by Link")
+                // Smart Size Recommendation Section
+                VStack(alignment: .leading, spacing: 15) {
+                    Text("Get Size Recommendation")
                         .font(.headline)
                         .frame(maxWidth: .infinity, alignment: .leading)
                     
-                    TextField("Paste product link here", text: $productLink)
-                        .textFieldStyle(RoundedBorderTextFieldStyle())
-                        .padding(.horizontal, 20)
-                    
-                    // Show size category dropdown only when link is entered
-                    if !productLink.isEmpty {
-                        Text("Select Size Category")
-                            .font(.headline)
-                            .frame(maxWidth: .infinity, alignment: .leading)
-                            .padding(.top, 10)
-
-                        Picker("Size Category", selection: $selectedSizeCategory) {
-                            ForEach(sizeCategories, id: \.self) { category in
-                                Text(category).tag(category)
-                            }
-                        }
-                        .pickerStyle(MenuPickerStyle())
-                        .padding(.horizontal, 20)
+                    // URL Input
+                    HStack {
+                        TextField("Paste product link here", text: $productLink)
+                            .textFieldStyle(RoundedBorderTextFieldStyle())
+                            .disabled(isAnalyzing)
                         
-                        Text("Select Size")
-                            .font(.headline)
-                            .frame(maxWidth: .infinity, alignment: .leading)
-                            .padding(.top, 10)
-
-                        Picker("Size", selection: $selectedSize) {
-                            ForEach(sizeOptions, id: \.self) { size in
-                                Text(size).tag(size as String?)
+                        if !productLink.isEmpty && !isAnalyzing {
+                            Button("Analyze") {
+                                analyzeProduct()
                             }
+                            .buttonStyle(.borderedProminent)
                         }
-                        .pickerStyle(SegmentedPickerStyle())
+                    }
+                    .padding(.horizontal, 20)
+                    
+                    // Analysis Status
+                    if isAnalyzing {
+                        HStack {
+                            ProgressView()
+                                .scaleEffect(0.8)
+                            Text("Analyzing product and finding your best size...")
+                                .font(.caption)
+                                .foregroundColor(.secondary)
+                        }
                         .padding(.horizontal, 20)
+                    }
+                    
+                    // Error Display
+                    if let error = analysisError {
+                        Text(error)
+                            .font(.caption)
+                            .foregroundColor(.red)
+                            .padding(.horizontal, 20)
+                    }
+                    
+                    // Size Recommendation Display
+                    if let recommendation = sizeRecommendation {
+                        SizeRecommendationView(recommendation: recommendation)
                     }
                 }
                 .padding(.horizontal, 40)
                 
-                // Find Garment Button
-                Button(action: {
-                    navigateToFitFeedback = true
-                }) {
-                    Text("Find Garment")
-                        .font(.headline)
-                        .foregroundColor(.white)
-                        .frame(maxWidth: .infinity)
-                        .padding()
-                        .background(productLink.isEmpty || selectedSize == nil ? Color.gray : Color.blue)
-                        .cornerRadius(10)
+                Spacer()
+                
+                // Proceed Button (only shown when we have a recommendation)
+                if let recommendation = sizeRecommendation {
+                    Button(action: {
+                        navigateToFitFeedback = true
+                    }) {
+                        Text("Add to Closet - Size \(recommendation.recommendedSize)")
+                            .font(.headline)
+                            .foregroundColor(.white)
+                            .frame(maxWidth: .infinity)
+                            .padding()
+                            .background(Color.green)
+                            .cornerRadius(10)
+                    }
+                    .padding(.horizontal, 40)
+                    .background(
+                        NavigationLink(
+                            destination: FitFeedbackView(
+                                feedbackType: .manualEntry, 
+                                selectedSize: recommendation.recommendedSize,
+                                productUrl: recommendation.productUrl,
+                                brand: recommendation.brand
+                            ),
+                            isActive: $navigateToFitFeedback
+                        ) { EmptyView() }
+                    )
                 }
-                .padding(.horizontal, 40)
-                .disabled(productLink.isEmpty || selectedSize == nil)
-                .background(
-                    NavigationLink(
-                        destination: FitFeedbackView(feedbackType: .manualEntry, selectedSize: selectedSize ?? ""),
-                        isActive: $navigateToFitFeedback
-                    ) { EmptyView() }
-                )
             }
             .padding(.top, 30)
             .navigationTitle("Scan")
@@ -148,24 +178,349 @@ struct ScanTab: View {
                     showingImagePicker = true
                 }
             }
-            .sheet(isPresented: $showingImagePicker) {
-                ImagePicker(image: $selectedImage)
-            }
-            .onChange(of: selectedImage) { newImage in
-                if newImage != nil {
-                    showingScanView = true
+        }
+    }
+    
+    private func analyzeProduct() {
+        guard !productLink.isEmpty else { return }
+        
+        isAnalyzing = true
+        analysisError = nil
+        sizeRecommendation = nil
+        
+        guard let url = URL(string: "\(Config.baseURL)/garment/size-recommendation") else {
+            analysisError = "Invalid API URL"
+            isAnalyzing = false
+            return
+        }
+        
+        let requestBody = [
+            "product_url": productLink,
+            "user_id": "1"  // Using default user for now
+        ]
+        
+        guard let jsonData = try? JSONSerialization.data(withJSONObject: requestBody) else {
+            analysisError = "Failed to encode request"
+            isAnalyzing = false
+            return
+        }
+        
+        var request = URLRequest(url: url)
+        request.httpMethod = "POST"
+        request.setValue("application/json", forHTTPHeaderField: "Content-Type")
+        request.httpBody = jsonData
+        
+        URLSession.shared.dataTask(with: request) { data, response, error in
+            DispatchQueue.main.async {
+                isAnalyzing = false
+                
+                if let error = error {
+                    analysisError = "Network error: \(error.localizedDescription)"
+                    return
+                }
+                
+                guard let data = data else {
+                    analysisError = "No data received"
+                    return
+                }
+                
+                do {
+                    let recommendation = try JSONDecoder().decode(SizeRecommendationResponse.self, from: data)
+                    self.sizeRecommendation = recommendation
+                } catch {
+                    analysisError = "Failed to parse recommendation: \(error.localizedDescription)"
+                    print("Decode error: \(error)")
                 }
             }
-            .sheet(isPresented: $showingScanView) {
-                if let image = selectedImage {
-                    NavigationView {
-                        ScanGarmentView(
-                            selectedImage: image,
-                            isPresented: $showingScanView
-                        )
+        }.resume()
+    }
+}
+
+// Size Recommendation Display Component
+struct SizeRecommendationView: View {
+    let recommendation: SizeRecommendationResponse
+    
+    var body: some View {
+        VStack(alignment: .leading, spacing: 12) {
+            // Header
+            HStack {
+                Text("📏 Size Recommendation")
+                    .font(.headline)
+                    .foregroundColor(.primary)
+                Spacer()
+                Text(recommendation.brand)
+                    .font(.subheadline)
+                    .foregroundColor(.secondary)
+            }
+            
+            // Main Recommendation
+            HStack {
+                VStack(alignment: .leading) {
+                    Text("Recommended Size")
+                        .font(.caption)
+                        .foregroundColor(.secondary)
+                    Text(recommendation.recommendedSize)
+                        .font(.largeTitle)
+                        .fontWeight(.bold)
+                        .foregroundColor(.green)
+                }
+                
+                Spacer()
+                
+                VStack(alignment: .trailing) {
+                    Text("Fit Score")
+                        .font(.caption)
+                        .foregroundColor(.secondary)
+                    Text(String(format: "%.1f%%", recommendation.recommendedFitScore * 100))
+                        .font(.headline)
+                        .foregroundColor(scoreColor(for: recommendation.recommendedFitScore))
+                }
+            }
+            .padding()
+            .background(Color(.systemGray6))
+            .cornerRadius(12)
+            
+            // Primary Concerns (if any)
+            if !recommendation.primaryConcerns.isEmpty {
+                HStack {
+                    Image(systemName: "exclamationmark.triangle.fill")
+                        .foregroundColor(.orange)
+                    Text("Potential concerns: \(recommendation.primaryConcerns.joined(separator: ", "))")
+                        .font(.caption)
+                        .foregroundColor(.orange)
+                }
+                .padding(.horizontal)
+            }
+            
+            // Reasoning
+            Text(recommendation.reasoning)
+                .font(.caption)
+                .foregroundColor(.secondary)
+            
+            // Your Reference Garments (Direct Comparison)
+            DisclosureGroup("Reference Garments (\(recommendation.referenceGarments.count) used)") {
+                VStack(alignment: .leading, spacing: 6) {
+                    ForEach(Array(recommendation.referenceGarments.keys.sorted()), id: \.self) { key in
+                        if let reference = recommendation.referenceGarments[key] {
+                            VStack(alignment: .leading, spacing: 2) {
+                                HStack {
+                                    Circle().fill(.blue).frame(width: 8, height: 8)
+                                    Text("\(reference.brand) \(reference.size)")
+                                        .fontWeight(.medium)
+                                    Spacer()
+                                    Text("\(String(format: "%.0f%%", reference.confidence * 100)) confidence")
+                                        .font(.caption2)
+                                        .foregroundColor(.secondary)
+                                }
+                                
+                                // Show measurements (now as range strings)
+                                if !reference.measurements.isEmpty {
+                                    let measurementText = reference.measurements.map { dim, measurement in
+                                        "\(dim): \(measurement)"
+                                    }.joined(separator: ", ")
+                                    
+                                    Text(measurementText)
+                                        .font(.caption2)
+                                        .foregroundColor(.secondary)
+                                        .padding(.leading, 16)
+                                }
+                            }
+                        }
+                    }
+                }
+                .font(.caption)
+            }
+            .font(.caption)
+            
+            // Alternative Sizes (Comprehensive Analysis)
+            if recommendation.allSizes.count > 1 {
+                DisclosureGroup("All Available Sizes (Multi-Dimensional Analysis)") {
+                    LazyVGrid(columns: [
+                        GridItem(.flexible()),
+                        GridItem(.flexible())
+                    ], spacing: 8) {
+                        ForEach(recommendation.allSizes, id: \.size) { size in
+                            VStack(alignment: .leading, spacing: 4) {
+                                HStack {
+                                    Text(size.size)
+                                        .font(.headline)
+                                        .fontWeight(size.size == recommendation.recommendedSize ? .bold : .regular)
+                                    Spacer()
+                                    Text(String(format: "%.0f%%", size.overallFitScore * 100))
+                                        .font(.caption)
+                                        .foregroundColor(scoreColor(for: size.overallFitScore))
+                                }
+                                
+                                Text(size.fitType.capitalized)
+                                    .font(.caption)
+                                    .foregroundColor(fitColor(for: size.fitType))
+                                
+                                Text(size.measurementSummary)
+                                    .font(.caption2)
+                                    .foregroundColor(.secondary)
+                                    .lineLimit(2)
+                                
+                                if !size.primaryConcerns.isEmpty {
+                                    HStack {
+                                        Image(systemName: "exclamationmark.triangle.fill")
+                                            .font(.caption2)
+                                            .foregroundColor(.orange)
+                                        Text(size.primaryConcerns.joined(separator: ", "))
+                                            .font(.caption2)
+                                            .foregroundColor(.orange)
+                                            .lineLimit(1)
+                                    }
+                                }
+                            }
+                            .padding(8)
+                            .background(
+                                Color(size.size == recommendation.recommendedSize ? .systemGray4 : .systemGray6)
+                            )
+                            .cornerRadius(8)
+                        }
                     }
                 }
             }
         }
+        .padding()
+        .background(Color(.systemBackground))
+        .cornerRadius(16)
+        .shadow(color: .black.opacity(0.1), radius: 4, x: 0, y: 2)
     }
+    
+    private func fitColor(for fitType: String) -> Color {
+        switch fitType.lowercased() {
+        case "tight": return .orange
+        case "good": return .green  
+        case "relaxed": return .blue
+        case "too_loose": return .red
+        case "excellent": return .green
+        case "acceptable": return .orange
+        case "poor": return .red
+        default: return .gray
+        }
+    }
+    
+    private func scoreColor(for score: Double) -> Color {
+        if score >= 0.9 {
+            return .green
+        } else if score >= 0.7 {
+            return .orange
+        } else if score >= 0.5 {
+            return .yellow
+        } else {
+            return .red
+        }
+    }
+}
+
+// Data Models for Size Recommendation (Direct Garment Comparison)
+struct SizeRecommendationResponse: Codable {
+    let productUrl: String
+    let brand: String
+    let analysisType: String
+    let dimensionsAnalyzed: [String]
+    let referenceGarments: [String: ReferenceGarment]
+    let recommendedSize: String
+    let recommendedFitScore: Double
+    let confidence: Double
+    let reasoning: String
+    let primaryConcerns: [String]
+    let comprehensiveAnalysis: Bool
+    let allSizes: [DirectSizeOption]
+    
+    enum CodingKeys: String, CodingKey {
+        case productUrl = "product_url"
+        case brand
+        case analysisType = "analysis_type"
+        case dimensionsAnalyzed = "dimensions_analyzed"
+        case referenceGarments = "reference_garments"
+        case recommendedSize = "recommended_size"
+        case recommendedFitScore = "recommended_fit_score"
+        case confidence
+        case reasoning
+        case primaryConcerns = "primary_concerns"
+        case comprehensiveAnalysis = "comprehensive_analysis"
+        case allSizes = "all_sizes"
+    }
+}
+
+struct ReferenceGarment: Codable {
+    let brand: String
+    let size: String
+    let productName: String
+    let measurements: [String: String]  // Now stores range strings like "16-16.5\""
+    let feedback: [String: String]
+    let confidence: Double
+    
+    enum CodingKeys: String, CodingKey {
+        case brand
+        case size
+        case productName = "product_name"
+        case measurements
+        case feedback
+        case confidence
+    }
+}
+
+struct DirectSizeOption: Codable {
+    let size: String
+    let overallFitScore: Double
+    let confidence: Double
+    let fitType: String
+    let availableDimensions: [String]
+    let dimensionAnalysis: [String: DimensionComparison]
+    let measurementSummary: String
+    let reasoning: String
+    let primaryConcerns: [String]
+    let fitDescription: String
+    
+    enum CodingKeys: String, CodingKey {
+        case size
+        case overallFitScore = "overall_fit_score"
+        case confidence
+        case fitType = "fit_type"
+        case availableDimensions = "available_dimensions"
+        case dimensionAnalysis = "dimension_analysis"
+        case measurementSummary = "measurement_summary"
+        case reasoning
+        case primaryConcerns = "primary_concerns"
+        case fitDescription = "fit_description"
+    }
+}
+
+struct DimensionComparison: Codable {
+    let predictedFit: String
+    let targetMeasurement: String
+    let referenceMeasurement: String
+    let referenceBrand: String
+    let referenceSize: String
+    let rangeComparison: RangeComparisonDetails
+    let similarityScore: Double
+    
+    enum CodingKeys: String, CodingKey {
+        case predictedFit = "predicted_fit"
+        case targetMeasurement = "target_measurement"
+        case referenceMeasurement = "reference_measurement"
+        case referenceBrand = "reference_brand"
+        case referenceSize = "reference_size"
+        case rangeComparison = "range_comparison"
+        case similarityScore = "similarity_score"
+    }
+}
+
+struct RangeComparisonDetails: Codable {
+    let type: String
+    let description: String
+    let difference: Double?
+    
+    enum CodingKeys: String, CodingKey {
+        case type
+        case description
+        case difference
+    }
+}
+
+#Preview {
+    ScanTab()
 }
