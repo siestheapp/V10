@@ -37,6 +37,12 @@ struct SiesApp: App {
                                 Label("Fit", systemImage: "ruler")
                             }
                         
+                        CanvasView()
+                            .environmentObject(userSettings)
+                            .tabItem {
+                                Label("Canvas", systemImage: "cpu")
+                            }
+                        
                         ShopView()
                             .environmentObject(userSettings)
                             .tabItem {

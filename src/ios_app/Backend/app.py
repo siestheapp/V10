@@ -2124,6 +2124,21 @@ async def get_user_body_measurements(user_id: str):
         print(f"Error in get_user_body_measurements: {str(e)}")
         raise HTTPException(status_code=500, detail=str(e))
 
+@app.get("/canvas/user/{user_id}")
+async def get_canvas_data(user_id: str):
+    """Get comprehensive canvas data for debugging and understanding the measurement prediction system"""
+    try:
+        from canvas_endpoint import CanvasDataGenerator
+        
+        canvas_generator = CanvasDataGenerator(DB_CONFIG)
+        canvas_data = canvas_generator.generate_canvas_data(int(user_id))
+        
+        return canvas_data
+        
+    except Exception as e:
+        print(f"Error in get_canvas_data: {str(e)}")
+        raise HTTPException(status_code=500, detail=str(e))
+
 if __name__ == "__main__":
     import uvicorn
     uvicorn.run(
