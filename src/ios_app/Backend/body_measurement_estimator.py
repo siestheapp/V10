@@ -710,6 +710,366 @@ class BodyMeasurementEstimator:
             self.logger.error(f"Error estimating arm length for user {user_id}: {str(e)}")
             return None
     
+    def estimate_waist_measurement(self, user_id: int) -> Optional[dict]:
+        """
+        Estimate body waist circumference from garment waist measurements.
+        This converts garment waist measurements to body waist measurements that match what a tailor would measure.
+        """
+        try:
+            conn = self.get_connection()
+            cursor = conn.cursor()
+            
+            # Query for garments with waist measurements and EITHER waist feedback OR overall "Good Fit" (deduplicated)
+            query = """
+                WITH latest_feedback AS (
+                    SELECT 
+                        ug.id as user_garment_id,
+                        b.name as brand,
+                        ug.product_name,
+                        ug.size_label,
+                        sge.waist_min,
+                        sge.waist_max,
+                        sge.waist_range,
+                        sg.guide_level,
+                        waist_fc.feedback_text as waist_feedback,
+                        overall_fc.feedback_text as overall_feedback,
+                        CASE 
+                            WHEN waist_fc.feedback_text IS NOT NULL THEN 'specific'
+                            WHEN overall_fc.feedback_text = 'Good Fit' THEN 'inferred'
+                            ELSE 'none'
+                        END as feedback_source,
+                        COALESCE(waist_ugf.created_at, overall_ugf.created_at) as feedback_date,
+                        ROW_NUMBER() OVER (PARTITION BY ug.id ORDER BY 
+                            CASE WHEN waist_fc.feedback_text IS NOT NULL THEN 1 ELSE 2 END,
+                            COALESCE(waist_ugf.created_at, overall_ugf.created_at) DESC
+                        ) as rn
+                    FROM user_garments ug
+                    JOIN brands b ON ug.brand_id = b.id
+                    LEFT JOIN size_guide_entries sge ON ug.size_guide_entry_id = sge.id
+                    LEFT JOIN size_guides sg ON sge.size_guide_id = sg.id
+                    -- Get specific waist feedback
+                    LEFT JOIN user_garment_feedback waist_ugf ON ug.id = waist_ugf.user_garment_id AND waist_ugf.dimension = 'waist'
+                    LEFT JOIN feedback_codes waist_fc ON waist_ugf.feedback_code_id = waist_fc.id
+                    -- Get overall feedback
+                    LEFT JOIN user_garment_feedback overall_ugf ON ug.id = overall_ugf.user_garment_id AND overall_ugf.dimension = 'overall'
+                    LEFT JOIN feedback_codes overall_fc ON overall_ugf.feedback_code_id = overall_fc.id
+                    WHERE ug.user_id = %s 
+                    AND ug.owns_garment = true
+                    AND (sge.waist_min IS NOT NULL OR sge.waist_max IS NOT NULL OR sge.waist_range IS NOT NULL)
+                    AND (waist_fc.feedback_text IS NOT NULL OR overall_fc.feedback_text = 'Good Fit')
+                )
+                SELECT 
+                    brand, product_name, size_label, waist_min, waist_max, waist_range, 
+                    guide_level, waist_feedback, overall_feedback, feedback_source, feedback_date
+                FROM latest_feedback 
+                WHERE rn = 1
+                ORDER BY 
+                    CASE WHEN waist_feedback IS NOT NULL THEN 1 ELSE 2 END,
+                    user_garment_id DESC
+            """
+            
+            cursor.execute(query, (user_id,))
+            garments = cursor.fetchall()
+            
+            if not garments:
+                self.logger.info(f"No garments with waist measurements and feedback found for user {user_id}")
+                return None
+            
+            specific_feedback_count = len([g for g in garments if g[7] is not None])  # waist_feedback IS NOT NULL
+            inferred_feedback_count = len(garments) - specific_feedback_count
+            
+            self.logger.info(f"Found {len(garments)} garments with waist measurements for user {user_id}:")
+            self.logger.info(f"  - {specific_feedback_count} with specific waist feedback")
+            self.logger.info(f"  - {inferred_feedback_count} inferred from overall 'Good Fit'")
+            
+            # Process each garment to estimate body waist circumference
+            body_waist_measurements = []
+            garment_details = []
+            for garment in garments:
+                (brand, product_name, size_label, waist_min, waist_max, waist_range, 
+                 guide_level, waist_feedback, overall_feedback, feedback_source, feedback_date) = garment
+                
+                garment_waist = self._parse_measurement(waist_min, waist_max, waist_range)
+                if garment_waist is None:
+                    continue
+                
+                # Determine which feedback to use and confidence adjustment
+                if feedback_source == 'specific':
+                    # Use specific waist feedback with full confidence
+                    feedback_to_use = waist_feedback
+                    confidence_multiplier = 1.0
+                    self.logger.info(f"  {brand} {size_label}: Using SPECIFIC waist feedback '{waist_feedback}'")
+                elif feedback_source == 'inferred':
+                    # Infer "Good Fit" for waist from overall feedback, but with lower confidence
+                    feedback_to_use = "Good Fit"
+                    confidence_multiplier = 0.7  # Lower confidence for inferred feedback
+                    self.logger.info(f"  {brand} {size_label}: INFERRED waist fit from overall 'Good Fit'")
+                else:
+                    continue
+                
+                # CONVERSION TO BODY WAIST CIRCUMFERENCE:
+                # Garment waist measurements need ease for comfort
+                
+                waist_ease = 1.5  # Standard waist ease for comfort
+                
+                # Adjust ease based on feedback about fit
+                if feedback_to_use == "Too Tight" or feedback_to_use == "Tight but I Like It":
+                    # If waist feels tight, garment is closer to body size
+                    adjusted_ease = waist_ease - 0.5
+                elif feedback_to_use == "Too Loose" or feedback_to_use == "Loose but I Like It":
+                    # If waist feels loose, garment is much larger than body
+                    adjusted_ease = waist_ease + 1.0
+                elif feedback_to_use == "Slightly Loose":
+                    adjusted_ease = waist_ease + 0.5
+                else:  # Good Fit
+                    adjusted_ease = waist_ease
+                
+                # Create detailed entry for transparency
+                waist_range_display = ""
+                if waist_min is not None and waist_max is not None:
+                    if waist_min == waist_max:
+                        waist_range_display = f"{waist_min}\""
+                    else:
+                        waist_range_display = f"{waist_min}-{waist_max}\""
+                elif waist_range:
+                    waist_range_display = waist_range
+                else:
+                    waist_range_display = f"{garment_waist}\""
+                
+                garment_details.append({
+                    'brand': brand,
+                    'product_name': product_name or "Unknown Product",
+                    'size': size_label,
+                    'measurement_display': waist_range_display,
+                    'feedback': feedback_to_use,
+                    'feedback_source': feedback_source,
+                    'guide_level': guide_level or "unknown",
+                    'feedback_date': feedback_date.isoformat() if feedback_date else None
+                })
+                
+                # Calculate body waist circumference: Garment waist - ease
+                body_waist_estimate = garment_waist - adjusted_ease
+                
+                base_confidence = self._calculate_confidence(feedback_to_use, len(garments), guide_level)
+                final_confidence = base_confidence * confidence_multiplier
+                
+                body_waist_measurements.append({
+                    'measurement': body_waist_estimate,
+                    'garment_waist': garment_waist,
+                    'waist_ease': adjusted_ease,
+                    'feedback': feedback_to_use,
+                    'feedback_source': feedback_source,
+                    'brand': brand,
+                    'product': product_name,
+                    'size': size_label,
+                    'confidence': final_confidence
+                })
+                
+                self.logger.info(f"    Garment waist: {garment_waist}\", Ease: {adjusted_ease}\", "
+                               f"Body waist estimate: {body_waist_estimate:.1f}\"")
+            
+            if not body_waist_measurements:
+                return None
+            
+            estimated_waist = self._calculate_confidence_weighted_average(body_waist_measurements)
+            
+            self.logger.info(f"Estimated body waist circumference for user {user_id}: {estimated_waist:.1f}\". "
+                           f"Based on {specific_feedback_count} specific + {inferred_feedback_count} inferred feedback points.")
+            self.logger.info(f"NOTE: This represents body waist circumference that a tailor would measure.")
+            
+            cursor.close()
+            conn.close()
+            
+            return {
+                'estimate': estimated_waist,
+                'garment_details': garment_details,
+                'data_points': len(garment_details)
+            }
+            
+        except Exception as e:
+            self.logger.error(f"Error estimating waist measurement for user {user_id}: {str(e)}")
+            return None
+
+    def estimate_hip_measurement(self, user_id: int) -> Optional[dict]:
+        """
+        Estimate body hip circumference from garment hip measurements.
+        This converts garment hip measurements to body hip measurements that match what a tailor would measure.
+        """
+        try:
+            conn = self.get_connection()
+            cursor = conn.cursor()
+            
+            # Query for garments with hip measurements and EITHER hip feedback OR overall "Good Fit" (deduplicated)
+            query = """
+                WITH latest_feedback AS (
+                    SELECT 
+                        ug.id as user_garment_id,
+                        b.name as brand,
+                        ug.product_name,
+                        ug.size_label,
+                        sge.hip_min,
+                        sge.hip_max,
+                        sge.hip_range,
+                        sg.guide_level,
+                        hip_fc.feedback_text as hip_feedback,
+                        overall_fc.feedback_text as overall_feedback,
+                        CASE 
+                            WHEN hip_fc.feedback_text IS NOT NULL THEN 'specific'
+                            WHEN overall_fc.feedback_text = 'Good Fit' THEN 'inferred'
+                            ELSE 'none'
+                        END as feedback_source,
+                        COALESCE(hip_ugf.created_at, overall_ugf.created_at) as feedback_date,
+                        ROW_NUMBER() OVER (PARTITION BY ug.id ORDER BY 
+                            CASE WHEN hip_fc.feedback_text IS NOT NULL THEN 1 ELSE 2 END,
+                            COALESCE(hip_ugf.created_at, overall_ugf.created_at) DESC
+                        ) as rn
+                    FROM user_garments ug
+                    JOIN brands b ON ug.brand_id = b.id
+                    LEFT JOIN size_guide_entries sge ON ug.size_guide_entry_id = sge.id
+                    LEFT JOIN size_guides sg ON sge.size_guide_id = sg.id
+                    -- Get specific hip feedback
+                    LEFT JOIN user_garment_feedback hip_ugf ON ug.id = hip_ugf.user_garment_id AND hip_ugf.dimension = 'hip'
+                    LEFT JOIN feedback_codes hip_fc ON hip_ugf.feedback_code_id = hip_fc.id
+                    -- Get overall feedback
+                    LEFT JOIN user_garment_feedback overall_ugf ON ug.id = overall_ugf.user_garment_id AND overall_ugf.dimension = 'overall'
+                    LEFT JOIN feedback_codes overall_fc ON overall_ugf.feedback_code_id = overall_fc.id
+                    WHERE ug.user_id = %s 
+                    AND ug.owns_garment = true
+                    AND (sge.hip_min IS NOT NULL OR sge.hip_max IS NOT NULL OR sge.hip_range IS NOT NULL)
+                    AND (hip_fc.feedback_text IS NOT NULL OR overall_fc.feedback_text = 'Good Fit')
+                )
+                SELECT 
+                    brand, product_name, size_label, hip_min, hip_max, hip_range, 
+                    guide_level, hip_feedback, overall_feedback, feedback_source, feedback_date
+                FROM latest_feedback 
+                WHERE rn = 1
+                ORDER BY 
+                    CASE WHEN hip_feedback IS NOT NULL THEN 1 ELSE 2 END,
+                    user_garment_id DESC
+            """
+            
+            cursor.execute(query, (user_id,))
+            garments = cursor.fetchall()
+            
+            if not garments:
+                self.logger.info(f"No garments with hip measurements and feedback found for user {user_id}")
+                return None
+            
+            specific_feedback_count = len([g for g in garments if g[7] is not None])  # hip_feedback IS NOT NULL
+            inferred_feedback_count = len(garments) - specific_feedback_count
+            
+            self.logger.info(f"Found {len(garments)} garments with hip measurements for user {user_id}:")
+            self.logger.info(f"  - {specific_feedback_count} with specific hip feedback")
+            self.logger.info(f"  - {inferred_feedback_count} inferred from overall 'Good Fit'")
+            
+            # Process each garment to estimate body hip circumference
+            body_hip_measurements = []
+            garment_details = []
+            for garment in garments:
+                (brand, product_name, size_label, hip_min, hip_max, hip_range, 
+                 guide_level, hip_feedback, overall_feedback, feedback_source, feedback_date) = garment
+                
+                garment_hip = self._parse_measurement(hip_min, hip_max, hip_range)
+                if garment_hip is None:
+                    continue
+                
+                # Determine which feedback to use and confidence adjustment
+                if feedback_source == 'specific':
+                    # Use specific hip feedback with full confidence
+                    feedback_to_use = hip_feedback
+                    confidence_multiplier = 1.0
+                    self.logger.info(f"  {brand} {size_label}: Using SPECIFIC hip feedback '{hip_feedback}'")
+                elif feedback_source == 'inferred':
+                    # Infer "Good Fit" for hip from overall feedback, but with lower confidence
+                    feedback_to_use = "Good Fit"
+                    confidence_multiplier = 0.7  # Lower confidence for inferred feedback
+                    self.logger.info(f"  {brand} {size_label}: INFERRED hip fit from overall 'Good Fit'")
+                else:
+                    continue
+                
+                # CONVERSION TO BODY HIP CIRCUMFERENCE:
+                # Garment hip measurements need ease for movement
+                
+                hip_ease = 2.0  # Standard hip ease for comfort and movement
+                
+                # Adjust ease based on feedback about fit
+                if feedback_to_use == "Too Tight" or feedback_to_use == "Tight but I Like It":
+                    # If hip feels tight, garment is closer to body size
+                    adjusted_ease = hip_ease - 0.5
+                elif feedback_to_use == "Too Loose" or feedback_to_use == "Loose but I Like It":
+                    # If hip feels loose, garment is much larger than body
+                    adjusted_ease = hip_ease + 1.0
+                elif feedback_to_use == "Slightly Loose":
+                    adjusted_ease = hip_ease + 0.5
+                else:  # Good Fit
+                    adjusted_ease = hip_ease
+                
+                # Create detailed entry for transparency
+                hip_range_display = ""
+                if hip_min is not None and hip_max is not None:
+                    if hip_min == hip_max:
+                        hip_range_display = f"{hip_min}\""
+                    else:
+                        hip_range_display = f"{hip_min}-{hip_max}\""
+                elif hip_range:
+                    hip_range_display = hip_range
+                else:
+                    hip_range_display = f"{garment_hip}\""
+                
+                garment_details.append({
+                    'brand': brand,
+                    'product_name': product_name or "Unknown Product",
+                    'size': size_label,
+                    'measurement_display': hip_range_display,
+                    'feedback': feedback_to_use,
+                    'feedback_source': feedback_source,
+                    'guide_level': guide_level or "unknown",
+                    'feedback_date': feedback_date.isoformat() if feedback_date else None
+                })
+                
+                # Calculate body hip circumference: Garment hip - ease
+                body_hip_estimate = garment_hip - adjusted_ease
+                
+                base_confidence = self._calculate_confidence(feedback_to_use, len(garments), guide_level)
+                final_confidence = base_confidence * confidence_multiplier * 0.8  # Lower confidence for hip conversion
+                
+                body_hip_measurements.append({
+                    'measurement': body_hip_estimate,
+                    'garment_hip': garment_hip,
+                    'hip_ease': adjusted_ease,
+                    'feedback': feedback_to_use,
+                    'feedback_source': feedback_source,
+                    'brand': brand,
+                    'product': product_name,
+                    'size': size_label,
+                    'confidence': final_confidence
+                })
+                
+                self.logger.info(f"    Garment hip: {garment_hip}\", Ease: {adjusted_ease}\", "
+                               f"Body hip estimate: {body_hip_estimate:.1f}\"")
+            
+            if not body_hip_measurements:
+                return None
+            
+            estimated_hip = self._calculate_confidence_weighted_average(body_hip_measurements)
+            
+            self.logger.info(f"Estimated body hip circumference for user {user_id}: {estimated_hip:.1f}\". "
+                           f"Based on {specific_feedback_count} specific + {inferred_feedback_count} inferred feedback points.")
+            self.logger.info(f"NOTE: This represents body hip circumference that a tailor would measure.")
+            
+            cursor.close()
+            conn.close()
+            
+            return {
+                'estimate': estimated_hip,
+                'garment_details': garment_details,
+                'data_points': len(garment_details)
+            }
+            
+        except Exception as e:
+            self.logger.error(f"Error estimating hip measurement for user {user_id}: {str(e)}")
+            return None
+    
     def _parse_measurement(self, min_val: Optional[float], max_val: Optional[float], range_str: Optional[str]) -> Optional[float]:
         """Parse measurement to get average value"""
         try:

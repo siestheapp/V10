@@ -15,11 +15,28 @@ enum FeedbackType {
 struct FitFeedbackView: View {
     let feedbackType: FeedbackType
     let selectedSize: String
+    let productUrl: String?
+    let brand: String?
     
     @State private var fitFeedback: [String: Int] = [:]
     @State private var isSubmitting = false
     @State private var showConfirmation = false
     
+    // Initializers to support both old and new flows
+    init(feedbackType: FeedbackType, selectedSize: String) {
+        self.feedbackType = feedbackType
+        self.selectedSize = selectedSize
+        self.productUrl = nil
+        self.brand = nil
+    }
+    
+    init(feedbackType: FeedbackType, selectedSize: String, productUrl: String?, brand: String?) {
+        self.feedbackType = feedbackType
+        self.selectedSize = selectedSize
+        self.productUrl = productUrl
+        self.brand = brand
+    }
+
     let fitOptions = [
         (1, "Too Tight"),
         (2, "Tight but I Like It"),

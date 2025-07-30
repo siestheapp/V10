@@ -143,11 +143,11 @@ struct UserTestData: Decodable {
     let totalGarments: Int
     let lastGarmentInput: String
     let brandsOwned: [String]
-    let fitZones: FitZones
+    let fitZones: TestScreenFitZones
     let recentFeedback: [FeedbackItem]
 }
 
-struct FitZones: Decodable {
+struct TestScreenFitZones: Decodable {
     let tightMin: Double
     let tightMax: Double
     let goodMin: Double
