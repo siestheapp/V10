@@ -1823,11 +1823,8 @@ def get_overall_feedback_description(feedback: dict) -> str:
 @app.post("/shop/recommendations")
 async def get_shop_recommendations(request: dict):
     """
-    Get personalized shopping recommendations based on user's fit feedback and measurements.
-    Logic:
-      1. Find user's 'Good Fit' garments (from user_garments + user_fit_feedback).
-      2. Generate mock recommendations based on those garments.
-      3. Return a reason for each recommendation.
+    Get personalized shopping recommendations based on user's fit analysis.
+    Uses MultiDimensionalFitAnalyzer to provide real fit scores for actual products.
     """
     try:
         user_id = request.get("user_id")
@@ -1837,132 +1834,129 @@ async def get_shop_recommendations(request: dict):
         if not user_id:
             raise HTTPException(status_code=400, detail="User ID is required")
 
-        # 1. Find user's 'Good Fit' garments
         conn = get_db()
         cur = conn.cursor(cursor_factory=RealDictCursor)
-        cur.execute("""
-            SELECT ug.id, ug.brand_id, b.name as brand_name, ug.size_label, c.name as category, ug.product_name,
-                   uff_overall.feedback_code_id as overall_feedback_code,
-                   uff_chest.feedback_code_id as chest_feedback_code,
-                   uff_sleeve.feedback_code_id as sleeve_feedback_code,
-                   uff_neck.feedback_code_id as neck_feedback_code,
-                   uff_waist.feedback_code_id as waist_feedback_code
-            FROM user_garments ug
-            JOIN brands b ON ug.brand_id = b.id
-            LEFT JOIN categories c ON ug.category_id = c.id
-            LEFT JOIN user_garment_feedback uff_overall ON 
-                ug.id = uff_overall.user_garment_id AND uff_overall.dimension = 'overall'
-            LEFT JOIN user_garment_feedback uff_chest ON 
-                ug.id = uff_chest.user_garment_id AND uff_chest.dimension = 'chest'
-            LEFT JOIN user_garment_feedback uff_sleeve ON 
-                ug.id = uff_sleeve.user_garment_id AND uff_sleeve.dimension = 'sleeve'
-            LEFT JOIN user_garment_feedback uff_neck ON 
-                ug.id = uff_neck.user_garment_id AND uff_neck.dimension = 'neck'
-            LEFT JOIN user_garment_feedback uff_waist ON 
-                ug.id = uff_waist.user_garment_id AND uff_waist.dimension = 'waist'
-            WHERE ug.user_id = %s AND ug.owns_garment = true
-            ORDER BY ug.created_at DESC
-        """, (user_id,))
-        garments = cur.fetchall()
-
-        # Get feedback codes for mapping
-        cur.execute("SELECT id, feedback_text FROM feedback_codes")
-        feedback_codes = {row['id']: row['feedback_text'] for row in cur.fetchall()}
         
-        # Filter for 'Good Fit' garments
-        good_fit_garments = []
-        for g in garments:
-            overall_feedback = feedback_codes.get(g.get('overall_feedback_code'), '')
-            if 'good fit' in overall_feedback.lower():
-                good_fit_garments.append(g)
+        # Get available products from our products table
+        category_filter = ""
+        if category and category != "All":
+            category_filter = "AND c.name = %s"
+            
+        cur.execute(f"""
+            SELECT p.id, p.name, p.price, p.image_url, p.product_url, p.description,
+                   b.id as brand_id, b.name as brand_name, c.name as category
+            FROM products p
+            JOIN brands b ON p.brand_id = b.id
+            JOIN categories c ON p.category_id = c.id
+            WHERE p.is_active = true
+            {category_filter}
+            ORDER BY p.created_at DESC
+            LIMIT {limit * 2}
+        """, (category,) if category and category != "All" else ())
         
-        if not good_fit_garments:
-            # Fallback: use any owned garment
-            good_fit_garments = garments
+        products = cur.fetchall()
+        
+        if not products:
+            cur.close()
+            conn.close()
+            return {
+                "recommendations": [],
+                "total_count": 0,
+                "has_more": False
+            }
 
+        # Initialize the MultiDimensionalFitAnalyzer
+        from multi_dimensional_fit_analyzer import MultiDimensionalFitAnalyzer
+        analyzer = MultiDimensionalFitAnalyzer(DB_CONFIG)
+        
         recommendations = []
         
-        # 2. Generate mock recommendations based on user's good fit garments
-        for garment in good_fit_garments[:3]:  # Use up to 3 garments for recommendations
-            # Create mock recommendations based on this garment
-            mock_recommendations = [
-                {
-                    "id": f"rec_{garment['id']}_1",
-                    "name": f"Classic {garment['category'].rstrip('s')}",
-                    "brand": garment['brand_name'],
-                    "price": 79.99,
-                    "image_url": f"https://via.placeholder.com/300x400/4A90E2/FFFFFF?text={garment['brand_name']}+{garment['category']}",
-                    "product_url": f"https://example.com/product/1",
-                    "category": garment['category'],
-                    "fit_confidence": 0.95,
-                    "recommended_size": garment['size_label'],
-                    "measurements": {
-                        "chest": "40-42\"",
-                        "sleeve": "24-25\"",
-                        "length": "28-29\""
-                    },
-                    "available_sizes": ["XS", "S", "M", "L", "XL"],
-                    "description": f"Based on your {garment['brand_name']} {garment['size_label']} that fits well"
-                },
-                {
-                    "id": f"rec_{garment['id']}_2",
-                    "name": f"Premium {garment['category'].rstrip('s')}",
-                    "brand": "Theory" if garment['brand_name'] != "Theory" else "Banana Republic",
-                    "price": 129.99,
-                    "image_url": f"https://via.placeholder.com/300x400/50C878/FFFFFF?text=Theory+{garment['category']}",
-                    "product_url": f"https://example.com/product/2",
-                    "category": garment['category'],
-                    "fit_confidence": 0.88,
-                    "recommended_size": garment['size_label'],
-                    "measurements": {
-                        "chest": "42-44\"",
-                        "sleeve": "25-26\"",
-                        "length": "29-30\""
-                    },
-                    "available_sizes": ["XS", "S", "M", "L", "XL", "XXL"],
-                    "description": f"Similar style to your {garment['brand_name']} {garment['size_label']}"
-                },
-                {
-                    "id": f"rec_{garment['id']}_3",
-                    "name": f"Casual {garment['category'].rstrip('s')}",
-                    "brand": "J.Crew" if garment['brand_name'] != "J.Crew" else "Patagonia",
-                    "price": 59.99,
-                    "image_url": f"https://via.placeholder.com/300x400/FF6B35/FFFFFF?text=J.Crew+{garment['category']}",
-                    "product_url": f"https://example.com/product/3",
-                    "category": garment['category'],
-                    "fit_confidence": 0.92,
-                    "recommended_size": garment['size_label'],
-                    "measurements": {
-                        "chest": "40-42\"",
-                        "sleeve": "24-25\"",
-                        "length": "27-28\""
-                    },
-                    "available_sizes": ["S", "M", "L", "XL"],
-                    "description": f"Same size as your {garment['brand_name']} {garment['size_label']}"
-                }
-            ]
-            
-            # Filter by category if specified
-            if category and category != "All":
-                mock_recommendations = [r for r in mock_recommendations if r["category"] == category]
-            
-            recommendations.extend(mock_recommendations)
+        # Get fit analysis for each product (with timeout protection)
+        processed_count = 0
+        max_processing_time = 10  # seconds
+        start_time = datetime.now()
+        
+        for product in products:
+            # Check if we've spent too much time processing
+            if (datetime.now() - start_time).total_seconds() > max_processing_time:
+                print(f"Processing timeout reached, returning {len(recommendations)} recommendations")
+                break
+                
+            try:
+                # Get comprehensive size recommendations for this brand/category
+                fit_result = analyzer.get_comprehensive_size_recommendations(
+                    user_id=user_id,
+                    brand_name=product['brand_name'],
+                    category='Tops'  # We only have Tops category for now
+                )
+                
+                if fit_result and len(fit_result) > 0:
+                    # Find the best recommendation from the fit analysis
+                    best_rec = None
+                    best_score = 0
+                    
+                    for size_rec in fit_result:
+                        if size_rec.overall_fit_score > best_score:
+                            best_score = size_rec.overall_fit_score
+                            best_rec = size_rec
+                    
+                    if best_rec:
+                        # Convert fit analysis to recommendation format (matching iOS ShopItem model)
+                        recommendation = {
+                            "id": f"product_{product['id']}",
+                            "name": product['name'],
+                            "brand": product['brand_name'],
+                            "price": float(product['price']) if product['price'] else 0.0,
+                            "image_url": product['image_url'] or f"https://via.placeholder.com/300x400/4A90E2/FFFFFF?text={product['brand_name']}",
+                            "product_url": product['product_url'] or "#",
+                            "category": product['category'],
+                            "fit_confidence": round(best_rec.overall_fit_score, 2),
+                            "recommended_size": best_rec.size_label,
+                            "measurements": {dim: f"{scores['garment_measurement']:.1f}\"" for dim, scores in best_rec.dimension_scores.items()},
+                            "available_sizes": [sr.size_label for sr in fit_result],
+                            "description": product['description'] or f"Recommended based on your measurement profile"
+                        }
+                        
+                        recommendations.append(recommendation)
+                        processed_count += 1
+                        
+                        # Return early if we have enough good recommendations
+                        if len(recommendations) >= limit:
+                            break
+                        
+            except Exception as e:
+                print(f"Error analyzing product {product['id']}: {str(e)}")
+                # Fallback: add product with basic info but no fit analysis (only if we need more)
+                if len(recommendations) < limit:
+                     recommendation = {
+                         "id": f"product_{product['id']}",
+                         "name": product['name'],
+                         "brand": product['brand_name'],
+                         "price": float(product['price']) if product['price'] else 0.0,
+                         "image_url": product['image_url'] or f"https://via.placeholder.com/300x400/4A90E2/FFFFFF?text={product['brand_name']}",
+                         "product_url": product['product_url'] or "#",
+                         "category": product['category'],
+                         "fit_confidence": 0.5,
+                         "recommended_size": "M",  # Default fallback
+                         "measurements": {"chest": "40.0\"", "sleeve": "34.0\""},  # Default measurements
+                         "available_sizes": ["XS", "S", "M", "L", "XL"],
+                         "description": product['description'] or "Product available for purchase"
+                     }
+                     recommendations.append(recommendation)
 
         cur.close()
         conn.close()
         
-        # Limit results and remove duplicates
-        unique_recommendations = []
-        seen_ids = set()
-        for rec in recommendations:
-            if rec["id"] not in seen_ids and len(unique_recommendations) < limit:
-                unique_recommendations.append(rec)
-                seen_ids.add(rec["id"])
+        # Sort recommendations by fit confidence (best first)
+        recommendations.sort(key=lambda x: x['fit_confidence'], reverse=True)
+        
+        # Limit results
+        limited_recommendations = recommendations[:limit]
 
         return {
-            "recommendations": unique_recommendations,
-            "total_count": len(unique_recommendations),
-            "has_more": len(unique_recommendations) >= limit
+            "recommendations": limited_recommendations,
+            "total_count": len(limited_recommendations),
+            "has_more": len(recommendations) > limit
         }
         
     except Exception as e:
