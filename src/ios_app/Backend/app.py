@@ -1840,62 +1840,28 @@ async def get_shop_recommendations(request: dict):
         conn = get_db()
         cur = conn.cursor(cursor_factory=RealDictCursor)
         
-        # Get user's fit zones for filtering (only for Tops category currently)
-        user_fit_zones = None
+        # Get user's fit zones for filtering (FAST database lookup)
         selected_zone_range = None
         if category == "Tops" and fit_zone != "All":
             try:
-                # Use the same FitZoneCalculator that works in /user/{user_id}/measurements
-                from fit_zone_calculator import FitZoneCalculator
+                from fit_zone_service import FitZoneService
                 
-                # Create separate database connection for fit zone calculation (avoid transaction conflicts)
-                fit_zone_conn = get_db()
-                fit_zone_cur = fit_zone_conn.cursor(cursor_factory=RealDictCursor)
+                fit_zone_service = FitZoneService(DB_CONFIG)
+                stored_fit_zones = fit_zone_service.get_stored_fit_zones(user_id, category)
                 
-                # Get user garments directly 
-                fit_zone_cur.execute("""
-                    SELECT ug.id, b.name as brand, ug.product_name, ug.size_label,
-                           COALESCE(ug.fit_feedback, 'Good Fit') as fit_feedback,
-                           ug.chest_range
-                    FROM user_garments ug
-                    JOIN brands b ON ug.brand_id = b.id  
-                    WHERE ug.user_id = %s AND ug.owns_garment = true
-                    ORDER BY ug.created_at DESC
-                """, (user_id,))
-                garment_rows = fit_zone_cur.fetchall()
-                
-                # Convert to format expected by FitZoneCalculator
-                garments = []
-                for row in garment_rows:
-                    garments.append({
-                        'brand': row['brand'],
-                        'garment_name': row['product_name'],
-                        'size': row['size_label'],
-                        'fit_feedback': row['fit_feedback'],
-                        'chest_range': row['chest_range']
-                    })
-                
-                # Close the fit zone database connection
-                fit_zone_cur.close()
-                
-                calculator = FitZoneCalculator(user_id, fit_zone_conn)
-                fit_zone_result = calculator.calculate_chest_fit_zone(garments)
-                
-                # Close the fit zone connection 
-                fit_zone_conn.close()
-                
-                if fit_zone_result and 'zones' in fit_zone_result:
-                    zones = fit_zone_result['zones']
-                    if fit_zone.lower() in zones:
-                        selected_zone_range = zones[fit_zone.lower()]
-                        print(f"🎯 User fit zones for {fit_zone}: {selected_zone_range}")
-                        print(f"🎯 Available zones: {list(zones.keys())}")
+                if stored_fit_zones and 'chest' in stored_fit_zones:
+                    chest_zones = stored_fit_zones['chest']
+                    if fit_zone.lower() in chest_zones:
+                        selected_zone_range = chest_zones[fit_zone.lower()]
+                        print(f"⚡ Using stored fit zones for {fit_zone}: {selected_zone_range}")
                     else:
-                        print(f"⚠️ Fit zone '{fit_zone}' not found in calculated zones: {list(zones.keys()) if zones else 'None'}")
+                        print(f"⚠️ Fit zone '{fit_zone}' not found in stored zones: {list(chest_zones.keys()) if chest_zones else 'None'}")
                 else:
-                    print(f"⚠️ No fit zones calculated from user garments")
+                    print(f"⚠️ No stored fit zones found for user {user_id}, category {category}")
+                    # TODO: Trigger background fit zone calculation for this user
+                    
             except Exception as e:
-                print(f"⚠️ Could not calculate user fit zones: {str(e)}, proceeding without fit zone filtering")
+                print(f"⚠️ Could not retrieve stored fit zones: {str(e)}, proceeding without fit zone filtering")
         
         # Get available products from our products table
         category_filter = ""
