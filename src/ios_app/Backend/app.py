@@ -1830,12 +1830,72 @@ async def get_shop_recommendations(request: dict):
         user_id = request.get("user_id")
         category = request.get("category")
         filters = request.get("filters", {})
+        fit_zone = filters.get("fit_zone", "Standard")  # Default to Standard if not specified
         limit = request.get("limit", 20)
         if not user_id:
             raise HTTPException(status_code=400, detail="User ID is required")
+            
+        print(f"🎯 Shop recommendations request: user_id={user_id}, category={category}, fit_zone={fit_zone}")
 
         conn = get_db()
         cur = conn.cursor(cursor_factory=RealDictCursor)
+        
+        # Get user's fit zones for filtering (only for Tops category currently)
+        user_fit_zones = None
+        selected_zone_range = None
+        if category == "Tops" and fit_zone != "All":
+            try:
+                # Use the same FitZoneCalculator that works in /user/{user_id}/measurements
+                from fit_zone_calculator import FitZoneCalculator
+                
+                # Create separate database connection for fit zone calculation (avoid transaction conflicts)
+                fit_zone_conn = get_db()
+                fit_zone_cur = fit_zone_conn.cursor(cursor_factory=RealDictCursor)
+                
+                # Get user garments directly 
+                fit_zone_cur.execute("""
+                    SELECT ug.id, b.name as brand, ug.product_name, ug.size_label,
+                           COALESCE(ug.fit_feedback, 'Good Fit') as fit_feedback,
+                           ug.chest_range
+                    FROM user_garments ug
+                    JOIN brands b ON ug.brand_id = b.id  
+                    WHERE ug.user_id = %s AND ug.owns_garment = true
+                    ORDER BY ug.created_at DESC
+                """, (user_id,))
+                garment_rows = fit_zone_cur.fetchall()
+                
+                # Convert to format expected by FitZoneCalculator
+                garments = []
+                for row in garment_rows:
+                    garments.append({
+                        'brand': row['brand'],
+                        'garment_name': row['product_name'],
+                        'size': row['size_label'],
+                        'fit_feedback': row['fit_feedback'],
+                        'chest_range': row['chest_range']
+                    })
+                
+                # Close the fit zone database connection
+                fit_zone_cur.close()
+                
+                calculator = FitZoneCalculator(user_id, fit_zone_conn)
+                fit_zone_result = calculator.calculate_chest_fit_zone(garments)
+                
+                # Close the fit zone connection 
+                fit_zone_conn.close()
+                
+                if fit_zone_result and 'zones' in fit_zone_result:
+                    zones = fit_zone_result['zones']
+                    if fit_zone.lower() in zones:
+                        selected_zone_range = zones[fit_zone.lower()]
+                        print(f"🎯 User fit zones for {fit_zone}: {selected_zone_range}")
+                        print(f"🎯 Available zones: {list(zones.keys())}")
+                    else:
+                        print(f"⚠️ Fit zone '{fit_zone}' not found in calculated zones: {list(zones.keys()) if zones else 'None'}")
+                else:
+                    print(f"⚠️ No fit zones calculated from user garments")
+            except Exception as e:
+                print(f"⚠️ Could not calculate user fit zones: {str(e)}, proceeding without fit zone filtering")
         
         # Get available products from our products table
         category_filter = ""
@@ -1873,6 +1933,7 @@ async def get_shop_recommendations(request: dict):
         
         # Get fit analysis for each product (with timeout protection)
         processed_count = 0
+        filtered_count = 0  # Track how many products were filtered out by fit zones
         max_processing_time = 10  # seconds
         start_time = datetime.now()
         
@@ -1901,28 +1962,49 @@ async def get_shop_recommendations(request: dict):
                             best_rec = size_rec
                     
                     if best_rec:
-                        # Convert fit analysis to recommendation format (matching iOS ShopItem model)
-                        recommendation = {
-                            "id": f"product_{product['id']}",
-                            "name": product['name'],
-                            "brand": product['brand_name'],
-                            "price": float(product['price']) if product['price'] else 0.0,
-                            "image_url": product['image_url'] or f"https://via.placeholder.com/300x400/4A90E2/FFFFFF?text={product['brand_name']}",
-                            "product_url": product['product_url'] or "#",
-                            "category": product['category'],
-                            "fit_confidence": round(best_rec.overall_fit_score, 2),
-                            "recommended_size": best_rec.size_label,
-                            "measurements": {dim: f"{scores['garment_measurement']:.1f}\"" for dim, scores in best_rec.dimension_scores.items()},
-                            "available_sizes": [sr.size_label for sr in fit_result],
-                            "description": product['description'] or f"Recommended based on your measurement profile"
-                        }
+                        # Apply fit zone filtering if requested
+                        should_include_product = True
+                        if selected_zone_range:
+                            zone_min = selected_zone_range.get("min", 0)
+                            zone_max = selected_zone_range.get("max", 999)
+                            
+                            # Get chest measurement from the recommended size
+                            chest_measurement = None
+                            if "chest" in best_rec.dimension_scores:
+                                chest_measurement = best_rec.dimension_scores["chest"]["garment_measurement"]
+                            
+                            # Check if garment falls within user's selected fit zone
+                            if chest_measurement is not None:
+                                if not (zone_min <= chest_measurement <= zone_max):
+                                    should_include_product = False
+                                    filtered_count += 1
+                                    print(f"🚫 Filtered out {product['name']} - chest {chest_measurement:.1f}\" outside {fit_zone} range [{zone_min:.1f}\"-{zone_max:.1f}\"]")
+                                else:
+                                    print(f"✅ Including {product['name']} - chest {chest_measurement:.1f}\" fits {fit_zone} range [{zone_min:.1f}\"-{zone_max:.1f}\"]")
                         
-                        recommendations.append(recommendation)
-                        processed_count += 1
-                        
-                        # Return early if we have enough good recommendations
-                        if len(recommendations) >= limit:
-                            break
+                        if should_include_product:
+                            # Convert fit analysis to recommendation format (matching iOS ShopItem model)
+                            recommendation = {
+                                "id": f"product_{product['id']}",
+                                "name": product['name'],
+                                "brand": product['brand_name'],
+                                "price": float(product['price']) if product['price'] else 0.0,
+                                "image_url": product['image_url'] or f"https://via.placeholder.com/300x400/4A90E2/FFFFFF?text={product['brand_name']}",
+                                "product_url": product['product_url'] or "#",
+                                "category": product['category'],
+                                "fit_confidence": round(best_rec.overall_fit_score, 2),
+                                "recommended_size": best_rec.size_label,
+                                "measurements": {dim: f"{scores['garment_measurement']:.1f}\"" for dim, scores in best_rec.dimension_scores.items()},
+                                "available_sizes": [sr.size_label for sr in fit_result],
+                                "description": product['description'] or f"Recommended based on your measurement profile"
+                            }
+                            
+                            recommendations.append(recommendation)
+                            processed_count += 1
+                            
+                            # Return early if we have enough good recommendations
+                            if len(recommendations) >= limit:
+                                break
                         
             except Exception as e:
                 print(f"Error analyzing product {product['id']}: {str(e)}")
@@ -1952,6 +2034,18 @@ async def get_shop_recommendations(request: dict):
         
         # Limit results
         limited_recommendations = recommendations[:limit]
+        
+        # Summary logging
+        total_products_analyzed = len(products)
+        if selected_zone_range:
+            print(f"🎯 FIT ZONE FILTERING SUMMARY:")
+            print(f"   User: {user_id}, Category: {category}, Fit Zone: {fit_zone}")
+            print(f"   Zone Range: {selected_zone_range.get('min', 0):.1f}\" - {selected_zone_range.get('max', 999):.1f}\"")
+            print(f"   Products analyzed: {total_products_analyzed}")
+            print(f"   Products filtered out: {filtered_count}")
+            print(f"   Products included: {len(limited_recommendations)}")
+        else:
+            print(f"🎯 NO FIT ZONE FILTERING APPLIED - returning {len(limited_recommendations)} products")
 
         return {
             "recommendations": limited_recommendations,

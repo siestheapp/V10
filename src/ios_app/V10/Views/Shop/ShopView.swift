@@ -3,9 +3,11 @@ import SwiftUI
 struct ShopView: View {
     @StateObject private var shopViewModel = ShopViewModel()
     @State private var selectedCategory = "Tops"
+    @State private var selectedFitZone = "Standard"
     @State private var showingFilters = false
     
     let categories = ["Tops", "Bottoms", "Outerwear", "All"]
+    let fitZones = ["Tight", "Standard", "Relaxed"]
     
     var body: some View {
         NavigationView {
@@ -19,6 +21,7 @@ struct ShopView: View {
                                 isSelected: selectedCategory == category
                             ) {
                                 selectedCategory = category
+                                selectedFitZone = "Standard" // Reset fit zone when category changes
                                 shopViewModel.filterByCategory(category)
                             }
                         }
@@ -26,6 +29,25 @@ struct ShopView: View {
                     .padding(.horizontal)
                 }
                 .padding(.vertical, 8)
+                
+                // Fit Zone Filter (only show for Tops since we only have chest fit zones currently)
+                if selectedCategory == "Tops" {
+                    ScrollView(.horizontal, showsIndicators: false) {
+                        HStack(spacing: 12) {
+                            ForEach(fitZones, id: \.self) { fitZone in
+                                FitZoneButton(
+                                    title: fitZone,
+                                    isSelected: selectedFitZone == fitZone
+                                ) {
+                                    selectedFitZone = fitZone
+                                    shopViewModel.filterByFitZone(fitZone)
+                                }
+                            }
+                        }
+                        .padding(.horizontal)
+                    }
+                    .padding(.vertical, 8)
+                }
                 
                 // Shop Feed
                 if shopViewModel.isLoading {
@@ -112,6 +134,47 @@ struct CategoryButton: View {
                 .background(isSelected ? Color.blue : Color.gray.opacity(0.1))
                 .foregroundColor(isSelected ? .white : .primary)
                 .cornerRadius(20)
+        }
+    }
+}
+
+struct FitZoneButton: View {
+    let title: String
+    let isSelected: Bool
+    let action: () -> Void
+    
+    var fitZoneColor: Color {
+        switch title {
+        case "Tight":
+            return Color.orange
+        case "Standard":
+            return Color.green
+        case "Relaxed":
+            return Color.blue
+        default:
+            return Color.gray
+        }
+    }
+    
+    var body: some View {
+        Button(action: action) {
+            HStack(spacing: 6) {
+                Circle()
+                    .fill(fitZoneColor)
+                    .frame(width: 8, height: 8)
+                Text(title)
+                    .font(.subheadline)
+                    .fontWeight(.medium)
+            }
+            .padding(.horizontal, 14)
+            .padding(.vertical, 8)
+            .background(isSelected ? fitZoneColor.opacity(0.2) : Color.gray.opacity(0.1))
+            .foregroundColor(isSelected ? fitZoneColor : .primary)
+            .cornerRadius(20)
+            .overlay(
+                RoundedRectangle(cornerRadius: 20)
+                    .stroke(isSelected ? fitZoneColor : Color.clear, lineWidth: 1.5)
+            )
         }
     }
 }

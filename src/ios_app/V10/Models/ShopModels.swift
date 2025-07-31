@@ -26,6 +26,7 @@ struct ShopItem: Identifiable, Codable {
 
 struct ShopFilters: Codable {
     var category: String?
+    var fitZone: String?
     var minPrice: Double?
     var maxPrice: Double?
     var brands: [String]?
@@ -41,7 +42,7 @@ struct ShopFilters: Codable {
     }
     
     enum CodingKeys: String, CodingKey {
-        case category, brands, fitTypes, sortBy
+        case category, fitZone = "fit_zone", brands, fitTypes, sortBy
         case minPrice = "min_price"
         case maxPrice = "max_price"
     }

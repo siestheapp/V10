@@ -10,6 +10,7 @@ class ShopViewModel: ObservableObject {
     
     private let userId = String(Config.defaultUserId)
     private var currentCategory = "Tops"
+    private var currentFitZone = "Standard"
     
     func loadRecommendations() {
         isLoading = true
@@ -55,6 +56,12 @@ class ShopViewModel: ObservableObject {
     func filterByCategory(_ category: String) {
         currentCategory = category
         currentFilters.category = category == "All" ? nil : category
+        loadRecommendations()
+    }
+    
+    func filterByFitZone(_ fitZone: String) {
+        currentFitZone = fitZone
+        currentFilters.fitZone = fitZone
         loadRecommendations()
     }
     
