@@ -999,15 +999,21 @@ async def process_garment_url(request: dict):
 
 @app.post("/garment/size-recommendation")
 async def get_garment_size_recommendation(request: dict):
-    """Process product URL and return comprehensive size recommendation across all dimensions"""
+    """
+    🎯 ENHANCED: Process product URL and return ALL sizes that match user's fit zones
+    
+    Returns format like: ["Good Fit - L", "Tight Fit - S", "Relaxed Fit - XL"]
+    This captures the original Sies vision: scan a shirt tag and see ALL your size options
+    """
     try:
         product_url = request.get("product_url")
         user_id = request.get("user_id", "1")  # Default to user 1
+        user_fit_preference = request.get("fit_preference", "Standard")  # NEW: User's current preference
         
         if not product_url:
             raise HTTPException(status_code=400, detail="Product URL is required")
         
-        print(f"🔍 Getting comprehensive size recommendation for user {user_id}, URL: {product_url}")
+        print(f"🎯 Getting ALL matching sizes for user {user_id}, URL: {product_url}, preference: {user_fit_preference}")
         
         # Step 1: Extract brand from URL
         brand_info = extract_brand_from_url(product_url)
@@ -1016,8 +1022,8 @@ async def get_garment_size_recommendation(request: dict):
         
         print(f"📊 Identified brand: {brand_info['brand_name']} (ID: {brand_info['brand_id']})")
         
-        # Step 2: Use direct garment-to-garment comparison (simpler and more accurate)
-        from direct_garment_comparator import DirectGarmentComparator
+        # Step 2: Use the new Unified Fit Recommendation Engine
+        from unified_fit_recommendation_engine import UnifiedFitRecommendationEngine
         
         db_config = {
             "database": "postgres",
@@ -1027,102 +1033,141 @@ async def get_garment_size_recommendation(request: dict):
             "port": "6543"
         }
         
-        comparator = DirectGarmentComparator(db_config)
+        unified_engine = UnifiedFitRecommendationEngine(db_config)
         
-        # Get direct size recommendations by comparing to user's existing garments
-        recommendations = comparator.get_direct_size_recommendations(
+        # Get ALL sizes that match user's fit zones (this is the key enhancement!)
+        recommendation = unified_engine.get_all_matching_sizes(
             user_id=int(user_id),
             brand_name=brand_info['brand_name'],
-            category="Tops"  # Use "Tops" to match database category name
+            category="Tops",
+            user_fit_preference=user_fit_preference
         )
         
-        if not recommendations:
-            raise HTTPException(status_code=404, detail=f"No size recommendations available for {brand_info['brand_name']}")
+        if not recommendation.matching_sizes:
+            raise HTTPException(status_code=404, detail=f"No size recommendations available for {brand_info['brand_name']}. Try adding more garments to your closet for better recommendations.")
         
-        print(f"📏 Generated {len(recommendations)} direct comparison recommendations")
+        print(f"🎯 Found {len(recommendation.matching_sizes)} matching sizes: {recommendation.best_matches}")
         
-        # Convert recommendations to API response format
+        # Convert to API response format (enhanced with fit zone labels)
         api_recommendations = []
-        for rec in recommendations:
-            # Build reference garment details
-            reference_summary = []
+        for match in recommendation.matching_sizes:
+            # Build dimension details for this specific fit zone match
             dimension_details = {}
+            measurement_summary = []
             
-            for dimension, comparison in rec.dimension_comparisons.items():
+            for dimension, dim_analysis in match.dimension_matches.items():
                 dimension_details[dimension] = {
-                    "predicted_fit": comparison['predicted_fit'],
-                    "target_measurement": comparison['target_measurement'],
-                    "reference_measurement": comparison['reference_measurement'],
-                    "reference_brand": comparison['reference_brand'],
-                    "reference_size": comparison['reference_size'],
-                    "range_comparison": comparison['range_comparison'],
-                    "similarity_score": comparison['similarity_score']
+                    "fit_zone": match.fit_zone,
+                    "fit_zone_display": match.fit_zone_display,
+                    "garment_measurement": dim_analysis['garment_measurement'],
+                    "zone_range": f"{dim_analysis['zone_range'][0]}-{dim_analysis['zone_range'][1]}\"",
+                    "fits_in_zone": dim_analysis['fits_in_zone'],
+                    "fit_score": round(dim_analysis['fit_score'], 3),
+                    "explanation": dim_analysis['explanation']
                 }
                 
-                # Add to summary for display  
-                reference_summary.append(f"{dimension}: {comparison['target_measurement']}")
-            
-            # Primary concerns are dimensions with concerning fit predictions
-            primary_concerns = [
-                dim for dim, comp in rec.dimension_comparisons.items() 
-                if comp['predicted_fit'] in ['Too Tight', 'Too Loose']
-            ]
+                measurement_summary.append(f"{dimension}: {dim_analysis['garment_measurement']}\"")
             
             api_recommendations.append({
-                "size": rec.size_label,
-                "overall_fit_score": round(rec.overall_fit_score, 3),
-                "confidence": round(rec.confidence, 3),
-                "fit_type": "excellent" if rec.overall_fit_score >= 0.9 else 
-                           "good" if rec.overall_fit_score >= 0.7 else
-                           "acceptable" if rec.overall_fit_score >= 0.5 else "poor",
-                "available_dimensions": list(rec.dimension_comparisons.keys()),
+                "size": match.size_label,
+                "fit_zone": match.fit_zone,
+                "fit_zone_display": match.fit_zone_display,
+                "size_with_fit_label": f"{match.fit_zone_display} - {match.size_label}",  # 🎯 KEY ENHANCEMENT
+                "overall_match_score": round(match.overall_match_score, 3),
+                "confidence": round(match.confidence, 3),
+                "fit_type": "excellent" if match.overall_match_score >= 0.9 else 
+                           "good" if match.overall_match_score >= 0.7 else
+                           "acceptable" if match.overall_match_score >= 0.5 else "fair",
+                "available_dimensions": list(match.dimension_matches.keys()),
                 "dimension_analysis": dimension_details,
-                "measurement_summary": ", ".join(reference_summary),
-                "reasoning": rec.reasoning,
-                "primary_concerns": primary_concerns,
-                "fit_description": _get_direct_fit_description(
-                    rec.overall_fit_score, primary_concerns, rec.reference_garments
-                )
+                "measurement_summary": ", ".join(measurement_summary),
+                "reasoning": match.explanation,
+                "primary_concerns": match.primary_concerns,
+                "matches_user_preference": match.fit_zone == user_fit_preference.lower()
             })
         
-        # Find the best recommendation
-        best_rec = recommendations[0]  # Already sorted by fit score
+        # Best match is first in the sorted list
+        best_match = recommendation.matching_sizes[0] if recommendation.matching_sizes else None
         
-        # Get reference garments info for response
-        reference_garments = {}
-        for ref in best_rec.reference_garments:
-            ref_key = f"{ref.brand}_{ref.size_label}"
-            reference_garments[ref_key] = {
-                "brand": ref.brand,
-                "size": ref.size_label,
-                "product_name": ref.product_name,
-                "measurements": {dim: measurement_range.display_string for dim, measurement_range in ref.measurements.items()},
-                "feedback": ref.feedback,
-                "confidence": round(ref.confidence, 2)
-            }
-        
+        # Enhanced response with ALL matching sizes and fit zone labels
         return {
             "product_url": product_url,
             "brand": brand_info["brand_name"],
-            "analysis_type": "direct_comparison",
-            "dimensions_analyzed": list(best_rec.dimension_comparisons.keys()),
-            "reference_garments": reference_garments,
-            "recommended_size": best_rec.size_label,
-            "recommended_fit_score": round(best_rec.overall_fit_score, 3),
-            "confidence": round(best_rec.confidence, 3),
-            "reasoning": best_rec.reasoning,
-            "primary_concerns": [
-                dim for dim, comp in best_rec.dimension_comparisons.items() 
-                if comp['predicted_fit'] in ['Too Tight', 'Too Loose']
-            ],
+            "analysis_type": "unified_multi_dimensional_fit_zones",  # Updated analysis type
+            "user_fit_preference": user_fit_preference,
+            
+            # 🎯 KEY ENHANCEMENT: All matching sizes with fit zone labels
+            "all_matching_sizes": recommendation.best_matches,  # ["Good Fit - L", "Tight Fit - S", etc.]
+            "total_matches": len(recommendation.matching_sizes),
+            
+            # Best single recommendation (for compatibility)
+            "recommended_size": best_match.size_label if best_match else "Unknown",
+            "recommended_fit_label": f"{best_match.fit_zone_display} - {best_match.size_label}" if best_match else "No match",
+            "recommended_fit_score": round(best_match.overall_match_score, 3) if best_match else 0,
+            
+            # Analysis details
+            "dimensions_analyzed": recommendation.dimensions_analyzed,
+            "confidence_level": recommendation.confidence_level,
+            "reference_garments_count": recommendation.reference_garments_count,
+            
+            # Summary and detailed breakdown
+            "recommendation_summary": recommendation.recommendation_summary,
             "comprehensive_analysis": True,
-            "all_sizes": api_recommendations
+            "all_sizes_detailed": api_recommendations,
+            "detailed_analysis": recommendation.detailed_analysis,
+            
+            # User guidance
+            "user_guidance": _generate_user_guidance(recommendation, user_fit_preference),
+            "next_steps": [
+                "Choose your preferred fit from the matching sizes above",
+                "Consider your outfit needs: Tight for layering, Relaxed for comfort",
+                "Check the measurement details for each size option"
+            ]
         }
         
     except Exception as e:
-        print(f"Error getting comprehensive size recommendation: {str(e)}")
+        print(f"Error getting enhanced size recommendation: {str(e)}")
         raise HTTPException(status_code=500, detail=str(e))
 
+
+def _generate_user_guidance(recommendation, user_fit_preference: str) -> str:
+    """Generate user-friendly guidance for the scan results"""
+    if not recommendation.matching_sizes:
+        return f"No sizes found that match your fit zones. Consider adding more garments to your closet for better recommendations."
+    
+    # Count matches by fit zone
+    zone_counts = {}
+    for match in recommendation.matching_sizes:
+        zone = match.fit_zone_display
+        zone_counts[zone] = zone_counts.get(zone, 0) + 1
+    
+    guidance_parts = []
+    
+    # Main message based on matches
+    if len(recommendation.matching_sizes) == 1:
+        match = recommendation.matching_sizes[0]
+        guidance_parts.append(f"Found 1 size that fits your preferences: {match.fit_zone_display} - {match.size_label}")
+    else:
+        guidance_parts.append(f"Found {len(recommendation.matching_sizes)} sizes that could work for you!")
+    
+    # Zone-specific guidance
+    if zone_counts:
+        zone_summary = []
+        for zone, count in zone_counts.items():
+            if count == 1:
+                zone_summary.append(f"1 {zone}")
+            else:
+                zone_summary.append(f"{count} {zone}")
+        guidance_parts.append(f"Options: {', '.join(zone_summary)}")
+    
+    # Preference-specific advice
+    user_pref_matches = [m for m in recommendation.matching_sizes if m.fit_zone == user_fit_preference.lower()]
+    if user_pref_matches:
+        guidance_parts.append(f"Your preferred {user_fit_preference} fit is available!")
+    else:
+        guidance_parts.append(f"No {user_fit_preference} fit available, but other options shown match your closet data.")
+    
+    return " ".join(guidance_parts)
 
 def _get_direct_fit_description(fit_score: float, concerns: List[str], references: List) -> str:
     """Generate human-readable fit description for direct comparison"""
