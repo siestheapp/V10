@@ -13,8 +13,8 @@ struct ChatView: View {
     @State private var isLoading = false
     @EnvironmentObject var userSettings: UserSettings
     
-    // Updated to use IPv4 localhost address explicitly
-    private let baseURL = "http://192.168.18.32:8006"
+    // Updated to use localhost address
+    private let baseURL = "http://127.0.0.1:8006"
     
     var body: some View {
         NavigationView {
