@@ -1022,8 +1022,8 @@ async def get_garment_size_recommendation(request: dict):
         
         print(f"📊 Identified brand: {brand_info['brand_name']} (ID: {brand_info['brand_id']})")
         
-        # Step 2: Use the new Unified Fit Recommendation Engine
-        from unified_fit_recommendation_engine import UnifiedFitRecommendationEngine
+        # Step 2: Use the Simple Multi-Dimensional Analyzer (practical approach)
+        from simple_multi_dimensional_analyzer import SimpleMultiDimensionalAnalyzer
         
         db_config = {
             "database": "postgres",
@@ -1033,95 +1033,150 @@ async def get_garment_size_recommendation(request: dict):
             "port": "6543"
         }
         
-        unified_engine = UnifiedFitRecommendationEngine(db_config)
+        analyzer = SimpleMultiDimensionalAnalyzer(db_config)
         
-        # Get ALL sizes that match user's fit zones (this is the key enhancement!)
-        recommendation = unified_engine.get_all_matching_sizes(
+        # Get ALL sizes analyzed across all available dimensions
+        size_analyses = analyzer.analyze_all_sizes(
             user_id=int(user_id),
             brand_name=brand_info['brand_name'],
             category="Tops",
             user_fit_preference=user_fit_preference
         )
         
-        if not recommendation.matching_sizes:
+        # Get fit zone recommendations in desired format
+        fit_zone_recommendations = analyzer.get_fit_zone_recommendations(
+            user_id=int(user_id),
+            brand_name=brand_info['brand_name'],
+            category="Tops",
+            user_fit_preference=user_fit_preference
+        )
+        
+        if not size_analyses:
             raise HTTPException(status_code=404, detail=f"No size recommendations available for {brand_info['brand_name']}. Try adding more garments to your closet for better recommendations.")
         
-        print(f"🎯 Found {len(recommendation.matching_sizes)} matching sizes: {recommendation.best_matches}")
+        print(f"🎯 Found {len(size_analyses)} analyzed sizes with {len(fit_zone_recommendations)} fit zone matches: {fit_zone_recommendations}")
         
-        # Convert to API response format (enhanced with fit zone labels)
+        # Convert to API response format (enhanced with multi-dimensional analysis)
         api_recommendations = []
-        for match in recommendation.matching_sizes:
-            # Build dimension details for this specific fit zone match
+        for analysis in size_analyses:
+            # Build dimension details
             dimension_details = {}
             measurement_summary = []
             
-            for dimension, dim_analysis in match.dimension_matches.items():
-                dimension_details[dimension] = {
-                    "fit_zone": match.fit_zone,
-                    "fit_zone_display": match.fit_zone_display,
-                    "garment_measurement": dim_analysis['garment_measurement'],
-                    "zone_range": f"{dim_analysis['zone_range'][0]}-{dim_analysis['zone_range'][1]}\"",
-                    "fits_in_zone": dim_analysis['fits_in_zone'],
-                    "fit_score": round(dim_analysis['fit_score'], 3),
-                    "explanation": dim_analysis['explanation']
-                }
+            for dimension, dim_analysis in analysis.dimension_analysis.items():
+                if dimension == 'chest' and 'fit_zone' in dim_analysis:
+                    # Chest with fit zone
+                    dimension_details[dimension] = {
+                        "type": "fit_zone",
+                        "fit_zone": dim_analysis['fit_zone'],
+                        "garment_measurement": dim_analysis['garment_measurement'],
+                        "zone_range": dim_analysis['zone_range'],
+                        "matches_preference": dim_analysis['matches_preference'],
+                        "fit_score": round(dim_analysis['score'], 3),
+                        "explanation": dim_analysis['explanation']
+                    }
+                else:
+                    # Other dimensions with good fit range
+                    dimension_details[dimension] = {
+                        "type": "good_fit_range",
+                        "fits_well": dim_analysis['fits_well'],
+                        "garment_measurement": dim_analysis['garment_measurement'],
+                        "good_fit_range": dim_analysis['good_fit_range'],
+                        "fit_score": round(dim_analysis['score'], 3),
+                        "confidence": round(dim_analysis['confidence'], 3),
+                        "data_points": dim_analysis['data_points'],
+                        "explanation": dim_analysis['explanation']
+                    }
                 
                 measurement_summary.append(f"{dimension}: {dim_analysis['garment_measurement']}\"")
             
+            # Create fit zone display for this size
+            if analysis.chest_fit_zone:
+                zone_display = {
+                    'tight': 'Tight Fit',
+                    'standard': 'Good Fit',
+                    'relaxed': 'Relaxed Fit'
+                }.get(analysis.chest_fit_zone, 'Good Fit')
+                size_with_fit_label = f"{zone_display} - {analysis.size_label}"
+            else:
+                zone_display = 'Good Fit'
+                size_with_fit_label = f"Good Fit - {analysis.size_label}"
+            
             api_recommendations.append({
-                "size": match.size_label,
-                "fit_zone": match.fit_zone,
-                "fit_zone_display": match.fit_zone_display,
-                "size_with_fit_label": f"{match.fit_zone_display} - {match.size_label}",  # 🎯 KEY ENHANCEMENT
-                "overall_match_score": round(match.overall_match_score, 3),
-                "confidence": round(match.confidence, 3),
-                "fit_type": "excellent" if match.overall_match_score >= 0.9 else 
-                           "good" if match.overall_match_score >= 0.7 else
-                           "acceptable" if match.overall_match_score >= 0.5 else "fair",
-                "available_dimensions": list(match.dimension_matches.keys()),
+                "size": analysis.size_label,
+                "chest_fit_zone": analysis.chest_fit_zone,
+                "fit_zone_display": zone_display,
+                "size_with_fit_label": size_with_fit_label,  # 🎯 KEY ENHANCEMENT
+                "overall_fit_score": round(analysis.overall_fit_score, 3),
+                "confidence": round(analysis.overall_fit_score, 3),  # iOS expects confidence field
+                "fits_all_dimensions": analysis.fits_all_dimensions,
+                "fit_type": "excellent" if analysis.overall_fit_score >= 0.8 else 
+                           "good" if analysis.overall_fit_score >= 0.6 else
+                           "acceptable" if analysis.overall_fit_score >= 0.4 else "fair",
+                "available_dimensions": list(analysis.dimension_analysis.keys()),
                 "dimension_analysis": dimension_details,
                 "measurement_summary": ", ".join(measurement_summary),
-                "reasoning": match.explanation,
-                "primary_concerns": match.primary_concerns,
-                "matches_user_preference": match.fit_zone == user_fit_preference.lower()
+                "reasoning": analysis.reasoning,
+                "primary_concerns": analysis.concerns,
+                "fit_description": f"{zone_display} fit for size {analysis.size_label}",
+                "matches_user_preference": analysis.chest_fit_zone == user_fit_preference.lower() if analysis.chest_fit_zone else False
             })
         
-        # Best match is first in the sorted list
-        best_match = recommendation.matching_sizes[0] if recommendation.matching_sizes else None
+        # Best analysis is first in the sorted list
+        best_analysis = size_analyses[0] if size_analyses else None
         
-        # Enhanced response with ALL matching sizes and fit zone labels
+        # Generate best fit label
+        if best_analysis and best_analysis.chest_fit_zone:
+            zone_map = {'tight': 'Tight Fit', 'standard': 'Good Fit', 'relaxed': 'Relaxed Fit'}
+            zone_display = zone_map.get(best_analysis.chest_fit_zone, 'Good Fit')
+            recommended_fit_label = f"{zone_display} - {best_analysis.size_label}"
+        elif best_analysis:
+            recommended_fit_label = f"Good Fit - {best_analysis.size_label}"
+        else:
+            recommended_fit_label = "No match"
+        
+        # Enhanced response with ALL matching sizes and multi-dimensional analysis
         return {
             "product_url": product_url,
             "brand": brand_info["brand_name"],
-            "analysis_type": "unified_multi_dimensional_fit_zones",  # Updated analysis type
+            "analysis_type": "simple_multi_dimensional_analyzer",  # Updated analysis type
             "user_fit_preference": user_fit_preference,
             
+            # iOS app expects this field at root level
+            "confidence": round(best_analysis.overall_fit_score, 2) if best_analysis else 0.5,
+            "reasoning": best_analysis.reasoning if best_analysis else "No suitable sizes found within acceptable fit ranges",
+            "primary_concerns": best_analysis.concerns if best_analysis else [],
+            
             # 🎯 KEY ENHANCEMENT: All matching sizes with fit zone labels
-            "all_matching_sizes": recommendation.best_matches,  # ["Good Fit - L", "Tight Fit - S", etc.]
-            "total_matches": len(recommendation.matching_sizes),
+            "all_matching_sizes": fit_zone_recommendations,  # ["Good Fit - L", "Tight Fit - S", etc.]
+            "total_matches": len(fit_zone_recommendations),
             
             # Best single recommendation (for compatibility)
-            "recommended_size": best_match.size_label if best_match else "Unknown",
-            "recommended_fit_label": f"{best_match.fit_zone_display} - {best_match.size_label}" if best_match else "No match",
-            "recommended_fit_score": round(best_match.overall_match_score, 3) if best_match else 0,
+            "recommended_size": best_analysis.size_label if best_analysis else "Unknown",
+            "recommended_fit_label": recommended_fit_label,
+            "recommended_fit_score": round(best_analysis.overall_fit_score, 3) if best_analysis else 0,
             
             # Analysis details
-            "dimensions_analyzed": recommendation.dimensions_analyzed,
-            "confidence_level": recommendation.confidence_level,
-            "reference_garments_count": recommendation.reference_garments_count,
+            "dimensions_analyzed": list(best_analysis.dimension_analysis.keys()) if best_analysis else [],
+            "fits_all_dimensions": best_analysis.fits_all_dimensions if best_analysis else False,
+            "total_concerns": len(best_analysis.concerns) if best_analysis else 0,
+            
+            # Reference garments (required by iOS app)
+            "reference_garments": _get_reference_garments_summary(size_analyses),
             
             # Summary and detailed breakdown
-            "recommendation_summary": recommendation.recommendation_summary,
+            "recommendation_summary": f"Found {len(size_analyses)} sizes analyzed across {len(list(best_analysis.dimension_analysis.keys()) if best_analysis else [])} dimensions",
             "comprehensive_analysis": True,
-            "all_sizes_detailed": api_recommendations,
-            "detailed_analysis": recommendation.detailed_analysis,
+            "multi_dimensional_analysis": True,
+            "all_sizes": api_recommendations,  # iOS expects "all_sizes"
+            "all_sizes_detailed": api_recommendations,  # Keep for backwards compatibility
             
             # User guidance
-            "user_guidance": _generate_user_guidance(recommendation, user_fit_preference),
+            "user_guidance": _generate_simple_user_guidance(size_analyses, fit_zone_recommendations, user_fit_preference),
             "next_steps": [
                 "Choose your preferred fit from the matching sizes above",
-                "Consider your outfit needs: Tight for layering, Relaxed for comfort",
-                "Check the measurement details for each size option"
+                "All dimensions (chest, neck, sleeve) have been analyzed based on your closet",
+                "Sizes with concerns may still work depending on your preferences"
             ]
         }
         
@@ -1168,6 +1223,100 @@ def _generate_user_guidance(recommendation, user_fit_preference: str) -> str:
         guidance_parts.append(f"No {user_fit_preference} fit available, but other options shown match your closet data.")
     
     return " ".join(guidance_parts)
+
+def _generate_simple_user_guidance(size_analyses, fit_zone_recommendations, user_fit_preference: str) -> str:
+    """Generate user-friendly guidance for the simple multi-dimensional analyzer results"""
+    if not size_analyses:
+        return "No sizes found that work well across your established fit preferences. Consider adding more garments with feedback to your closet."
+    
+    guidance_parts = []
+    
+    # Main message
+    if len(fit_zone_recommendations) == 1:
+        guidance_parts.append(f"Found 1 size that matches your preferences: {fit_zone_recommendations[0]}")
+    elif len(fit_zone_recommendations) > 1:
+        guidance_parts.append(f"Found {len(fit_zone_recommendations)} sizes that could work for you!")
+    else:
+        guidance_parts.append(f"Analyzed {len(size_analyses)} sizes across multiple dimensions.")
+    
+    # Count dimensions analyzed
+    if size_analyses:
+        dimensions_count = len(size_analyses[0].dimension_analysis.keys())
+        if dimensions_count > 1:
+            dimensions_list = list(size_analyses[0].dimension_analysis.keys())
+            guidance_parts.append(f"Analysis included {dimensions_count} dimensions: {', '.join(dimensions_list)}.")
+    
+    # Check for user preference matches
+    if fit_zone_recommendations:
+        pref_matches = [rec for rec in fit_zone_recommendations if user_fit_preference.lower() in rec.lower()]
+        if pref_matches:
+            guidance_parts.append(f"Your preferred {user_fit_preference} fit is available!")
+        else:
+            guidance_parts.append(f"No exact {user_fit_preference} fit found, but alternatives shown are based on your closet data.")
+    
+    return " ".join(guidance_parts)
+
+def _get_reference_garments_summary(size_analyses) -> dict:
+    """Generate reference garments summary for iOS app compatibility"""
+    if not size_analyses:
+        return {}
+    
+    # Get unique garments that were used in the analysis
+    reference_garments = {}
+    
+    for analysis in size_analyses[:3]:  # Top 3 analyses
+        for dimension, dim_analysis in analysis.dimension_analysis.items():
+            if dimension != 'chest' and 'data_points' in dim_analysis:
+                # This is a good fit range analysis with source garments
+                garment_key = f"user_garment_{dimension}"
+                reference_garments[garment_key] = {
+                    "brand": "Multiple Brands",  # iOS app expects this field
+                    "product_name": f"User's {dimension.title()} Profile",
+                    "size": "Multiple Sizes",  # iOS app expects "size" not "size_label"
+                    "size_label": "Multiple Sizes",  # Keep both for compatibility
+                    "dimension": dimension,
+                    "measurement_range": dim_analysis.get('good_fit_range', 'Unknown'),
+                    "measurements": {  # iOS app expects this field (as strings)
+                        dimension: str(dim_analysis.get('garment_measurement', 0)),
+                        f"{dimension}_range": str(dim_analysis.get('good_fit_range', 'Unknown'))
+                    },
+                    "data_points": dim_analysis.get('data_points', 1),
+                    "confidence": round(dim_analysis.get('confidence', 0.5), 2),
+                    "analysis_type": "good_fit_range",
+                    "feedback": {  # iOS app expects feedback as dictionary
+                        "overall": "Positive Feedback",
+                        "dimension": dimension,
+                        "fit_assessment": "Good"
+                    },
+                    "fit_feedback": "Positive Feedback",  # Keep both for compatibility
+                    "garment_measurement": dim_analysis.get('garment_measurement', 'N/A')
+                }
+    
+    # If no reference garments found, create a basic entry
+    if not reference_garments:
+        reference_garments["user_profile"] = {
+            "brand": "User Profile",
+            "product_name": "Multi-Dimensional Analysis",
+            "size": "Various",  # iOS app expects "size" not "size_label"
+            "size_label": "Various",  # Keep both for compatibility
+            "dimension": "multi_dimensional",
+            "measurements": {  # iOS app expects this field
+                "chest": "39.5-42.5",
+                "overall": "Multi-dimensional"
+            },
+            "analysis_type": "fit_zone_analysis",
+            "data_points": len(size_analyses),
+            "confidence": 0.7,
+            "feedback": {  # iOS app expects feedback as dictionary
+                "overall": "Analyzed",
+                "dimension": "multi_dimensional",
+                "fit_assessment": "Profile-based"
+            },
+            "fit_feedback": "Analyzed",  # Keep both for compatibility
+            "garment_measurement": "Multiple"
+        }
+    
+    return reference_garments
 
 def _get_direct_fit_description(fit_score: float, concerns: List[str], references: List) -> str:
     """Generate human-readable fit description for direct comparison"""

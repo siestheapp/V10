@@ -490,36 +490,26 @@ struct DirectSizeOption: Codable {
 }
 
 struct DimensionComparison: Codable {
-    let predictedFit: String
-    let targetMeasurement: String
-    let referenceMeasurement: String
-    let referenceBrand: String
-    let referenceSize: String
-    let rangeComparison: RangeComparisonDetails
-    let similarityScore: Double
-    
-    enum CodingKeys: String, CodingKey {
-        case predictedFit = "predicted_fit"
-        case targetMeasurement = "target_measurement"
-        case referenceMeasurement = "reference_measurement"
-        case referenceBrand = "reference_brand"
-        case referenceSize = "reference_size"
-        case rangeComparison = "range_comparison"
-        case similarityScore = "similarity_score"
-    }
-}
-
-struct RangeComparisonDetails: Codable {
     let type: String
-    let description: String
-    let difference: Double?
+    let fitScore: Double
+    let garmentMeasurement: Double
+    let explanation: String
+    let fitZone: String?
+    let zoneRange: String?  // API returns "39.5-42.5" string format
+    let matchesPreference: Bool?
     
     enum CodingKeys: String, CodingKey {
         case type
-        case description
-        case difference
+        case fitScore = "fit_score"
+        case garmentMeasurement = "garment_measurement"
+        case explanation
+        case fitZone = "fit_zone"
+        case zoneRange = "zone_range"
+        case matchesPreference = "matches_preference"
     }
 }
+
+// RangeComparisonDetails removed - no longer needed with new DimensionComparison structure
 
 #Preview {
     ScanTab()
