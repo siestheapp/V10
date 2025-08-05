@@ -1070,6 +1070,7 @@ async def get_garment_size_recommendation(request: dict):
                         "type": "fit_zone",
                         "fit_zone": dim_analysis['fit_zone'],
                         "garment_measurement": dim_analysis['garment_measurement'],
+                        "garment_range": dim_analysis.get('garment_range', f"{dim_analysis['garment_measurement']}\""),  # Add actual range
                         "zone_range": dim_analysis['zone_range'],
                         "matches_preference": dim_analysis['matches_preference'],
                         "fit_score": round(dim_analysis['score'], 3),
@@ -1081,6 +1082,7 @@ async def get_garment_size_recommendation(request: dict):
                         "type": "good_fit_range",
                         "fits_well": dim_analysis['fits_well'],
                         "garment_measurement": dim_analysis['garment_measurement'],
+                        "garment_range": dim_analysis.get('garment_range', f"{dim_analysis['garment_measurement']}\""),  # Add actual range
                         "good_fit_range": dim_analysis['good_fit_range'],
                         "fit_score": round(dim_analysis['score'], 3),
                         "confidence": round(dim_analysis['confidence'], 3),
@@ -1088,7 +1090,9 @@ async def get_garment_size_recommendation(request: dict):
                         "explanation": dim_analysis['explanation']
                     }
                 
-                measurement_summary.append(f"{dimension}: {dim_analysis['garment_measurement']}\"")
+                # Use actual range from size guide instead of averaged value
+                garment_range = dim_analysis.get('garment_range', f"{dim_analysis['garment_measurement']}\"")
+                measurement_summary.append(f"{dimension}: {garment_range}")
             
             # Create fit zone display for this size
             if analysis.chest_fit_zone:

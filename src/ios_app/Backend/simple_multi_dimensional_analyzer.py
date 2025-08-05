@@ -406,12 +406,20 @@ class SimpleMultiDimensionalAnalyzer:
             if garment_measurement is None:
                 continue
             
+            # Get actual garment range from size guide
+            garment_range = self._get_garment_range(
+                size_entry.get(f'{dimension}_min'),
+                size_entry.get(f'{dimension}_max'),
+                size_entry.get(f'{dimension}_range')
+            )
+            
             # Special handling for chest (has fit zones)
             if dimension == 'chest' and chest_fit_zones:
                 chest_analysis = self._analyze_chest_with_fit_zones(
                     garment_measurement, chest_fit_zones, user_fit_preference
                 )
                 if chest_analysis:
+                    chest_analysis['garment_range'] = garment_range  # Add actual range
                     dimension_analysis[dimension] = chest_analysis
                     dimension_scores.append(chest_analysis['score'])
                     chest_fit_zone = chest_analysis['fit_zone']
@@ -438,50 +446,114 @@ class SimpleMultiDimensionalAnalyzer:
                     dimension_analysis[dimension] = {
                         'fits_well': True,
                         'garment_measurement': garment_measurement,
+                        'garment_range': garment_range,  # Add actual range
                         'good_fit_range': f"{profile.good_fit_min:.1f}-{profile.good_fit_max:.1f}\"",
                         'score': fit_score,
                         'confidence': profile.confidence,
                         'data_points': profile.data_points,
-                        'explanation': f"{dimension.title()}: {garment_measurement}\" fits within your good range ({profile.good_fit_min:.1f}-{profile.good_fit_max:.1f}\")"
+                        'explanation': f"{dimension.title()}: {garment_range} fits within your good range ({profile.good_fit_min:.1f}-{profile.good_fit_max:.1f}\")"
                     }
                     
                     dimension_scores.append(fit_score * self.DIMENSION_WEIGHTS.get(dimension, 0.5))
                     
                 else:
-                    # Doesn't fit well - note the concern
-                    if garment_measurement < profile.good_fit_min:
-                        concerns.append(f"{dimension} too small ({garment_measurement}\" < {profile.good_fit_min:.1f}\")")
-                    else:
-                        concerns.append(f"{dimension} too large ({garment_measurement}\" > {profile.good_fit_max:.1f}\")")
-        
-        # Must have at least some dimensional analysis
-        if not dimension_analysis:
-            return None
+                    # Doesn't fit well
+                    dimension_analysis[dimension] = {
+                        'fits_well': False,
+                        'garment_measurement': garment_measurement,
+                        'garment_range': garment_range,  # Add actual range
+                        'good_fit_range': f"{profile.good_fit_min:.1f}-{profile.good_fit_max:.1f}\"",
+                        'score': 0.2,  # Low score for poor fit
+                        'confidence': profile.confidence,
+                        'data_points': profile.data_points,
+                        'explanation': f"{dimension.title()}: {garment_range} outside your good range ({profile.good_fit_min:.1f}-{profile.good_fit_max:.1f}\")"
+                    }
+                    
+                    dimension_scores.append(0.2 * self.DIMENSION_WEIGHTS.get(dimension, 0.5))
+                    concerns.append(f"{dimension} measurement outside preferred range")
+            
+            else:
+                # No user profile for this dimension
+                dimension_analysis[dimension] = {
+                    'fits_well': None,
+                    'garment_measurement': garment_measurement,
+                    'garment_range': garment_range,  # Add actual range
+                    'good_fit_range': 'No user data',
+                    'score': 0.5,  # Neutral score for unknown
+                    'confidence': 0.0,
+                    'data_points': 0,
+                    'explanation': f"No user data available for {dimension} measurement"
+                }
+                
+                dimension_scores.append(0.5 * self.DIMENSION_WEIGHTS.get(dimension, 0.5))
         
         # Calculate overall fit score
         if dimension_scores:
-            total_weight = sum(self.DIMENSION_WEIGHTS.get(dim, 0.5) for dim in dimension_analysis.keys())
-            overall_fit_score = sum(dimension_scores) / total_weight if total_weight > 0 else 0
+            overall_fit_score = sum(dimension_scores) / len(dimension_scores)
         else:
-            overall_fit_score = 0
+            overall_fit_score = 0.0
+        
+        # Determine if fits all dimensions
+        fits_all_dimensions = all(
+            dim_analysis.get('fits_well', False) 
+            for dim_analysis in dimension_analysis.values()
+        )
         
         # Generate reasoning
-        fits_dimensions = list(dimension_analysis.keys())
-        reasoning = f"Size {size_label} analyzed across {len(fits_dimensions)} dimensions: {', '.join(fits_dimensions)}"
-        if chest_fit_zone:
-            reasoning += f". Chest fits in {chest_fit_zone} zone"
-        if concerns:
-            reasoning += f". Concerns: {', '.join(concerns[:2])}"  # Limit concerns for readability
+        reasoning = self._generate_reasoning(dimension_analysis, overall_fit_score, size_label)
         
         return SizeAnalysis(
             size_label=size_label,
             overall_fit_score=overall_fit_score,
             dimension_analysis=dimension_analysis,
             chest_fit_zone=chest_fit_zone,
-            fits_all_dimensions=len(concerns) == 0,
+            fits_all_dimensions=fits_all_dimensions,
             concerns=concerns,
             reasoning=reasoning
         )
+    
+    def _get_garment_range(self, min_val: Optional[float], max_val: Optional[float], range_str: Optional[str]) -> str:
+        """Get the actual garment range from size guide data"""
+        try:
+            if min_val is not None and max_val is not None:
+                if min_val == max_val:
+                    return f"{min_val}\""
+                else:
+                    return f"{min_val}-{max_val}\""
+            elif range_str is not None:
+                if '-' in range_str:
+                    return f"{range_str}\""
+                else:
+                    return f"{range_str}\""
+            elif min_val is not None:
+                return f"{min_val}\""
+            elif max_val is not None:
+                return f"{max_val}\""
+            else:
+                return "N/A"
+        except (ValueError, IndexError):
+            return "N/A"
+    
+    def _generate_reasoning(self, dimension_analysis: Dict[str, Dict], overall_fit_score: float, size_label: str) -> str:
+        """Generate reasoning for the size analysis"""
+        fits_dimensions = list(dimension_analysis.keys())
+        reasoning = f"Size {size_label} analyzed across {len(fits_dimensions)} dimensions: {', '.join(fits_dimensions)}"
+        
+        # Add chest fit zone info if available
+        chest_analysis = dimension_analysis.get('chest')
+        if chest_analysis and 'fit_zone' in chest_analysis:
+            reasoning += f". Chest fits in {chest_analysis['fit_zone']} zone"
+        
+        # Add concerns if any
+        concerns = []
+        for dim, analysis in dimension_analysis.items():
+            if not analysis.get('fits_well', True):
+                concerns.append(f"{dim} measurement outside preferred range")
+        
+        if concerns:
+            reasoning += f". Concerns: {', '.join(concerns[:2])}"  # Limit concerns for readability
+        
+        return reasoning
 
     def _analyze_chest_with_fit_zones(
         self, 

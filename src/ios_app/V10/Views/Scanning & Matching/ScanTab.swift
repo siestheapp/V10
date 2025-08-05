@@ -240,6 +240,17 @@ struct ScanTab: View {
 struct SizeRecommendationView: View {
     let recommendation: SizeRecommendationResponse
     
+    // Get top 2 sizes for display
+    private var topTwoSizes: [DirectSizeOption] {
+        let sorted = recommendation.allSizes.sorted { $0.overallFitScore > $1.overallFitScore }
+        return Array(sorted.prefix(2))
+    }
+    
+    // Get recommended size details for enhanced display
+    private var recommendedSizeDetails: DirectSizeOption? {
+        recommendation.allSizes.first { $0.size == recommendation.recommendedSize }
+    }
+    
     var body: some View {
         VStack(alignment: .leading, spacing: 12) {
             // Header
@@ -253,27 +264,60 @@ struct SizeRecommendationView: View {
                     .foregroundColor(.secondary)
             }
             
-            // Main Recommendation
-            HStack {
-                VStack(alignment: .leading) {
-                    Text("Recommended Size")
-                        .font(.caption)
-                        .foregroundColor(.secondary)
-                    Text(recommendation.recommendedSize)
-                        .font(.largeTitle)
-                        .fontWeight(.bold)
-                        .foregroundColor(.green)
+            // Enhanced Main Recommendation
+            VStack(alignment: .leading, spacing: 8) {
+                HStack {
+                    VStack(alignment: .leading) {
+                        Text("Recommended Size")
+                            .font(.caption)
+                            .foregroundColor(.secondary)
+                        Text(recommendation.recommendedSize)
+                            .font(.system(size: 32, weight: .bold))
+                            .foregroundColor(.green)
+                    }
+                    
+                    Spacer()
+                    
+                    VStack(alignment: .trailing) {
+                        Text("Fit Score")
+                            .font(.caption)
+                            .foregroundColor(.secondary)
+                        Text(String(format: "%.1f%%", recommendation.recommendedFitScore * 100))
+                            .font(.title2)
+                            .fontWeight(.bold)
+                            .foregroundColor(scoreColor(for: recommendation.recommendedFitScore))
+                    }
                 }
                 
-                Spacer()
-                
-                VStack(alignment: .trailing) {
-                    Text("Fit Score")
-                        .font(.caption)
-                        .foregroundColor(.secondary)
-                    Text(String(format: "%.1f%%", recommendation.recommendedFitScore * 100))
-                        .font(.headline)
-                        .foregroundColor(scoreColor(for: recommendation.recommendedFitScore))
+                // Show size guide measurements vs user ranges for recommended size
+                if let recommended = recommendedSizeDetails {
+                    VStack(alignment: .leading, spacing: 4) {
+                        Text("Size Guide vs Your Ranges:")
+                            .font(.caption)
+                            .fontWeight(.medium)
+                            .foregroundColor(.secondary)
+                        
+                        // Parse measurement summary to show comparison
+                        let measurements = parseMeasurementSummary(recommended.measurementSummary)
+                        ForEach(measurements, id: \.dimension) { measurement in
+                            HStack {
+                                Text(measurement.dimension.capitalized)
+                                    .font(.caption)
+                                    .fontWeight(.medium)
+                                Spacer()
+                                Text("\(measurement.value)\"")
+                                    .font(.caption)
+                                    .foregroundColor(.primary)
+                                Text("vs")
+                                    .font(.caption2)
+                                    .foregroundColor(.secondary)
+                                Text("\(measurement.userRange)")
+                                    .font(.caption)
+                                    .foregroundColor(.blue)
+                            }
+                        }
+                    }
+                    .padding(.top, 4)
                 }
             }
             .padding()
@@ -297,49 +341,51 @@ struct SizeRecommendationView: View {
                 .font(.caption)
                 .foregroundColor(.secondary)
             
-            // Your Reference Garments (Direct Comparison)
-            DisclosureGroup("Reference Garments (\(recommendation.referenceGarments.count) used)") {
-                VStack(alignment: .leading, spacing: 6) {
-                    ForEach(Array(recommendation.referenceGarments.keys.sorted()), id: \.self) { key in
-                        if let reference = recommendation.referenceGarments[key] {
-                            VStack(alignment: .leading, spacing: 2) {
-                                HStack {
-                                    Circle().fill(.blue).frame(width: 8, height: 8)
-                                    Text("\(reference.brand) \(reference.size)")
-                                        .fontWeight(.medium)
-                                    Spacer()
-                                    Text("\(String(format: "%.0f%%", reference.confidence * 100)) confidence")
-                                        .font(.caption2)
-                                        .foregroundColor(.secondary)
-                                }
-                                
-                                // Show measurements (now as range strings)
-                                if !reference.measurements.isEmpty {
-                                    let measurementText = reference.measurements.map { dim, measurement in
-                                        "\(dim): \(measurement)"
-                                    }.joined(separator: ", ")
+            // Fixed Reference Garments - Only show for recommended size
+            if let recommended = recommendedSizeDetails {
+                DisclosureGroup("Reference Garments (\(recommendation.referenceGarments.count) used)") {
+                    VStack(alignment: .leading, spacing: 6) {
+                        ForEach(Array(recommendation.referenceGarments.keys.sorted()), id: \.self) { key in
+                            if let reference = recommendation.referenceGarments[key] {
+                                VStack(alignment: .leading, spacing: 2) {
+                                    HStack {
+                                        Circle().fill(.blue).frame(width: 8, height: 8)
+                                        Text("\(reference.brand) \(reference.size)")
+                                            .fontWeight(.medium)
+                                        Spacer()
+                                        Text("\(String(format: "%.0f%%", reference.confidence * 100)) confidence")
+                                            .font(.caption2)
+                                            .foregroundColor(.secondary)
+                                    }
                                     
-                                    Text(measurementText)
-                                        .font(.caption2)
-                                        .foregroundColor(.secondary)
-                                        .padding(.leading, 16)
+                                    // Show measurements for recommended size only
+                                    if !reference.measurements.isEmpty {
+                                        let measurementText = reference.measurements.map { dim, measurement in
+                                            "\(dim): \(measurement)"
+                                        }.joined(separator: ", ")
+                                        
+                                        Text(measurementText)
+                                            .font(.caption2)
+                                            .foregroundColor(.secondary)
+                                            .padding(.leading, 16)
+                                    }
                                 }
                             }
                         }
                     }
+                    .font(.caption)
                 }
                 .font(.caption)
             }
-            .font(.caption)
             
-            // Alternative Sizes (Comprehensive Analysis)
-            if recommendation.allSizes.count > 1 {
-                DisclosureGroup("All Available Sizes (Multi-Dimensional Analysis)") {
+            // Limited Alternative Sizes - Only top 2
+            if topTwoSizes.count > 1 {
+                DisclosureGroup("Alternative Sizes (Top 2 Matches)") {
                     LazyVGrid(columns: [
                         GridItem(.flexible()),
                         GridItem(.flexible())
                     ], spacing: 8) {
-                        ForEach(recommendation.allSizes, id: \.size) { size in
+                        ForEach(topTwoSizes, id: \.size) { size in
                             VStack(alignment: .leading, spacing: 4) {
                                 HStack {
                                     Text(size.size)
@@ -388,6 +434,42 @@ struct SizeRecommendationView: View {
         .shadow(color: .black.opacity(0.1), radius: 4, x: 0, y: 2)
     }
     
+    // Helper to parse measurement summary for comparison display
+    private func parseMeasurementSummary(_ summary: String) -> [MeasurementComparison] {
+        let components = summary.components(separatedBy: ", ")
+        return components.compactMap { component in
+            let parts = component.components(separatedBy: ": ")
+            guard parts.count == 2 else { return nil }
+            
+            let dimension = parts[0].trimmingCharacters(in: .whitespaces)
+            let value = parts[1].trimmingCharacters(in: .whitespaces)
+            
+            // Get user range for this dimension from fit zones
+            let userRange = getUserFitZoneRange(for: dimension)
+            
+            return MeasurementComparison(
+                dimension: dimension,
+                value: value,
+                userRange: userRange
+            )
+        }
+    }
+    
+    // Helper to get user fit zone range for a dimension
+    private func getUserFitZoneRange(for dimension: String) -> String {
+        // Use the established fit zones from the documentation
+        switch dimension.lowercased() {
+        case "chest":
+            return "39.5-42.0\""  // From fitzonetracker.md
+        case "neck":
+            return "16.0-16.5\""  // From fitzonetracker.md
+        case "sleeve":
+            return "33.5-36.0\""  // From fitzonetracker.md
+        default:
+            return "N/A"
+        }
+    }
+    
     private func fitColor(for fitType: String) -> Color {
         switch fitType.lowercased() {
         case "tight": return .orange
@@ -402,16 +484,21 @@ struct SizeRecommendationView: View {
     }
     
     private func scoreColor(for score: Double) -> Color {
-        if score >= 0.9 {
+        if score >= 0.8 {
             return .green
-        } else if score >= 0.7 {
+        } else if score >= 0.6 {
             return .orange
-        } else if score >= 0.5 {
-            return .yellow
         } else {
             return .red
         }
     }
+}
+
+// Helper struct for measurement comparison
+struct MeasurementComparison {
+    let dimension: String
+    let value: String
+    let userRange: String
 }
 
 // Data Models for Size Recommendation (Direct Garment Comparison)
