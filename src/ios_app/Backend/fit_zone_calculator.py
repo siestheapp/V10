@@ -45,29 +45,176 @@ class FitZoneCalculator:
                     'value': chest_avg,
                     'weight': final_weight,
                     'feedback': final_feedback,
-                    'garment': f"{garment.get('brand', 'Unknown')} {garment.get('size', 'Unknown')}"
+                    'brand': brand_name
                 })
                 
-                print(f"Added measurement: {chest_avg}\" (weight: {final_weight}, feedback: {final_feedback})")
-                
             except Exception as e:
-                print(f"Error processing garment {garment}: {str(e)}")
+                print(f"Error processing garment {garment}: {e}")
                 continue
         
-        if len(weighted_measurements) < 2:
-            print("Insufficient data for statistical analysis, using fallback")
-            return self._generate_fallback_zones(weighted_measurements)
+        if not weighted_measurements:
+            print("No valid chest measurements found")
+            return None
         
-        # Calculate statistical zones
-        statistical_zones = self._calculate_statistical_zones(weighted_measurements)
+        # Calculate zones using weighted statistics
+        zones = self._calculate_statistical_zones(weighted_measurements)
         
-        # Convert to practical shopping ranges
-        practical_zones = self._make_practical_ranges(statistical_zones)
+        # Add confidence and data points
+        zones['confidence'] = statistics.mean([m['weight'] for m in weighted_measurements])
+        zones['data_points'] = len(weighted_measurements)
         
-        print(f"Statistical zones: {statistical_zones}")
-        print(f"Practical shopping zones: {practical_zones}")
+        print(f"Calculated fit zone: {zones}")
+        return zones
+    
+    def calculate_neck_fit_zone(self, garments: list) -> dict:
+        """Calculate neck fit zones using statistical methods"""
+        print(f"Starting neck fit zone calculation with garments: {garments}")
         
-        return practical_zones
+        # Convert garments to weighted measurements
+        weighted_measurements = []
+        for garment in garments:
+            try:
+                # Parse neck range into min and max
+                neck_range = self._parse_measurement_range(garment.get('neck_range'))
+                if not neck_range:
+                    continue
+                
+                # Use average of range for more stable calculations
+                neck_avg = (neck_range['min'] + neck_range['max']) / 2
+                
+                # Get confidence weight
+                brand_name = garment.get('brand', 'Unknown')
+                fit_feedback = garment.get('fit_feedback', 'Unknown')
+                neck_feedback = garment.get('neck_feedback')
+                
+                # Use neck-specific feedback if available, otherwise overall
+                if neck_feedback:
+                    final_weight = self._get_combined_confidence(neck_feedback, brand_name)
+                    final_feedback = neck_feedback
+                else:
+                    final_weight = self._get_combined_confidence(fit_feedback, brand_name)
+                    final_feedback = fit_feedback
+                
+                weighted_measurements.append({
+                    'value': neck_avg,
+                    'weight': final_weight,
+                    'feedback': final_feedback,
+                    'brand': brand_name
+                })
+                
+            except Exception as e:
+                print(f"Error processing neck measurement for garment {garment}: {e}")
+                continue
+        
+        if not weighted_measurements:
+            print("No valid neck measurements found")
+            return None
+        
+        # For neck, we only calculate a "good" range (not tight/relaxed zones)
+        good_measurements = [m for m in weighted_measurements if 'Good Fit' in m['feedback']]
+        
+        if good_measurements:
+            good_values = [m['value'] for m in good_measurements]
+            good_weights = [m['weight'] for m in good_measurements]
+            
+            # Weighted average and standard deviation
+            good_center = self._weighted_average(good_values, good_weights)
+            good_std = self._weighted_std(good_values, good_weights, good_center)
+            
+            # Good zone: center ± 0.5 standard deviations
+            zones = {
+                'good': {
+                    'min': good_center - 0.5 * good_std,
+                    'max': good_center + 0.5 * good_std
+                },
+                'confidence': statistics.mean([m['weight'] for m in good_measurements]),
+                'data_points': len(good_measurements)
+            }
+        else:
+            # Fallback to default neck range
+            zones = {
+                'good': {'min': 16.0, 'max': 16.5},
+                'confidence': 0.5,
+                'data_points': 0
+            }
+        
+        print(f"Calculated neck fit zone: {zones}")
+        return zones
+    
+    def calculate_sleeve_fit_zone(self, garments: list) -> dict:
+        """Calculate sleeve fit zones using statistical methods"""
+        print(f"Starting sleeve fit zone calculation with garments: {garments}")
+        
+        # Convert garments to weighted measurements
+        weighted_measurements = []
+        for garment in garments:
+            try:
+                # Parse sleeve range into min and max
+                sleeve_range = self._parse_measurement_range(garment.get('sleeve_range'))
+                if not sleeve_range:
+                    continue
+                
+                # Use average of range for more stable calculations
+                sleeve_avg = (sleeve_range['min'] + sleeve_range['max']) / 2
+                
+                # Get confidence weight
+                brand_name = garment.get('brand', 'Unknown')
+                fit_feedback = garment.get('fit_feedback', 'Unknown')
+                sleeve_feedback = garment.get('sleeve_feedback')
+                
+                # Use sleeve-specific feedback if available, otherwise overall
+                if sleeve_feedback:
+                    final_weight = self._get_combined_confidence(sleeve_feedback, brand_name)
+                    final_feedback = sleeve_feedback
+                else:
+                    final_weight = self._get_combined_confidence(fit_feedback, brand_name)
+                    final_feedback = fit_feedback
+                
+                weighted_measurements.append({
+                    'value': sleeve_avg,
+                    'weight': final_weight,
+                    'feedback': final_feedback,
+                    'brand': brand_name
+                })
+                
+            except Exception as e:
+                print(f"Error processing sleeve measurement for garment {garment}: {e}")
+                continue
+        
+        if not weighted_measurements:
+            print("No valid sleeve measurements found")
+            return None
+        
+        # For sleeve, we only calculate a "good" range (not tight/relaxed zones)
+        good_measurements = [m for m in weighted_measurements if 'Good Fit' in m['feedback']]
+        
+        if good_measurements:
+            good_values = [m['value'] for m in good_measurements]
+            good_weights = [m['weight'] for m in good_measurements]
+            
+            # Weighted average and standard deviation
+            good_center = self._weighted_average(good_values, good_weights)
+            good_std = self._weighted_std(good_values, good_weights, good_center)
+            
+            # Good zone: center ± 0.5 standard deviations
+            zones = {
+                'good': {
+                    'min': good_center - 0.5 * good_std,
+                    'max': good_center + 0.5 * good_std
+                },
+                'confidence': statistics.mean([m['weight'] for m in good_measurements]),
+                'data_points': len(good_measurements)
+            }
+        else:
+            # Fallback to default sleeve range
+            zones = {
+                'good': {'min': 33.5, 'max': 36.0},
+                'confidence': 0.5,
+                'data_points': 0
+            }
+        
+        print(f"Calculated sleeve fit zone: {zones}")
+        return zones
     
     def _make_practical_ranges(self, statistical_zones: dict) -> dict:
         """Convert precise statistical ranges into practical shopping ranges"""
@@ -361,6 +508,25 @@ class FitZoneCalculator:
                 return {'min': val, 'max': val}
         except (ValueError, IndexError):
             print(f"Could not parse range: {range_str}")
+            return None
+    
+    def _parse_measurement_range(self, range_str: str) -> dict:
+        """Parse any measurement range string (chest, neck, sleeve, etc.)"""
+        if not range_str:
+            return None
+        
+        try:
+            if '-' in range_str:
+                parts = range_str.split('-')
+                return {
+                    'min': float(parts[0].strip()),
+                    'max': float(parts[1].strip())
+                }
+            else:
+                # Single value
+                value = float(range_str.strip())
+                return {'min': value, 'max': value}
+        except (ValueError, IndexError):
             return None
     
     def _adjust_zone_boundaries(self, zones: dict):

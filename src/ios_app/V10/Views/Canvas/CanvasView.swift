@@ -429,7 +429,7 @@ struct FitZonesSection: View {
                         
                         FitZoneBar(
                             label: zone.dimension.capitalized,
-                            ranges: fitZoneRanges
+                            ranges: convertToCanvasDimensionData(fitZoneRanges)
                         )
                         
                         Text("Based on \(zone.dataPoints) feedback entries")
@@ -442,6 +442,27 @@ struct FitZonesSection: View {
                 }
             }
         }
+    }
+    
+    // Convert FitZoneRanges to DimensionData for FitZonesSection
+    private func convertToCanvasDimensionData(_ fitZoneRanges: FitZoneRanges) -> DimensionData {
+        return DimensionData(
+            tightRange: MeasurementRange(min: fitZoneRanges.tightRange.min, max: fitZoneRanges.tightRange.max),
+            goodRange: MeasurementRange(min: fitZoneRanges.goodRange.min, max: fitZoneRanges.goodRange.max),
+            relaxedRange: MeasurementRange(min: fitZoneRanges.relaxedRange.min, max: fitZoneRanges.relaxedRange.max),
+            garments: fitZoneRanges.garments.map { garment in
+                GarmentData(
+                    brand: garment.brand,
+                    garmentName: garment.garmentName,
+                    range: garment.chestRange ?? "",
+                    value: garment.chestValue,
+                    size: garment.size,
+                    fitFeedback: garment.fitFeedback,
+                    feedback: garment.feedback,
+                    ownsGarment: true
+                )
+            }
+        )
     }
 }
 

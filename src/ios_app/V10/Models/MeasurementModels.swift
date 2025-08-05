@@ -25,7 +25,6 @@ struct MeasurementRange: Codable {
 }
 
 struct BrandMeasurement: Identifiable, Codable {
-    let id = UUID()
     let brand: String
     let garmentName: String
     let value: Double
@@ -34,6 +33,9 @@ struct BrandMeasurement: Identifiable, Codable {
     let ownsGarment: Bool
     let fitType: String
     let feedback: String
+    
+    // Computed property for SwiftUI ForEach (not encoded/decoded)
+    var id: String { "\(brand)-\(size)-\(chestRange ?? "")" }
 }
 
 struct MeasurementResponse: Codable {

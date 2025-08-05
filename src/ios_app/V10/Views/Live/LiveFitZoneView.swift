@@ -28,7 +28,7 @@ struct LiveFitZoneView: View {
                     VStack(alignment: .leading, spacing: 30) {
                         FitZoneBar(
                             label: selectedCategory,
-                            ranges: data.tops
+                            ranges: convertToChestDimensionData(data.tops)
                         )
                     }
                     .padding()
@@ -78,6 +78,27 @@ struct LiveFitZoneView: View {
                 }
             }
         }.resume()
+    }
+    
+    // Convert FitZoneRanges to DimensionData for chest measurements
+    private func convertToChestDimensionData(_ fitZoneRanges: FitZoneRanges) -> DimensionData {
+        return DimensionData(
+            tightRange: fitZoneRanges.tightRange,
+            goodRange: fitZoneRanges.goodRange,
+            relaxedRange: fitZoneRanges.relaxedRange,
+            garments: fitZoneRanges.garments.map { garment in
+                GarmentData(
+                    brand: garment.brand,
+                    garmentName: garment.garmentName,
+                    range: garment.chestRange ?? "",
+                    value: garment.chestValue,
+                    size: garment.size,
+                    fitFeedback: garment.fitFeedback,
+                    feedback: garment.feedback,
+                    ownsGarment: true
+                )
+            }
+        )
     }
 }
 

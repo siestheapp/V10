@@ -5,7 +5,7 @@ struct UserMeasurementProfileView: View {
     @State private var isLoading = true
     @State private var  errorMessage: String?
     @State private var showingOwnedOnly = false
-    @State private var fitZoneRanges: FitZoneRanges? = nil
+    @State private var comprehensiveData: ComprehensiveMeasurementData? = nil
     
     var body: some View {
         NavigationView {
@@ -28,45 +28,96 @@ struct UserMeasurementProfileView: View {
     
     private var measurementListView: some View {
         List {
-            // Fit Zone Ranges Bar at the top
-            if let fitZoneRanges = fitZoneRanges {
-                Section(header: Text("Fit Zone Ranges").font(.headline)) {
-                    FitZoneBar(label: "Tops", ranges: fitZoneRanges)
+            // Comprehensive Fit Zone Ranges
+            if let data = comprehensiveData {
+                Section(header: Text("FIT ZONE RANGES").font(.headline)) {
+                    // Chest Fit Zones
+                    VStack(alignment: .leading, spacing: 12) {
+                        Text("CHEST")
+                            .font(.subheadline)
+                            .fontWeight(.bold)
+                            .foregroundColor(.primary)
+                        
+                        if let chestData = data.chest {
+                            FitZoneBar(label: "Tops", ranges: chestData)
+                        }
+                    }
+                    .padding(.vertical, 8)
+                    
+                    // Neck Fit Zone
+                    VStack(alignment: .leading, spacing: 12) {
+                        Text("NECK")
+                            .font(.subheadline)
+                            .fontWeight(.bold)
+                            .foregroundColor(.primary)
+                        
+                        if let neckData = data.neck {
+                            NeckFitZoneView(neckData: neckData)
+                        }
+                    }
+                    .padding(.vertical, 8)
+                    
+                    // Sleeve Fit Zone
+                    VStack(alignment: .leading, spacing: 12) {
+                        Text("SLEEVE")
+                            .font(.subheadline)
+                            .fontWeight(.bold)
+                            .foregroundColor(.primary)
+                        
+                        if let sleeveData = data.sleeve {
+                            SleeveFitZoneView(sleeveData: sleeveData)
+                        }
+                    }
+                    .padding(.vertical, 8)
                 }
             }
             
             Toggle("Show Only Owned Items", isOn: $showingOwnedOnly)
                 .padding(.vertical, 4)
             
-            ForEach(measurements) { measurement in
-                measurementSection(for: measurement)
+            // Individual Dimension Sections
+            if let data = comprehensiveData {
+                // Chest Garments
+                if let chestData = data.chest, !chestData.garments.isEmpty {
+                    dimensionSection(
+                        title: "CHEST GARMENTS",
+                        garments: chestData.garments,
+                        showingOwnedOnly: showingOwnedOnly
+                    )
+                }
+                
+                // Neck Garments
+                if let neckData = data.neck, !neckData.garments.isEmpty {
+                    dimensionSection(
+                        title: "NECK GARMENTS", 
+                        garments: neckData.garments,
+                        showingOwnedOnly: showingOwnedOnly
+                    )
+                }
+                
+                // Sleeve Garments
+                if let sleeveData = data.sleeve, !sleeveData.garments.isEmpty {
+                    dimensionSection(
+                        title: "SLEEVE GARMENTS",
+                        garments: sleeveData.garments,
+                        showingOwnedOnly: showingOwnedOnly
+                    )
+                }
             }
         }
     }
     
-    private func measurementSection(for measurement: MeasurementSummary) -> some View {
+    private func dimensionSection(title: String, garments: [GarmentData], showingOwnedOnly: Bool) -> some View {
         Section {
             VStack(alignment: .leading, spacing: 12) {
-                HStack {
-                    Text("Preferred Range")
-                        .fontWeight(.medium)
-                    Spacer()
-                    Text(String(format: "%.1f-%.1f\"", measurement.preferredRange.min, measurement.preferredRange.max))
-                }
+                let filteredGarments = showingOwnedOnly ? garments.filter { $0.ownsGarment } : garments
                 
-                Text("Based on owned items:")
-                    .font(.caption)
-                    .foregroundColor(.gray)
-                    .padding(.top, 4)
-                
-                let filteredMeasurements = showingOwnedOnly ? measurement.measurements.filter { $0.ownsGarment } : measurement.measurements
-                
-                ForEach(filteredMeasurements) { brandMeasurement in
-                    MeasurementDetailRow(measurement: brandMeasurement)
+                ForEach(filteredGarments, id: \.id) { garment in
+                    GarmentDetailRow(garment: garment)
                 }
             }
         } header: {
-            Text(measurement.name.uppercased())
+            Text(title)
                 .font(.subheadline)
                 .foregroundColor(.gray)
         }
@@ -97,28 +148,9 @@ struct UserMeasurementProfileView: View {
                 print("Raw response: \(rawString)")
             }
             do {
-                let response = try JSONDecoder().decode(FitZoneResponse.self, from: data)
-                let measurements = response.tops.garments.map { garment in
-                    BrandMeasurement(
-                        brand: garment.brand,
-                        garmentName: garment.garmentName,
-                        value: garment.chestValue,
-                        chestRange: garment.chestRange,
-                        size: garment.size,
-                        ownsGarment: true,
-                        fitType: garment.fitFeedback,
-                        feedback: garment.feedback
-                    )
-                }
+                let response = try JSONDecoder().decode(ComprehensiveMeasurementResponse.self, from: data)
                 DispatchQueue.main.async {
-                    self.measurements = [
-                        MeasurementSummary(
-                            name: "Tops",
-                            measurements: measurements,
-                            preferredRange: response.tops.goodRange
-                        )
-                    ]
-                    self.fitZoneRanges = response.tops
+                    self.comprehensiveData = response.tops
                     self.isLoading = false
                 }
             } catch {
@@ -132,17 +164,195 @@ struct UserMeasurementProfileView: View {
     }
 }
 
-// --- FitZoneBar and RangeBarView from LiveFitZoneView ---
+// MARK: - Data Models
+struct ComprehensiveMeasurementResponse: Codable {
+    let tops: ComprehensiveMeasurementData
+    
+    // Custom coding keys to match backend response
+    enum CodingKeys: String, CodingKey {
+        case tops = "Tops"  // Backend sends "Tops" (capitalized)
+    }
+}
+
+struct ComprehensiveMeasurementData: Codable {
+    let chest: DimensionData?
+    let neck: DimensionData?
+    let sleeve: DimensionData?
+}
+
+struct DimensionData: Codable {
+    let tightRange: MeasurementRange?
+    let goodRange: MeasurementRange
+    let relaxedRange: MeasurementRange?
+    let garments: [GarmentData]
+}
+
+struct GarmentData: Codable, Identifiable {
+    let brand: String
+    let garmentName: String
+    let range: String
+    let value: Double?
+    let size: String
+    let fitFeedback: String
+    let feedback: String
+    let ownsGarment: Bool
+    
+    // Computed property for SwiftUI ForEach (not encoded/decoded)
+    var id: String { "\(brand)-\(size)-\(range)" }
+    
+    // Custom coding keys to match API response
+    enum CodingKeys: String, CodingKey {
+        case brand, size, range, value, feedback
+        case garmentName = "garmentName"
+        case fitFeedback = "fitFeedback"
+        case ownsGarment = "ownsGarment"
+    }
+}
+
+// MARK: - View Components
+struct NeckFitZoneView: View {
+    let neckData: DimensionData
+    
+    var body: some View {
+        VStack(alignment: .leading, spacing: 8) {
+            HStack {
+                Text("Good")
+                    .font(.subheadline)
+                    .foregroundColor(.green)
+                Spacer()
+                Text(String(format: "%.1f\"-%.1f\"", neckData.goodRange.min, neckData.goodRange.max))
+                    .font(.subheadline)
+                    .foregroundColor(.green)
+            }
+            GeometryReader { geometry in
+                ZStack(alignment: .leading) {
+                    RoundedRectangle(cornerRadius: 8)
+                        .fill(Color.gray.opacity(0.2))
+                    RoundedRectangle(cornerRadius: 8)
+                        .fill(Color.green.opacity(0.3))
+                        .frame(
+                            width: width(for: neckData.goodRange.asRange, in: geometry),
+                            height: 24
+                        )
+                        .offset(x: position(for: neckData.goodRange.min, in: geometry))
+                }
+            }
+            .frame(height: 24)
+            Text("Comfortable, standard fit")
+                .font(.caption)
+                .foregroundColor(.gray)
+        }
+        .padding(.vertical, 8)
+    }
+    
+    private func position(for value: Double, in geometry: GeometryProxy) -> CGFloat {
+        let range = 10.0 // Total range in inches for neck
+        let start = 14.0 // Starting measurement for neck
+        let position = (value - start) / range
+        return geometry.size.width * CGFloat(position)
+    }
+    
+    private func width(for range: ClosedRange<Double>, in geometry: GeometryProxy) -> CGFloat {
+        let totalRange = 10.0
+        let width = (range.upperBound - range.lowerBound) / totalRange
+        return geometry.size.width * CGFloat(width)
+    }
+}
+
+struct SleeveFitZoneView: View {
+    let sleeveData: DimensionData
+    
+    var body: some View {
+        VStack(alignment: .leading, spacing: 8) {
+            HStack {
+                Text("Good")
+                    .font(.subheadline)
+                    .foregroundColor(.green)
+                Spacer()
+                Text(String(format: "%.1f\"-%.1f\"", sleeveData.goodRange.min, sleeveData.goodRange.max))
+                    .font(.subheadline)
+                    .foregroundColor(.green)
+            }
+            GeometryReader { geometry in
+                ZStack(alignment: .leading) {
+                    RoundedRectangle(cornerRadius: 8)
+                        .fill(Color.gray.opacity(0.2))
+                    RoundedRectangle(cornerRadius: 8)
+                        .fill(Color.green.opacity(0.3))
+                        .frame(
+                            width: width(for: sleeveData.goodRange.asRange, in: geometry),
+                            height: 24
+                        )
+                        .offset(x: position(for: sleeveData.goodRange.min, in: geometry))
+                }
+            }
+            .frame(height: 24)
+            Text("Comfortable, standard fit")
+                .font(.caption)
+                .foregroundColor(.gray)
+        }
+        .padding(.vertical, 8)
+    }
+    
+    private func position(for value: Double, in geometry: GeometryProxy) -> CGFloat {
+        let range = 15.0 // Total range in inches for sleeve
+        let start = 30.0 // Starting measurement for sleeve
+        let position = (value - start) / range
+        return geometry.size.width * CGFloat(position)
+    }
+    
+    private func width(for range: ClosedRange<Double>, in geometry: GeometryProxy) -> CGFloat {
+        let totalRange = 15.0
+        let width = (range.upperBound - range.lowerBound) / totalRange
+        return geometry.size.width * CGFloat(width)
+    }
+}
+
+struct GarmentDetailRow: View {
+    let garment: GarmentData
+    
+    var body: some View {
+        VStack(alignment: .leading, spacing: 4) {
+            HStack {
+                Text("\(garment.brand) \(garment.size)")
+                    .fontWeight(.medium)
+                Spacer()
+                Text(garment.range)
+                    .font(.caption)
+                    .foregroundColor(.secondary)
+            }
+            
+            if !garment.fitFeedback.isEmpty {
+                Text(garment.fitFeedback)
+                    .font(.caption)
+                    .foregroundColor(.blue)
+            }
+            
+            if !garment.feedback.isEmpty {
+                Text(garment.feedback)
+                    .font(.caption)
+                    .foregroundColor(.orange)
+            }
+        }
+        .padding(.vertical, 2)
+    }
+}
+
+// MARK: - Existing Components (unchanged)
 struct FitZoneBar: View {
     let label: String
-    let ranges: FitZoneRanges
+    let ranges: DimensionData
     var body: some View {
         VStack(alignment: .leading, spacing: 16) {
             Text(label)
                 .font(.headline)
-            RangeBarView(label: "Tight", range: ranges.tightRange.asRange, color: .orange, description: "Fitted, compression-like fit")
+            if let tightRange = ranges.tightRange {
+                RangeBarView(label: "Tight", range: tightRange.asRange, color: .orange, description: "Fitted, compression-like fit")
+            }
             RangeBarView(label: "Good", range: ranges.goodRange.asRange, color: .green, description: "Comfortable, standard fit")
-            RangeBarView(label: "Relaxed", range: ranges.relaxedRange.asRange, color: .blue, description: "Loose, oversized fit")
+            if let relaxedRange = ranges.relaxedRange {
+                RangeBarView(label: "Relaxed", range: relaxedRange.asRange, color: .blue, description: "Loose, oversized fit")
+            }
         }
         .padding(.vertical, 8)
     }

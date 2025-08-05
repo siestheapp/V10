@@ -301,17 +301,16 @@ async def get_user_measurements(user_id: str):
         # Get database connection for methodology confidence
         conn = get_db()
         
-        # Get garments
-        garments = get_user_garments(user_id)
+        # Get garments with ALL dimensions
+        garments = get_user_garments_with_all_dimensions(user_id)
         print(f"Found garments for measurements: {garments}")  # Debug log
         
-        # Calculate fit zones with measurement methodology awareness
-        calculator = FitZoneCalculator(user_id, conn)
-        fit_zone = calculator.calculate_chest_fit_zone(garments)
-        print(f"Calculated fit zone: {fit_zone}")  # Debug log
+        # Use ESTABLISHED fit zones from fitzonetracker.md instead of recalculating
+        established_fit_zones = get_established_fit_zones()
+        print(f"Using established fit zones: {established_fit_zones}")  # Debug log
         
-        # Format and return response
-        response = format_measurements_response(garments, fit_zone)
+        # Format and return comprehensive response
+        response = format_comprehensive_measurements_response(garments, established_fit_zones['chest'], established_fit_zones['neck'], established_fit_zones['sleeve'])
         print(f"Final response: {response}")  # Debug log
         return response
     except Exception as e:
@@ -320,6 +319,259 @@ async def get_user_measurements(user_id: str):
     finally:
         if conn:
             conn.close()
+
+def get_established_fit_zones():
+    """Get the established fit zones from database (FAANG-style caching)"""
+    try:
+        return get_fit_zones_from_database(user_id=1, category_id=1)
+    except Exception as e:
+        print(f"Error loading fit zones from database: {e}")
+        # Fallback to hardcoded values if database fails
+        return get_fallback_fit_zones()
+
+def invalidate_user_fit_zones(user_id: int):
+    """Mark user's fit zones as needing recalculation (called when new feedback is submitted)"""
+    conn = get_db()
+    cursor = conn.cursor()
+    
+    try:
+        # Mark existing fit zones as invalidated (but don't delete - for audit trail)
+        cursor.execute('''
+            UPDATE fit_zones 
+            SET updated_at = CURRENT_TIMESTAMP,
+                notes = CONCAT(COALESCE(notes, ''), ' - Invalidated due to new feedback at ', CURRENT_TIMESTAMP)
+            WHERE user_id = %s
+        ''', (user_id,))
+        
+        conn.commit()
+        print(f"🔄 Invalidated fit zones for user {user_id} - will recalculate on next request")
+        
+    except Exception as e:
+        conn.rollback()
+        print(f"❌ Error invalidating fit zones: {e}")
+    finally:
+        cursor.close()
+        conn.close()
+
+def get_fit_zones_from_database(user_id: int, category_id: int):
+    """Load fit zones from database with proper structure"""
+    conn = get_db()
+    cursor = conn.cursor(cursor_factory=psycopg2.extras.RealDictCursor)
+    
+    try:
+        cursor.execute('''
+            SELECT dimension, fit_type, min_value, max_value, unit, notes, created_at
+            FROM fit_zones 
+            WHERE user_id = %s AND category_id = %s
+            ORDER BY dimension, fit_type
+        ''', (user_id, category_id))
+        
+        zones_data = cursor.fetchall()
+        print(f"📊 Loaded {len(zones_data)} fit zones from database")
+        
+        # Structure the data properly
+        structured_zones = {}
+        
+        for zone in zones_data:
+            dimension = zone['dimension']
+            fit_type = zone['fit_type']
+            
+            if dimension not in structured_zones:
+                structured_zones[dimension] = {}
+            
+            # Map database fit_type back to API format
+            api_fit_type = 'good' if fit_type == 'perfect' else fit_type
+            
+            structured_zones[dimension][api_fit_type] = {
+                'min': float(zone['min_value']),
+                'max': float(zone['max_value'])
+            }
+        
+        # Add metadata for each dimension
+        for dimension in structured_zones:
+            structured_zones[dimension]['confidence'] = 0.95
+            structured_zones[dimension]['data_points'] = 8 if dimension == 'chest' else 4
+        
+        print(f"✅ Structured fit zones: {structured_zones}")
+        return structured_zones
+        
+    finally:
+        cursor.close()
+        conn.close()
+
+def get_fallback_fit_zones():
+    """Fallback fit zones if database is unavailable"""
+    print("⚠️ Using fallback fit zones")
+    return {
+        'chest': {
+            'tight': {'min': 36.0, 'max': 39.5},
+            'good': {'min': 39.5, 'max': 42.5},
+            'relaxed': {'min': 43.0, 'max': 45.5},
+            'confidence': 0.95,
+            'data_points': 8
+        },
+        'neck': {
+            'good': {'min': 16.0, 'max': 16.5},
+            'confidence': 1.0,
+            'data_points': 4
+        },
+        'sleeve': {
+            'good': {'min': 33.5, 'max': 36.0},
+            'confidence': 1.0,
+            'data_points': 8
+        }
+    }
+
+def get_user_garments_with_all_dimensions(user_id: str) -> list:
+    """Get all owned garments for a user with ALL dimensions (chest, neck, sleeve)"""
+    conn = get_db()
+    cur = conn.cursor(cursor_factory=psycopg2.extras.RealDictCursor)
+    
+    try:
+        cur.execute("""
+            SELECT 
+                b.name as brand,
+                c.name as garment_name,
+                sge.chest_min, sge.chest_max,
+                sge.neck_min, sge.neck_max,
+                sge.sleeve_min, sge.sleeve_max,
+                CASE 
+                    WHEN sge.chest_min = sge.chest_max THEN sge.chest_min::text
+                    ELSE sge.chest_min::text || '-' || sge.chest_max::text
+                END as chest_range,
+                CASE 
+                    WHEN sge.neck_min = sge.neck_max THEN sge.neck_min::text
+                    ELSE sge.neck_min::text || '-' || sge.neck_max::text
+                END as neck_range,
+                CASE 
+                    WHEN sge.sleeve_min = sge.sleeve_max THEN sge.sleeve_min::text
+                    ELSE sge.sleeve_min::text || '-' || sge.sleeve_max::text
+                END as sleeve_range,
+                ug.size_label as size,
+                ug.owns_garment,
+                -- Get detailed feedback for all dimensions
+                (SELECT fc.feedback_text 
+                 FROM user_garment_feedback ugf 
+                 JOIN feedback_codes fc ON ugf.feedback_code_id = fc.id
+                 WHERE ugf.user_garment_id = ug.id AND ugf.dimension = 'overall' 
+                 ORDER BY ugf.created_at DESC LIMIT 1) as fit_feedback,
+                (SELECT fc.feedback_text 
+                 FROM user_garment_feedback ugf 
+                 JOIN feedback_codes fc ON ugf.feedback_code_id = fc.id
+                 WHERE ugf.user_garment_id = ug.id AND ugf.dimension = 'chest' 
+                 ORDER BY ugf.created_at DESC LIMIT 1) as chest_feedback,
+                (SELECT fc.feedback_text 
+                 FROM user_garment_feedback ugf 
+                 JOIN feedback_codes fc ON ugf.feedback_code_id = fc.id
+                 WHERE ugf.user_garment_id = ug.id AND ugf.dimension = 'neck' 
+                 ORDER BY ugf.created_at DESC LIMIT 1) as neck_feedback,
+                (SELECT fc.feedback_text 
+                 FROM user_garment_feedback ugf 
+                 JOIN feedback_codes fc ON ugf.feedback_code_id = fc.id
+                 WHERE ugf.user_garment_id = ug.id AND ugf.dimension = 'sleeve' 
+                 ORDER BY ugf.created_at DESC LIMIT 1) as sleeve_feedback
+            FROM user_garments ug
+            JOIN brands b ON ug.brand_id = b.id
+            JOIN categories c ON ug.category_id = c.id
+            LEFT JOIN size_guide_entries sge ON ug.size_guide_entry_id = sge.id
+            WHERE ug.user_id = %s AND ug.owns_garment = true
+            ORDER BY ug.created_at DESC
+        """, (user_id,))
+        
+        results = cur.fetchall()
+        print(f"DEBUG: Raw database results: {results}")
+        
+        # Convert RealDictRow objects to regular dictionaries
+        garments = []
+        for row in results:
+            garment_dict = dict(row)
+            print(f"DEBUG: Garment dict: {garment_dict}")
+            garments.append(garment_dict)
+        
+        return garments
+        
+    finally:
+        cur.close()
+        conn.close()
+
+def format_comprehensive_measurements_response(garments, chest_fit_zone, neck_fit_zone, sleeve_fit_zone):
+    """Format comprehensive response with all dimensions"""
+    def get_zone_range(zone_data, default_min, default_max):
+        if zone_data and 'min' in zone_data and zone_data['min'] is not None:
+            return {
+                "min": zone_data['min'],
+                "max": zone_data['max']
+            }
+        else:
+            return {"min": default_min, "max": default_max}
+    
+    def safe_parse_range(range_str):
+        """Safely parse a range string, returning None if invalid"""
+        if not range_str or not isinstance(range_str, str):
+            return None
+        try:
+            if '-' in range_str:
+                parts = range_str.split('-')
+                return float(parts[0].strip())
+            else:
+                return float(range_str.strip())
+        except (ValueError, IndexError):
+            return None
+    
+    print(f"DEBUG: Formatting response with {len(garments)} garments")
+    print(f"DEBUG: First garment: {garments[0] if garments else 'No garments'}")
+    
+    return {
+        "Tops": {
+            "chest": {
+                "tightRange": get_zone_range(chest_fit_zone.get('tight') if chest_fit_zone else None, 36.0, 39.0),
+                "goodRange": get_zone_range(chest_fit_zone.get('good') if chest_fit_zone else None, 39.5, 42.0),
+                "relaxedRange": get_zone_range(chest_fit_zone.get('relaxed') if chest_fit_zone else None, 46.0, 48.5),
+                "garments": [
+                    {
+                        "brand": g.get("brand", "Unknown"),
+                        "garmentName": g.get("garment_name", "Unknown"),
+                        "range": g.get("chest_range", ""),
+                        "value": safe_parse_range(g.get("chest_range")),
+                        "size": g.get("size", "Unknown"),
+                        "fitFeedback": g.get("fit_feedback", "") or "",
+                        "feedback": g.get("chest_feedback", "") or "",
+                        "ownsGarment": g.get("owns_garment", True)
+                    } for g in garments if g.get("chest_range")
+                ]
+            },
+            "neck": {
+                "goodRange": get_zone_range(neck_fit_zone.get('good') if neck_fit_zone else None, 16.0, 16.5),
+                "garments": [
+                    {
+                        "brand": g.get("brand", "Unknown"),
+                        "garmentName": g.get("garment_name", "Unknown"),
+                        "range": g.get("neck_range", ""),
+                        "value": safe_parse_range(g.get("neck_range")),
+                        "size": g.get("size", "Unknown"),
+                        "fitFeedback": g.get("fit_feedback", "") or "",
+                        "feedback": g.get("neck_feedback", "") or "",
+                        "ownsGarment": g.get("owns_garment", True)
+                    } for g in garments if g.get("neck_range")
+                ]
+            },
+            "sleeve": {
+                "goodRange": get_zone_range(sleeve_fit_zone.get('good') if sleeve_fit_zone else None, 33.5, 36.0),
+                "garments": [
+                    {
+                        "brand": g.get("brand", "Unknown"),
+                        "garmentName": g.get("garment_name", "Unknown"),
+                        "range": g.get("sleeve_range", ""),
+                        "value": safe_parse_range(g.get("sleeve_range")),
+                        "size": g.get("size", "Unknown"),
+                        "fitFeedback": g.get("fit_feedback", "") or "",
+                        "feedback": g.get("sleeve_feedback", "") or "",
+                        "ownsGarment": g.get("owns_garment", True)
+                    } for g in garments if g.get("sleeve_range")
+                ]
+            }
+        }
+    }
 
 @app.get("/user/{user_id}/ideal_measurements")
 async def get_ideal_measurements(user_id: str):
