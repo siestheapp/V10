@@ -1469,15 +1469,38 @@ async def get_garment_size_recommendation(request: dict):
         # Best analysis is first in the sorted list
         best_analysis = size_analyses[0] if size_analyses else None
         
-        # Generate best fit label
-        if best_analysis and best_analysis.chest_fit_zone:
-            zone_map = {'tight': 'Tight Fit', 'standard': 'Good Fit', 'relaxed': 'Relaxed Fit'}
-            zone_display = zone_map.get(best_analysis.chest_fit_zone, 'Good Fit')
-            recommended_fit_label = f"{zone_display} - {best_analysis.size_label}"
-        elif best_analysis:
-            recommended_fit_label = f"Good Fit - {best_analysis.size_label}"
+        # Get reference garments summary for confidence calculation
+        reference_garments = _get_reference_garments_summary(size_analyses)
+        
+        # Calculate enhanced confidence tier and human explanations
+        if best_analysis:
+            confidence_info = calculate_confidence_tier(
+                best_analysis.overall_fit_score,
+                len(reference_garments) if reference_garments else 0,
+                len(best_analysis.dimension_analysis) if hasattr(best_analysis, 'dimension_analysis') else 1
+            )
+            
+            human_explanation = generate_human_readable_explanation(
+                best_analysis, 
+                reference_garments, 
+                brand_info["brand_name"]
+            )
+            
+            # Use confidence tier for fit label instead of technical scoring
+            recommended_fit_label = f"{confidence_info['icon']} {confidence_info['label']} - {best_analysis.size_label}"
         else:
+            confidence_info = {
+                "tier": "poor",
+                "label": "No Match",
+                "icon": "❓",
+                "color": "red",
+                "description": "Not enough data"
+            }
+            human_explanation = "Add more garments to your closet for better recommendations"
             recommended_fit_label = "No match"
+        
+        # Generate alternative size explanations
+        alternative_explanations = generate_alternative_size_explanations(size_analyses, best_analysis.size_label if best_analysis else "")
         
         # Enhanced response with ALL matching sizes and multi-dimensional analysis
         return {
@@ -1486,9 +1509,14 @@ async def get_garment_size_recommendation(request: dict):
             "analysis_type": "simple_multi_dimensional_analyzer",  # Updated analysis type
             "user_fit_preference": user_fit_preference,
             
-            # iOS app expects this field at root level
-            "confidence": round(best_analysis.overall_fit_score, 2) if best_analysis else 0.5,
-            "reasoning": best_analysis.reasoning if best_analysis else "No suitable sizes found within acceptable fit ranges",
+            # 🎯 NEW: Enhanced confidence and explanation system
+            "confidence_tier": confidence_info,
+            "human_explanation": human_explanation,
+            "alternative_explanations": alternative_explanations,
+            
+            # iOS app expects this field at root level (kept for compatibility)
+            "confidence": round(confidence_info["confidence_score"], 2) if best_analysis else 0.5,
+            "reasoning": human_explanation,  # Now uses human-readable explanation
             "primary_concerns": best_analysis.concerns if best_analysis else [],
             
             # 🎯 KEY ENHANCEMENT: All matching sizes with fit zone labels
@@ -1567,6 +1595,164 @@ def _generate_user_guidance(recommendation, user_fit_preference: str) -> str:
         guidance_parts.append(f"No {user_fit_preference} fit available, but other options shown match your closet data.")
     
     return " ".join(guidance_parts)
+
+# Enhanced confidence and explanation system for better UX
+def calculate_confidence_tier(overall_fit_score: float, reference_count: int, dimensions_analyzed: int) -> dict:
+    """
+    Calculate confidence tier based on fit score, reference garments, and data completeness
+    Returns dict with tier, label, icon, and description
+    """
+    # Base confidence from fit score
+    base_confidence = overall_fit_score
+    
+    # Boost confidence based on reference garments (more references = higher confidence)
+    reference_boost = min(reference_count * 0.1, 0.2)  # Max 20% boost
+    
+    # Boost confidence based on dimensions analyzed (more data = higher confidence)  
+    dimension_boost = min(dimensions_analyzed * 0.05, 0.15)  # Max 15% boost
+    
+    # Calculate final confidence
+    final_confidence = min(base_confidence + reference_boost + dimension_boost, 1.0)
+    
+    # Determine tier
+    if final_confidence >= 0.9:
+        return {
+            "tier": "excellent",
+            "confidence_score": final_confidence,
+            "label": "Perfect Fit",
+            "icon": "✅",
+            "color": "green",
+            "description": "This will fit you perfectly"
+        }
+    elif final_confidence >= 0.7:
+        return {
+            "tier": "good", 
+            "confidence_score": final_confidence,
+            "label": "Great Fit",
+            "icon": "✅",
+            "color": "green", 
+            "description": "This will fit you well"
+        }
+    elif final_confidence >= 0.5:
+        return {
+            "tier": "fair",
+            "confidence_score": final_confidence, 
+            "label": "Good Fit",
+            "icon": "⚠️",
+            "color": "orange",
+            "description": "This should work for you"
+        }
+    else:
+        return {
+            "tier": "poor",
+            "confidence_score": final_confidence,
+            "label": "Uncertain Fit", 
+            "icon": "❓",
+            "color": "red",
+            "description": "Not enough data for a confident recommendation"
+        }
+
+def generate_human_readable_explanation(size_analysis, reference_garments: dict, brand_name: str) -> str:
+    """
+    Generate human-readable, confidence-building explanations instead of technical jargon
+    """
+    if not size_analysis:
+        return "Add more garments to your closet for better recommendations"
+    
+    # Count reference garments
+    ref_count = len(reference_garments) if reference_garments else 0
+    
+    # Get confidence tier
+    confidence = calculate_confidence_tier(
+        size_analysis.overall_fit_score,
+        ref_count,
+        len(size_analysis.dimension_analysis) if hasattr(size_analysis, 'dimension_analysis') else 1
+    )
+    
+    # Generate explanation based on confidence and context
+    if confidence["tier"] == "excellent":
+        if ref_count >= 2:
+            # Multiple reference garments
+            ref_brands = []
+            for ref_key, ref_data in reference_garments.items():
+                if isinstance(ref_data, dict) and 'brand' in ref_data:
+                    ref_brands.append(ref_data['brand'])
+            
+            if len(set(ref_brands)) > 1:
+                return f"Just like your {' and '.join(set(ref_brands))} shirts"
+            else:
+                return f"Same measurements as your favorite {ref_brands[0]} shirts"
+        elif ref_count == 1:
+            # Single reference garment
+            ref_data = list(reference_garments.values())[0]
+            if isinstance(ref_data, dict) and 'brand' in ref_data:
+                return f"Same measurements as your {ref_data['brand']} shirt"
+        
+        # Same brand fallback
+        if brand_name and ref_count > 0:
+            return f"Perfect match based on your {brand_name} history"
+        
+        return "Excellent fit based on your measurements"
+    
+    elif confidence["tier"] == "good":
+        if ref_count >= 1:
+            return f"Similar to shirts you love in your closet"
+        elif brand_name:
+            return f"Good fit based on {brand_name} sizing"
+        else:
+            return "Good fit based on your measurement profile"
+    
+    elif confidence["tier"] == "fair":
+        if ref_count >= 1:
+            return f"Reasonable fit based on similar garments"
+        else:
+            return f"Should work - try your usual {brand_name} size" if brand_name else "Should work for you"
+    
+    else:  # poor confidence
+        return "Add similar garments to your closet for better recommendations"
+
+def generate_alternative_size_explanations(size_analyses, recommended_size: str) -> list:
+    """
+    Generate human-readable explanations for why other sizes aren't recommended
+    """
+    explanations = []
+    
+    # Get the recommended analysis for comparison
+    recommended_analysis = next((a for a in size_analyses if a.size_label == recommended_size), None)
+    if not recommended_analysis:
+        return explanations
+    
+    # Analyze other sizes
+    for analysis in size_analyses[:3]:  # Top 3 sizes only
+        if analysis.size_label == recommended_size:
+            continue
+            
+        # Compare to recommended size
+        size_comparison = analysis.size_label
+        
+        # Determine why this size is worse
+        if analysis.overall_fit_score < recommended_analysis.overall_fit_score:
+            if 'chest' in analysis.concerns:
+                if 'tight' in str(analysis.concerns).lower():
+                    explanation = f"Size {size_comparison}: Too tight in chest"
+                else:
+                    explanation = f"Size {size_comparison}: Too loose in chest"
+            elif 'sleeve' in analysis.concerns:
+                explanation = f"Size {size_comparison}: Sleeve length issues"
+            elif 'neck' in analysis.concerns:
+                explanation = f"Size {size_comparison}: Neck fit issues" 
+            else:
+                explanation = f"Size {size_comparison}: Not as good overall fit"
+        else:
+            explanation = f"Size {size_comparison}: Alternative option"
+        
+        explanations.append({
+            "size": size_comparison,
+            "explanation": explanation,
+            "fit_score": analysis.overall_fit_score
+        })
+    
+    return explanations
 
 def _generate_simple_user_guidance(size_analyses, fit_zone_recommendations, user_fit_preference: str) -> str:
     """Generate user-friendly guidance for the simple multi-dimensional analyzer results"""

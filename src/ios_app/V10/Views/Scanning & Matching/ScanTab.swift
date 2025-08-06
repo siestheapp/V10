@@ -124,15 +124,20 @@ struct ScanTab: View {
                 
                 // Proceed Button (only shown when we have a recommendation)
                 if let recommendation = sizeRecommendation {
+                    let confidenceInfo = recommendation.confidenceTier ?? ConfidenceTier(
+                        tier: "fair", confidenceScore: recommendation.confidence,
+                        label: "Good Fit", icon: "✅", color: "green", description: "This should work for you"
+                    )
+                    
                     Button(action: {
                         navigateToFitFeedback = true
                     }) {
-                        Text("Add to Closet - Size \(recommendation.recommendedSize)")
+                        Text("\(confidenceInfo.icon) Add Size \(recommendation.recommendedSize) to Closet")
                             .font(.headline)
                             .foregroundColor(.white)
                             .frame(maxWidth: .infinity)
                             .padding()
-                            .background(Color.green)
+                            .background(colorFromString(confidenceInfo.color))
                             .cornerRadius(10)
                     }
                     .padding(.horizontal, 40)
@@ -239,23 +244,31 @@ struct ScanTab: View {
 // Size Recommendation Display Component
 struct SizeRecommendationView: View {
     let recommendation: SizeRecommendationResponse
+    @State private var showDetailedAnalysis = false
+    @State private var showAlternativeSizes = false
     
-    // Get top 2 sizes for display
-    private var topTwoSizes: [DirectSizeOption] {
-        let sorted = recommendation.allSizes.sorted { $0.overallFitScore > $1.overallFitScore }
-        return Array(sorted.prefix(2))
+    // Get confidence tier info with fallback
+    private var confidenceInfo: ConfidenceTier {
+        recommendation.confidenceTier ?? ConfidenceTier(
+            tier: "fair",
+            confidenceScore: recommendation.confidence,
+            label: "Good Fit",
+            icon: "✅",
+            color: "green",
+            description: "This should work for you"
+        )
     }
     
-    // Get recommended size details for enhanced display
-    private var recommendedSizeDetails: DirectSizeOption? {
-        recommendation.allSizes.first { $0.size == recommendation.recommendedSize }
+    // Get human explanation with fallback
+    private var explanation: String {
+        recommendation.humanExplanation ?? recommendation.reasoning
     }
     
     var body: some View {
-        VStack(alignment: .leading, spacing: 12) {
-            // Header
+        VStack(alignment: .leading, spacing: 16) {
+            // Header with brand
             HStack {
-                Text("📏 Size Recommendation")
+                Text("Size Recommendation")
                     .font(.headline)
                     .foregroundColor(.primary)
                 Spacer()
@@ -264,174 +277,153 @@ struct SizeRecommendationView: View {
                     .foregroundColor(.secondary)
             }
             
-            // Enhanced Main Recommendation
-            VStack(alignment: .leading, spacing: 8) {
-                HStack {
-                    VStack(alignment: .leading) {
-                        Text("Recommended Size")
-                            .font(.caption)
-                            .foregroundColor(.secondary)
-                        Text(recommendation.recommendedSize)
-                            .font(.system(size: 32, weight: .bold))
-                            .foregroundColor(.green)
+            // 🎯 PRIMARY DISPLAY: Confidence-First Approach
+            VStack(alignment: .leading, spacing: 12) {
+                // Main recommendation with confidence icon
+                HStack(alignment: .top) {
+                    VStack(alignment: .leading, spacing: 4) {
+                        HStack {
+                            Text(confidenceInfo.icon)
+                                .font(.title2)
+                            Text(confidenceInfo.label)
+                                .font(.headline)
+                                .foregroundColor(colorFromString(confidenceInfo.color))
+                        }
+                        
+                        Text("Size \(recommendation.recommendedSize)")
+                            .font(.system(size: 28, weight: .bold))
+                            .foregroundColor(.primary)
                     }
                     
                     Spacer()
-                    
-                    VStack(alignment: .trailing) {
-                        Text("Fit Score")
-                            .font(.caption)
-                            .foregroundColor(.secondary)
-                        Text(String(format: "%.1f%%", recommendation.recommendedFitScore * 100))
-                            .font(.title2)
-                            .fontWeight(.bold)
-                            .foregroundColor(scoreColor(for: recommendation.recommendedFitScore))
-                    }
                 }
                 
-                // Show size guide measurements vs user ranges for recommended size
-                if let recommended = recommendedSizeDetails {
-                    VStack(alignment: .leading, spacing: 4) {
-                        Text("Size Guide vs Your Ranges:")
-                            .font(.caption)
-                            .fontWeight(.medium)
-                            .foregroundColor(.secondary)
+                // Human-readable explanation
+                Text(explanation)
+                    .font(.subheadline)
+                    .foregroundColor(.secondary)
+                    .lineLimit(2)
+                    .multilineTextAlignment(.leading)
+            }
+            .padding()
+            .background(
+                RoundedRectangle(cornerRadius: 12)
+                    .fill(Color(.systemGray6))
+                    .overlay(
+                        RoundedRectangle(cornerRadius: 12)
+                            .stroke(colorFromString(confidenceInfo.color).opacity(0.3), lineWidth: 2)
+                    )
+            )
+            
+            // 🎯 PROGRESSIVE DISCLOSURE: Expandable sections
+            VStack(spacing: 8) {
+                // Why this size?
+                DisclosureGroup("Why this size?", isExpanded: $showDetailedAnalysis) {
+                    VStack(alignment: .leading, spacing: 8) {
+                        if let recommended = recommendation.allSizes.first(where: { $0.size == recommendation.recommendedSize }) {
+                            // Show measurement comparisons
+                            let measurements = parseMeasurementSummary(recommended.measurementSummary)
+                            ForEach(measurements, id: \.dimension) { measurement in
+                                HStack {
+                                    Text(measurement.dimension.capitalized)
+                                        .font(.caption)
+                                        .fontWeight(.medium)
+                                    Spacer()
+                                    Text("\(measurement.value)\"")
+                                        .font(.caption)
+                                        .foregroundColor(.primary)
+                                    Text("vs")
+                                        .font(.caption2)
+                                        .foregroundColor(.secondary)
+                                    Text("\(measurement.userRange)")
+                                        .font(.caption)
+                                        .foregroundColor(.blue)
+                                }
+                            }
+                        }
                         
-                        // Parse measurement summary to show comparison
-                        let measurements = parseMeasurementSummary(recommended.measurementSummary)
-                        ForEach(measurements, id: \.dimension) { measurement in
-                            HStack {
-                                Text(measurement.dimension.capitalized)
-                                    .font(.caption)
-                                    .fontWeight(.medium)
-                                Spacer()
-                                Text("\(measurement.value)\"")
-                                    .font(.caption)
-                                    .foregroundColor(.primary)
-                                Text("vs")
-                                    .font(.caption2)
-                                    .foregroundColor(.secondary)
-                                Text("\(measurement.userRange)")
-                                    .font(.caption)
-                                    .foregroundColor(.blue)
+                        // Reference garments
+                        if !recommendation.referenceGarments.isEmpty {
+                            Text("Based on:")
+                                .font(.caption)
+                                .fontWeight(.medium)
+                                .padding(.top, 4)
+                            
+                            ForEach(Array(recommendation.referenceGarments.keys.sorted()), id: \.self) { key in
+                                if let reference = recommendation.referenceGarments[key] {
+                                    HStack {
+                                        Circle().fill(.blue).frame(width: 6, height: 6)
+                                        Text("\(reference.brand) \(reference.size)")
+                                            .font(.caption)
+                                        Spacer()
+                                        Text("\(String(format: "%.0f%%", reference.confidence * 100)) match")
+                                            .font(.caption2)
+                                            .foregroundColor(.secondary)
+                                    }
+                                }
                             }
                         }
                     }
-                    .padding(.top, 4)
+                    .padding(.top, 8)
+                }
+                .font(.subheadline)
+                .foregroundColor(.primary)
+                
+                // Alternative sizes
+                if let alternatives = recommendation.alternativeExplanations, !alternatives.isEmpty {
+                    DisclosureGroup("Other sizes?", isExpanded: $showAlternativeSizes) {
+                        VStack(alignment: .leading, spacing: 6) {
+                            ForEach(alternatives, id: \.size) { alt in
+                                HStack {
+                                    Text(alt.size)
+                                        .font(.subheadline)
+                                        .fontWeight(.medium)
+                                    Spacer()
+                                    Text(alt.explanation)
+                                        .font(.caption)
+                                        .foregroundColor(.secondary)
+                                        .multilineTextAlignment(.trailing)
+                                }
+                                .padding(.vertical, 2)
+                            }
+                        }
+                        .padding(.top, 8)
+                    }
+                    .font(.subheadline)
+                    .foregroundColor(.primary)
                 }
             }
-            .padding()
-            .background(Color(.systemGray6))
-            .cornerRadius(12)
             
-            // Primary Concerns (if any)
+            // Concerns (only if present)
             if !recommendation.primaryConcerns.isEmpty {
                 HStack {
                     Image(systemName: "exclamationmark.triangle.fill")
                         .foregroundColor(.orange)
-                    Text("Potential concerns: \(recommendation.primaryConcerns.joined(separator: ", "))")
+                    Text("Note: \(recommendation.primaryConcerns.joined(separator: ", "))")
                         .font(.caption)
                         .foregroundColor(.orange)
                 }
                 .padding(.horizontal)
-            }
-            
-            // Reasoning
-            Text(recommendation.reasoning)
-                .font(.caption)
-                .foregroundColor(.secondary)
-            
-            // Fixed Reference Garments - Only show for recommended size
-            if let recommended = recommendedSizeDetails {
-                DisclosureGroup("Reference Garments (\(recommendation.referenceGarments.count) used)") {
-                    VStack(alignment: .leading, spacing: 6) {
-                        ForEach(Array(recommendation.referenceGarments.keys.sorted()), id: \.self) { key in
-                            if let reference = recommendation.referenceGarments[key] {
-                                VStack(alignment: .leading, spacing: 2) {
-                                    HStack {
-                                        Circle().fill(.blue).frame(width: 8, height: 8)
-                                        Text("\(reference.brand) \(reference.size)")
-                                            .fontWeight(.medium)
-                                        Spacer()
-                                        Text("\(String(format: "%.0f%%", reference.confidence * 100)) confidence")
-                                            .font(.caption2)
-                                            .foregroundColor(.secondary)
-                                    }
-                                    
-                                    // Show measurements for recommended size only
-                                    if !reference.measurements.isEmpty {
-                                        let measurementText = reference.measurements.map { dim, measurement in
-                                            "\(dim): \(measurement)"
-                                        }.joined(separator: ", ")
-                                        
-                                        Text(measurementText)
-                                            .font(.caption2)
-                                            .foregroundColor(.secondary)
-                                            .padding(.leading, 16)
-                                    }
-                                }
-                            }
-                        }
-                    }
-                    .font(.caption)
-                }
-                .font(.caption)
-            }
-            
-            // Limited Alternative Sizes - Only top 2
-            if topTwoSizes.count > 1 {
-                DisclosureGroup("Alternative Sizes (Top 2 Matches)") {
-                    LazyVGrid(columns: [
-                        GridItem(.flexible()),
-                        GridItem(.flexible())
-                    ], spacing: 8) {
-                        ForEach(topTwoSizes, id: \.size) { size in
-                            VStack(alignment: .leading, spacing: 4) {
-                                HStack {
-                                    Text(size.size)
-                                        .font(.headline)
-                                        .fontWeight(size.size == recommendation.recommendedSize ? .bold : .regular)
-                                    Spacer()
-                                    Text(String(format: "%.0f%%", size.overallFitScore * 100))
-                                        .font(.caption)
-                                        .foregroundColor(scoreColor(for: size.overallFitScore))
-                                }
-                                
-                                Text(size.fitType.capitalized)
-                                    .font(.caption)
-                                    .foregroundColor(fitColor(for: size.fitType))
-                                
-                                Text(size.measurementSummary)
-                                    .font(.caption2)
-                                    .foregroundColor(.secondary)
-                                    .lineLimit(2)
-                                
-                                if !size.primaryConcerns.isEmpty {
-                                    HStack {
-                                        Image(systemName: "exclamationmark.triangle.fill")
-                                            .font(.caption2)
-                                            .foregroundColor(.orange)
-                                        Text(size.primaryConcerns.joined(separator: ", "))
-                                            .font(.caption2)
-                                            .foregroundColor(.orange)
-                                            .lineLimit(1)
-                                    }
-                                }
-                            }
-                            .padding(8)
-                            .background(
-                                Color(size.size == recommendation.recommendedSize ? .systemGray4 : .systemGray6)
-                            )
-                            .cornerRadius(8)
-                        }
-                    }
-                }
-            }
+                .padding(.vertical, 8)
+                .background(Color.orange.opacity(0.1))
+                .cornerRadius(8)
         }
-        .padding()
-        .background(Color(.systemBackground))
-        .cornerRadius(16)
-        .shadow(color: .black.opacity(0.1), radius: 4, x: 0, y: 2)
+    }
+    
+    // Helper function to convert string color to SwiftUI Color
+    private func colorFromString(_ colorString: String) -> Color {
+        switch colorString.lowercased() {
+        case "green":
+            return .green
+        case "orange":
+            return .orange
+        case "red":
+            return .red
+        case "blue":
+            return .blue
+        default:
+            return .primary
+        }
     }
     
     // Helper to parse measurement summary for comparison display
@@ -516,6 +508,11 @@ struct SizeRecommendationResponse: Codable {
     let comprehensiveAnalysis: Bool
     let allSizes: [DirectSizeOption]
     
+    // 🎯 NEW: Enhanced confidence and explanation system
+    let confidenceTier: ConfidenceTier?
+    let humanExplanation: String?
+    let alternativeExplanations: [AlternativeExplanation]?
+    
     enum CodingKeys: String, CodingKey {
         case productUrl = "product_url"
         case brand
@@ -529,6 +526,41 @@ struct SizeRecommendationResponse: Codable {
         case primaryConcerns = "primary_concerns"
         case comprehensiveAnalysis = "comprehensive_analysis"
         case allSizes = "all_sizes"
+        case confidenceTier = "confidence_tier"
+        case humanExplanation = "human_explanation"
+        case alternativeExplanations = "alternative_explanations"
+    }
+}
+
+// 🎯 NEW: Confidence tier model for better UX
+struct ConfidenceTier: Codable {
+    let tier: String
+    let confidenceScore: Double
+    let label: String
+    let icon: String
+    let color: String
+    let description: String
+    
+    enum CodingKeys: String, CodingKey {
+        case tier
+        case confidenceScore = "confidence_score"
+        case label
+        case icon
+        case color
+        case description
+    }
+}
+
+// 🎯 NEW: Alternative size explanations
+struct AlternativeExplanation: Codable {
+    let size: String
+    let explanation: String
+    let fitScore: Double
+    
+    enum CodingKeys: String, CodingKey {
+        case size
+        case explanation
+        case fitScore = "fit_score"
     }
 }
 
