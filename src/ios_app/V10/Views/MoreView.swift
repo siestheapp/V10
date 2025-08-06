@@ -4,6 +4,9 @@ struct MoreView: View {
     var body: some View {
         NavigationView {
             List {
+                NavigationLink(destination: ScanHistoryView()) {
+                    Label("Scan History", systemImage: "list.bullet")
+                }
                 NavigationLink(destination: ChatView()) {
                     Label("Ask AI", systemImage: "bubble.left.and.bubble.right.fill")
                 }

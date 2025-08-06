@@ -1,4 +1,5 @@
 # New FastAPI application using tailor2 schema
+import asyncio
 from fastapi import FastAPI, HTTPException
 from pydantic import BaseModel
 import psycopg2
@@ -51,17 +52,15 @@ def get_db_connection():
     """Get a connection to the database"""
     return psycopg2.connect(**DB_CONFIG)
 
+
+
 @asynccontextmanager
 async def lifespan(app: FastAPI):
-    # Setup
-    global pool
-    pool = await asyncpg.create_pool(**DB_CONFIG, statement_cache_size=0)
-    print("Connected to database")
+    # Setup - simple database connection test
+    print("✅ Starting FastAPI application")
     yield
     # Cleanup
-    if pool:
-        await pool.close()
-        print("Closed database connection")
+    print("✅ Shutting down FastAPI application")
 
 app = FastAPI(lifespan=lifespan)
 
@@ -152,10 +151,8 @@ class ChatMessage(BaseModel):
     message: str
 
 # Connection Functions
-async def get_pool():
-    return await asyncpg.create_pool(**DB_CONFIG, statement_cache_size=0)
-
 def get_db():
+    """Get a database connection"""
     return psycopg2.connect(
         dbname=DB_CONFIG["database"],
         user=DB_CONFIG["user"],
@@ -163,9 +160,6 @@ def get_db():
         host=DB_CONFIG["host"],
         cursor_factory=RealDictCursor
     )
-
-# Create connection pool on startup
-pool = None
 
 @app.get("/user/{user_id}/closet")
 async def get_closet(user_id: int):
@@ -744,23 +738,78 @@ def format_measurements_response(garments, fit_zone):
 @app.get("/scan_history")
 async def get_scan_history(user_id: int):
     try:
-        return [
-            {
-                "id": 1,
-                "productCode": "475352",  # Changed to camelCase
-                "scannedSize": "L",
-                "scannedPrice": 29.90,
-                "scannedAt": "2024-02-24T10:30:00Z",
-                "name": "Waffle Crew Neck T-Shirt",
+        conn = get_db_connection()
+        cur = conn.cursor(cursor_factory=RealDictCursor)
+        
+        # Get scan actions from user_actions table
+        cur.execute("""
+            SELECT 
+                ua.id,
+                ua.metadata,
+                ua.created_at,
+                -- Extract product info from URL
+                CASE 
+                    WHEN ua.metadata->>'product_url' LIKE '%%jcrew%%' THEN 'J.Crew'
+                    WHEN ua.metadata->>'product_url' LIKE '%%uniqlo%%' THEN 'Uniqlo'
+                    WHEN ua.metadata->>'product_url' LIKE '%%banana%%' THEN 'Banana Republic'
+                    ELSE 'Unknown Brand'
+                END as brand,
+                CASE 
+                    WHEN ua.metadata->>'product_url' LIKE '%%shirt%%' THEN 'Short Sleeve Broken-in Organic Cotton Oxford Shirt'
+                    ELSE 'Scanned Item'
+                END as name
+            FROM user_actions ua
+            WHERE ua.user_id = %s 
+            AND ua.action_type = 'scan_item'
+            ORDER BY ua.created_at DESC
+            LIMIT 50
+        """, (user_id,))
+        
+        scan_actions = cur.fetchall()
+        
+        # Convert to scan history format
+        history_items = []
+        for action in scan_actions:
+            metadata = action['metadata'] if isinstance(action['metadata'], dict) else {}
+            
+            history_items.append({
+                "id": action['id'],
+                "productCode": "SCAN_" + str(action['id']),
+                "scannedSize": None,  # We don't track size in scan actions yet
+                "scannedPrice": None,  # We don't track price in scan actions yet
+                "scannedAt": action['created_at'].isoformat() + "Z",
+                "name": action['name'],
                 "category": "Tops",
-                "imageUrl": "https://example.com/image.jpg",
-                "productUrl": "https://uniqlo.com/product/475352",
-                "brand": "Uniqlo"
-            }
-            # Add more history items...
-        ]
+                "imageUrl": "https://example.com/image.jpg",  # Placeholder
+                "productUrl": metadata.get('product_url', ''),
+                "brand": action['brand']
+            })
+        
+        # Add mock data if no real scans exist
+        if not history_items:
+            history_items = [
+                {
+                    "id": 1,
+                    "productCode": "475352",
+                    "scannedSize": "L",
+                    "scannedPrice": 29.90,
+                    "scannedAt": "2024-02-24T10:30:00Z",
+                    "name": "Waffle Crew Neck T-Shirt",
+                    "category": "Tops",
+                    "imageUrl": "https://example.com/image.jpg",
+                    "productUrl": "https://uniqlo.com/product/475352",
+                    "brand": "Uniqlo"
+                }
+            ]
+        
+        return history_items
+            
     except Exception as e:
+        print(f"Error getting scan history: {str(e)}")
         raise HTTPException(status_code=500, detail=str(e))
+    finally:
+        cur.close()
+        conn.close()
 
 def process_new_garment(product_link: str, size_label: str, user_id: int):
     # Step 1: Create the garment entry and get measurements
@@ -797,52 +846,59 @@ def process_new_garment(product_link: str, size_label: str, user_id: int):
 @app.get("/brands/{brand_id}/measurements")
 async def get_brand_measurements(brand_id: int):
     try:
-        async with pool.acquire() as conn:
-            # First verify the brand exists
-            brand = await conn.fetchrow("SELECT name FROM brands WHERE id = $1", brand_id)
-            if not brand:
-                raise HTTPException(status_code=404, detail="Brand not found")
+        conn = get_db_connection()
+        cur = conn.cursor(cursor_factory=RealDictCursor)
+        
+        # First verify the brand exists
+        cur.execute("SELECT name FROM brands WHERE id = %s", (brand_id,))
+        brand = cur.fetchone()
+        if not brand:
+            raise HTTPException(status_code=404, detail="Brand not found")
 
-            # Get all available measurements for this brand
-            size_guide = await conn.fetchrow("""
-                SELECT 
-                    chest_range,
-                    neck_range,
-                    sleeve_range,
-                    waist_range
-                FROM size_guides 
-                WHERE brand_id = $1 
-                LIMIT 1
-            """, brand_id)
+        # Get all available measurements for this brand
+        cur.execute("""
+            SELECT 
+                chest_range,
+                neck_range,
+                sleeve_range,
+                waist_range
+            FROM size_guides 
+            WHERE brand_id = %s 
+            LIMIT 1
+        """, (brand_id,))
+        size_guide = cur.fetchone()
 
-            if not size_guide:
-                print(f"No size guide found for brand {brand_id}")
-                measurements = ['overall']  # Default to just overall if no size guide
-            else:
-                # Build measurements array based on what's available
-                measurements = ['overall']  # Always include overall
-                if size_guide.get('chest_range'):
-                    measurements.append('chest')
-                if size_guide.get('neck_range'):
-                    measurements.append('neck')
-                if size_guide.get('sleeve_range'):
-                    measurements.append('sleeve')
-                if size_guide.get('waist_range'):
-                    measurements.append('waist')
+        if not size_guide:
+            print(f"No size guide found for brand {brand_id}")
+            measurements = ['overall']  # Default to just overall if no size guide
+        else:
+            # Build measurements array based on what's available
+            measurements = ['overall']  # Always include overall
+            if size_guide.get('chest_range'):
+                measurements.append('chest')
+            if size_guide.get('neck_range'):
+                measurements.append('neck')
+            if size_guide.get('sleeve_range'):
+                measurements.append('sleeve')
+            if size_guide.get('waist_range'):
+                measurements.append('waist')
 
-            return {
-                "measurements": measurements,
-                "feedbackOptions": [
-                    {"value": 1, "label": "Too tight"},
-                    {"value": 2, "label": "Tight but I like it"},
-                    {"value": 3, "label": "Good"},
-                    {"value": 4, "label": "Loose but I like it"},
-                    {"value": 5, "label": "Too loose"}
-                ]
-            }
+        return {
+            "measurements": measurements,
+            "feedbackOptions": [
+                {"value": 1, "label": "Too tight"},
+                {"value": 2, "label": "Tight but I like it"},
+                {"value": 3, "label": "Good"},
+                {"value": 4, "label": "Loose but I like it"},
+                {"value": 5, "label": "Too loose"}
+            ]
+        }
     except Exception as e:
         print(f"Error in get_brand_measurements: {str(e)}")
         raise HTTPException(status_code=500, detail=str(e))
+    finally:
+        cur.close()
+        conn.close()
 
 @app.post("/garments/submit")
 async def submit_garment_and_feedback(submission: GarmentSubmission):
@@ -850,56 +906,73 @@ async def submit_garment_and_feedback(submission: GarmentSubmission):
     try:
         print(f"Received submission: {submission}")
         
-        async with pool.acquire() as conn:
-            # First check if this garment already exists
-            existing_garment = await conn.fetchrow("""
-                SELECT id FROM user_garments 
-                WHERE user_id = $1 
-                AND brand_id = (
-                    SELECT id FROM brands 
-                    WHERE name = 'Banana Republic'
-                )
-                AND category = 'Tops'
-                AND size_label = $2
-                AND created_at > NOW() - INTERVAL '1 hour'
-            """, submission.userId, submission.sizeLabel)
-            
-            if existing_garment:
-                return {
-                    "garment_id": existing_garment['id'],
-                    "status": "existing"
-                }
-            
-            # If no recent duplicate, proceed with insert
-            garment_id = await conn.fetchval("""
-                INSERT INTO user_garments (
-                    user_id, 
-                    brand_id,
-                    category,
-                    size_label,
-                    chest_range,
-                    product_link,
-                    owns_garment
-                ) VALUES ($1, $2, $3, $4, $5, $6, $7)
-                RETURNING id
-            """, 
-                submission.userId,
-                brand_id,
-                'Tops',
-                submission.sizeLabel,
-                'N/A',
-                submission.productLink,
-                True
+        conn = get_db_connection()
+        cur = conn.cursor(cursor_factory=RealDictCursor)
+        
+        # First check if this garment already exists
+        cur.execute("""
+            SELECT id FROM user_garments 
+            WHERE user_id = %s 
+            AND brand_id = (
+                SELECT id FROM brands 
+                WHERE name = 'Banana Republic'
             )
-            
+            AND category = 'Tops'
+            AND size_label = %s
+            AND created_at > NOW() - INTERVAL '1 hour'
+        """, (submission.userId, submission.sizeLabel))
+        
+        existing_garment = cur.fetchone()
+        if existing_garment:
             return {
-                "garment_id": garment_id,
-                "status": "success"
+                "garment_id": existing_garment['id'],
+                "status": "existing"
             }
+        
+        # Get brand_id for Banana Republic
+        cur.execute("SELECT id FROM brands WHERE name = 'Banana Republic'")
+        brand_result = cur.fetchone()
+        brand_id = brand_result['id'] if brand_result else None
+        
+        # If no recent duplicate, proceed with insert
+        cur.execute("""
+            INSERT INTO user_garments (
+                user_id, 
+                brand_id,
+                category,
+                size_label,
+                chest_range,
+                product_link,
+                owns_garment
+            ) VALUES (%s, %s, %s, %s, %s, %s, %s)
+            RETURNING id
+        """, (
+            submission.userId,
+            brand_id,
+            'Tops',
+            submission.sizeLabel,
+            'N/A',
+            submission.productLink,
+            True
+        ))
+        
+        garment_result = cur.fetchone()
+        garment_id = garment_result['id']
+        conn.commit()
+        
+        return {
+            "garment_id": garment_id,
+            "status": "success"
+        }
             
     except Exception as e:
         print(f"Error submitting garment: {str(e)}")
         raise HTTPException(status_code=500, detail=str(e))
+    finally:
+        if 'cur' in locals():
+            cur.close()
+        if 'conn' in locals():
+            conn.close()
 
 @app.post("/process_garment")
 async def process_garment(garment: GarmentRequest):
@@ -1264,6 +1337,23 @@ async def get_garment_size_recommendation(request: dict):
             raise HTTPException(status_code=400, detail="Product URL is required")
         
         print(f"🎯 Getting ALL matching sizes for user {user_id}, URL: {product_url}, preference: {user_fit_preference}")
+        
+        # Step 0: Log the scan action
+        try:
+            async with pool.acquire() as conn:
+                import json
+                await conn.execute("""
+                    INSERT INTO user_actions (
+                        user_id, action_type, target_table, metadata, created_at
+                    ) VALUES ($1, $2, $3, $4, NOW())
+                """, int(user_id), 'scan_item', 'garment_recommendations', json.dumps({
+                    'product_url': product_url,
+                    'user_fit_preference': user_fit_preference,
+                    'scan_source': 'ios_app'
+                }))
+                print(f"✅ Logged scan action for user {user_id}")
+        except Exception as e:
+            print(f"⚠️ Failed to log scan action: {str(e)}")
         
         # Step 1: Extract brand from URL
         brand_info = extract_brand_from_url(product_url)
