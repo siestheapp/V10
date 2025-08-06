@@ -1470,14 +1470,21 @@ async def get_garment_size_recommendation(request: dict):
         best_analysis = size_analyses[0] if size_analyses else None
         
         # Get reference garments summary for confidence calculation
-        reference_garments = _get_reference_garments_summary(size_analyses)
+        reference_garments = {}
+        if size_analyses:
+            # Extract reference garments from the first analysis
+            for analysis in size_analyses[:3]:  # Top 3 analyses
+                if hasattr(analysis, 'reference_garments') and analysis.reference_garments:
+                    reference_garments.update(analysis.reference_garments)
+                    break
         
         # Calculate enhanced confidence tier and human explanations
         if best_analysis:
             confidence_info = calculate_confidence_tier(
                 best_analysis.overall_fit_score,
-                len(reference_garments) if reference_garments else 0,
-                len(best_analysis.dimension_analysis) if hasattr(best_analysis, 'dimension_analysis') else 1
+                reference_garments if reference_garments else {},
+                len(best_analysis.dimension_analysis) if hasattr(best_analysis, 'dimension_analysis') else 1,
+                brand_info["brand_name"]
             )
             
             human_explanation = generate_human_readable_explanation(
@@ -1597,16 +1604,51 @@ def _generate_user_guidance(recommendation, user_fit_preference: str) -> str:
     return " ".join(guidance_parts)
 
 # Enhanced confidence and explanation system for better UX
-def calculate_confidence_tier(overall_fit_score: float, reference_count: int, dimensions_analyzed: int) -> dict:
+def calculate_confidence_tier(overall_fit_score: float, reference_garments: dict, dimensions_analyzed: int, brand_name: str) -> dict:
     """
-    Calculate confidence tier based on fit score, reference garments, and data completeness
+    Calculate confidence tier with sophisticated weighting based on todoAug.md plan
     Returns dict with tier, label, icon, and description
     """
     # Base confidence from fit score
     base_confidence = overall_fit_score
     
-    # Boost confidence based on reference garments (more references = higher confidence)
-    reference_boost = min(reference_count * 0.1, 0.2)  # Max 20% boost
+    # Enhanced reference garment weighting (per todoAug.md)
+    reference_boost = 0.0
+    reference_count = len(reference_garments)
+    
+    if reference_count > 0:
+        # Weight reference garments by quality factors
+        weighted_confidence = 0.0
+        total_weight = 0.0
+        
+        for ref_key, ref_data in reference_garments.items():
+            weight = 1.0
+            
+            # Same brand gets highest weight (per todoAug.md)
+            if ref_data.get('brand', '').lower() == brand_name.lower():
+                weight *= 2.0
+            
+            # Same category gets high weight (assuming shirts/tops)
+            # In real implementation, would check category match
+            weight *= 1.5
+            
+            # User satisfaction (high confidence = loved item)
+            ref_confidence = ref_data.get('confidence', 0.5)
+            if ref_confidence > 0.8:
+                weight *= 1.3  # Loved items
+            elif ref_confidence < 0.4:
+                weight *= 0.7  # Returned/disliked items
+            
+            # Recent items weighted higher (would need timestamp in real implementation)
+            # For now, assume all items are reasonably recent
+            
+            weighted_confidence += ref_confidence * weight
+            total_weight += weight
+        
+        # Calculate reference boost (up to 30% boost for excellent references)
+        if total_weight > 0:
+            avg_weighted_confidence = weighted_confidence / total_weight
+            reference_boost = min(avg_weighted_confidence * 0.3, 0.3)
     
     # Boost confidence based on dimensions analyzed (more data = higher confidence)  
     dimension_boost = min(dimensions_analyzed * 0.05, 0.15)  # Max 15% boost
@@ -1654,62 +1696,75 @@ def calculate_confidence_tier(overall_fit_score: float, reference_count: int, di
 
 def generate_human_readable_explanation(size_analysis, reference_garments: dict, brand_name: str) -> str:
     """
-    Generate human-readable, confidence-building explanations instead of technical jargon
+    Generate anxiety-reducing, confidence-building explanations based on todoAug.md plan
+    Uses contextual reference garments and human language instead of technical jargon
     """
     if not size_analysis:
         return "Add more garments to your closet for better recommendations"
     
-    # Count reference garments
-    ref_count = len(reference_garments) if reference_garments else 0
-    
-    # Get confidence tier
+    # Get confidence tier with enhanced weighting
     confidence = calculate_confidence_tier(
         size_analysis.overall_fit_score,
-        ref_count,
-        len(size_analysis.dimension_analysis) if hasattr(size_analysis, 'dimension_analysis') else 1
+        reference_garments,
+        len(size_analysis.dimension_analysis) if hasattr(size_analysis, 'dimension_analysis') else 1,
+        brand_name
     )
     
-    # Generate explanation based on confidence and context
-    if confidence["tier"] == "excellent":
-        if ref_count >= 2:
-            # Multiple reference garments
-            ref_brands = []
-            for ref_key, ref_data in reference_garments.items():
-                if isinstance(ref_data, dict) and 'brand' in ref_data:
-                    ref_brands.append(ref_data['brand'])
-            
-            if len(set(ref_brands)) > 1:
-                return f"Just like your {' and '.join(set(ref_brands))} shirts"
+    ref_count = len(reference_garments) if reference_garments else 0
+    
+    # Priority 1: Same brand references (highest confidence per todoAug.md)
+    same_brand_refs = []
+    other_brand_refs = []
+    
+    for ref_key, ref_data in reference_garments.items():
+        if isinstance(ref_data, dict) and 'brand' in ref_data:
+            if ref_data['brand'].lower() == brand_name.lower():
+                same_brand_refs.append(ref_data)
             else:
-                return f"Same measurements as your favorite {ref_brands[0]} shirts"
-        elif ref_count == 1:
-            # Single reference garment
-            ref_data = list(reference_garments.values())[0]
-            if isinstance(ref_data, dict) and 'brand' in ref_data:
-                return f"Same measurements as your {ref_data['brand']} shirt"
-        
-        # Same brand fallback
-        if brand_name and ref_count > 0:
-            return f"Perfect match based on your {brand_name} history"
-        
-        return "Excellent fit based on your measurements"
+                other_brand_refs.append(ref_data)
+    
+    # Generate contextual explanations based on confidence tier
+    if confidence["tier"] == "excellent":
+        if same_brand_refs:
+            if len(same_brand_refs) > 1:
+                return f"Perfect match - same measurements as your other {brand_name} shirts"
+            else:
+                return f"Just like your {brand_name} shirt that fits perfectly"
+        elif len(other_brand_refs) >= 2:
+            # Multiple different brands
+            brands = list(set([ref['brand'] for ref in other_brand_refs[:3]]))  # Top 3 brands
+            if len(brands) == 2:
+                return f"Same measurements as your {brands[0]} and {brands[1]} shirts"
+            else:
+                return f"Same measurements as your favorite shirts from {brands[0]}, {brands[1]}, and others"
+        elif len(other_brand_refs) == 1:
+            return f"Same measurements as your {other_brand_refs[0]['brand']} shirt"
+        else:
+            return "Perfect fit based on your body measurements"
     
     elif confidence["tier"] == "good":
-        if ref_count >= 1:
-            return f"Similar to shirts you love in your closet"
-        elif brand_name:
-            return f"Good fit based on {brand_name} sizing"
+        if same_brand_refs:
+            return f"Should fit well - similar to your {brand_name} shirts"
+        elif other_brand_refs:
+            best_ref = max(other_brand_refs, key=lambda x: x.get('confidence', 0))
+            return f"Should fit well - similar to your {best_ref['brand']} shirt"
         else:
-            return "Good fit based on your measurement profile"
+            return "Good fit based on your measurements"
     
     elif confidence["tier"] == "fair":
-        if ref_count >= 1:
-            return f"Reasonable fit based on similar garments"
+        if same_brand_refs:
+            return f"Try your usual {brand_name} size - you can always exchange if needed"
+        elif other_brand_refs:
+            return f"Based on your closet, this should work - similar fit to your other shirts"
         else:
-            return f"Should work - try your usual {brand_name} size" if brand_name else "Should work for you"
+            return "This might work based on typical sizing for your measurements"
     
     else:  # poor confidence
-        return "Add similar garments to your closet for better recommendations"
+        if brand_name:
+            return f"Not enough data - consider ordering your usual {brand_name} size"
+        else:
+            return "Limited data available - consider adding more garments to your closet"
+
 
 def generate_alternative_size_explanations(size_analyses, recommended_size: str) -> list:
     """
