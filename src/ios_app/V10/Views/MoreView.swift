@@ -2,23 +2,21 @@ import SwiftUI
 
 struct MoreView: View {
     var body: some View {
-        NavigationView {
-            List {
-                NavigationLink(destination: ScanHistoryView()) {
-                    Label("Scan History", systemImage: "list.bullet")
-                }
-                NavigationLink(destination: ChatView()) {
-                    Label("Ask AI", systemImage: "bubble.left.and.bubble.right.fill")
-                }
-                NavigationLink(destination: AccountScreen()) {
-                    Label("Account", systemImage: "person")
-                }
-                NavigationLink(destination: BodyScreen()) {
-                    Label("Body", systemImage: "figure.stand")
-                }
+        List {
+            NavigationLink(destination: ScanHistoryView()) {
+                Label("Scan History", systemImage: "list.bullet")
             }
-            .navigationTitle("More")
+            NavigationLink(destination: ChatView()) {
+                Label("Ask AI", systemImage: "bubble.left.and.bubble.right.fill")
+            }
+            NavigationLink(destination: AccountScreen()) {
+                Label("Account", systemImage: "person")
+            }
+            NavigationLink(destination: BodyScreen()) {
+                Label("Body", systemImage: "figure.stand")
+            }
         }
+        .navigationTitle("More")
     }
 }
 

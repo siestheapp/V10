@@ -48,6 +48,9 @@ DB_CONFIG = {
     "port": "6543"
 }
 
+# Global connection pool
+pool = None
+
 def get_db_connection():
     """Get a connection to the database"""
     return psycopg2.connect(**DB_CONFIG)
@@ -56,10 +59,14 @@ def get_db_connection():
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
-    # Setup - simple database connection test
+    # Setup - initialize database connection pool
+    global pool
+    pool = await asyncpg.create_pool(**DB_CONFIG)
     print("✅ Starting FastAPI application")
     yield
     # Cleanup
+    if pool:
+        await pool.close()
     print("✅ Shutting down FastAPI application")
 
 app = FastAPI(lifespan=lifespan)
@@ -741,21 +748,47 @@ async def get_scan_history(user_id: int):
         conn = get_db_connection()
         cur = conn.cursor(cursor_factory=RealDictCursor)
         
-        # Get scan actions from user_actions table
+        # Get scan actions from user_actions table with enhanced metadata
         cur.execute("""
             SELECT 
                 ua.id,
                 ua.metadata,
                 ua.created_at,
-                -- Extract product info from URL
+                -- Use brand_name from metadata if available, otherwise extract from URL
+                COALESCE(ua.metadata->>'brand_name', 
+                    CASE 
+                        WHEN ua.metadata->>'product_url' LIKE '%%jcrew%%' THEN 'J.Crew'
+                        WHEN ua.metadata->>'product_url' LIKE '%%uniqlo%%' THEN 'Uniqlo'
+                        WHEN ua.metadata->>'product_url' LIKE '%%banana%%' THEN 'Banana Republic'
+                        WHEN ua.metadata->>'product_url' LIKE '%%theory%%' THEN 'Theory'
+                        WHEN ua.metadata->>'product_url' LIKE '%%patagonia%%' THEN 'Patagonia'
+                        WHEN ua.metadata->>'product_url' LIKE '%%lululemon%%' THEN 'Lululemon'
+                        ELSE 'Unknown Brand'
+                    END
+                ) as brand,
+                -- Generate product name based on brand and URL patterns
                 CASE 
-                    WHEN ua.metadata->>'product_url' LIKE '%%jcrew%%' THEN 'J.Crew'
-                    WHEN ua.metadata->>'product_url' LIKE '%%uniqlo%%' THEN 'Uniqlo'
-                    WHEN ua.metadata->>'product_url' LIKE '%%banana%%' THEN 'Banana Republic'
-                    ELSE 'Unknown Brand'
-                END as brand,
-                CASE 
-                    WHEN ua.metadata->>'product_url' LIKE '%%shirt%%' THEN 'Short Sleeve Broken-in Organic Cotton Oxford Shirt'
+                    WHEN ua.metadata->>'brand_name' = 'Banana Republic' THEN 
+                        CASE 
+                            WHEN ua.metadata->>'product_url' LIKE '%%shirt%%' OR ua.metadata->>'product_url' LIKE '%%704275052%%' THEN 'Organic Cotton Oxford Shirt'
+                            WHEN ua.metadata->>'product_url' LIKE '%%polo%%' THEN 'Polo Shirt'
+                            WHEN ua.metadata->>'product_url' LIKE '%%tee%%' OR ua.metadata->>'product_url' LIKE '%%t-shirt%%' THEN 'T-Shirt'
+                            WHEN ua.metadata->>'product_url' LIKE '%%sweater%%' THEN 'Sweater'
+                            WHEN ua.metadata->>'product_url' LIKE '%%jacket%%' THEN 'Jacket'
+                            ELSE 'Scanned Item'
+                        END
+                    WHEN ua.metadata->>'brand_name' = 'J.Crew' THEN 
+                        CASE 
+                            WHEN ua.metadata->>'product_url' LIKE '%%shirt%%' THEN 'Short Sleeve Broken-in Organic Cotton Oxford Shirt'
+                            WHEN ua.metadata->>'product_url' LIKE '%%polo%%' THEN 'Polo Shirt'
+                            WHEN ua.metadata->>'product_url' LIKE '%%tee%%' THEN 'T-Shirt'
+                            ELSE 'Scanned Item'
+                        END
+                    WHEN ua.metadata->>'brand_name' = 'Theory' THEN 
+                        CASE 
+                            WHEN ua.metadata->>'product_url' LIKE '%%shirt%%' THEN 'Button-down Shirt'
+                            ELSE 'Scanned Item'
+                        END
                     ELSE 'Scanned Item'
                 END as name
             FROM user_actions ua
@@ -772,13 +805,20 @@ async def get_scan_history(user_id: int):
         for action in scan_actions:
             metadata = action['metadata'] if isinstance(action['metadata'], dict) else {}
             
+            # Get recommended size from metadata
+            recommended_size = metadata.get('recommended_size')
+            confidence_tier = metadata.get('confidence_tier')
+            
+            # Use clean product name without redundant recommendation text
+            display_name = action['name']
+            
             history_items.append({
                 "id": action['id'],
                 "productCode": "SCAN_" + str(action['id']),
-                "scannedSize": None,  # We don't track size in scan actions yet
+                "scannedSize": recommended_size,  # Now includes recommended size
                 "scannedPrice": None,  # We don't track price in scan actions yet
                 "scannedAt": action['created_at'].isoformat() + "Z",
-                "name": action['name'],
+                "name": display_name,
                 "category": "Tops",
                 "imageUrl": "https://example.com/image.jpg",  # Placeholder
                 "productUrl": metadata.get('product_url', ''),
@@ -1338,20 +1378,22 @@ async def get_garment_size_recommendation(request: dict):
         
         print(f"🎯 Getting ALL matching sizes for user {user_id}, URL: {product_url}, preference: {user_fit_preference}")
         
-        # Step 0: Log the scan action
+        # Step 0: Log the scan action (will be updated with results later)
+        scan_action_id = None
         try:
             async with pool.acquire() as conn:
                 import json
-                await conn.execute("""
+                scan_action_id = await conn.fetchval("""
                     INSERT INTO user_actions (
                         user_id, action_type, target_table, metadata, created_at
                     ) VALUES ($1, $2, $3, $4, NOW())
+                    RETURNING id
                 """, int(user_id), 'scan_item', 'garment_recommendations', json.dumps({
                     'product_url': product_url,
                     'user_fit_preference': user_fit_preference,
                     'scan_source': 'ios_app'
                 }))
-                print(f"✅ Logged scan action for user {user_id}")
+                print(f"✅ Logged scan action for user {user_id}, action_id: {scan_action_id}")
         except Exception as e:
             print(f"⚠️ Failed to log scan action: {str(e)}")
         
@@ -1509,6 +1551,29 @@ async def get_garment_size_recommendation(request: dict):
         # Generate alternative size explanations
         alternative_explanations = generate_alternative_size_explanations(size_analyses, best_analysis.size_label if best_analysis else "")
         
+        # Step 6: Update scan action with actual product information
+        if scan_action_id and best_analysis:
+            try:
+                async with pool.acquire() as conn:
+                    import json
+                    updated_metadata = {
+                        'product_url': product_url,
+                        'user_fit_preference': user_fit_preference,
+                        'scan_source': 'ios_app',
+                        'brand_name': brand_info["brand_name"],
+                        'recommended_size': best_analysis.size_label,
+                        'confidence_tier': confidence_info["label"],
+                        'fit_score': round(best_analysis.overall_fit_score, 3)
+                    }
+                    await conn.execute("""
+                        UPDATE user_actions 
+                        SET metadata = $1
+                        WHERE id = $2
+                    """, json.dumps(updated_metadata), scan_action_id)
+                    print(f"✅ Updated scan action {scan_action_id} with product info")
+            except Exception as e:
+                print(f"⚠️ Failed to update scan action: {str(e)}")
+
         # Enhanced response with ALL matching sizes and multi-dimensional analysis
         return {
             "product_url": product_url,
@@ -1997,7 +2062,7 @@ def extract_brand_from_url(url: str) -> dict:
             return {"brand_name": "Uniqlo", "brand_id": 1}
         elif "jcrew.com" in domain:
             return {"brand_name": "J.Crew", "brand_id": 2}
-        elif "bananarepublic.com" in domain:
+        elif "bananarepublic.com" in domain or "bananarepublic.gap.com" in domain:
             return {"brand_name": "Banana Republic", "brand_id": 3}
         elif "theory.com" in domain:
             return {"brand_name": "Theory", "brand_id": 4}

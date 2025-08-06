@@ -30,8 +30,7 @@ struct ScanHistoryView: View {
     @State private var errorMessage: String?
     
     var body: some View {
-        NavigationView {
-            Group {
+        Group {
                 if isLoading {
                     ProgressView("Loading finds...")
                 } else if let error = errorMessage {
@@ -73,11 +72,10 @@ struct ScanHistoryView: View {
                         }
                     }
                 }
-            }
-            .navigationTitle("Finds")
-            .onAppear {
-                loadHistory()
-            }
+        }
+        .navigationTitle("Finds")
+        .onAppear {
+            loadHistory()
         }
     }
     
