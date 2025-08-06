@@ -283,7 +283,7 @@ struct ScanTab: View {
                             .frame(maxWidth: .infinity)
                             .padding()
                             .background(colorFromString(confidenceInfo.color))
-                            .cornerRadius(10)
+                            .cornerRadius(12)
                     }
                     .padding(.horizontal, 40)
                     .background(
@@ -420,40 +420,93 @@ struct SizeRecommendationView: View {
         )
     }
     
-    // Get human explanation with fallback
+    // Get enhanced explanation showing analyzed dimensions and actual reference garments
     private var explanation: String {
-        recommendation.humanExplanation ?? recommendation.reasoning
+        // Get analyzed dimensions from the recommendation
+        let analyzedDimensions = getAnalyzedDimensions()
+        let referenceGarment = getBestReferenceGarment()
+        
+        if !analyzedDimensions.isEmpty && !referenceGarment.isEmpty {
+            let dimensionText = analyzedDimensions.count > 1 ? 
+                "Analyzed \(analyzedDimensions.joined(separator: ", "))" : 
+                "Based on \(analyzedDimensions.first!)"
+            return "\(dimensionText) - \(referenceGarment)"
+        }
+        
+        // Fallback to original explanation
+        return recommendation.humanExplanation ?? recommendation.reasoning
+    }
+    
+    // Helper to get analyzed dimensions from the recommendation
+    private func getAnalyzedDimensions() -> [String] {
+        var dimensions: [String] = []
+        
+        // Check if we have dimension analysis data
+        if let recommended = recommendation.allSizes.first(where: { $0.size == recommendation.recommendedSize }) {
+            // Parse available dimensions from the recommendation
+            if recommended.measurementSummary.contains("chest") || recommended.measurementSummary.contains("Chest") {
+                dimensions.append("chest")
+            }
+            if recommended.measurementSummary.contains("neck") || recommended.measurementSummary.contains("Neck") {
+                dimensions.append("neck")  
+            }
+            if recommended.measurementSummary.contains("sleeve") || recommended.measurementSummary.contains("Sleeve") {
+                dimensions.append("sleeve")
+            }
+        }
+        
+        return dimensions
+    }
+    
+    // Helper to get the best reference garment description
+    private func getBestReferenceGarment() -> String {
+        guard !recommendation.referenceGarments.isEmpty else {
+            return "matches your measurements"
+        }
+        
+        // Find same-brand reference first (highest confidence)
+        let sameBrandRef = recommendation.referenceGarments.values.first { ref in
+            ref.brand.lowercased() == recommendation.brand.lowercased()
+        }
+        
+        if let sameBrandRef = sameBrandRef {
+            return "matches your \(sameBrandRef.brand) \(sameBrandRef.size)"
+        }
+        
+        // Otherwise use highest confidence reference
+        let bestRef = recommendation.referenceGarments.values.max { $0.confidence < $1.confidence }
+        if let bestRef = bestRef {
+            return "similar to your \(bestRef.brand) \(bestRef.size)"
+        }
+        
+        return "based on your closet"
     }
     
     var body: some View {
         VStack(alignment: .leading, spacing: 16) {
-            // Header with brand
+            // Header with just brand (no "Size Recommendation" title)
             HStack {
-                Text("Size Recommendation")
-                    .font(.headline)
-                    .foregroundColor(.primary)
                 Spacer()
                 Text(recommendation.brand)
                     .font(.subheadline)
                     .foregroundColor(.secondary)
             }
             
-            // 🎯 PRIMARY DISPLAY: Confidence-First Approach (per todoAug.md)
+            // 🎯 PRIMARY DISPLAY: Lead with confidence + size (per todoAug.md)
             VStack(alignment: .leading, spacing: 12) {
-                // Main recommendation with confidence icon
-                HStack(alignment: .top) {
-                    VStack(alignment: .leading, spacing: 4) {
-                        HStack {
-                            Text(confidenceInfo.icon)
-                                .font(.title2)
-                            Text(confidenceInfo.label)
-                                .font(.headline)
-                                .foregroundColor(colorFromString(confidenceInfo.color))
-                        }
-                        
+                // Main recommendation - confidence and size together
+                HStack(alignment: .center, spacing: 8) {
+                    Text(confidenceInfo.icon)
+                        .font(.title)
+                    
+                    VStack(alignment: .leading, spacing: 2) {
                         Text("Size \(recommendation.recommendedSize)")
-                            .font(.system(size: 28, weight: .bold))
+                            .font(.system(size: 32, weight: .bold))
                             .foregroundColor(.primary)
+                        
+                        Text(confidenceInfo.label)
+                            .font(.headline)
+                            .foregroundColor(colorFromString(confidenceInfo.color))
                     }
                     
                     Spacer()
@@ -481,8 +534,29 @@ struct SizeRecommendationView: View {
                 // Why this size?
                 DisclosureGroup("Why this size?", isExpanded: $showDetailedAnalysis) {
                     VStack(alignment: .leading, spacing: 8) {
-                        if let recommended = recommendation.allSizes.first(where: { $0.size == recommendation.recommendedSize }) {
-                            // Show measurement comparisons in human language
+                        // Show analyzed dimensions with clear indicators
+                        let analyzedDimensions = getAnalyzedDimensions()
+                        if !analyzedDimensions.isEmpty {
+                            Text("Measurements analyzed:")
+                                .font(.caption)
+                                .fontWeight(.medium)
+                                .foregroundColor(.secondary)
+                            
+                            ForEach(analyzedDimensions, id: \.self) { dimension in
+                                HStack {
+                                    Text("✅")
+                                        .font(.caption)
+                                    Text(dimension.capitalized)
+                                        .font(.caption)
+                                        .fontWeight(.medium)
+                                    Text("matches your fit zone")
+                                        .font(.caption)
+                                        .foregroundColor(.secondary)
+                                    Spacer()
+                                }
+                            }
+                        } else if let recommended = recommendation.allSizes.first(where: { $0.size == recommendation.recommendedSize }) {
+                            // Fallback to original measurement display
                             let measurements = parseMeasurementSummary(recommended.measurementSummary)
                             ForEach(measurements, id: \.dimension) { measurement in
                                 HStack {
