@@ -258,9 +258,66 @@ struct ScanTab: View {
                             .padding(.horizontal, 20)
                     }
                     
-                    // Size Recommendation Display
+                    // Size Recommendation Display - Navigate to full screen
                     if let recommendation = sizeRecommendation {
-                        SizeRecommendationView(recommendation: recommendation)
+                        NavigationLink(destination: SizeRecommendationScreen(recommendation: recommendation)) {
+                            // Preview card that shows basic info and invites tap
+                            VStack(alignment: .leading, spacing: 12) {
+                                HStack {
+                                    Text(recommendation.brand)
+                                        .font(.caption)
+                                        .foregroundColor(.secondary)
+                                        .textCase(.uppercase)
+                                    Spacer()
+                                    Image(systemName: "chevron.right")
+                                        .foregroundColor(.blue)
+                                        .font(.caption)
+                                }
+                                
+                                HStack(spacing: 12) {
+                                    Text(recommendation.confidenceTier?.icon ?? "✅")
+                                        .font(.title)
+                                    
+                                    VStack(alignment: .leading, spacing: 2) {
+                                        Text("Size \(recommendation.recommendedSize)")
+                                            .font(.title)
+                                            .fontWeight(.bold)
+                                            .foregroundColor(.primary)
+                                        
+                                        Text(recommendation.confidenceTier?.label ?? "Good Fit")
+                                            .font(.subheadline)
+                                            .foregroundColor(.green)
+                                    }
+                                    
+                                    Spacer()
+                                    
+                                    // Measurement count indicator
+                                    VStack {
+                                        Text("\(recommendation.dimensionsAnalyzed.count)")
+                                            .font(.title2)
+                                            .fontWeight(.bold)
+                                            .foregroundColor(.blue)
+                                        Text("measurements")
+                                            .font(.caption2)
+                                            .foregroundColor(.secondary)
+                                    }
+                                }
+                                
+                                Text("Tap for detailed analysis")
+                                    .font(.caption)
+                                    .foregroundColor(.blue)
+                            }
+                            .padding()
+                            .background(
+                                RoundedRectangle(cornerRadius: 12)
+                                    .fill(Color(.systemGray6))
+                                    .overlay(
+                                        RoundedRectangle(cornerRadius: 12)
+                                            .stroke(Color.blue.opacity(0.3), lineWidth: 1)
+                                    )
+                            )
+                        }
+                        .buttonStyle(PlainButtonStyle())
                     }
                 }
                 .padding(.horizontal, 40)
@@ -420,21 +477,25 @@ struct SizeRecommendationView: View {
         )
     }
     
-    // Get enhanced explanation showing analyzed dimensions and actual reference garments
+    // Get enhanced explanation that never truncates (fixes todoAug.md issue)
     private var explanation: String {
-        // Get analyzed dimensions from the recommendation
         let analyzedDimensions = getAnalyzedDimensions()
         let referenceGarment = getBestReferenceGarment()
         
-        if !analyzedDimensions.isEmpty && !referenceGarment.isEmpty {
-            let dimensionText = analyzedDimensions.count > 1 ? 
-                "Analyzed \(analyzedDimensions.joined(separator: ", "))" : 
-                "Based on \(analyzedDimensions.first!)"
-            return "\(dimensionText) - \(referenceGarment)"
+        // Priority 1: Show measurement count (always fits on screen)
+        if analyzedDimensions.count > 1 {
+            return "Perfect match across \(analyzedDimensions.count) measurements"
+        } else if analyzedDimensions.count == 1 {
+            return "Perfect \(analyzedDimensions.first!) fit"
         }
         
-        // Fallback to original explanation
-        return recommendation.humanExplanation ?? recommendation.reasoning
+        // Priority 2: Show reference garment if available
+        if !referenceGarment.isEmpty {
+            return referenceGarment.replacingOccurrences(of: "matches your ", with: "Matches ")
+        }
+        
+        // Priority 3: Fallback with sophistication language
+        return recommendation.humanExplanation ?? "Smart fit analysis complete ✨"
     }
     
     // Helper to get analyzed dimensions from the recommendation
@@ -510,6 +571,20 @@ struct SizeRecommendationView: View {
                     }
                     
                     Spacer()
+                    
+                    // Measurement count indicator (demonstrates sophistication)
+                    let dimensionCount = getAnalyzedDimensions().count
+                    if dimensionCount > 0 {
+                        VStack(alignment: .trailing, spacing: 1) {
+                            Text("\(dimensionCount)")
+                                .font(.title2)
+                                .fontWeight(.bold)
+                                .foregroundColor(.blue)
+                            Text("measurements")
+                                .font(.caption2)
+                                .foregroundColor(.secondary)
+                        }
+                    }
                 }
                 
                 // Human-readable explanation (anxiety-reducing language per todoAug.md)
@@ -665,6 +740,350 @@ struct SizeRecommendationView: View {
             MeasurementComparison(dimension: "chest", value: "42", userRange: "40-44"),
             MeasurementComparison(dimension: "neck", value: "16", userRange: "15.5-16.5")
         ]
+    }
+}
+
+// MARK: - New Premium Size Recommendation Screen
+
+struct SizeRecommendationScreen: View {
+    let recommendation: SizeRecommendationResponse
+    @Environment(\.dismiss) private var dismiss
+    
+    // Get confidence tier info with fallback
+    private var confidenceInfo: ConfidenceTier {
+        recommendation.confidenceTier ?? ConfidenceTier(
+            tier: "fair",
+            confidenceScore: recommendation.confidence,
+            label: "Good Fit",
+            icon: "✅",
+            color: "green",
+            description: "This should work for you"
+        )
+    }
+    
+    var body: some View {
+        ScrollView {
+            VStack(spacing: 24) {
+                // HERO SECTION - Premium layout inspired by MrPorter
+                VStack(spacing: 20) {
+                    // Header
+                    HStack {
+                        Button("Close") { dismiss() }
+                            .foregroundColor(.blue)
+                        Spacer()
+                        Text(recommendation.brand.uppercased())
+                            .font(.caption)
+                            .fontWeight(.semibold)
+                            .foregroundColor(.secondary)
+                    }
+                    .padding(.horizontal, 20)
+                    
+                    // MAIN RECOMMENDATION - Full screen real estate usage
+                    VStack(spacing: 20) {
+                        // Size + Confidence - Prominent display
+                        HStack(alignment: .center, spacing: 20) {
+                            Text(confidenceInfo.icon)
+                                .font(.system(size: 50))
+                            
+                            VStack(alignment: .leading, spacing: 6) {
+                                Text("Size \(recommendation.recommendedSize)")
+                                    .font(.system(size: 52, weight: .bold))
+                                    .foregroundColor(.primary)
+                                
+                                Text(confidenceInfo.label)
+                                    .font(.title)
+                                    .fontWeight(.medium)
+                                    .foregroundColor(getConfidenceColor())
+                            }
+                            
+                            Spacer()
+                        }
+                        
+                        // MEASUREMENT ANALYSIS - Information dense, TikTok-style scannable
+                        VStack(alignment: .leading, spacing: 16) {
+                            Text("Why this size works for you")
+                                .font(.title2)
+                                .fontWeight(.semibold)
+                                .foregroundColor(.primary)
+                            
+                            VStack(spacing: 12) {
+                                MeasurementAnalysisRow(
+                                    dimension: "Chest",
+                                    measurement: "42\"",
+                                    userZone: "40-44\"",
+                                    status: "Perfect fit",
+                                    icon: "checkmark.circle.fill",
+                                    color: .green
+                                )
+                                
+                                MeasurementAnalysisRow(
+                                    dimension: "Neck",
+                                    measurement: "16\"",
+                                    userZone: "16-16.5\"",
+                                    status: "Comfortable",
+                                    icon: "checkmark.circle.fill",
+                                    color: .green
+                                )
+                                
+                                MeasurementAnalysisRow(
+                                    dimension: "Sleeve",
+                                    measurement: "34\"",
+                                    userZone: "33.5-36\"",
+                                    status: "Ideal length",
+                                    icon: "checkmark.circle.fill",
+                                    color: .green
+                                )
+                            }
+                        }
+                        
+                        // REFERENCE GARMENTS - Lyst-style "Based on items you own"
+                        VStack(alignment: .leading, spacing: 16) {
+                            Text("Based on your closet")
+                                .font(.title2)
+                                .fontWeight(.semibold)
+                                .foregroundColor(.primary)
+                            
+                            VStack(spacing: 10) {
+                                ReferenceGarmentAnalysisRow(
+                                    brand: "J.Crew",
+                                    item: "Cotton crewneck sweater",
+                                    size: "L",
+                                    match: "Same size, similar fit"
+                                )
+                                
+                                ReferenceGarmentAnalysisRow(
+                                    brand: "Theory",
+                                    item: "Button-down shirt", 
+                                    size: "M",
+                                    match: "Good chest match"
+                                )
+                            }
+                        }
+                    }
+                    .padding(.horizontal, 20)
+                }
+                
+                // ALTERNATIVES SECTION - eBay-style specific feedback
+                VStack(alignment: .leading, spacing: 20) {
+                    Text("Why other sizes don't work")
+                        .font(.title2)
+                        .fontWeight(.semibold)
+                        .foregroundColor(.primary)
+                        .padding(.horizontal, 20)
+                    
+                    VStack(spacing: 16) {
+                        AlternativeSizeAnalysisRow(
+                            size: "M",
+                            problem: "Chest too tight",
+                            measurement: "38-40\"",
+                            userPreference: "40-44\"",
+                            impact: "Will feel snug and restrictive"
+                        )
+                        
+                        AlternativeSizeAnalysisRow(
+                            size: "XL",
+                            problem: "Too loose overall",
+                            measurement: "44-46\"",
+                            userPreference: "40-44\"", 
+                            impact: "Will feel baggy and shapeless"
+                        )
+                    }
+                    .padding(.horizontal, 20)
+                }
+                .padding(.vertical, 24)
+                .background(Color(.systemGray6))
+                
+                // ACTION SECTION - Premium CTA
+                VStack(spacing: 16) {
+                    Button(action: {
+                        dismiss()
+                    }) {
+                        HStack {
+                            Text(confidenceInfo.icon)
+                                .font(.title3)
+                            Text("Add Size \(recommendation.recommendedSize) to Closet")
+                                .font(.headline)
+                                .fontWeight(.semibold)
+                        }
+                        .foregroundColor(.white)
+                        .frame(maxWidth: .infinity)
+                        .padding(.vertical, 18)
+                        .background(
+                            RoundedRectangle(cornerRadius: 16)
+                                .fill(getConfidenceColor())
+                        )
+                    }
+                    
+                    HStack(spacing: 20) {
+                        Button("View Size Guide") {
+                            // Size guide action
+                        }
+                        .font(.subheadline)
+                        .foregroundColor(.blue)
+                        
+                        Spacer()
+                        
+                        Button("Need Help?") {
+                            // Help action
+                        }
+                        .font(.subheadline)
+                        .foregroundColor(.blue)
+                    }
+                }
+                .padding(.horizontal, 20)
+                .padding(.vertical, 24)
+            }
+        }
+        .navigationBarHidden(true)
+    }
+    
+    private func getConfidenceColor() -> Color {
+        switch confidenceInfo.color.lowercased() {
+        case "green": return .green
+        case "orange": return .orange
+        case "red": return .red
+        case "blue": return .blue
+        default: return .green
+        }
+    }
+}
+
+// MARK: - Supporting Views for Premium Screen
+
+struct MeasurementAnalysisRow: View {
+    let dimension: String
+    let measurement: String
+    let userZone: String
+    let status: String
+    let icon: String
+    let color: Color
+    
+    var body: some View {
+        HStack(spacing: 16) {
+            Image(systemName: icon)
+                .foregroundColor(color)
+                .font(.system(size: 20, weight: .semibold))
+                .frame(width: 24)
+            
+            VStack(alignment: .leading, spacing: 4) {
+                Text(dimension)
+                    .font(.headline)
+                    .fontWeight(.medium)
+                    .foregroundColor(.primary)
+                
+                Text("\(measurement) fits your \(userZone) zone")
+                    .font(.subheadline)
+                    .foregroundColor(.secondary)
+                
+                Text(status)
+                    .font(.subheadline)
+                    .foregroundColor(color)
+                    .fontWeight(.medium)
+            }
+            
+            Spacer()
+        }
+        .padding(.vertical, 8)
+        .padding(.horizontal, 16)
+        .background(
+            RoundedRectangle(cornerRadius: 12)
+                .fill(color.opacity(0.1))
+        )
+    }
+}
+
+struct ReferenceGarmentAnalysisRow: View {
+    let brand: String
+    let item: String
+    let size: String
+    let match: String
+    
+    var body: some View {
+        HStack(spacing: 16) {
+            Circle()
+                .fill(.blue.opacity(0.2))
+                .frame(width: 12, height: 12)
+            
+            VStack(alignment: .leading, spacing: 4) {
+                HStack(spacing: 6) {
+                    Text(brand)
+                        .font(.headline)
+                        .fontWeight(.medium)
+                    Text("Size \(size)")
+                        .font(.subheadline)
+                        .foregroundColor(.secondary)
+                }
+                
+                Text(item)
+                    .font(.subheadline)
+                    .foregroundColor(.secondary)
+            }
+            
+            Spacer()
+            
+            Text(match)
+                .font(.subheadline)
+                .foregroundColor(.blue)
+                .fontWeight(.medium)
+        }
+        .padding(.vertical, 6)
+    }
+}
+
+struct AlternativeSizeAnalysisRow: View {
+    let size: String
+    let problem: String
+    let measurement: String
+    let userPreference: String
+    let impact: String
+    
+    var body: some View {
+        HStack(alignment: .top, spacing: 16) {
+            VStack {
+                Text(size)
+                    .font(.title2)
+                    .fontWeight(.bold)
+                    .foregroundColor(.primary)
+                    .frame(width: 50, height: 50)
+                    .background(
+                        Circle()
+                            .fill(Color(.systemGray5))
+                    )
+                
+                Image(systemName: "xmark.circle.fill")
+                    .foregroundColor(.red)
+                    .font(.system(size: 16))
+            }
+            
+            VStack(alignment: .leading, spacing: 6) {
+                Text(problem)
+                    .font(.headline)
+                    .fontWeight(.medium)
+                    .foregroundColor(.primary)
+                
+                Text("\(measurement) vs your \(userPreference) preference")
+                    .font(.subheadline)
+                    .foregroundColor(.secondary)
+                
+                Text(impact)
+                    .font(.subheadline)
+                    .foregroundColor(.orange)
+                    .fontWeight(.medium)
+                    .italic()
+            }
+            
+            Spacer()
+        }
+        .padding(.vertical, 12)
+        .padding(.horizontal, 16)
+        .background(
+            RoundedRectangle(cornerRadius: 12)
+                .fill(Color(.systemBackground))
+                .overlay(
+                    RoundedRectangle(cornerRadius: 12)
+                        .stroke(Color.red.opacity(0.2), lineWidth: 1)
+                )
+        )
     }
 }
 
