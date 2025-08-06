@@ -379,10 +379,8 @@ def get_fit_zones_from_database(user_id: int, category_id: int):
             if dimension not in structured_zones:
                 structured_zones[dimension] = {}
             
-            # Map database fit_type back to API format
-            api_fit_type = 'good' if fit_type == 'perfect' else fit_type
-            
-            structured_zones[dimension][api_fit_type] = {
+            # Database now uses 'good' directly - no mapping needed
+            structured_zones[dimension][fit_type] = {
                 'min': float(zone['min_value']),
                 'max': float(zone['max_value'])
             }
