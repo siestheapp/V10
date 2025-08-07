@@ -2,6 +2,70 @@
 
 **Note:** All timestamps are in US Eastern Time (EST/EDT).
 
+## [2025-08-05 14:30] Session Summary - Banana Republic Scanner Fixes & Reference Garments Enhancement
+
+**What we accomplished:**
+
+### 🔧 **Critical Backend Fixes:**
+- **Fixed Banana Republic URL detection** - Updated `extract_brand_from_url()` to recognize `bananarepublic.gap.com` domains
+- **Resolved database connection pool errors** - Added proper asyncpg pool initialization in FastAPI lifespan function
+- **Fixed brand ID mapping** - Corrected hardcoded brand IDs to match actual database (Banana Republic: 3→5, J.Crew: 2→4, Theory: 4→9)
+- **Enhanced scan action logging** - Added detailed product metadata storage (brand, size, confidence, fit_score)
+
+### 📱 **iOS Scan History Improvements:**
+- **Fixed product name display** - Now shows "Organic Cotton Oxford Shirt" instead of generic "Scanned Item"
+- **Added recommended size display** - Shows "Size: L" with proper formatting
+- **Removed redundant parentheses** - Clean display without "(Recommended: Good Fit - Size L)" clutter
+- **Fixed navigation UI glitch** - Resolved double "More" navigation by removing nested NavigationView
+
+### 🎯 **Reference Garments System Overhaul:**
+- **Replaced hardcoded J.Crew/Theory data** with dynamic API response from user's actual closet
+- **Implemented brand prioritization** - Same brand items (Banana Republic) appear first
+- **Added smart messaging** - "Same brand, same size!" for confidence building
+- **Enhanced SQL query** - Proper user garment retrieval with measurements and feedback
+- **Fixed iOS scope issues** - Corrected variable access in SizeRecommendationScreen struct
+
+### 🐛 **Debugging & Troubleshooting:**
+- **Added comprehensive debug logging** - Tracked reference garments query and processing
+- **Resolved SQL syntax errors** - Fixed `SELECT DISTINCT` with `ORDER BY` issues
+- **Fixed server port conflicts** - Proper process management for port 8006
+- **Identified root cause** - iOS hardcoded data was overriding backend API responses
+
+### 📊 **Database & Data Flow:**
+- **Verified user 1's actual garments** - Found Banana Republic "Soft Wash Long-Sleeve T-Shirt Size L" in database
+- **Confirmed brand ID mapping** - Database has correct brand IDs, backend now matches
+- **Enhanced scan history storage** - Stores detailed product info and recommendations
+- **Improved reference garment query** - Prioritizes same brand, includes measurements and feedback
+
+### 🎉 **Final Results:**
+- **✅ Backend correctly identifies** Banana Republic as brand_id: 5
+- **✅ iOS displays real user garments** instead of hardcoded J.Crew/Theory
+- **✅ "Based on your closet" shows** "Banana Republic - Soft Wash Long-Sleeve T-Shirt - Size L"
+- **✅ Smart messaging** "Same brand, same size!" for user confidence
+- **✅ Clean scan history** with proper product names and sizes
+
+### 📋 **Files Modified:**
+- **Backend**: `src/ios_app/Backend/app.py` - Brand detection, pool initialization, reference garments
+- **iOS**: `src/ios_app/V10/Views/Scanning & Matching/ScanTab.swift` - Dynamic reference data
+- **iOS**: `src/ios_app/V10/Views/MoreView.swift` - Navigation fix
+- **iOS**: `src/ios_app/V10/Views/Scanning & Matching/ScanHistoryView.swift` - History display
+
+### 🚀 **Commit Stats:**
+- **Commit**: `9342abb` - "Fix reference garments display to show actual user closet items"
+- **Files changed**: 2
+- **Lines added**: 136 insertions, 79 deletions
+- **Build status**: ✅ SUCCESSFUL
+- **User testing**: ✅ WORKING PERFECTLY
+
+### 💡 **Key Insights:**
+- **Dual filtering redundancy** identified - Two different filtering methods (strict vs permissive) causing confusion
+- **Database snapshots valuable** for context - Real data examples help AI understand system better
+- **Context template created** - `CURSOR_CONTEXT_TEMPLATE.md` for future sessions to avoid confusion
+
+**Impact:** Complete resolution of Banana Republic scanner issues and transformation of reference garments from generic hardcoded data to dynamic user-specific recommendations with proper brand prioritization and confidence messaging.
+
+---
+
 ## [2025-08-05 12:08] 🎉 MAJOR UX BREAKTHROUGH - Premium Size Recommendation Screen
 
 **REVOLUTIONARY IMPROVEMENT - Complete Screen Real Estate Solution:**

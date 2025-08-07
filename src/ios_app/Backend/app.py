@@ -20,6 +20,9 @@ from sqlalchemy import text
 import subprocess
 import sys
 from body_measurement_estimator import BodyMeasurementEstimator
+import requests
+import re
+from bs4 import BeautifulSoup
 
 # Load environment variables from .env file
 load_dotenv()
@@ -748,54 +751,50 @@ async def get_scan_history(user_id: int):
         conn = get_db_connection()
         cur = conn.cursor(cursor_factory=RealDictCursor)
         
-        # Get scan actions from user_actions table with enhanced metadata
+        # Get scan actions from user_actions table with enhanced metadata and deduplication
         cur.execute("""
-            SELECT 
-                ua.id,
-                ua.metadata,
-                ua.created_at,
-                -- Use brand_name from metadata if available, otherwise extract from URL
-                COALESCE(ua.metadata->>'brand_name', 
-                    CASE 
-                        WHEN ua.metadata->>'product_url' LIKE '%%jcrew%%' THEN 'J.Crew'
-                        WHEN ua.metadata->>'product_url' LIKE '%%uniqlo%%' THEN 'Uniqlo'
-                        WHEN ua.metadata->>'product_url' LIKE '%%banana%%' THEN 'Banana Republic'
-                        WHEN ua.metadata->>'product_url' LIKE '%%theory%%' THEN 'Theory'
-                        WHEN ua.metadata->>'product_url' LIKE '%%patagonia%%' THEN 'Patagonia'
-                        WHEN ua.metadata->>'product_url' LIKE '%%lululemon%%' THEN 'Lululemon'
-                        ELSE 'Unknown Brand'
-                    END
-                ) as brand,
-                -- Generate product name based on brand and URL patterns
-                CASE 
-                    WHEN ua.metadata->>'brand_name' = 'Banana Republic' THEN 
+            WITH ranked_scans AS (
+                SELECT 
+                    ua.id,
+                    ua.metadata,
+                    ua.created_at,
+                    -- Use brand_name from metadata if available, otherwise extract from URL
+                    COALESCE(ua.metadata->>'brand_name', 
                         CASE 
-                            WHEN ua.metadata->>'product_url' LIKE '%%shirt%%' OR ua.metadata->>'product_url' LIKE '%%704275052%%' THEN 'Organic Cotton Oxford Shirt'
-                            WHEN ua.metadata->>'product_url' LIKE '%%polo%%' THEN 'Polo Shirt'
-                            WHEN ua.metadata->>'product_url' LIKE '%%tee%%' OR ua.metadata->>'product_url' LIKE '%%t-shirt%%' THEN 'T-Shirt'
-                            WHEN ua.metadata->>'product_url' LIKE '%%sweater%%' THEN 'Sweater'
-                            WHEN ua.metadata->>'product_url' LIKE '%%jacket%%' THEN 'Jacket'
-                            ELSE 'Scanned Item'
+                            WHEN ua.metadata->>'product_url' LIKE '%%jcrew%%' THEN 'J.Crew'
+                            WHEN ua.metadata->>'product_url' LIKE '%%uniqlo%%' THEN 'Uniqlo'
+                            WHEN ua.metadata->>'product_url' LIKE '%%banana%%' THEN 'Banana Republic'
+                            WHEN ua.metadata->>'product_url' LIKE '%%theory%%' THEN 'Theory'
+                            WHEN ua.metadata->>'product_url' LIKE '%%patagonia%%' THEN 'Patagonia'
+                            WHEN ua.metadata->>'product_url' LIKE '%%lululemon%%' THEN 'Lululemon'
+                            ELSE 'Unknown Brand'
                         END
-                    WHEN ua.metadata->>'brand_name' = 'J.Crew' THEN 
-                        CASE 
-                            WHEN ua.metadata->>'product_url' LIKE '%%shirt%%' THEN 'Short Sleeve Broken-in Organic Cotton Oxford Shirt'
-                            WHEN ua.metadata->>'product_url' LIKE '%%polo%%' THEN 'Polo Shirt'
-                            WHEN ua.metadata->>'product_url' LIKE '%%tee%%' THEN 'T-Shirt'
-                            ELSE 'Scanned Item'
-                        END
-                    WHEN ua.metadata->>'brand_name' = 'Theory' THEN 
-                        CASE 
-                            WHEN ua.metadata->>'product_url' LIKE '%%shirt%%' THEN 'Button-down Shirt'
-                            ELSE 'Scanned Item'
-                        END
-                    ELSE 'Scanned Item'
-                END as name
-            FROM user_actions ua
-            WHERE ua.user_id = %s 
-            AND ua.action_type = 'scan_item'
-            ORDER BY ua.created_at DESC
-            LIMIT 50
+                    ) as brand,
+                    -- Use real product name from metadata, fallback to extracted name
+                    COALESCE(ua.metadata->>'product_name', 'Product Name Not Found') as name,
+                    -- Create a unique key for deduplication: product_url + recommended_size
+                    CONCAT(ua.metadata->>'product_url', '|', COALESCE(ua.metadata->>'recommended_size', 'unknown')) as unique_key,
+                    -- Rank by creation time (most recent first)
+                    ROW_NUMBER() OVER (
+                        PARTITION BY CONCAT(ua.metadata->>'product_url', '|', COALESCE(ua.metadata->>'recommended_size', 'unknown'))
+                        ORDER BY ua.created_at DESC
+                    ) as rn
+                FROM user_actions ua
+                WHERE ua.user_id = %s 
+                AND ua.action_type = 'scan_item'
+                AND ua.metadata->>'product_url' IS NOT NULL
+            )
+                    SELECT
+            id,
+            metadata,
+            created_at,
+            brand,
+            name,
+            COALESCE(metadata->>'product_image', 'https://via.placeholder.com/300x400?text=No+Image') as image_url
+        FROM ranked_scans
+        WHERE rn = 1  -- Only the most recent scan for each unique product+size combination
+        ORDER BY created_at DESC
+        LIMIT 50
         """, (user_id,))
         
         scan_actions = cur.fetchall()
@@ -820,7 +819,7 @@ async def get_scan_history(user_id: int):
                 "scannedAt": action['created_at'].isoformat() + "Z",
                 "name": display_name,
                 "category": "Tops",
-                "imageUrl": "https://example.com/image.jpg",  # Placeholder
+                "imageUrl": action.get('image_url') or get_brand_placeholder_image(action['brand']),
                 "productUrl": metadata.get('product_url', ''),
                 "brand": action['brand']
             })
@@ -1378,9 +1377,15 @@ async def get_garment_size_recommendation(request: dict):
         
         print(f"🎯 Getting ALL matching sizes for user {user_id}, URL: {product_url}, preference: {user_fit_preference}")
         
-        # Step 0: Log the scan action (will be updated with results later)
+        # Step 0: Extract real product name and log the scan action
         scan_action_id = None
         try:
+            # Extract the actual product name and image from the webpage
+            real_product_name = extract_product_name_from_url(product_url)
+            real_product_image = extract_product_image_from_url(product_url)
+            print(f"📦 Extracted product name: {real_product_name}")
+            print(f"🖼️  Extracted product image: {real_product_image}")
+            
             async with pool.acquire() as conn:
                 import json
                 scan_action_id = await conn.fetchval("""
@@ -1391,7 +1396,9 @@ async def get_garment_size_recommendation(request: dict):
                 """, int(user_id), 'scan_item', 'garment_recommendations', json.dumps({
                     'product_url': product_url,
                     'user_fit_preference': user_fit_preference,
-                    'scan_source': 'ios_app'
+                    'scan_source': 'ios_app',
+                    'product_name': real_product_name,
+                    'product_image': real_product_image
                 }))
                 print(f"✅ Logged scan action for user {user_id}, action_id: {scan_action_id}")
         except Exception as e:
@@ -1560,6 +1567,8 @@ async def get_garment_size_recommendation(request: dict):
                         'product_url': product_url,
                         'user_fit_preference': user_fit_preference,
                         'scan_source': 'ios_app',
+                        'product_name': real_product_name,
+                        'product_image': real_product_image,
                         'brand_name': brand_info["brand_name"],
                         'recommended_size': best_analysis.size_label,
                         'confidence_tier': confidence_info["label"],
@@ -3094,6 +3103,183 @@ async def get_canvas_data(user_id: str):
     except Exception as e:
         print(f"Error in get_canvas_data: {str(e)}")
         raise HTTPException(status_code=500, detail=str(e))
+
+def extract_product_name_from_url(product_url: str) -> str:
+    """
+    Extract the actual product name from a product webpage
+    Returns the real product name or a fallback if extraction fails
+    """
+    try:
+        # Add headers to mimic a real browser request
+        headers = {
+            'User-Agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36'
+        }
+        
+        response = requests.get(product_url, headers=headers, timeout=10)
+        response.raise_for_status()
+        
+        soup = BeautifulSoup(response.content, 'html.parser')
+        
+        # Try multiple selectors for product name extraction
+        product_name_selectors = [
+            'h1[data-testid="product-title"]',  # Banana Republic
+            'h1.product-title',
+            'h1[class*="title"]',
+            'h1[class*="product"]',
+            'h1',
+            '[data-testid="product-name"]',
+            '.product-name',
+            '.product-title'
+        ]
+        
+        for selector in product_name_selectors:
+            element = soup.select_one(selector)
+            if element:
+                product_name = element.get_text().strip()
+                if product_name and len(product_name) > 3:  # Basic validation
+                    return product_name
+        
+        # Fallback: try to extract from page title
+        title = soup.find('title')
+        if title:
+            title_text = title.get_text().strip()
+            # Remove brand name and common suffixes
+            title_text = re.sub(r'\|.*$', '', title_text)  # Remove everything after |
+            title_text = re.sub(r'-.*$', '', title_text)   # Remove everything after -
+            title_text = title_text.strip()
+            if title_text and len(title_text) > 3:
+                return title_text
+        
+        return "Product Name Not Found"
+        
+    except Exception as e:
+        print(f"⚠️ Failed to extract product name from {product_url}: {str(e)}")
+        return "Product Name Not Found"
+
+def get_brand_placeholder_image(brand_name: str) -> str:
+    """Generate a brand-specific placeholder image URL"""
+    brand_lower = brand_name.lower()
+    if 'banana republic' in brand_lower:
+        return "https://via.placeholder.com/300x400/1a1a1a/ffffff?text=Banana+Republic"
+    elif 'j.crew' in brand_lower or 'jcrew' in brand_lower:
+        return "https://via.placeholder.com/300x400/000000/ffffff?text=J.Crew"
+    elif 'uniqlo' in brand_lower:
+        return "https://via.placeholder.com/300x400/000000/ffffff?text=Uniqlo"
+    elif 'theory' in brand_lower:
+        return "https://via.placeholder.com/300x400/000000/ffffff?text=Theory"
+    elif 'patagonia' in brand_lower:
+        return "https://via.placeholder.com/300x400/000000/ffffff?text=Patagonia"
+    elif 'lululemon' in brand_lower:
+        return "https://via.placeholder.com/300x400/000000/ffffff?text=Lululemon"
+    else:
+        return "https://via.placeholder.com/300x400?text=Product+Image"
+
+def extract_product_image_from_url(product_url: str) -> str:
+    """
+    Extract the main product image from a product webpage
+    Returns the image URL or a fallback if extraction fails
+    """
+    try:
+        headers = {
+            'User-Agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36',
+            'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,*/*;q=0.8',
+            'Accept-Language': 'en-US,en;q=0.5',
+            'Accept-Encoding': 'gzip, deflate',
+            'Connection': 'keep-alive',
+            'Upgrade-Insecure-Requests': '1',
+        }
+        
+        response = requests.get(product_url, headers=headers, timeout=15)
+        response.raise_for_status()
+        
+        soup = BeautifulSoup(response.content, 'html.parser')
+        
+        # Try multiple selectors for product image extraction
+        image_selectors = [
+            # Banana Republic specific
+            'img[data-testid="product-image"]',
+            'img[class*="product-image"]',
+            'img[class*="product-img"]',
+            'img[data-testid="hero-image"]',
+            # J.Crew specific
+            'img[data-testid="product-hero-image"]',
+            'img[class*="hero-image"]',
+            'img[class*="product-hero"]',
+            # Generic
+            'img[class*="main-image"]',
+            'img[class*="primary-image"]',
+            'img[class*="product"]',
+            # Meta tags (often more reliable)
+            'meta[property="og:image"]',
+            'meta[name="twitter:image"]',
+            'meta[property="og:image:secure_url"]',
+            # Any img with product in class or id
+            'img[id*="product"]',
+            'img[class*="product"]',
+            # Look for any image with reasonable dimensions
+            'img[width*="300"]',
+            'img[height*="400"]',
+            'img[width*="400"]',
+            'img[height*="300"]'
+        ]
+        
+        for selector in image_selectors:
+            element = soup.select_one(selector)
+            if element:
+                if element.name == 'meta':
+                    image_url = element.get('content')
+                else:
+                    image_url = element.get('src') or element.get('data-src') or element.get('data-lazy-src')
+                
+                if image_url:
+                    # Handle relative URLs
+                    if image_url.startswith('//'):
+                        image_url = 'https:' + image_url
+                    elif image_url.startswith('/'):
+                        parsed_url = urlparse(product_url)
+                        image_url = f"{parsed_url.scheme}://{parsed_url.netloc}{image_url}"
+                    elif not image_url.startswith('http'):
+                        parsed_url = urlparse(product_url)
+                        image_url = f"{parsed_url.scheme}://{parsed_url.netloc}/{image_url}"
+                    
+                    # Basic validation - check if it's likely an image
+                    if any(ext in image_url.lower() for ext in ['.jpg', '.jpeg', '.png', '.webp', '.gif']):
+                        return image_url
+        
+        # Fallback: look for any image that might be a product image
+        images = soup.find_all('img')
+        for img in images:
+            src = img.get('src') or img.get('data-src') or img.get('data-lazy-src')
+            if src and any(keyword in src.lower() for keyword in ['product', 'item', 'main', 'hero', 'image']):
+                if src.startswith('//'):
+                    src = 'https:' + src
+                elif src.startswith('/'):
+                    parsed_url = urlparse(product_url)
+                    src = f"{parsed_url.scheme}://{parsed_url.netloc}{src}"
+                elif not src.startswith('http'):
+                    parsed_url = urlparse(product_url)
+                    src = f"{parsed_url.scheme}://{parsed_url.netloc}/{src}"
+                
+                if any(ext in src.lower() for ext in ['.jpg', '.jpeg', '.png', '.webp', '.gif']):
+                    return src
+        
+        # Last resort: return a brand-specific placeholder
+        if 'bananarepublic' in product_url.lower():
+            return "https://via.placeholder.com/300x400/1a1a1a/ffffff?text=Banana+Republic"
+        elif 'jcrew' in product_url.lower():
+            return "https://via.placeholder.com/300x400/000000/ffffff?text=J.Crew"
+        else:
+            return "https://via.placeholder.com/300x400?text=Product+Image"
+        
+    except Exception as e:
+        print(f"⚠️ Failed to extract product image from {product_url}: {str(e)}")
+        # Return brand-specific placeholder on error
+        if 'bananarepublic' in product_url.lower():
+            return "https://via.placeholder.com/300x400/1a1a1a/ffffff?text=Banana+Republic"
+        elif 'jcrew' in product_url.lower():
+            return "https://via.placeholder.com/300x400/000000/ffffff?text=J.Crew"
+        else:
+            return "https://via.placeholder.com/300x400?text=Image+Unavailable"
 
 if __name__ == "__main__":
     import uvicorn

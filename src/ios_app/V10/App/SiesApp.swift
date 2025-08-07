@@ -25,6 +25,12 @@ struct SiesApp: App {
                                 Label("Scan", systemImage: "camera")
                             }
                         
+                        ScanHistoryView()
+                            .environmentObject(userSettings)
+                            .tabItem {
+                                Label("Finds", systemImage: "list.bullet")
+                            }
+                        
                         ClosetListView()
                             .environmentObject(userSettings)
                             .tabItem {
@@ -35,12 +41,6 @@ struct SiesApp: App {
                             .environmentObject(userSettings)
                             .tabItem {
                                 Label("Fit", systemImage: "ruler")
-                            }
-                        
-                        CanvasView()
-                            .environmentObject(userSettings)
-                            .tabItem {
-                                Label("Canvas", systemImage: "cpu")
                             }
                         
                         ShopView()

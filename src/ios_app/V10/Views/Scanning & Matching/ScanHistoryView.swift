@@ -63,11 +63,26 @@ struct ScanHistoryView: View {
                                 Text(item.formattedDate)  // Add this
                                     .font(.caption2)
                                     .foregroundColor(.gray)
+                                
+                                // Subtle indicator that this is clickable
+                                if !item.productUrl.isEmpty {
+                                    HStack {
+                                        Image(systemName: "arrow.up.right.square")
+                                            .font(.caption2)
+                                            .foregroundColor(.blue)
+                                        Text("Tap to view product")
+                                            .font(.caption2)
+                                            .foregroundColor(.blue)
+                                    }
+                                }
                             }
                         }
                         .onTapGesture {
                             if let url = URL(string: item.productUrl) {
+                                print("🌐 Opening product URL: \(url)")
                                 UIApplication.shared.open(url)
+                            } else {
+                                print("⚠️ Invalid product URL: \(item.productUrl)")
                             }
                         }
                     }
