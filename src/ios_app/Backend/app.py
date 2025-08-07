@@ -1606,7 +1606,7 @@ async def get_garment_size_recommendation(request: dict):
             "total_concerns": len(best_analysis.concerns) if best_analysis else 0,
             
             # Reference garments (required by iOS app)
-            "reference_garments": _get_reference_garments_summary(size_analyses),
+            "reference_garments": _get_reference_garments_summary(size_analyses, int(user_id), brand_info["brand_name"]),
             
             # Summary and detailed breakdown
             "recommendation_summary": f"Found {len(size_analyses)} sizes analyzed across {len(list(best_analysis.dimension_analysis.keys()) if best_analysis else [])} dimensions",
@@ -1906,67 +1906,125 @@ def _generate_simple_user_guidance(size_analyses, fit_zone_recommendations, user
     
     return " ".join(guidance_parts)
 
-def _get_reference_garments_summary(size_analyses) -> dict:
-    """Generate reference garments summary for iOS app compatibility"""
+def _get_reference_garments_summary(size_analyses, user_id: int = 1, target_brand: str = None) -> dict:
+    """Generate reference garments summary from actual user garments with brand prioritization"""
     if not size_analyses:
         return {}
     
-    # Get unique garments that were used in the analysis
-    reference_garments = {}
-    
-    for analysis in size_analyses[:3]:  # Top 3 analyses
-        for dimension, dim_analysis in analysis.dimension_analysis.items():
-            if dimension != 'chest' and 'data_points' in dim_analysis:
-                # This is a good fit range analysis with source garments
-                garment_key = f"user_garment_{dimension}"
-                reference_garments[garment_key] = {
-                    "brand": "Multiple Brands",  # iOS app expects this field
-                    "product_name": f"User's {dimension.title()} Profile",
-                    "size": "Multiple Sizes",  # iOS app expects "size" not "size_label"
-                    "size_label": "Multiple Sizes",  # Keep both for compatibility
-                    "dimension": dimension,
-                    "measurement_range": dim_analysis.get('good_fit_range', 'Unknown'),
-                    "measurements": {  # iOS app expects this field (as strings)
-                        dimension: str(dim_analysis.get('garment_measurement', 0)),
-                        f"{dimension}_range": str(dim_analysis.get('good_fit_range', 'Unknown'))
-                    },
-                    "data_points": dim_analysis.get('data_points', 1),
-                    "confidence": round(dim_analysis.get('confidence', 0.5), 2),
-                    "analysis_type": "good_fit_range",
-                    "feedback": {  # iOS app expects feedback as dictionary
-                        "overall": "Positive Feedback",
-                        "dimension": dimension,
-                        "fit_assessment": "Good"
-                    },
-                    "fit_feedback": "Positive Feedback",  # Keep both for compatibility
-                    "garment_measurement": dim_analysis.get('garment_measurement', 'N/A')
-                }
-    
-    # If no reference garments found, create a basic entry
-    if not reference_garments:
-        reference_garments["user_profile"] = {
-            "brand": "User Profile",
-            "product_name": "Multi-Dimensional Analysis",
-            "size": "Various",  # iOS app expects "size" not "size_label"
-            "size_label": "Various",  # Keep both for compatibility
-            "dimension": "multi_dimensional",
-            "measurements": {  # iOS app expects this field
-                "chest": "39.5-42.5",
-                "overall": "Multi-dimensional"
-            },
-            "analysis_type": "fit_zone_analysis",
-            "data_points": len(size_analyses),
-            "confidence": 0.7,
-            "feedback": {  # iOS app expects feedback as dictionary
-                "overall": "Analyzed",
-                "dimension": "multi_dimensional",
-                "fit_assessment": "Profile-based"
-            },
-            "fit_feedback": "Analyzed",  # Keep both for compatibility
-            "garment_measurement": "Multiple"
-        }
-    
-    return reference_garments
+    try:
+        conn = get_db_connection()
+        cur = conn.cursor(cursor_factory=RealDictCursor)
+        
+        # Get user's actual garments with measurements and feedback, prioritizing same brand
+        query = """
+            SELECT DISTINCT
+                b.name as brand,
+                ug.product_name,
+                ug.size_label,
+                sge.chest_min, sge.chest_max, sge.chest_range,
+                sge.neck_min, sge.neck_max, sge.neck_range,
+                sge.sleeve_min, sge.sleeve_max, sge.sleeve_range,
+                -- Get latest feedback for each dimension
+                (SELECT fc.feedback_text FROM user_garment_feedback ugf 
+                 JOIN feedback_codes fc ON ugf.feedback_code_id = fc.id 
+                 WHERE ugf.user_garment_id = ug.id AND ugf.dimension = 'chest' 
+                 ORDER BY ugf.created_at DESC LIMIT 1) as chest_feedback,
+                (SELECT fc.feedback_text FROM user_garment_feedback ugf 
+                 JOIN feedback_codes fc ON ugf.feedback_code_id = fc.id 
+                 WHERE ugf.user_garment_id = ug.id AND ugf.dimension = 'overall' 
+                 ORDER BY ugf.created_at DESC LIMIT 1) as overall_feedback,
+                -- Brand priority for sorting
+                CASE WHEN b.name = %s THEN 1 ELSE 2 END as brand_priority,
+                ug.created_at
+            FROM user_garments ug
+            JOIN brands b ON ug.brand_id = b.id
+            LEFT JOIN size_guide_entries sge ON ug.size_guide_entry_id = sge.id
+            WHERE ug.user_id = %s 
+            AND ug.owns_garment = true
+            AND sge.id IS NOT NULL
+            ORDER BY 
+                brand_priority,  -- Same brand first
+                ug.created_at DESC
+            LIMIT 3
+        """
+        
+        print(f"🔍 Querying reference garments for user {user_id}, target_brand: '{target_brand}'")
+        cur.execute(query, (target_brand or '', user_id))
+        user_garments = cur.fetchall()
+        print(f"📊 Found {len(user_garments)} user garments in database")
+        
+        reference_garments = {}
+        
+        for idx, garment in enumerate(user_garments):
+            print(f"🔍 Processing garment {idx+1}: {garment['brand']} - {garment['product_name']} - Size {garment['size_label']}")
+            garment_key = f"user_garment_{idx + 1}"
+            
+            # Determine fit relationship to target
+            if garment['brand'] == target_brand:
+                if garment['size_label'] == size_analyses[0].size_label if size_analyses else None:
+                    fit_description = "Same brand, same size!"
+                else:
+                    fit_description = "Same brand, different size"
+            else:
+                if garment['size_label'] == size_analyses[0].size_label if size_analyses else None:
+                    fit_description = "Same size, similar fit"
+                else:
+                    # Compare chest measurements for fit description
+                    if garment.get('chest_min') and garment.get('chest_max'):
+                        chest_avg = (garment['chest_min'] + garment['chest_max']) / 2
+                        if 40 <= chest_avg <= 44:  # Assuming target is in this range
+                            fit_description = "Good chest match"
+                        else:
+                            fit_description = "Different fit profile"
+                    else:
+                        fit_description = "Reference garment"
+            
+            reference_garments[garment_key] = {
+                "brand": garment['brand'],
+                "product_name": garment['product_name'] or "Garment",
+                "size": garment['size_label'],
+                "size_label": garment['size_label'],
+                "measurements": {
+                    "chest": f"{garment['chest_min']}-{garment['chest_max']}" if garment.get('chest_min') and garment.get('chest_max') else "N/A",
+                    "neck": f"{garment['neck_min']}-{garment['neck_max']}" if garment.get('neck_min') and garment.get('neck_max') else "N/A",
+                    "sleeve": f"{garment['sleeve_min']}-{garment['sleeve_max']}" if garment.get('sleeve_min') and garment.get('sleeve_max') else "N/A"
+                },
+                "feedback": {
+                    "overall": garment['overall_feedback'] or "Good Fit",
+                    "chest": garment['chest_feedback'] or "Good Fit",
+                    "fit_assessment": "Reference"
+                },
+                "fit_feedback": garment['overall_feedback'] or "Good Fit",
+                "confidence": 0.9 if garment['brand'] == target_brand else 0.7,
+                "fit_description": fit_description,
+                "is_same_brand": garment['brand'] == target_brand
+            }
+        
+        cur.close()
+        conn.close()
+        
+        # If no actual garments found, fall back to generic profile
+        if not reference_garments:
+            reference_garments["user_profile"] = {
+                "brand": "User Profile",
+                "product_name": "Fit Analysis",
+                "size": "Various",
+                "size_label": "Various",
+                "measurements": {"overall": "Multi-dimensional analysis"},
+                "feedback": {"overall": "Analyzed", "fit_assessment": "Profile-based"},
+                "fit_feedback": "Profile-based analysis",
+                "confidence": 0.6,
+                "fit_description": "Based on your closet data",
+                "is_same_brand": False
+            }
+        
+        print(f"🎯 Final reference_garments being returned: {reference_garments}")
+        return reference_garments
+        
+    except Exception as e:
+        print(f"Error getting reference garments: {str(e)}")
+        # Fallback to empty dict
+        return {}
 
 def _get_direct_fit_description(fit_score: float, concerns: List[str], references: List) -> str:
     """Generate human-readable fit description for direct comparison"""
@@ -2057,19 +2115,19 @@ def extract_brand_from_url(url: str) -> dict:
         parsed = urlparse(url)
         domain = parsed.netloc.lower()
         
-        # Brand detection logic
+        # Brand detection logic (IDs match database brands table)
         if "uniqlo.com" in domain:
-            return {"brand_name": "Uniqlo", "brand_id": 1}
+            return {"brand_name": "Uniqlo", "brand_id": 1}  # No Uniqlo in DB yet
         elif "jcrew.com" in domain:
-            return {"brand_name": "J.Crew", "brand_id": 2}
+            return {"brand_name": "J.Crew", "brand_id": 4}  # J.Crew = ID 4 in DB
         elif "bananarepublic.com" in domain or "bananarepublic.gap.com" in domain:
-            return {"brand_name": "Banana Republic", "brand_id": 3}
+            return {"brand_name": "Banana Republic", "brand_id": 5}  # Banana Republic = ID 5 in DB
         elif "theory.com" in domain:
-            return {"brand_name": "Theory", "brand_id": 4}
+            return {"brand_name": "Theory", "brand_id": 9}  # Theory = ID 9 in DB
         elif "patagonia.com" in domain:
-            return {"brand_name": "Patagonia", "brand_id": 5}
+            return {"brand_name": "Patagonia", "brand_id": 2}  # Patagonia = ID 2 in DB
         elif "lululemon.com" in domain:
-            return {"brand_name": "Lululemon", "brand_id": 6}
+            return {"brand_name": "Lululemon", "brand_id": 1}  # Lululemon = ID 1 in DB
         else:
             # Try to extract from database
             conn = get_db()

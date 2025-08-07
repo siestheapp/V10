@@ -844,19 +844,18 @@ struct SizeRecommendationScreen: View {
                                 .foregroundColor(.primary)
                             
                             VStack(spacing: 10) {
-                                ReferenceGarmentAnalysisRow(
-                                    brand: "J.Crew",
-                                    item: "Cotton crewneck sweater",
-                                    size: "L",
-                                    match: "Same size, similar fit"
-                                )
-                                
-                                ReferenceGarmentAnalysisRow(
-                                    brand: "Theory",
-                                    item: "Button-down shirt", 
-                                    size: "M",
-                                    match: "Good chest match"
-                                )
+                                // Dynamic reference garments from API
+                                let referenceGarments = recommendation.referenceGarments
+                                ForEach(Array(referenceGarments.keys.sorted()), id: \.self) { key in
+                                    if let garment = referenceGarments[key] {
+                                        ReferenceGarmentAnalysisRow(
+                                            brand: garment.brand,
+                                            item: garment.productName,
+                                            size: garment.size,
+                                            match: garment.feedback["fit_description"] ?? "Good match"
+                                        )
+                                    }
+                                }
                             }
                         }
                     }
