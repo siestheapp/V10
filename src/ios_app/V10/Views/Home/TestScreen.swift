@@ -193,7 +193,7 @@ struct LiveMeasurementsResponse: Decodable {
 
 // API Function
 func fetchUserTestData() async throws -> UserTestData {
-                let url = URL(string: "http://localhost:8006/test/user/1")!
+                let url = URL(string: "http://192.168.18.26:8006/test/user/1")!
     let (data, _) = try await URLSession.shared.data(from: url)
     let decoder = JSONDecoder()
     return try decoder.decode(UserTestData.self, from: data)
@@ -201,7 +201,7 @@ func fetchUserTestData() async throws -> UserTestData {
 
 // Add new API function
 func fetchLiveMeasurements() async throws -> LiveMeasurementsResponse {
-    let url = URL(string: "http://localhost:8006/user/2/measurements")!
+    let url = URL(string: "http://192.168.18.26:8006/user/2/measurements")!
     let (data, _) = try await URLSession.shared.data(from: url)
     let decoder = JSONDecoder()
     return try decoder.decode(LiveMeasurementsResponse.self, from: data)

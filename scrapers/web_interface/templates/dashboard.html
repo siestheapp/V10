@@ -1,0 +1,315 @@
+{% extends "base.html" %}
+
+{% block title %}Dashboard - Product Scraper{% endblock %}
+
+{% block content %}
+<div class="row">
+    <div class="col-12">
+        <h1 class="h2 mb-4">
+            <i class="bi bi-speedometer2"></i> Scraper Dashboard
+        </h1>
+    </div>
+</div>
+
+<!-- Status Cards -->
+<div class="row mb-4">
+    <div class="col-md-3">
+        <div class="card text-white bg-primary">
+            <div class="card-body">
+                <div class="d-flex justify-content-between">
+                    <div>
+                        <h5 class="card-title">Database</h5>
+                        <h3 class="mb-0">
+                            {% if db_status %}
+                                <i class="bi bi-check-circle"></i> Connected
+                            {% else %}
+                                <i class="bi bi-x-circle"></i> Error
+                            {% endif %}
+                        </h3>
+                    </div>
+                    <div class="align-self-center">
+                        <i class="bi bi-database fs-1"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <div class="col-md-3">
+        <div class="card text-white bg-success">
+            <div class="card-body">
+                <div class="d-flex justify-content-between">
+                    <div>
+                        <h5 class="card-title">Products</h5>
+                        <h3 class="mb-0">{{ products_count }}</h3>
+                        <small>Scraped products</small>
+                    </div>
+                    <div class="align-self-center">
+                        <i class="bi bi-box fs-1"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <div class="col-md-3">
+        <div class="card text-white {% if scraping_status.is_running %}bg-warning{% else %}bg-info{% endif %}">
+            <div class="card-body">
+                <div class="d-flex justify-content-between">
+                    <div>
+                        <h5 class="card-title">Scraper Status</h5>
+                        <h3 class="mb-0">
+                            {% if scraping_status.is_running %}
+                                <i class="bi bi-play-circle"></i> Running
+                            {% else %}
+                                <i class="bi bi-pause-circle"></i> Idle
+                            {% endif %}
+                        </h3>
+                        {% if scraping_status.current_brand %}
+                            <small>{{ scraping_status.current_brand }}</small>
+                        {% endif %}
+                    </div>
+                    <div class="align-self-center">
+                        <i class="bi bi-gear fs-1"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <div class="col-md-3">
+        <div class="card text-white bg-secondary">
+            <div class="card-body">
+                <div class="d-flex justify-content-between">
+                    <div>
+                        <h5 class="card-title">Last Run</h5>
+                        <h3 class="mb-0">
+                            {% if recent_runs %}
+                                {{ recent_runs[0].started_at.strftime('%H:%M') }}
+                            {% else %}
+                                Never
+                            {% endif %}
+                        </h3>
+                        {% if recent_runs %}
+                            <small>{{ recent_runs[0].started_at.strftime('%Y-%m-%d') }}</small>
+                        {% endif %}
+                    </div>
+                    <div class="align-self-center">
+                        <i class="bi bi-clock fs-1"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Current Scraping Status -->
+{% if scraping_status.is_running %}
+<div class="row mb-4">
+    <div class="col-12">
+        <div class="card">
+            <div class="card-header bg-warning text-dark">
+                <h5 class="mb-0">
+                    <i class="bi bi-gear-fill"></i> Scraping in Progress
+                </h5>
+            </div>
+            <div class="card-body">
+                <div class="d-flex justify-content-between align-items-center mb-2">
+                    <span>{{ scraping_status.current_brand }}</span>
+                    <span>{{ scraping_status.progress }}%</span>
+                </div>
+                <div class="progress mb-2">
+                    <div class="progress-bar progress-bar-striped progress-bar-animated" 
+                         role="progressbar" 
+                         style="width: {{ scraping_status.progress }}%"></div>
+                </div>
+                <small class="text-muted">
+                    Last update: <span id="last-update">{{ scraping_status.last_update }}</span>
+                </small>
+            </div>
+        </div>
+    </div>
+</div>
+{% endif %}
+
+<!-- Quick Actions -->
+<div class="row mb-4">
+    <div class="col-12">
+        <div class="card">
+            <div class="card-header">
+                <h5 class="mb-0">
+                    <i class="bi bi-lightning"></i> Quick Actions
+                </h5>
+            </div>
+            <div class="card-body">
+                <div class="row">
+                    <div class="col-md-4">
+                        <button class="btn btn-primary btn-lg w-100 mb-2" 
+                                onclick="startScraper('banana_republic', 1)"
+                                {% if scraping_status.is_running %}disabled{% endif %}>
+                            <i class="bi bi-play"></i> Test Scrape (1 page)
+                        </button>
+                    </div>
+                    <div class="col-md-4">
+                        <button class="btn btn-success btn-lg w-100 mb-2" 
+                                onclick="startScraper('banana_republic', 3)"
+                                {% if scraping_status.is_running %}disabled{% endif %}>
+                            <i class="bi bi-collection"></i> Scrape 3 Pages
+                        </button>
+                    </div>
+                    <div class="col-md-4">
+                        <button class="btn btn-danger btn-lg w-100 mb-2" 
+                                onclick="stopScraper()"
+                                {% if not scraping_status.is_running %}disabled{% endif %}>
+                            <i class="bi bi-stop"></i> Stop Scraper
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Recent Scraping Runs -->
+<div class="row">
+    <div class="col-12">
+        <div class="card">
+            <div class="card-header">
+                <h5 class="mb-0">
+                    <i class="bi bi-clock-history"></i> Recent Scraping Runs
+                </h5>
+            </div>
+            <div class="card-body">
+                {% if recent_runs %}
+                    <div class="table-responsive">
+                        <table class="table table-striped">
+                            <thead>
+                                <tr>
+                                    <th>Brand</th>
+                                    <th>Category</th>
+                                    <th>Found</th>
+                                    <th>Added</th>
+                                    <th>Updated</th>
+                                    <th>Errors</th>
+                                    <th>Duration</th>
+                                    <th>Started</th>
+                                    <th>Status</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for run in recent_runs %}
+                                <tr>
+                                    <td>{{ run.brand_name or 'Unknown' }}</td>
+                                    <td>{{ run.category_name or 'Unknown' }}</td>
+                                    <td>{{ run.products_found }}</td>
+                                    <td>
+                                        <span class="badge bg-success">{{ run.products_added }}</span>
+                                    </td>
+                                    <td>
+                                        <span class="badge bg-info">{{ run.products_updated }}</span>
+                                    </td>
+                                    <td>
+                                        {% if run.errors_count > 0 %}
+                                            <span class="badge bg-danger">{{ run.errors_count }}</span>
+                                        {% else %}
+                                            <span class="badge bg-success">0</span>
+                                        {% endif %}
+                                    </td>
+                                    <td>
+                                        {% if run.run_duration_seconds %}
+                                            {{ run.run_duration_seconds }}s
+                                        {% else %}
+                                            -
+                                        {% endif %}
+                                    </td>
+                                    <td>{{ run.started_at.strftime('%Y-%m-%d %H:%M') }}</td>
+                                    <td>
+                                        {% if run.status == 'completed' %}
+                                            <span class="badge bg-success">Completed</span>
+                                        {% elif run.status == 'failed' %}
+                                            <span class="badge bg-danger">Failed</span>
+                                        {% elif run.status == 'running' %}
+                                            <span class="badge bg-warning">Running</span>
+                                        {% else %}
+                                            <span class="badge bg-secondary">{{ run.status }}</span>
+                                        {% endif %}
+                                    </td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                {% else %}
+                    <div class="text-center py-4">
+                        <i class="bi bi-inbox display-1 text-muted"></i>
+                        <h4 class="mt-3">No scraping runs yet</h4>
+                        <p class="text-muted">Start your first scraper to see results here.</p>
+                    </div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+// Auto-refresh status every 5 seconds if scraping is running
+{% if scraping_status.is_running %}
+setInterval(function() {
+    fetch('/api/scraping_status')
+        .then(response => response.json())
+        .then(data => {
+            if (!data.is_running) {
+                // Reload page when scraping completes
+                window.location.reload();
+            }
+        });
+}, 5000);
+{% endif %}
+
+function startScraper(scraperId, maxPages) {
+    if (confirm(`Start ${scraperId.replace('_', ' ')} scraper for ${maxPages} page(s)?`)) {
+        fetch('/api/start_scraper', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({
+                scraper_id: scraperId,
+                max_pages: maxPages
+            })
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                alert('Scraper started successfully!');
+                window.location.reload();
+            } else {
+                alert('Error: ' + data.message);
+            }
+        })
+        .catch(error => {
+            alert('Error starting scraper: ' + error);
+        });
+    }
+}
+
+function stopScraper() {
+    if (confirm('Stop the current scraper?')) {
+        fetch('/api/stop_scraper', {
+            method: 'POST'
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                alert('Scraper stop requested');
+                window.location.reload();
+            } else {
+                alert('Error: ' + data.message);
+            }
+        });
+    }
+}
+</script>
+{% endblock %}

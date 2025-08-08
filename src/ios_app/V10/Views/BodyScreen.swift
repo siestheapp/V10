@@ -26,7 +26,7 @@ class BodyMeasurementViewModel: ObservableObject {
 
     func fetchBodyMeasurements() {
         // Use user ID 1 which has data, or make this configurable
-        guard let url = URL(string: "http://localhost:8006/user/1/body-measurements") else { 
+        guard let url = URL(string: "http://192.168.18.26:8006/user/1/body-measurements") else { 
             self.error = "Invalid URL"
             return 
         }

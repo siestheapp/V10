@@ -14,6 +14,8 @@ from pathlib import Path
 scrapers_dir = Path(__file__).parent.parent
 sys.path.insert(0, str(scrapers_dir))
 
+sys.path.append(str(scrapers_dir))
+
 from scrapers.banana_republic import BananaRepublicScraper
 from config.database import db_config
 

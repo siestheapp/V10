@@ -1,7 +1,7 @@
 import Foundation
 
 struct Config {
-    static let baseURL = "http://127.0.0.1:8006"  // Restored to working URL
+    static let baseURL = "http://192.168.18.26:8006"  // Restored to working URL
     
     static let uniqloURLTemplate = "https://www.uniqlo.com/us/en/products/E{product_code}-000"
     

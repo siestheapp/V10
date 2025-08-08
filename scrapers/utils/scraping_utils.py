@@ -9,7 +9,7 @@ from urllib.parse import urljoin, urlparse
 import re
 from decimal import Decimal
 
-from ..config.scraping_config import scraping_config
+from config.scraping_config import scraping_config
 
 class ScrapingSession:
     """Manages HTTP sessions with rate limiting and error handling."""

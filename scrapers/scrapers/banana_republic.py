@@ -5,10 +5,10 @@ from bs4 import BeautifulSoup
 import re
 from decimal import Decimal
 
-from .base_scraper import BaseScraper
-from ..models.product import ScrapedProduct
-from ..utils.scraping_utils import make_absolute_url, ProductExtractor
-from ..config.scraping_config import BRAND_CONFIGS
+from scrapers.base_scraper import BaseScraper
+from models.product import ScrapedProduct
+from utils.scraping_utils import make_absolute_url, ProductExtractor
+from config.scraping_config import BRAND_CONFIGS
 
 class BananaRepublicScraper(BaseScraper):
     """Scraper for Banana Republic products."""

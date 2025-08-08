@@ -4,8 +4,8 @@ from typing import Optional, Dict, Any, List
 import json
 from datetime import datetime
 
-from ..config.database import db_config
-from ..models.product import ScrapedProduct, ScrapingRun
+from config.database import db_config
+from models.product import ScrapedProduct, ScrapingRun
 
 class DatabaseManager:
     """Manages database operations for scrapers."""

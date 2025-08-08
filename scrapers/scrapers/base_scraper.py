@@ -5,9 +5,9 @@ from typing import List, Dict, Any, Optional
 from bs4 import BeautifulSoup
 import time
 
-from ..models.product import ScrapedProduct, ScrapingRun
-from ..utils.scraping_utils import ScrapingSession, ProductExtractor
-from ..utils.db_utils import db_manager
+from models.product import ScrapedProduct, ScrapingRun
+from utils.scraping_utils import ScrapingSession, ProductExtractor
+from utils.db_utils import db_manager
 
 class BaseScraper(ABC):
     """Abstract base class for all scrapers."""
