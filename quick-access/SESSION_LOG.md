@@ -1,1 +1,0 @@
-../docs/development/SESSION_LOG.md

@@ -1,1 +1,0 @@
-../docs/development/QUICK_REFERENCE.md
