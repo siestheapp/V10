@@ -86,6 +86,10 @@ class SimpleMultiDimensionalAnalyzer:
             # Step 2: Get chest fit zones for preference matching
             chest_fit_zones = self._get_chest_fit_zones(user_id, category)
             
+            # Step 2.5: Get brand-size prior and neck tolerance history (for tie-breakers)
+            brand_prior = self._get_brand_size_prior(user_id, brand_name)
+            neck_tolerance_allowed = self._has_neck_tolerance_history(user_id)
+            
             # Step 3: Get brand's size guide
             size_entries = self._get_brand_size_guide(brand_name, category)
             
@@ -97,12 +101,13 @@ class SimpleMultiDimensionalAnalyzer:
             analyses = []
             for size_entry in size_entries:
                 analysis = self._analyze_single_size(
-                    size_entry, user_profiles, chest_fit_zones, user_fit_preference, category
+                    size_entry, user_profiles, chest_fit_zones, user_fit_preference, category, neck_tolerance_allowed
                 )
                 if analysis:
                     analyses.append(analysis)
             
-            # Step 5: Sort by overall fit score
+            # Step 5: Apply brand-size prior to overall scores (light weight) and sort
+            analyses = self._apply_brand_prior_and_sort(analyses, brand_prior)
             analyses.sort(key=lambda a: a.overall_fit_score, reverse=True)
             
             self.logger.info(f"✅ Analyzed {len(analyses)} sizes across {len(user_profiles)} dimensions")
@@ -377,7 +382,8 @@ class SimpleMultiDimensionalAnalyzer:
         user_profiles: Dict[str, UserDimensionProfile],
         chest_fit_zones: Optional[Dict[str, Tuple[float, float]]],
         user_fit_preference: str,
-        category: str = "Tops"
+        category: str = "Tops",
+        neck_tolerance_allowed: bool = False
     ) -> Optional[SizeAnalysis]:
         """Analyze how well a single size fits the user across all dimensions"""
         
@@ -443,6 +449,12 @@ class SimpleMultiDimensionalAnalyzer:
                     else:
                         fit_score = 0.8  # Good score for single data point match
                     
+                    # Neck-specific stricter handling: if below user's good min and no tolerance history, penalize strongly
+                    if dimension == 'neck' and garment_measurement < profile.good_fit_min and not neck_tolerance_allowed:
+                        fit_score = min(fit_score, 0.2)
+                        fits_well = False
+                        concerns.append("neck measurement below preferred range and no tolerance history")
+
                     dimension_analysis[dimension] = {
                         'fits_well': True,
                         'garment_measurement': garment_measurement,
@@ -511,6 +523,68 @@ class SimpleMultiDimensionalAnalyzer:
             concerns=concerns,
             reasoning=reasoning
         )
+
+    def _get_brand_size_prior(self, user_id: int, brand_name: str) -> Dict[str, float]:
+        """Return normalized prior over size_label for this brand based on user's Good chest feedback."""
+        try:
+            conn = self.get_connection()
+            cursor = conn.cursor()
+            query = """
+                SELECT ug.size_label, COUNT(*)::float AS c
+                FROM user_garments ug
+                JOIN brands b ON b.id = ug.brand_id
+                WHERE ug.user_id = %s AND b.name = %s
+                  AND ug.owns_garment = true
+                  AND EXISTS (
+                      SELECT 1 FROM user_garment_feedback f
+                      JOIN feedback_codes fc ON fc.id = f.feedback_code_id
+                      WHERE f.user_garment_id = ug.id
+                        AND f.dimension = 'chest'
+                        AND fc.feedback_text IN ('Good Fit','Perfect Fit')
+                  )
+                GROUP BY ug.size_label
+            """
+            cursor.execute(query, (user_id, brand_name))
+            rows = cursor.fetchall()
+            cursor.close()
+            conn.close()
+            total = sum(r[1] for r in rows) or 1.0
+            return {r[0]: (r[1] / total) for r in rows}
+        except Exception:
+            return {}
+
+    def _has_neck_tolerance_history(self, user_id: int) -> bool:
+        """Return True if the user has any neck feedback indicating tolerance (tight/loose but liked)."""
+        try:
+            conn = self.get_connection()
+            cursor = conn.cursor()
+            query = """
+                SELECT COUNT(*)
+                FROM user_garment_feedback f
+                JOIN user_garments ug ON ug.id = f.user_garment_id
+                JOIN feedback_codes fc ON fc.id = f.feedback_code_id
+                WHERE ug.user_id = %s AND f.dimension = 'neck'
+                  AND fc.feedback_text IN ('Tight but I Like It','Loose but I Like It','Relaxed but I Like It','Slightly Tight','Slightly Loose')
+            """
+            cursor.execute(query, (user_id,))
+            count = cursor.fetchone()[0] or 0
+            cursor.close()
+            conn.close()
+            return count > 0
+        except Exception:
+            return False
+
+    def _apply_brand_prior_and_sort(self, analyses: List[SizeAnalysis], brand_prior: Dict[str, float]) -> List[SizeAnalysis]:
+        """Apply a light brand-size prior to overall scores and return the adjusted list."""
+        if not analyses:
+            return analyses
+        prior_weight = 0.15  # light nudge
+        adjusted: List[SizeAnalysis] = []
+        for a in analyses:
+            prior = brand_prior.get(a.size_label, 0.0)
+            a.overall_fit_score = (1.0 - prior_weight) * a.overall_fit_score + prior_weight * prior
+            adjusted.append(a)
+        return adjusted
     
     def _get_garment_range(self, min_val: Optional[float], max_val: Optional[float], range_str: Optional[str]) -> str:
         """Get the actual garment range from size guide data"""

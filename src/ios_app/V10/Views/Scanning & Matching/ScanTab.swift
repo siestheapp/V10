@@ -816,23 +816,36 @@ struct SizeRecommendationScreen: View {
     private func getAlternativeSizes() -> [AlternativeSize] {
         var alternatives: [AlternativeSize] = []
         
-        // Get sizes that aren't the recommended size
-        let otherSizes = recommendation.allSizes.filter { $0.size != recommendation.recommendedSize }
-        
-        for sizeOption in otherSizes.prefix(2) { // Limit to 2 alternatives
-            if let chestAnalysis = sizeOption.dimensionAnalysis["chest"] {
-                let measurement = chestAnalysis.garmentRange ?? "\(chestAnalysis.garmentMeasurement)\""
-                let problem = determineProblem(for: sizeOption, chestAnalysis: chestAnalysis)
-                let impact = determineImpact(for: problem)
-                let similarGarment = findSimilarGarment(for: chestAnalysis.garmentMeasurement)
-                
+        // Use backend alternative explanations if available
+        if let backendAlternatives = recommendation.alternativeExplanations {
+            for alt in backendAlternatives.prefix(2) {
                 alternatives.append(AlternativeSize(
-                    size: sizeOption.size,
-                    problem: problem,
-                    measurement: measurement,
-                    impact: impact,
-                    similarGarment: similarGarment
+                    size: alt.size,
+                    problem: alt.explanation,
+                    measurement: "", // Not needed with backend explanation
+                    impact: "", // Not needed with backend explanation
+                    similarGarment: nil // Backend explanation is comprehensive
                 ))
+            }
+        } else {
+            // Fallback to local logic if backend explanations not available
+            let otherSizes = recommendation.allSizes.filter { $0.size != recommendation.recommendedSize }
+            
+            for sizeOption in otherSizes.prefix(2) { // Limit to 2 alternatives
+                if let chestAnalysis = sizeOption.dimensionAnalysis["chest"] {
+                    let measurement = chestAnalysis.garmentRange ?? "\(chestAnalysis.garmentMeasurement)\""
+                    let problem = determineProblem(for: sizeOption, chestAnalysis: chestAnalysis)
+                    let impact = determineImpact(for: problem)
+                    let similarGarment = findSimilarGarment(for: chestAnalysis.garmentMeasurement)
+                    
+                    alternatives.append(AlternativeSize(
+                        size: sizeOption.size,
+                        problem: problem,
+                        measurement: measurement,
+                        impact: impact,
+                        similarGarment: similarGarment
+                    ))
+                }
             }
         }
         
@@ -1213,9 +1226,12 @@ struct AlternativeSizeAnalysisRow: View {
                     .fontWeight(.medium)
                     .foregroundColor(.primary)
                 
-                Text("\(measurement) vs your \(userPreference) preference")
-                    .font(.subheadline)
-                    .foregroundColor(.secondary)
+                // Show measurement comparison only if we have separate measurement data
+                if !measurement.isEmpty {
+                    Text("\(measurement) vs your \(userPreference) preference")
+                        .font(.subheadline)
+                        .foregroundColor(.secondary)
+                }
                 
                 // Show garment comparison if available
                 if let similarGarment = similarGarment {
@@ -1223,7 +1239,7 @@ struct AlternativeSizeAnalysisRow: View {
                         .font(.subheadline)
                         .foregroundColor(.blue)
                         .fontWeight(.medium)
-                } else {
+                } else if !impact.isEmpty {
                     Text(impact)
                         .font(.subheadline)
                         .foregroundColor(.orange)

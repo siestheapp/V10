@@ -221,6 +221,60 @@ Transformed project from having critical security vulnerabilities (exposed datab
 
 ---
 
+## [2025-08-07 23:59] Session Summary - Fit Logic Tie-Breakers, Clearer Explanations, and Server Instability
+
+What we accomplished:
+
+- Implemented tie-breakers in `src/ios_app/Backend/simple_multi_dimensional_analyzer.py`:
+  - Brand-size prior: nudges toward sizes the user rated “Good Fit” for the same brand
+  - Neck strictness: penalizes neck below user Good zone unless there is explicit neck tolerance history
+  - Light scoring integration without schema changes
+
+- Improved alternative-size copy in `src/ios_app/Backend/app.py` to avoid contradictions:
+  - Replaced vague “Chest too tight” with dimension-specific reasons, e.g. “Neck 15–15.5 is below your preferred 16.0–16.5; Chest 38–40 is slimmer than your Good zone …”
+
+- Created `fit-logic-experiment` branch and pushed to GitHub for safe iteration.
+
+- Verified DB signals for the Banana Republic Boxy Linen‑Cotton Tee decision:
+  - BR L previously “Good” in closet; neck Good zone 16.0–16.5; sleeve center ≈34.7 → L subtly favored over M
+  - Live endpoint returned L as primary, M as slimmer alternative
+
+- Server stability work:
+  - Made FastAPI reload configurable via `APP_RELOAD` env var in `app.py` (default on; can disable for device testing)
+  - Observed timeouts on `/docs` and `/user/{id}/measurements` despite process listening; likely related to lifespan/DB pool and/or pgbouncer prepared-statement issues
+
+Outstanding issues observed:
+
+- iOS app timeouts to `http://192.168.18.26:8006/user/1/measurements`
+- Backend occasionally hangs and `/docs` times out even on localhost
+- pgbouncer warning about prepared statements during scan logging
+
+Immediate next steps (backend stability):
+
+- Add `/healthz` (no DB) and `/readyz` (light DB ping) endpoints
+- Allow `APP_DISABLE_DB=1` to start server without pool for device UI testing
+- Set asyncpg `statement_cache_size=0` when behind pgbouncer; avoid prepared statements in logging paths
+- Add request/response timeouts and access logs around problematic routes
+- Provide fallback port (e.g., 8010) flag to avoid lingering binds
+
+Fit-logic enhancements queued (no schema changes):
+
+- Add subcategory prior (e.g., T‑shirts) alongside brand prior
+- Parse product “fit intent” (Slim/Boxy/Relaxed) to bias size selection
+- Support multi-interval chest zones and overlap scoring (not midpoint)
+- Surface a succinct “why L wins” summary in primary card (neck + chest + sleeve)
+
+Testing plan:
+
+- Use app to try on close calls (e.g., BR M vs L) and record outcomes to calibrate prior weights
+- Validate neck/sleeve tie-breaks across other brands; confirm explanations read clearly
+
+Branch: `fit-logic-experiment`
+
+Status: logic edits landed; explanations clearer; server reachability flaky—stabilization tasks identified.
+
+---
+
 ## [2025-08-05 14:30] Session Summary - Banana Republic Scanner Fixes & Reference Garments Enhancement
 
 **What we accomplished:**

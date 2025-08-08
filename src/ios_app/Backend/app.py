@@ -1842,45 +1842,87 @@ def generate_human_readable_explanation(size_analysis, reference_garments: dict,
 
 def generate_alternative_size_explanations(size_analyses, recommended_size: str) -> list:
     """
-    Generate human-readable explanations for why other sizes aren't recommended
+    Generate clear, non-contradictory explanations for why other sizes aren't recommended.
+    Uses dimension-level details when available instead of generic labels.
     """
     explanations = []
-    
+
     # Get the recommended analysis for comparison
     recommended_analysis = next((a for a in size_analyses if a.size_label == recommended_size), None)
     if not recommended_analysis:
         return explanations
-    
+
+    # Helper to extract a friendly range string
+    def _get_range_str(dim):
+        d = dim or {}
+        return d.get('garment_range') or d.get('good_fit_range') or 'N/A'
+
+    # Helper to extract good range min/max from the stored string "X-Y\""
+    def _parse_good_range(dim):
+        try:
+            rng = (dim or {}).get('good_fit_range') or ''
+            rng = rng.replace('"', '')
+            parts = [p.strip() for p in rng.split('-')]
+            if len(parts) == 2:
+                return float(parts[0]), float(parts[1])
+        except Exception:
+            pass
+        return None, None
+
     # Analyze other sizes
     for analysis in size_analyses[:3]:  # Top 3 sizes only
         if analysis.size_label == recommended_size:
             continue
-            
-        # Compare to recommended size
-        size_comparison = analysis.size_label
-        
-        # Determine why this size is worse
-        if analysis.overall_fit_score < recommended_analysis.overall_fit_score:
-            if 'chest' in analysis.concerns:
-                if 'tight' in str(analysis.concerns).lower():
-                    explanation = f"Size {size_comparison}: Too tight in chest"
-                else:
-                    explanation = f"Size {size_comparison}: Too loose in chest"
-            elif 'sleeve' in analysis.concerns:
-                explanation = f"Size {size_comparison}: Sleeve length issues"
-            elif 'neck' in analysis.concerns:
-                explanation = f"Size {size_comparison}: Neck fit issues" 
+
+        size_label = analysis.size_label
+
+        chest = analysis.dimension_analysis.get('chest') if hasattr(analysis, 'dimension_analysis') else None
+        neck = analysis.dimension_analysis.get('neck') if hasattr(analysis, 'dimension_analysis') else None
+        sleeve = analysis.dimension_analysis.get('sleeve') if hasattr(analysis, 'dimension_analysis') else None
+
+        chest_msg = None
+        if chest:
+            # Prefer explicit zone/range message over a vague "too tight"
+            zone = chest.get('fit_zone')
+            zone_range = chest.get('zone_range')
+            chest_range = _get_range_str(chest)
+            if zone == 'tight':
+                chest_msg = f"Chest {chest_range} is slimmer than your Good zone ({zone_range})"
+            elif zone == 'relaxed':
+                chest_msg = f"Chest {chest_range} is roomier than your Good zone ({zone_range})"
+
+        neck_msg = None
+        if neck:
+            gmin, gmax = _parse_good_range(neck)
+            neck_range = _get_range_str(neck)
+            gm = neck.get('garment_measurement')
+            if gmin is not None and gm is not None:
+                if gm < gmin:
+                    neck_msg = f"Neck {neck_range} is below your preferred {gmin:.1f}-{gmax:.1f}"
+                elif gmax is not None and gm > gmax:
+                    neck_msg = f"Neck {neck_range} is above your preferred {gmin:.1f}-{gmax:.1f}"
+
+        sleeve_msg = None
+        if sleeve and not sleeve.get('fits_well', True):
+            sleeve_range = _get_range_str(sleeve)
+            smin, smax = _parse_good_range(sleeve)
+            if smin is not None and smax is not None:
+                sleeve_msg = f"Sleeve {sleeve_range} is outside your preferred {smin:.1f}-{smax:.1f}"
+
+        # Compose ordered explanation emphasizing neck, then chest, then sleeve
+        parts = [p for p in [neck_msg, chest_msg, sleeve_msg] if p]
+        if not parts:
+            if analysis.overall_fit_score < recommended_analysis.overall_fit_score:
+                parts = ["Not as good overall fit"]
             else:
-                explanation = f"Size {size_comparison}: Not as good overall fit"
-        else:
-            explanation = f"Size {size_comparison}: Alternative option"
-        
+                parts = ["Alternative option"]
+
         explanations.append({
-            "size": size_comparison,
-            "explanation": explanation,
+            "size": size_label,
+            "explanation": "; ".join(parts),
             "fit_score": analysis.overall_fit_score
         })
-    
+
     return explanations
 
 def _generate_simple_user_guidance(size_analyses, fit_zone_recommendations, user_fit_preference: str) -> str:
@@ -3283,9 +3325,13 @@ def extract_product_image_from_url(product_url: str) -> str:
 
 if __name__ == "__main__":
     import uvicorn
+    import os
+    # Allow disabling auto-reload to avoid request timeouts during development on device
+    reload_env = os.getenv("APP_RELOAD", "1").lower()
+    reload_enabled = not (reload_env in ("0", "false", "no"))
     uvicorn.run(
         "app:app",  # Use string format
         host="0.0.0.0",
         port=8006,  # Backend API port
-        reload=True
+        reload=reload_enabled
     ) 
