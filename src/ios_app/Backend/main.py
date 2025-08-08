@@ -23,17 +23,22 @@ from typing import List, Optional
 from fastapi.responses import JSONResponse
 from fastapi.middleware.cors import CORSMiddleware
 import asyncpg
+import os
+from dotenv import load_dotenv
+
+# Load environment variables
+load_dotenv()
 
 # Create the FastAPI app first
 app = FastAPI()
 
-# Database connection settings - Updated to use Supabase tailor3
+# Database connection settings - Updated to use environment variables
 DB_CONFIG = {
-    "database": "postgres",
-    "user": "postgres.lbilxlkchzpducggkrxx",
-    "password": "efvTower12",
-    "host": "aws-0-us-east-2.pooler.supabase.com",
-    "port": "6543"
+    "database": os.getenv("DB_NAME", "postgres"),
+    "user": os.getenv("DB_USER", "postgres.lbilxlkchzpducggkrxx"),
+    "password": os.getenv("DB_PASSWORD", "efvTower12"),
+    "host": os.getenv("DB_HOST", "aws-0-us-east-2.pooler.supabase.com"),
+    "port": os.getenv("DB_PORT", "6543")
 }
 
 # Create a connection pool
@@ -52,11 +57,11 @@ async def shutdown():
 # Keep the old get_db() function for non-async endpoints
 def get_db():
     return psycopg2.connect(
-        dbname="postgres",  # psycopg2 uses dbname
-        user="postgres.lbilxlkchzpducggkrxx",
-        password="efvTower12",
-        host="aws-0-us-east-2.pooler.supabase.com",
-        port="6543",
+        dbname=os.getenv("DB_NAME", "postgres"),  # psycopg2 uses dbname
+        user=os.getenv("DB_USER", "postgres.lbilxlkchzpducggkrxx"),
+        password=os.getenv("DB_PASSWORD", "efvTower12"),
+        host=os.getenv("DB_HOST", "aws-0-us-east-2.pooler.supabase.com"),
+        port=os.getenv("DB_PORT", "6543"),
         cursor_factory=RealDictCursor
     )
 

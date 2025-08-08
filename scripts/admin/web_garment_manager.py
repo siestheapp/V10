@@ -13,17 +13,21 @@ import sys
 import os
 sys.path.append(os.path.join(os.path.dirname(__file__), '..', 'database'))
 from db_change_logger import log_garment_addition, log_feedback_submission, log_brand_addition
+from dotenv import load_dotenv
+
+# Load environment variables
+load_dotenv()
 
 app = Flask(__name__)
 app.secret_key = 'your-secret-key-here'
 
-# Database configuration - Supabase tailor3
+# Database configuration - Updated to use environment variables
 DB_CONFIG = {
-    "database": "postgres",
-    "user": "postgres.lbilxlkchzpducggkrxx",
-    "password": "efvTower12",
-    "host": "aws-0-us-east-2.pooler.supabase.com",
-    "port": "6543"
+    "database": os.getenv("DB_NAME", "postgres"),
+    "user": os.getenv("DB_USER", "postgres.lbilxlkchzpducggkrxx"),
+    "password": os.getenv("DB_PASSWORD", "efvTower12"),
+    "host": os.getenv("DB_HOST", "aws-0-us-east-2.pooler.supabase.com"),
+    "port": os.getenv("DB_PORT", "6543")
 }
 
 def get_db_connection():

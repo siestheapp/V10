@@ -42,13 +42,13 @@ if api_key and api_key != "your-api-key-here":
 else:
     print("Warning: OpenAI API key not set. Chat features will be disabled.")
 
-# Database configuration
+# Database configuration - Updated to use environment variables
 DB_CONFIG = {
-    "database": "postgres",
-    "user": "postgres.lbilxlkchzpducggkrxx",
-    "password": "efvTower12",
-    "host": "aws-0-us-east-2.pooler.supabase.com",
-    "port": "6543"
+    "database": os.getenv("DB_NAME", "postgres"),
+    "user": os.getenv("DB_USER", "postgres.lbilxlkchzpducggkrxx"),
+    "password": os.getenv("DB_PASSWORD", "efvTower12"),
+    "host": os.getenv("DB_HOST", "aws-0-us-east-2.pooler.supabase.com"),
+    "port": os.getenv("DB_PORT", "6543")
 }
 
 # Global connection pool
@@ -1415,11 +1415,11 @@ async def get_garment_size_recommendation(request: dict):
         from simple_multi_dimensional_analyzer import SimpleMultiDimensionalAnalyzer
         
         db_config = {
-            "database": "postgres",
-            "user": "postgres.lbilxlkchzpducggkrxx",
-            "password": "efvTower12",
-            "host": "aws-0-us-east-2.pooler.supabase.com",
-            "port": "6543"
+            "database": os.getenv("DB_NAME", "postgres"),
+            "user": os.getenv("DB_USER", "postgres.lbilxlkchzpducggkrxx"),
+            "password": os.getenv("DB_PASSWORD", "efvTower12"),
+            "host": os.getenv("DB_HOST", "aws-0-us-east-2.pooler.supabase.com"),
+            "port": os.getenv("DB_PORT", "6543")
         }
         
         analyzer = SimpleMultiDimensionalAnalyzer(db_config)

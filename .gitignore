@@ -4,7 +4,17 @@
 # Ignore xcuserdata directories globally
 **/xcuserdata/
 
+# Environment files (CRITICAL - contains sensitive credentials)
+.env
+**/.env
+*.env
 
+# Database credentials and sensitive config
+**/config.ini
+**/secrets.json
+**/credentials.json
+
+# Python cache
 __pycache__/
 __pycache__/
 *.pyc
@@ -29,3 +39,17 @@ dist/
 # Archive and backup patterns
 *.backup
 archive/*.zip
+
+# Logs (may contain sensitive info)
+*.log
+logs/
+
+# Database dumps and backups
+database/backups/
+database/snapshots/
+database/dumps/
+
+# iOS build artifacts
+*.ipa
+*.dSYM.zip
+DerivedData/
