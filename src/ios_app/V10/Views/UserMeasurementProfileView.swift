@@ -164,50 +164,7 @@ struct UserMeasurementProfileView: View {
     }
 }
 
-// MARK: - Data Models
-struct ComprehensiveMeasurementResponse: Codable {
-    let tops: ComprehensiveMeasurementData
-    
-    // Custom coding keys to match backend response
-    enum CodingKeys: String, CodingKey {
-        case tops = "Tops"  // Backend sends "Tops" (capitalized)
-    }
-}
 
-struct ComprehensiveMeasurementData: Codable {
-    let chest: DimensionData?
-    let neck: DimensionData?
-    let sleeve: DimensionData?
-}
-
-struct DimensionData: Codable {
-    let tightRange: MeasurementRange?
-    let goodRange: MeasurementRange
-    let relaxedRange: MeasurementRange?
-    let garments: [GarmentData]
-}
-
-struct GarmentData: Codable, Identifiable {
-    let brand: String
-    let garmentName: String
-    let range: String
-    let value: Double?
-    let size: String
-    let fitFeedback: String
-    let feedback: String
-    let ownsGarment: Bool
-    
-    // Computed property for SwiftUI ForEach (not encoded/decoded)
-    var id: String { "\(brand)-\(size)-\(range)" }
-    
-    // Custom coding keys to match API response
-    enum CodingKeys: String, CodingKey {
-        case brand, size, range, value, feedback
-        case garmentName = "garmentName"
-        case fitFeedback = "fitFeedback"
-        case ownsGarment = "ownsGarment"
-    }
-}
 
 // MARK: - View Components
 struct NeckFitZoneView: View {

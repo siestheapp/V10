@@ -218,7 +218,7 @@ struct ScanGarmentView: View {
         let body: [String: Any] = [
             "product_code": productCode,
             "scanned_price": scannedPrice ?? 0.0,
-            "scanned_size": scannedSize
+            "scanned_size": scannedSize ?? ""
         ]
         
         print("Sending to backend:", body)  // Add this debug line

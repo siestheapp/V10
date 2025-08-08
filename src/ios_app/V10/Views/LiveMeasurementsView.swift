@@ -59,7 +59,7 @@ struct LiveMeasurementsView: View {
         }
         .refreshable {
             lastRefresh = Date()
-            await loadIdealMeasurements()
+            loadIdealMeasurements()
         }
     }
     

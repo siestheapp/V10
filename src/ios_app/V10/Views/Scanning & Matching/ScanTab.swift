@@ -148,6 +148,7 @@ struct DimensionComparison: Codable {
     }
 }
 
+
 // MARK: - Views
 
 struct ScanTab: View {
@@ -161,6 +162,10 @@ struct ScanTab: View {
     @State private var isAnalyzing = false
     @State private var analysisError: String?
     @State private var navigateToFitFeedback = false
+    
+    // Add user fit zones data
+    @State private var userFitZones: ComprehensiveMeasurementData?
+    @State private var isLoadingFitZones = false
 
     var body: some View {
         NavigationView {
@@ -186,7 +191,7 @@ struct ScanTab: View {
                     .sheet(isPresented: $showingImagePicker) {
                         ImagePicker(image: $selectedImage)
                     }
-                    .onChange(of: selectedImage) { newImage in
+                    .onChange(of: selectedImage) { _, newImage in
                         if newImage != nil {
                             showingScanView = true
                         }
@@ -260,7 +265,7 @@ struct ScanTab: View {
                     
                     // Size Recommendation Display - Navigate to full screen
                     if let recommendation = sizeRecommendation {
-                        NavigationLink(destination: SizeRecommendationScreen(recommendation: recommendation)) {
+                        NavigationLink(destination: SizeRecommendationScreen(recommendation: recommendation, userFitZones: userFitZones)) {
                             // Preview card that shows basic info and invites tap
                             VStack(alignment: .leading, spacing: 12) {
                                 HStack {
@@ -343,17 +348,14 @@ struct ScanTab: View {
                             .cornerRadius(12)
                     }
                     .padding(.horizontal, 40)
-                    .background(
-                        NavigationLink(
-                            destination: FitFeedbackView(
-                                feedbackType: .manualEntry, 
-                                selectedSize: recommendation.recommendedSize,
-                                productUrl: recommendation.productUrl,
-                                brand: recommendation.brand
-                            ),
-                            isActive: $navigateToFitFeedback
-                        ) { EmptyView() }
-                    )
+                    .navigationDestination(isPresented: $navigateToFitFeedback) {
+                        FitFeedbackView(
+                            feedbackType: .manualEntry, 
+                            selectedSize: recommendation.recommendedSize,
+                            productUrl: recommendation.productUrl,
+                            brand: recommendation.brand
+                        )
+                    }
                 }
             }
             .padding(.top, 30)
@@ -385,6 +387,9 @@ struct ScanTab: View {
                     showingImagePicker = true
                 }
             }
+        }
+        .onAppear {
+            loadUserFitZones()
         }
     }
     
@@ -453,6 +458,38 @@ struct ScanTab: View {
                 } catch {
                     analysisError = "Failed to parse recommendation: \(error.localizedDescription)"
                     print("Decode error: \(error)")
+                }
+            }
+        }.resume()
+    }
+    
+    private func loadUserFitZones() {
+        guard let url = URL(string: "\(Config.baseURL)/user/\(Config.defaultUserId)/measurements") else {
+            print("Invalid URL for fit zones")
+            return
+        }
+        
+        isLoadingFitZones = true
+        
+        URLSession.shared.dataTask(with: url) { data, response, error in
+            DispatchQueue.main.async {
+                isLoadingFitZones = false
+                
+                if let error = error {
+                    print("Error loading fit zones: \(error.localizedDescription)")
+                    return
+                }
+                
+                guard let data = data else {
+                    print("No fit zones data received")
+                    return
+                }
+                
+                do {
+                    let response = try JSONDecoder().decode(ComprehensiveMeasurementResponse.self, from: data)
+                    self.userFitZones = response.tops
+                } catch {
+                    print("Failed to parse fit zones: \(error)")
                 }
             }
         }.resume()
@@ -541,6 +578,15 @@ struct SizeRecommendationView: View {
         }
         
         return "based on your closet"
+    }
+    
+    // Helper to parse measurement summary for comparison display
+    private func parseMeasurementSummary(_ summary: String) -> [MeasurementComparison] {
+        // Simple parsing - return default ranges since this is just for display
+        return [
+            MeasurementComparison(dimension: "chest", value: "42", userRange: "39.5-42.5"),
+            MeasurementComparison(dimension: "neck", value: "16", userRange: "15.5-16.5")
+        ]
     }
     
     var body: some View {
@@ -733,20 +779,14 @@ struct SizeRecommendationView: View {
         }
     }
     
-    // Helper to parse measurement summary for comparison display
-    private func parseMeasurementSummary(_ summary: String) -> [MeasurementComparison] {
-        // Simple parsing - in real implementation would parse the actual summary
-        return [
-            MeasurementComparison(dimension: "chest", value: "42", userRange: "40-44"),
-            MeasurementComparison(dimension: "neck", value: "16", userRange: "15.5-16.5")
-        ]
-    }
+
 }
 
 // MARK: - New Premium Size Recommendation Screen
 
 struct SizeRecommendationScreen: View {
     let recommendation: SizeRecommendationResponse
+    let userFitZones: ComprehensiveMeasurementData?
     @Environment(\.dismiss) private var dismiss
     
     // Get confidence tier info with fallback
@@ -759,6 +799,38 @@ struct SizeRecommendationScreen: View {
             color: "green",
             description: "This should work for you"
         )
+    }
+    
+    // Helper to get dynamic fit zone ranges
+    private func getFitZoneRange(for dimension: String) -> String {
+        guard let fitZones = userFitZones else {
+            // Fallback ranges if fit zones not loaded
+            switch dimension.lowercased() {
+            case "chest": return "39.5-42.5"
+            case "neck": return "16.0-16.5"
+            case "sleeve": return "33.5-36.0"
+            default: return "N/A"
+            }
+        }
+        
+        switch dimension.lowercased() {
+        case "chest":
+            if let range = fitZones.chest?.goodRange {
+                return String(format: "%.1f-%.1f", range.min, range.max)
+            }
+        case "neck":
+            if let range = fitZones.neck?.goodRange {
+                return String(format: "%.1f-%.1f", range.min, range.max)
+            }
+        case "sleeve":
+            if let range = fitZones.sleeve?.goodRange {
+                return String(format: "%.1f-%.1f", range.min, range.max)
+            }
+        default:
+            break
+        }
+        
+        return "N/A"
     }
     
     var body: some View {
@@ -810,7 +882,7 @@ struct SizeRecommendationScreen: View {
                                 MeasurementAnalysisRow(
                                     dimension: "Chest",
                                     measurement: "42\"",
-                                    userZone: "40-44\"",
+                                    userZone: "\(getFitZoneRange(for: "chest"))\"",
                                     status: "Perfect fit",
                                     icon: "checkmark.circle.fill",
                                     color: .green
@@ -819,7 +891,7 @@ struct SizeRecommendationScreen: View {
                                 MeasurementAnalysisRow(
                                     dimension: "Neck",
                                     measurement: "16\"",
-                                    userZone: "16-16.5\"",
+                                    userZone: "\(getFitZoneRange(for: "neck"))\"",
                                     status: "Comfortable",
                                     icon: "checkmark.circle.fill",
                                     color: .green
@@ -828,7 +900,7 @@ struct SizeRecommendationScreen: View {
                                 MeasurementAnalysisRow(
                                     dimension: "Sleeve",
                                     measurement: "34\"",
-                                    userZone: "33.5-36\"",
+                                    userZone: "\(getFitZoneRange(for: "sleeve"))\"",
                                     status: "Ideal length",
                                     icon: "checkmark.circle.fill",
                                     color: .green
@@ -875,7 +947,7 @@ struct SizeRecommendationScreen: View {
                             size: "M",
                             problem: "Chest too tight",
                             measurement: "38-40\"",
-                            userPreference: "40-44\"",
+                            userPreference: "\(getFitZoneRange(for: "chest"))\"",
                             impact: "Will feel snug and restrictive"
                         )
                         
@@ -883,7 +955,7 @@ struct SizeRecommendationScreen: View {
                             size: "XL",
                             problem: "Too loose overall",
                             measurement: "44-46\"",
-                            userPreference: "40-44\"", 
+                            userPreference: "\(getFitZoneRange(for: "chest"))\"", 
                             impact: "Will feel baggy and shapeless"
                         )
                     }
