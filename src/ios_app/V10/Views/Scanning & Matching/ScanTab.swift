@@ -132,6 +132,7 @@ struct DimensionComparison: Codable {
     let type: String
     let fitScore: Double
     let garmentMeasurement: Double
+    let garmentRange: String?  // NEW: Actual range like "41-44" from size guide
     let explanation: String
     let fitZone: String?
     let zoneRange: String?  // API returns "39.5-42.5" string format
@@ -141,11 +142,21 @@ struct DimensionComparison: Codable {
         case type
         case fitScore = "fit_score"
         case garmentMeasurement = "garment_measurement"
+        case garmentRange = "garment_range"
         case explanation
         case fitZone = "fit_zone"
         case zoneRange = "zone_range"
         case matchesPreference = "matches_preference"
     }
+}
+
+// Helper model for alternative size analysis with garment comparisons
+struct AlternativeSize {
+    let size: String
+    let problem: String
+    let measurement: String
+    let impact: String
+    let similarGarment: String?
 }
 
 
@@ -801,6 +812,67 @@ struct SizeRecommendationScreen: View {
         )
     }
     
+    // Helper to get alternative sizes with garment comparisons
+    private func getAlternativeSizes() -> [AlternativeSize] {
+        var alternatives: [AlternativeSize] = []
+        
+        // Get sizes that aren't the recommended size
+        let otherSizes = recommendation.allSizes.filter { $0.size != recommendation.recommendedSize }
+        
+        for sizeOption in otherSizes.prefix(2) { // Limit to 2 alternatives
+            if let chestAnalysis = sizeOption.dimensionAnalysis["chest"] {
+                let measurement = chestAnalysis.garmentRange ?? "\(chestAnalysis.garmentMeasurement)\""
+                let problem = determineProblem(for: sizeOption, chestAnalysis: chestAnalysis)
+                let impact = determineImpact(for: problem)
+                let similarGarment = findSimilarGarment(for: chestAnalysis.garmentMeasurement)
+                
+                alternatives.append(AlternativeSize(
+                    size: sizeOption.size,
+                    problem: problem,
+                    measurement: measurement,
+                    impact: impact,
+                    similarGarment: similarGarment
+                ))
+            }
+        }
+        
+        return alternatives
+    }
+    
+    private func determineProblem(for sizeOption: DirectSizeOption, chestAnalysis: DimensionComparison) -> String {
+        if chestAnalysis.garmentMeasurement < 40 {
+            return "Chest too tight"
+        } else if chestAnalysis.garmentMeasurement > 44 {
+            return "Too loose overall"
+        } else {
+            return "Different fit"
+        }
+    }
+    
+    private func determineImpact(for problem: String) -> String {
+        switch problem {
+        case "Chest too tight":
+            return "Will feel snug and restrictive"
+        case "Too loose overall":
+            return "Will feel baggy and shapeless"
+        default:
+            return "May not match your preference"
+        }
+    }
+    
+    private func findSimilarGarment(for measurement: Double) -> String? {
+        // This would ideally come from the backend API, but for now we'll use mock logic
+        // based on the user's known garments
+        if measurement >= 36 && measurement <= 38 {
+            return "Like your Theory Brenan Polo (Size S) - Tight but I Like It"
+        } else if measurement >= 38 && measurement <= 40 {
+            return "Like your Theory Blue polo (Size M) - Good Fit"
+        } else if measurement >= 45 && measurement <= 48 {
+            return "Like your Patagonia shirt (Size XL) - Loose but I Like It"
+        }
+        return nil
+    }
+
     // Helper to get dynamic fit zone ranges
     private func getFitZoneRange(for dimension: String) -> String {
         guard let fitZones = userFitZones else {
@@ -879,14 +951,26 @@ struct SizeRecommendationScreen: View {
                                 .foregroundColor(.primary)
                             
                             VStack(spacing: 12) {
-                                MeasurementAnalysisRow(
-                                    dimension: "Chest",
-                                    measurement: "42\"",
-                                    userZone: "\(getFitZoneRange(for: "chest"))\"",
-                                    status: "Perfect fit",
-                                    icon: "checkmark.circle.fill",
-                                    color: .green
-                                )
+                                // Dynamic chest measurement from API
+                                if let chestAnalysis = recommendation.allSizes.first(where: { $0.size == recommendation.recommendedSize })?.dimensionAnalysis["chest"] {
+                                    MeasurementAnalysisRow(
+                                        dimension: "Chest",
+                                        measurement: chestAnalysis.garmentRange ?? "\(chestAnalysis.garmentMeasurement)\"",
+                                        userZone: "\(getFitZoneRange(for: "chest"))\"",
+                                        status: "Perfect fit",
+                                        icon: "checkmark.circle.fill",
+                                        color: .green
+                                    )
+                                } else {
+                                    MeasurementAnalysisRow(
+                                        dimension: "Chest",
+                                        measurement: "N/A",
+                                        userZone: "\(getFitZoneRange(for: "chest"))\"",
+                                        status: "Perfect fit",
+                                        icon: "checkmark.circle.fill",
+                                        color: .green
+                                    )
+                                }
                                 
                                 MeasurementAnalysisRow(
                                     dimension: "Neck",
@@ -943,21 +1027,17 @@ struct SizeRecommendationScreen: View {
                         .padding(.horizontal, 20)
                     
                     VStack(spacing: 16) {
-                        AlternativeSizeAnalysisRow(
-                            size: "M",
-                            problem: "Chest too tight",
-                            measurement: "38-40\"",
-                            userPreference: "\(getFitZoneRange(for: "chest"))\"",
-                            impact: "Will feel snug and restrictive"
-                        )
-                        
-                        AlternativeSizeAnalysisRow(
-                            size: "XL",
-                            problem: "Too loose overall",
-                            measurement: "44-46\"",
-                            userPreference: "\(getFitZoneRange(for: "chest"))\"", 
-                            impact: "Will feel baggy and shapeless"
-                        )
+                        // Dynamic alternative sizes from API
+                        ForEach(getAlternativeSizes(), id: \.size) { altSize in
+                            AlternativeSizeAnalysisRow(
+                                size: altSize.size,
+                                problem: altSize.problem,
+                                measurement: altSize.measurement,
+                                userPreference: "\(getFitZoneRange(for: "chest"))\"",
+                                impact: altSize.impact,
+                                similarGarment: altSize.similarGarment
+                            )
+                        }
                     }
                     .padding(.horizontal, 20)
                 }
@@ -1107,6 +1187,7 @@ struct AlternativeSizeAnalysisRow: View {
     let measurement: String
     let userPreference: String
     let impact: String
+    let similarGarment: String?
     
     var body: some View {
         HStack(alignment: .top, spacing: 16) {
@@ -1136,11 +1217,19 @@ struct AlternativeSizeAnalysisRow: View {
                     .font(.subheadline)
                     .foregroundColor(.secondary)
                 
-                Text(impact)
-                    .font(.subheadline)
-                    .foregroundColor(.orange)
-                    .fontWeight(.medium)
-                    .italic()
+                // Show garment comparison if available
+                if let similarGarment = similarGarment {
+                    Text(similarGarment)
+                        .font(.subheadline)
+                        .foregroundColor(.blue)
+                        .fontWeight(.medium)
+                } else {
+                    Text(impact)
+                        .font(.subheadline)
+                        .foregroundColor(.orange)
+                        .fontWeight(.medium)
+                        .italic()
+                }
             }
             
             Spacer()
