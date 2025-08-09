@@ -2,6 +2,7 @@ import SwiftUI
 
 struct HomeView: View {
     var body: some View {
+        let _ = print("🏠 ONBOARDING: HomeView is being shown (this should only happen during onboarding)")
         TabView {
             ClosetListView()
                 .tabItem {

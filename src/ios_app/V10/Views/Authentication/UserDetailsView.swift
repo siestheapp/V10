@@ -8,7 +8,12 @@ struct UserDetailsView: View {
     
     var body: some View {
         if showCloset {
-            ClosetView()
+            // Navigate to main app - this will trigger the main TabView in SiesApp.swift
+            EmptyView()
+                .onAppear {
+                    // Set onboarding as completed to show main TabView
+                    UserDefaults.standard.set(true, forKey: "hasCompletedOnboarding")
+                }
         } else {
             ZStack(alignment: .topLeading) {
                 Button(action: goBack) {

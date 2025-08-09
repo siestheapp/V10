@@ -12,7 +12,7 @@ struct ScanHistoryItem: Codable, Identifiable {
     let productUrl: String
     let brand: String
     
-    // Add computed property for formatted date
+    // Add computed property for formatted date in EST
     var formattedDate: String {
         guard let date = ISO8601DateFormatter().date(from: scannedAt) else {
             return scannedAt
@@ -20,6 +20,7 @@ struct ScanHistoryItem: Codable, Identifiable {
         let formatter = DateFormatter()
         formatter.dateStyle = .medium
         formatter.timeStyle = .short
+        formatter.timeZone = TimeZone(identifier: "America/New_York") // EST/EDT
         return formatter.string(from: date)
     }
 }
@@ -33,6 +34,9 @@ struct ScanHistoryView: View {
         Group {
                 if isLoading {
                     ProgressView("Loading finds...")
+                        .onAppear {
+                            print("🔍 FINDS TAB: ScanHistoryView is loading...")
+                        }
                 } else if let error = errorMessage {
                     Text(error)
                         .foregroundColor(.red)
@@ -90,6 +94,7 @@ struct ScanHistoryView: View {
         }
         .navigationTitle("Finds")
         .onAppear {
+            print("📱 FINDS TAB: ScanHistoryView appeared - starting to load history")
             loadHistory()
         }
     }

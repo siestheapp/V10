@@ -400,6 +400,7 @@ struct ScanTab: View {
             }
         }
         .onAppear {
+            print("📷 SCAN TAB: ScanTab appeared")
             loadUserFitZones()
         }
     }
