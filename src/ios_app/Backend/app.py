@@ -772,11 +772,28 @@ async def get_scan_history(user_id: int):
                     ) as brand,
                     -- Use real product name from metadata, fallback to extracted name
                     COALESCE(ua.metadata->>'product_name', 'Product Name Not Found') as name,
-                    -- Create a unique key for deduplication: product_url + recommended_size
-                    CONCAT(ua.metadata->>'product_url', '|', COALESCE(ua.metadata->>'recommended_size', 'unknown')) as unique_key,
+                    -- Create a unique key for deduplication: normalized_product_url + recommended_size
+                    -- Extract product ID from URL for better deduplication (e.g., pid=704275052)
+                    CONCAT(
+                        CASE 
+                            WHEN ua.metadata->>'product_url' ~ 'pid=([0-9]+)' THEN 
+                                CONCAT('pid=', (regexp_match(ua.metadata->>'product_url', 'pid=([0-9]+)'))[1])
+                            ELSE ua.metadata->>'product_url'
+                        END,
+                        '|', 
+                        COALESCE(ua.metadata->>'recommended_size', 'unknown')
+                    ) as unique_key,
                     -- Rank by creation time (most recent first)
                     ROW_NUMBER() OVER (
-                        PARTITION BY CONCAT(ua.metadata->>'product_url', '|', COALESCE(ua.metadata->>'recommended_size', 'unknown'))
+                        PARTITION BY CONCAT(
+                            CASE 
+                                WHEN ua.metadata->>'product_url' ~ 'pid=([0-9]+)' THEN 
+                                    CONCAT('pid=', (regexp_match(ua.metadata->>'product_url', 'pid=([0-9]+)'))[1])
+                                ELSE ua.metadata->>'product_url'
+                            END,
+                            '|', 
+                            COALESCE(ua.metadata->>'recommended_size', 'unknown')
+                        )
                         ORDER BY ua.created_at DESC
                     ) as rn
                 FROM user_actions ua

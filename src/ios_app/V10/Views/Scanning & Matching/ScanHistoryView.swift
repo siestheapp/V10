@@ -29,10 +29,15 @@ struct ScanHistoryView: View {
     @State private var history: [ScanHistoryItem] = []
     @State private var isLoading = true
     @State private var errorMessage: String?
+    @State private var selectedItem: ScanHistoryItem?
+    @State private var sizeRecommendation: SizeRecommendationResponse?
+    @State private var isAnalyzing = false
+    @State private var userFitZones: ComprehensiveMeasurementData?
     
     var body: some View {
-        Group {
-                if isLoading {
+        NavigationStack {
+            Group {
+                    if isLoading {
                     ProgressView("Loading finds...")
                         .onAppear {
                             print("🔍 FINDS TAB: ScanHistoryView is loading...")
@@ -71,10 +76,10 @@ struct ScanHistoryView: View {
                                 // Subtle indicator that this is clickable
                                 if !item.productUrl.isEmpty {
                                     HStack {
-                                        Image(systemName: "arrow.up.right.square")
+                                        Image(systemName: "magnifyingglass.circle")
                                             .font(.caption2)
                                             .foregroundColor(.blue)
-                                        Text("Tap to view product")
+                                        Text("Tap to see size recommendation")
                                             .font(.caption2)
                                             .foregroundColor(.blue)
                                     }
@@ -82,20 +87,49 @@ struct ScanHistoryView: View {
                             }
                         }
                         .onTapGesture {
-                            if let url = URL(string: item.productUrl) {
-                                print("🌐 Opening product URL: \(url)")
-                                UIApplication.shared.open(url)
-                            } else {
-                                print("⚠️ Invalid product URL: \(item.productUrl)")
-                            }
+                            print("🔍 FINDS: Clicked on \(item.brand) - \(item.name)")
+                            selectedItem = item
+                            fetchSizeRecommendation(for: item)
                         }
+                        .overlay(
+                            Group {
+                                if isAnalyzing && selectedItem?.id == item.id {
+                                    HStack {
+                                        ProgressView()
+                                            .scaleEffect(0.8)
+                                        Text("Loading recommendation...")
+                                            .font(.caption)
+                                            .foregroundColor(.secondary)
+                                    }
+                                    .padding(8)
+                                    .background(Color(.systemBackground).opacity(0.9))
+                                    .cornerRadius(8)
+                                }
+                            }
+                        )
                     }
                 }
-        }
-        .navigationTitle("Finds")
-        .onAppear {
+            }
+            .navigationTitle("Finds")
+                    .onAppear {
             print("📱 FINDS TAB: ScanHistoryView appeared - starting to load history")
-            loadHistory()
+            // Only load history if we don't have any data yet
+            if history.isEmpty {
+                loadHistory()
+            }
+            // Only load fit zones if we don't have them yet
+            if userFitZones == nil {
+                loadUserFitZones()
+            }
+        }
+            .navigationDestination(isPresented: Binding(
+                get: { sizeRecommendation != nil },
+                set: { if !$0 { sizeRecommendation = nil; selectedItem = nil } }
+            )) {
+                if let recommendation = sizeRecommendation {
+                    SizeRecommendationScreen(recommendation: recommendation, userFitZones: userFitZones)
+                }
+            }
         }
     }
     
@@ -134,6 +168,91 @@ struct ScanHistoryView: View {
             
             DispatchQueue.main.async {
                 self.isLoading = false
+            }
+        }.resume()
+    }
+    
+    private func fetchSizeRecommendation(for item: ScanHistoryItem) {
+        guard !item.productUrl.isEmpty else {
+            print("⚠️ No product URL for item: \(item.name)")
+            return
+        }
+        
+        guard let url = URL(string: "\(Config.baseURL)/garment/size-recommendation") else {
+            print("⚠️ Invalid API URL for size recommendation")
+            return
+        }
+        
+        isAnalyzing = true
+        
+        let requestBody = [
+            "product_url": item.productUrl,
+            "user_id": Config.defaultUserId
+        ]
+        
+        guard let jsonData = try? JSONSerialization.data(withJSONObject: requestBody) else {
+            print("⚠️ Failed to encode request for size recommendation")
+            isAnalyzing = false
+            return
+        }
+        
+        var request = URLRequest(url: url)
+        request.httpMethod = "POST"
+        request.setValue("application/json", forHTTPHeaderField: "Content-Type")
+        request.httpBody = jsonData
+        
+        print("🔄 FINDS: Fetching size recommendation for \(item.brand) - \(item.name)")
+        
+        URLSession.shared.dataTask(with: request) { data, response, error in
+            DispatchQueue.main.async {
+                isAnalyzing = false
+                
+                if let error = error {
+                    print("❌ FINDS: Network error fetching recommendation: \(error.localizedDescription)")
+                    return
+                }
+                
+                guard let data = data else {
+                    print("❌ FINDS: No data received for recommendation")
+                    return
+                }
+                
+                do {
+                    let recommendation = try JSONDecoder().decode(SizeRecommendationResponse.self, from: data)
+                    print("✅ FINDS: Successfully fetched recommendation for \(item.name)")
+                    self.sizeRecommendation = recommendation
+                } catch {
+                    print("❌ FINDS: Failed to parse recommendation: \(error.localizedDescription)")
+                }
+            }
+        }.resume()
+    }
+    
+    private func loadUserFitZones() {
+        guard let url = URL(string: "\(Config.baseURL)/user/\(Config.defaultUserId)/measurements") else {
+            print("⚠️ Invalid URL for fit zones")
+            return
+        }
+        
+        URLSession.shared.dataTask(with: url) { data, response, error in
+            DispatchQueue.main.async {
+                if let error = error {
+                    print("❌ FINDS: Error loading fit zones: \(error.localizedDescription)")
+                    return
+                }
+                
+                guard let data = data else {
+                    print("❌ FINDS: No fit zones data received")
+                    return
+                }
+                
+                do {
+                    let response = try JSONDecoder().decode(ComprehensiveMeasurementResponse.self, from: data)
+                    self.userFitZones = response.tops
+                    print("✅ FINDS: Loaded user fit zones")
+                } catch {
+                    print("❌ FINDS: Failed to parse fit zones: \(error)")
+                }
             }
         }.resume()
     }
