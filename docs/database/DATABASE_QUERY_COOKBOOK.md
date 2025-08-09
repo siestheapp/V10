@@ -18,8 +18,9 @@ brands: id, name, region, default_unit, notes
 categories: id, name, description
 subcategories: id, name, category_id, description
 user_garments: id, user_id, brand_id, category_id, subcategory_id, size_label, product_name, notes, image_url
-size_guides: id, brand_id, gender, category_id, subcategory_id, fit_type, specificity, notes
+size_guides: id, brand_id, gender, category_id, subcategory_id, fit_type, specificity, guide_level, unit, source_url, size_guide_header, notes
 size_guide_entries: id, size_guide_id, size_label, chest_min, chest_max, waist_min, waist_max, neck_min, neck_max, measurements_available
+raw_size_guides: id, brand_id, gender, category_id, subcategory_id, fit_type, source_url, screenshot_path, raw_text
 users: id, email, gender, height, preferred_units
 body_measurements: id, user_id, chest, waist, neck, sleeve_length
 user_actions: id, user_id, action_type, target_table, created_at, is_undone
@@ -66,6 +67,22 @@ LEFT JOIN size_guide_entries sge ON sg.id = sge.size_guide_id
 LEFT JOIN user_garments ug ON b.id = ug.brand_id
 WHERE b.name = 'Lacoste'
 GROUP BY b.id, b.name;
+```
+
+### Check if Brand Exists Before Creation
+```sql
+-- ✅ TESTED: Prevent duplicate brand creation
+SELECT id, name, region, default_unit 
+FROM brands 
+WHERE LOWER(name) = LOWER('Uniqlo');
+```
+
+### Create New Brand with RETURNING
+```sql
+-- ✅ TESTED: Create brand and get ID for immediate use
+INSERT INTO brands (name, region, default_unit, notes) 
+VALUES ('Uniqlo', 'Japan', 'in', 'Japanese fast fashion retailer with international presence') 
+RETURNING id;
 ```
 
 ---
@@ -178,6 +195,35 @@ WHERE sg.specificity = 'specific'
 ORDER BY b.name;
 ```
 
+### Create Complete Size Guide with Metadata
+```sql
+-- ✅ TESTED: Create size guide with all required fields including specificity
+INSERT INTO size_guides (
+    brand_id, gender, category_id, subcategory_id, fit_type,
+    guide_level, specificity, unit, source_url, size_guide_header, notes
+) VALUES (
+    12, 'Male', 1, NULL, 'NA',
+    'category_level', 'broad', 'in', 
+    'https://www.uniqlo.com/us/en/size-guide',
+    'MEN Body dimensions', 
+    'Universal size guide for all men''s tops. Labeled as "Common" indicating broad applicability across all men''s top categories.'
+) RETURNING id;
+```
+
+### Create Raw Size Guide Documentation
+```sql
+-- ✅ TESTED: Store source documentation for size guide ingestion
+INSERT INTO raw_size_guides (
+    brand_id, gender, category_id, subcategory_id, fit_type,
+    source_url, screenshot_path, raw_text
+) VALUES (
+    12, 'Male', 1, NULL, 'Unspecified',
+    'https://www.uniqlo.com/us/en/size-guide',
+    'User provided screenshot of Uniqlo MEN Body dimensions size guide',
+    'MEN Body dimensions - Common size guide showing Height (feet/cm), Chest (inch/cm), Waist (inch/cm) for sizes XXS through 4XL'
+);
+```
+
 ---
 
 ## 🔍 **Fit Analysis Queries**
@@ -280,6 +326,55 @@ GROUP BY b.id, b.name, b.region
 ORDER BY b.name;
 ```
 
+### Comprehensive Size Guide Verification
+```sql
+-- ✅ TESTED: Complete verification of size guide ingestion with all joins
+SELECT 
+    sg.id, sg.brand_id, b.name as brand_name, sg.gender, sg.specificity, 
+    sg.guide_level, sg.size_guide_header, sg.notes
+FROM size_guides sg 
+JOIN brands b ON sg.brand_id = b.id 
+WHERE sg.id = 14;  -- Replace with specific size guide ID
+```
+
+### Size Entry Quality Check with Progression
+```sql
+-- ✅ TESTED: Verify size entries with logical ordering
+SELECT 
+    size_label, chest_min, chest_max, chest_range, 
+    waist_min, waist_max, waist_range
+FROM size_guide_entries 
+WHERE size_guide_id = 14 
+ORDER BY 
+    CASE 
+        WHEN size_label = 'XXS' THEN 1
+        WHEN size_label = 'XS' THEN 2
+        WHEN size_label = 'S' THEN 3
+        WHEN size_label = 'M' THEN 4
+        WHEN size_label = 'L' THEN 5
+        WHEN size_label = 'XL' THEN 6
+        WHEN size_label = 'XXL' THEN 7
+        WHEN size_label = '3XL' THEN 8
+        WHEN size_label = '4XL' THEN 9
+    END;
+```
+
+### Measurement Progression Analysis
+```sql
+-- ✅ TESTED: Check for overlaps in measurement ranges
+SELECT 
+    size_label, chest_min, chest_max,
+    LAG(chest_max) OVER (ORDER BY chest_min) as prev_max,
+    CASE 
+        WHEN chest_min < LAG(chest_max) OVER (ORDER BY chest_min) 
+        THEN 'OVERLAP' 
+        ELSE 'OK' 
+    END as overlap_status
+FROM size_guide_entries 
+WHERE size_guide_id = 14 AND chest_min IS NOT NULL
+ORDER BY chest_min;
+```
+
 ---
 
 ## 🔧 **System Maintenance**
@@ -355,6 +450,13 @@ SELECT
 
 ---
 
-**Last Updated**: January 19, 2025  
+**Last Updated**: January 20, 2025  
 **Next Update**: Add queries as they're tested and confirmed working
+
+**Recent Additions (Jan 20, 2025)**:
+- Brand existence checking and creation patterns with RETURNING
+- Complete size guide creation with specificity field
+- Raw size guide documentation storage
+- Comprehensive verification queries with joins
+- Size progression analysis with overlap detection
 

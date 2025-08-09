@@ -7,7 +7,7 @@
 ## 📊 **Database & Logs**
 
 - **[Database Query Cookbook](docs/database/DATABASE_QUERY_COOKBOOK.md)** - ⭐ **NEW!** Tested, working SQL queries for AI assistants
-- **[Database Changes Log](dev/logs/database_changes.log)** - Live log of all database modifications
+- **[Database Changes Log](database_changes_log.txt)** - ⭐ **QUICK ACCESS!** Live log of all database modifications (linked in sidebar)
 - **[Session Log](daily-notes/2025-08-08/SESSION_LOG.md)** - Complete record of all sessions and work
 - **[Database Backup Overview](daily-notes/2025-08-08/database_backup_overview.md)** - Complete backup & logging guide
 - **[Size Guide Ingestion Process V2](daily-notes/2025-08-08/SIZE_GUIDE_INGESTION_COMPLETE_PROCESS_V2.md)** - Complete ingestion guide

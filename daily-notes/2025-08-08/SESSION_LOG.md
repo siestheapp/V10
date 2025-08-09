@@ -186,6 +186,97 @@ Status: logic edits landed; explanations clearer; server reachability flaky—st
 
 ## [2025-01-18 21:30] Session Summary - Scraper Web Interface & Database Integration
 
+## [2025-01-18 23:45] iOS Finds Tab Enhancement & Navigation Fixes
+
+### 🎯 **Major UI/UX Improvements Completed**
+
+#### ✅ **1. Fixed Finds Tab Navigation Issue**
+- **Problem**: Clicking "Finds" tab initially showed Scan tab, required double-click to access finds
+- **Root Cause**: Conflicting TabView structures between main app and onboarding flow
+- **Solution**: 
+  - Removed duplicate `ClosetView` that was interfering with main app navigation
+  - Added explicit TabView selection state management with `selectedTab` binding and `.tag()` identifiers
+  - Fixed navigation structure by removing NavigationView wrapper around main TabView
+  - Enhanced onboarding flow state management with `forceMainApp` flag
+- **Result**: ✅ Finds tab now works on first click with proper tab state management
+
+#### ✅ **2. Implemented Click-to-View Size Recommendations**
+- **Problem**: Clicking finds items only opened product URLs in browser, no way to review app's size analysis
+- **Solution**:
+  - Enhanced `ScanHistoryView` to fetch full size recommendations when items are clicked
+  - Added `NavigationStack` wrapper for proper SwiftUI navigation support
+  - Integrated with existing `SizeRecommendationScreen` for seamless UX experience
+  - Added loading indicators ("Loading size recommendation...") and proper error handling
+  - Updated UI with visual hints ("Tap to see size recommendation" with analysis icon)
+- **Result**: ✅ Users can now click finds items to see complete size recommendation analysis
+
+#### ✅ **3. Fixed Duplicate Items in Finds Tab**
+- **Problem**: Same products appeared multiple times (e.g., "Boxy Linen-Cotton T-Shirt" showed 4+ times)
+- **Root Cause**: URL variations for same product not being recognized as duplicates
+  - `pid=704275052` with different query parameters treated as separate items
+- **Solution**:
+  - Enhanced backend deduplication logic in `/scan_history` endpoint
+  - Implemented regex pattern matching to extract product IDs: `pid=([0-9]+)`
+  - Used normalized product ID + recommended size as deduplication key
+  - Applied proper `ROW_NUMBER()` partitioning to keep only most recent entries
+- **Result**: ✅ Eliminated duplicates (Boxy Linen-Cotton T-Shirt: 4+ entries → 1 unique entry)
+
+#### ✅ **4. Fixed List Position Jumping**
+- **Problem**: After viewing size recommendation and returning, clicked item jumped to top of list
+- **Root Cause**: `ScanHistoryView` was reloading data on every appearance
+- **Solution**: 
+  - Added conditional data loading: only fetch if `history.isEmpty` or `userFitZones == nil`
+  - Prevented unnecessary API calls when returning from size recommendation screen
+- **Result**: ✅ List maintains position and scroll state when navigating back
+
+### 📊 **Technical Implementation Details**
+
+#### Backend Changes (`src/ios_app/Backend/app.py`)
+```sql
+-- Enhanced deduplication logic
+PARTITION BY CONCAT(
+    CASE 
+        WHEN ua.metadata->>'product_url' ~ 'pid=([0-9]+)' THEN 
+            CONCAT('pid=', (regexp_match(ua.metadata->>'product_url', 'pid=([0-9]+)'))[1])
+        ELSE ua.metadata->>'product_url'
+    END,
+    '|', 
+    COALESCE(ua.metadata->>'recommended_size', 'unknown')
+)
+ORDER BY ua.created_at DESC
+```
+
+#### iOS Changes (`src/ios_app/V10/Views/Scanning & Matching/ScanHistoryView.swift`)
+- Added `NavigationStack` wrapper for proper navigation
+- Implemented size recommendation fetching with loading states
+- Added conditional data loading to preserve list state
+- Integrated with existing `SizeRecommendationScreen`
+
+#### App-Level Navigation (`src/ios_app/V10/App/SiesApp.swift`)
+- Added explicit `@State private var selectedTab = 0` for tab management
+- Implemented `TabView(selection: $selectedTab)` with proper `.tag()` identifiers
+- Enhanced debug logging for navigation troubleshooting
+
+### 🚀 **User Experience Impact**
+- **Before**: Finds tab required double-click, showed duplicates, opened external browser, lost position
+- **After**: Single-click access, unique items, in-app size review, preserved positioning
+- **Navigation Flow**: Finds Tab → Click Item → Full Size Analysis → Back Button → Same Position
+- **Data Integrity**: Clean, deduplicated history with most recent entries prioritized
+
+### 🔧 **Commit Details**
+- **Commit**: `340a1c3` - "Enhance iOS Finds tab: Add size recommendation navigation & fix duplicates"
+- **Files Modified**: 3 files, 1676 insertions, 17 deletions
+- **Branch**: `fit-logic-experiment`
+- **Status**: ✅ Committed and pushed successfully
+
+### 📱 **Testing Results**
+- ✅ Finds tab navigation works on first click
+- ✅ Size recommendations load and display correctly
+- ✅ No duplicate items in finds list
+- ✅ List position preserved when returning from size recommendation
+- ✅ Loading indicators work properly
+- ✅ Backend deduplication logic functioning correctly
+
 **What we accomplished:**
 
 ### 🌐 **WEB INTERFACE CREATION:**
