@@ -2453,9 +2453,58 @@ async def get_fit_feedback_options():
         ]
     }
 
+@app.get("/garment/{garment_id}/measurements")
+async def get_garment_measurements(garment_id: int):
+    """Get garment measurements for feedback UI"""
+    try:
+        conn = get_db_connection()
+        cur = conn.cursor(cursor_factory=RealDictCursor)
+        
+        # Get garment measurements
+        cur.execute("""
+            SELECT 
+                gm.measurement_type,
+                gm.measurement_value,
+                gm.unit,
+                gm.measurement_source
+            FROM garment_measurements gm
+            WHERE gm.user_garment_id = %s
+            ORDER BY gm.measurement_type
+        """, (garment_id,))
+        
+        measurements_data = cur.fetchall()
+        
+        # Format measurements for the UI
+        measurements = {}
+        for row in measurements_data:
+            # Format the measurement value with unit
+            value_str = f"{row['measurement_value']}\""
+            measurements[row['measurement_type']] = value_str
+        
+        return {
+            "garment_id": garment_id,
+            "measurements": measurements,
+            "count": len(measurements)
+        }
+        
+    except Exception as e:
+        print(f"Error getting garment measurements: {str(e)}")
+        return {
+            "garment_id": garment_id,
+            "measurements": {},
+            "count": 0,
+            "error": str(e)
+        }
+    
+    finally:
+        if 'cur' in locals():
+            cur.close()
+        if 'conn' in locals():
+            conn.close()
+
 @app.post("/garment/{garment_id}/feedback")
 async def update_garment_feedback(garment_id: int, request: dict):
-    """Update feedback with action tracking and undo support"""
+    """Update feedback with action tracking and undo support - Enhanced for body + garment measurements"""
     try:
         feedback = request.get("feedback")  # Dict of measurement -> feedback_value
         user_id = request.get("user_id")
@@ -2480,67 +2529,140 @@ async def update_garment_feedback(garment_id: int, request: dict):
             if not garment:
                 raise HTTPException(status_code=404, detail="Garment not found or doesn't belong to user")
             
-            # Get current feedback values BEFORE changing them (for undo)
-            current_feedback = await conn.fetch("""
+            # Separate body and garment feedback
+            body_feedback = {}
+            garment_feedback = {}
+            
+            for key, value in feedback.items():
+                if key.startswith('garment_'):
+                    # Remove 'garment_' prefix for the measurement type
+                    measurement_type = key.replace('garment_', '')
+                    garment_feedback[measurement_type] = value
+                else:
+                    body_feedback[key] = value
+            
+            # Get current body feedback values BEFORE changing them (for undo)
+            current_body_feedback = await conn.fetch("""
                 SELECT ugf.dimension, fc.feedback_text, ugf.id
                 FROM user_garment_feedback ugf
                 JOIN feedback_codes fc ON ugf.feedback_code_id = fc.id
                 WHERE ugf.user_garment_id = $1
             """, garment_id)
             
-            # Store previous values for undo
-            previous_values = {
-                row['dimension']: {
-                    'feedback_text': row['feedback_text'],
-                    'feedback_id': row['id']
-                }
-                for row in current_feedback
-            }
-            
-            # Convert numeric feedback values to text descriptions
-            feedback_text = convert_feedback_to_text(feedback)
-            
-            # Delete old feedback entries
-            await conn.execute("""
-                DELETE FROM user_garment_feedback 
-                WHERE user_garment_id = $1
+            # Get current garment feedback values BEFORE changing them (for undo)
+            current_garment_feedback = await conn.fetch("""
+                SELECT gmf.measurement_type, fc.feedback_text, gmf.id
+                FROM garment_measurement_feedback gmf
+                JOIN feedback_codes fc ON gmf.feedback_code_id = fc.id
+                WHERE gmf.user_garment_id = $1
             """, garment_id)
             
-            # Insert new feedback entries and collect new values
-            new_values = {}
-            for dimension, feedback_text_value in feedback_text.items():
-                if feedback_text_value:
-                    # Get feedback code ID
-                    feedback_code = await conn.fetchrow("""
-                        SELECT id FROM feedback_codes 
-                        WHERE feedback_text = $1
-                    """, feedback_text_value)
-                    
-                    if feedback_code:
-                        # Insert new feedback
-                        new_id = await conn.fetchval("""
-                            INSERT INTO user_garment_feedback (
-                                user_garment_id,
-                                dimension,
-                                feedback_code_id
-                            ) VALUES ($1, $2, $3) RETURNING id
-                        """, 
-                            garment_id,
-                            dimension,
-                            feedback_code['id']
-                        )
-                        
-                        new_values[dimension] = {
-                            'feedback_text': feedback_text_value,
-                            'feedback_id': new_id
-                        }
+            # Store previous values for undo
+            previous_values = {
+                'body': {
+                    row['dimension']: {
+                        'feedback_text': row['feedback_text'],
+                        'feedback_id': row['id']
+                    }
+                    for row in current_body_feedback
+                },
+                'garment': {
+                    row['measurement_type']: {
+                        'feedback_text': row['feedback_text'],
+                        'feedback_id': row['id']
+                    }
+                    for row in current_garment_feedback
+                }
+            }
             
-            # Update fit_feedback in user_garments
-            await conn.execute("""
-                UPDATE user_garments
-                SET fit_feedback = $1
-                WHERE id = $2
-            """, feedback_text.get('overall'), garment_id)
+            new_values = {'body': {}, 'garment': {}}
+            
+            # Process body measurements (existing logic)
+            if body_feedback:
+                # Convert numeric feedback values to text descriptions
+                body_feedback_text = convert_feedback_to_text(body_feedback)
+                
+                # Delete old body feedback entries
+                await conn.execute("""
+                    DELETE FROM user_garment_feedback 
+                    WHERE user_garment_id = $1
+                """, garment_id)
+                
+                # Insert new body feedback entries
+                for dimension, feedback_text_value in body_feedback_text.items():
+                    if feedback_text_value:
+                        # Get feedback code ID
+                        feedback_code = await conn.fetchrow("""
+                            SELECT id FROM feedback_codes 
+                            WHERE feedback_text = $1
+                        """, feedback_text_value)
+                        
+                        if feedback_code:
+                            # Insert new feedback
+                            new_id = await conn.fetchval("""
+                                INSERT INTO user_garment_feedback (
+                                    user_garment_id,
+                                    dimension,
+                                    feedback_code_id
+                                ) VALUES ($1, $2, $3) RETURNING id
+                            """, 
+                                garment_id,
+                                dimension,
+                                feedback_code['id']
+                            )
+                            
+                            new_values['body'][dimension] = {
+                                'feedback_text': feedback_text_value,
+                                'feedback_id': new_id
+                            }
+            
+            # Process garment measurements (new logic)
+            if garment_feedback:
+                # Delete old garment feedback entries
+                await conn.execute("""
+                    DELETE FROM garment_measurement_feedback 
+                    WHERE user_garment_id = $1
+                """, garment_id)
+                
+                # Convert garment feedback values to text
+                garment_feedback_text = convert_garment_feedback_to_text(garment_feedback)
+                
+                # Insert new garment feedback entries
+                for measurement_type, feedback_text_value in garment_feedback_text.items():
+                    if feedback_text_value:
+                        # Get feedback code ID
+                        feedback_code = await conn.fetchrow("""
+                            SELECT id FROM feedback_codes 
+                            WHERE feedback_text = $1
+                        """, feedback_text_value)
+                        
+                        if feedback_code:
+                            # Insert new garment feedback
+                            new_id = await conn.fetchval("""
+                                INSERT INTO garment_measurement_feedback (
+                                    user_garment_id,
+                                    measurement_type,
+                                    feedback_code_id
+                                ) VALUES ($1, $2, $3) RETURNING id
+                            """, 
+                                garment_id,
+                                measurement_type,
+                                feedback_code['id']
+                            )
+                            
+                            new_values['garment'][measurement_type] = {
+                                'feedback_text': feedback_text_value,
+                                'feedback_id': new_id
+                            }
+            
+            # Update fit_feedback in user_garments (only if body feedback exists)
+            if body_feedback:
+                body_feedback_text = convert_feedback_to_text(body_feedback)
+                await conn.execute("""
+                    UPDATE user_garments
+                    SET fit_feedback = $1
+                    WHERE id = $2
+                """, body_feedback_text.get('overall'), garment_id)
             
             # Log the action for undo support
             action_id = await conn.fetchval("""
@@ -2557,7 +2679,8 @@ async def update_garment_feedback(garment_id: int, request: dict):
                 json.dumps(previous_values),
                 json.dumps(new_values),
                 json.dumps({
-                    'dimensions_changed': list(feedback.keys()),
+                    'body_dimensions_changed': list(body_feedback.keys()) if body_feedback else [],
+                    'garment_dimensions_changed': list(garment_feedback.keys()) if garment_feedback else [],
                     'screen': 'garment_detail'
                 })
             )
@@ -2566,9 +2689,11 @@ async def update_garment_feedback(garment_id: int, request: dict):
         
         return {
             "status": "success",
-            "message": "Feedback updated successfully",
+            "message": f"Feedback updated successfully - Body: {len(body_feedback)} dimensions, Garment: {len(garment_feedback)} dimensions",
             "action_id": action_id,
-            "can_undo": True
+            "can_undo": True,
+            "body_feedback_count": len(body_feedback),
+            "garment_feedback_count": len(garment_feedback)
         }
         
     except Exception as e:
@@ -2764,6 +2889,41 @@ def convert_feedback_to_text(feedback: dict) -> dict:
             result['overall'] = "Loose but I Like It"
         else:
             result['overall'] = "Too Loose"
+    
+    return result
+
+def convert_garment_feedback_to_text(garment_feedback: dict) -> dict:
+    """Convert numeric garment feedback values to text descriptions."""
+    # Mapping for garment measurements based on your specifications
+    garment_mapping = {
+        'center_back_length': {  # Body length back
+            30: "Too Long (Garment)",
+            31: "Too Short (Garment)", 
+            32: "Right Length"
+        },
+        'shoulder_width': {  # Shoulder width
+            33: "Too Wide",
+            34: "Too Narrow",
+            35: "Right Width"
+        },
+        'chest_width': {  # Body width (laid flat)
+            36: "Too Wide (Body)",
+            37: "Too Narrow (Body)",
+            38: "Right Width (Body)"
+        },
+        'sleeve_length': {  # Sleeve length (center back)
+            39: "Too Long (Sleeve)",
+            40: "Too Short (Sleeve)",
+            41: "Right Length (Sleeve)"
+        }
+    }
+    
+    result = {}
+    for measurement_type, feedback_value in garment_feedback.items():
+        if measurement_type in garment_mapping:
+            measurement_codes = garment_mapping[measurement_type]
+            if feedback_value in measurement_codes:
+                result[measurement_type] = measurement_codes[feedback_value]
     
     return result
 

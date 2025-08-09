@@ -6,8 +6,10 @@
 
 ## 📊 **Database & Logs**
 
-- **[Database Query Cookbook](docs/database/DATABASE_QUERY_COOKBOOK.md)** - ⭐ **NEW!** Tested, working SQL queries for AI assistants
-- **[Database Changes Log](database_changes_log.txt)** - ⭐ **QUICK ACCESS!** Live log of all database modifications (linked in sidebar)
+- **[How to Ingest Size Guides](daily-notes/2025-01-20/howto_ingest_sizeguide.md)** - ⭐ **NEW!** Complete AI agent guide with tested examples
+- **[Database Query Cookbook](dev/docs/database/DATABASE_QUERY_COOKBOOK.md)** - ⭐ **NEW!** Tested, working SQL queries for AI assistants
+- **[DB Queries](db_queries.md)** - ⭐ **QUICK!** Same as above, shorter link
+- **[Database Changes Log](dev/logs/database_changes.log)** - ⭐ **ACTIVE LOG!** Live log of all database modifications - gets updated automatically
 - **[Session Log](daily-notes/2025-08-08/SESSION_LOG.md)** - Complete record of all sessions and work
 - **[Database Backup Overview](daily-notes/2025-08-08/database_backup_overview.md)** - Complete backup & logging guide
 - **[Size Guide Ingestion Process V2](daily-notes/2025-08-08/SIZE_GUIDE_INGESTION_COMPLETE_PROCESS_V2.md)** - Complete ingestion guide
@@ -33,8 +35,8 @@
 ## 🔧 **Development Tools**
 
 - **[Database Logger](dev/scripts/database/database_change_logger.py)** - Database change logging utility
-- **[Port Checker](dev/scripts/port_management/check_ports.py)** - Check running services
-- **[Kill Ports](dev/scripts/port_management/kill_ports.py)** - Stop services
+- **[Port Checker](dev/scripts/ports/check_ports.py)** - Check running services
+- **[Kill Ports](dev/scripts/ports/kill_ports.py)** - Stop services
 
 ## 📝 **Documentation Archive**
 

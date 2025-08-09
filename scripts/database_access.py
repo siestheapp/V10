@@ -34,8 +34,10 @@ def execute_query(query, params=None):
         else:
             cursor.execute(query)
         
-        if query.strip().upper().startswith('SELECT'):
+        if query.strip().upper().startswith('SELECT') or 'RETURNING' in query.upper():
             results = cursor.fetchall()
+            if 'RETURNING' in query.upper():
+                conn.commit()  # Commit the transaction for INSERT/UPDATE with RETURNING
             return results
         else:
             conn.commit()

@@ -450,6 +450,147 @@ SELECT
 
 ---
 
+## 🏗️ **Complete Size Guide Ingestion Example**
+
+### Real-World Vuori Size Guide Ingestion (January 20, 2025)
+```sql
+-- ✅ TESTED: Complete end-to-end size guide ingestion process
+-- This example shows the exact process used to successfully add Vuori size guide
+
+-- Step 1: Check if brand exists
+SELECT id, name, region, default_unit FROM brands WHERE LOWER(name) = LOWER('Vuori');
+-- Result: Found existing brand with ID=13
+
+-- Step 2: Create size guide record
+INSERT INTO size_guides (
+    brand_id, gender, category_id, subcategory_id, fit_type,
+    guide_level, specificity, unit, source_url, size_guide_header, notes
+) VALUES (
+    13, 'Male', 1, NULL, 'Regular',
+    'category_level', 'broad', 'in', 
+    'https://vuoriclothing.com/size-guide',
+    'Men''s Tops Size Guide', 
+    'Universal size guide for Vuori men''s tops. Chest measurements in inches. Data extracted from official size guide images.'
+) RETURNING id;
+-- Result: Created size guide with ID=16
+
+-- Step 3: Add individual size entries (example for one size)
+INSERT INTO size_guide_entries (
+    size_guide_id, size_label,
+    chest_min, chest_max, chest_range,
+    neck_min, neck_max, neck_range,
+    waist_min, waist_max, waist_range,
+    sleeve_min, sleeve_max, sleeve_range,
+    hip_min, hip_max, hip_range,
+    center_back_length
+) VALUES (
+    16, 'L',
+    41, 43, '41-43',
+    NULL, NULL, NULL,
+    NULL, NULL, NULL,
+    NULL, NULL, NULL,
+    NULL, NULL, NULL,
+    NULL
+);
+-- Repeat for all sizes: XXS(33-35), XS(33-35), S(35-39), M(39-41), L(41-43), XL(43-46), XXL(46-49), 3XL(49-52)
+
+-- Step 4: Create raw documentation record
+INSERT INTO raw_size_guides (
+    brand_id, gender, category_id, subcategory_id, fit_type,
+    source_url, screenshot_path, raw_text
+) VALUES (
+    13, 'Male', 1, NULL, 'Regular',
+    'https://vuoriclothing.com/size-guide',
+    'User provided images of Vuori size guide showing chest measurements',
+    'Vuori Men''s Size Guide - Chest measurements in inches: XXS(33-35), XS(33-35), S(35-39), M(39-41), L(41-43), XL(43-46), XXL(46-49), 3XL(49-52)'
+);
+
+-- Step 5: Verify the complete ingestion
+SELECT 
+    sg.id, sg.brand_id, b.name as brand_name, sg.gender, sg.specificity, 
+    sg.guide_level, sg.size_guide_header, sg.notes
+FROM size_guides sg 
+JOIN brands b ON sg.brand_id = b.id 
+WHERE sg.id = 16;
+
+-- Step 6: Verify all size entries
+SELECT size_label, chest_min, chest_max, chest_range
+FROM size_guide_entries 
+WHERE size_guide_id = 16 
+ORDER BY chest_min;
+```
+
+### Size Guide Ingestion Best Practices
+```sql
+-- ✅ TESTED: Essential steps for any size guide ingestion
+
+-- 1. Always check brand exists first (prevents errors)
+SELECT id, name FROM brands WHERE LOWER(name) = LOWER('[Brand Name]');
+
+-- 2. Use proper specificity classification:
+-- 'broad' = covers entire category (most common)
+-- 'specific' = covers subcategory only  
+-- 'product' = single product
+-- 'unknown' = scope unclear
+
+-- 3. Set guide_level correctly:
+-- 'category_level' = most common (separate guides per category)
+-- 'brand_level' = universal across all categories (rare)
+-- 'product_level' = unique to specific products
+
+-- 4. Handle measurements consistently:
+-- Single values: min=max=value, range="value"  
+-- Ranges: min=lower, max=upper, range="lower-upper"
+-- Missing data: NULL for all three fields
+
+-- 5. Always create raw documentation for audit trail
+-- Include source_url and description of data source
+
+-- 6. Verify ingestion with joins to ensure data integrity
+-- Check both size_guides and size_guide_entries tables
+```
+
+### Common Size Guide Patterns
+```sql
+-- ✅ TESTED: Typical patterns for different brand scenarios
+
+-- Pattern 1: New brand + size guide
+INSERT INTO brands (name, region, default_unit, notes) 
+VALUES ('NewBrand', 'USA', 'in', 'Brand description') 
+RETURNING id;
+-- Then use returned ID for size guide creation
+
+-- Pattern 2: Existing brand + additional size guide
+-- Check existing guides first to avoid duplicates
+SELECT id, gender, category_id, specificity FROM size_guides 
+WHERE brand_id = [brand_id] AND gender = 'Male' AND category_id = 1;
+
+-- Pattern 3: Size entries with only chest measurements (like Vuori)
+INSERT INTO size_guide_entries (
+    size_guide_id, size_label, chest_min, chest_max, chest_range
+) VALUES 
+    ([guide_id], 'S', 35, 39, '35-39'),
+    ([guide_id], 'M', 39, 41, '39-41'),
+    ([guide_id], 'L', 41, 43, '41-43');
+
+-- Pattern 4: Full measurement entries (chest, neck, waist, sleeve)
+INSERT INTO size_guide_entries (
+    size_guide_id, size_label,
+    chest_min, chest_max, chest_range,
+    neck_min, neck_max, neck_range,
+    waist_min, waist_max, waist_range,
+    sleeve_min, sleeve_max, sleeve_range
+) VALUES (
+    [guide_id], 'M',
+    39, 41, '39-41',
+    15.5, 16, '15.5-16', 
+    32, 34, '32-34',
+    33, 34, '33-34'
+);
+```
+
+---
+
 **Last Updated**: January 20, 2025  
 **Next Update**: Add queries as they're tested and confirmed working
 
@@ -459,4 +600,6 @@ SELECT
 - Raw size guide documentation storage
 - Comprehensive verification queries with joins
 - Size progression analysis with overlap detection
+- **🆕 Complete Vuori size guide ingestion example with all steps**
+- **🆕 Size guide ingestion best practices and common patterns**
 

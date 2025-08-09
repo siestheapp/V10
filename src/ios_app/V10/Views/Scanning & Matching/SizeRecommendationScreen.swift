@@ -34,7 +34,7 @@ struct SizeRecommendationScreen: View {
                             .font(.caption)
                             .fontWeight(.semibold)
                             .foregroundColor(.secondary)
-                            .letterSpacing(1.2)
+                            .tracking(1.2)
                     }
                     .padding(.horizontal, 20)
                     
@@ -68,19 +68,19 @@ struct SizeRecommendationScreen: View {
                             
                             // Measurement analysis - information dense
                             VStack(spacing: 8) {
-                                MeasurementRow(
+                                FitMeasurementRow(
                                     dimension: "Chest", 
                                     status: .perfect,
                                     detail: "42\" fits your 40-44\" preference perfectly"
                                 )
                                 
-                                MeasurementRow(
+                                FitMeasurementRow(
                                     dimension: "Neck", 
                                     status: .perfect,
                                     detail: "16\" fits your 16-16.5\" zone comfortably"
                                 )
                                 
-                                MeasurementRow(
+                                FitMeasurementRow(
                                     dimension: "Sleeve", 
                                     status: .perfect,
                                     detail: "34\" fits your 33.5-36\" range ideally"
@@ -208,7 +208,7 @@ struct SizeRecommendationScreen: View {
 
 // MARK: - Supporting Views
 
-struct MeasurementRow: View {
+struct FitMeasurementRow: View {
     let dimension: String
     let status: MeasurementStatus
     let detail: String
