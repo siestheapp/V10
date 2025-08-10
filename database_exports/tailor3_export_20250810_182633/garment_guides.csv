@@ -1,0 +1,53 @@
+id,brand_id,info_source,guide_header,measurements_available,source_url,notes,created_at,created_by,updated_at,updated_by,screenshot_path,raw_source_text
+6,11,product_measurement_table,Product Measurements,"['chest_width', 'sleeve_length', 'body_length']",https://www.lacoste.com/us/lacoste/men/clothing/button-down-shirts/CH3346-51-DPC.html,"Each size of this garment has a table for ""product measurements"" (stored in this table) and ""body measurements"" (shown in size_guides).",2025-08-10 02:53:17.819195,1,,,https://drive.google.com/file/d/1ySaeY5J3Y_L6PjytmT_la-lkya59sKCY/view?usp=drive_link,"Size guide
+Close
+Our advice
+This item runs large. We advise you to take one size smaller than your usual size.
+
+Measures
+
+Product Measurements
+
+Body Measurements
+Attention
+Product dimensions are given for information only: they may change slightly depending on the properties of the material, and may vary from one color to another.
+
+
+Measurements below are in inches.
+
+
+16½ - 42
+Across chest	24.1 inch
+Sleeve length	26.4 inch
+Front length	30.2 inch"
+1,13,product_description,NULL,['body_length'],https://vuoriclothing.com/products/strato-tech-tee-chambray-heather,"See under fit tab on product page: ""29"" body length""",2025-08-10 02:25:45.927532,1,,,https://drive.google.com/file/d/1QLRfIy-G0i_M_zXCupn0ILPBzQzXHTw3/view?usp=drive_link,"29"" body length"
+2,6,product_measurement_table,Size Guide Clive,"['chest_width', 'sleeve_length']",https://www.nn07.com/en/us/clive-3323-tee-egg-white?srsltid=AfmBOop652NdNa5TlEY4BqCYj9iwoIwoeRWJN0JT5s7PygSbNTiQ9Hs6,Garment measurement table.,2025-08-10 02:25:45.927532,1,,,https://drive.google.com/file/d/1PmU5JfW4YAFbzvw2JdSNqgYXuP3DcETE/view?usp=drive_link,"SIZE GUIDE
+Clive
+
+Fit Information
+• If inbetween sizes, size up
+• Regular fit
+• Bruce is 187 cm / 6'2 / 6'1 and is wearing a size M
+
+Measurement Details
+A) 1/2 Chest Width - Measure the Chest under the armpit straight to the other armpit. For around chest circumference, double the chest value of our chart.
+B) Center Back Length - Measured at center of back from bottom of collar to the hem.
+C) Sleeve Length - Measured from the shoulder seam and down the outer sleeve to the bottom of the cuff.
+
+INCHES
+
+SIZE	S	M	L	XL	XXL
+1/2 Chest Width	19.7	20.5	21.3	22	23.2
+Center Back Length	26.6	27	27.4	27.8	28.1
+Sleeve Length	25.6	26	26.4	26.8	27.2
+"
+3,12,product_measurement_table,Size Chart,"['chest_width', 'sleeve_length', 'body_length', 'shoulder_width']",https://www.uniqlo.com/us/en/products/E455365-000/00/size,"Garment measurement table. ""These metrics are based on the finished size of the product.""",2025-08-10 02:25:45.927532,1,,,https://drive.google.com/file/d/1oU3eswNbyyF46GyNX7b7dQrWJRKAIZXv/view?usp=drive_link,"Compare With Previously Purchased Products
+These metrics are based on the finished size of the product.
+
+IN
+Size	Body length back	Shoulder width	Body width	Sleeve length
+(center back)
+M	28	17 1/2	21 1/2	17 1/2
+L	29	18 1/2	23	18
+XL	30	19	24 1/2	18 1/2
+Please log in to compare the size of the product you want with your previously owned items."

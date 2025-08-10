@@ -1,0 +1,268 @@
+{
+  "table_name": "user_garments",
+  "export_date": "2025-08-10T18:26:39.920609",
+  "columns": [
+    {
+      "column_name": "id",
+      "data_type": "integer",
+      "character_maximum_length": null,
+      "is_nullable": "NO",
+      "column_default": "nextval('user_garments_id_seq'::regclass)",
+      "ordinal_position": 1
+    },
+    {
+      "column_name": "user_id",
+      "data_type": "integer",
+      "character_maximum_length": null,
+      "is_nullable": "YES",
+      "column_default": null,
+      "ordinal_position": 2
+    },
+    {
+      "column_name": "brand_id",
+      "data_type": "integer",
+      "character_maximum_length": null,
+      "is_nullable": "YES",
+      "column_default": null,
+      "ordinal_position": 3
+    },
+    {
+      "column_name": "category_id",
+      "data_type": "integer",
+      "character_maximum_length": null,
+      "is_nullable": "YES",
+      "column_default": null,
+      "ordinal_position": 4
+    },
+    {
+      "column_name": "subcategory_id",
+      "data_type": "integer",
+      "character_maximum_length": null,
+      "is_nullable": "YES",
+      "column_default": null,
+      "ordinal_position": 5
+    },
+    {
+      "column_name": "gender",
+      "data_type": "text",
+      "character_maximum_length": null,
+      "is_nullable": "YES",
+      "column_default": null,
+      "ordinal_position": 6
+    },
+    {
+      "column_name": "size_label",
+      "data_type": "text",
+      "character_maximum_length": null,
+      "is_nullable": "NO",
+      "column_default": null,
+      "ordinal_position": 7
+    },
+    {
+      "column_name": "fit_type",
+      "data_type": "text",
+      "character_maximum_length": null,
+      "is_nullable": "YES",
+      "column_default": "'Regular'::text",
+      "ordinal_position": 8
+    },
+    {
+      "column_name": "unit",
+      "data_type": "text",
+      "character_maximum_length": null,
+      "is_nullable": "YES",
+      "column_default": "'in'::text",
+      "ordinal_position": 9
+    },
+    {
+      "column_name": "product_name",
+      "data_type": "text",
+      "character_maximum_length": null,
+      "is_nullable": "YES",
+      "column_default": null,
+      "ordinal_position": 10
+    },
+    {
+      "column_name": "product_url",
+      "data_type": "text",
+      "character_maximum_length": null,
+      "is_nullable": "YES",
+      "column_default": null,
+      "ordinal_position": 11
+    },
+    {
+      "column_name": "product_code",
+      "data_type": "text",
+      "character_maximum_length": null,
+      "is_nullable": "YES",
+      "column_default": null,
+      "ordinal_position": 12
+    },
+    {
+      "column_name": "tag_photo_path",
+      "data_type": "text",
+      "character_maximum_length": null,
+      "is_nullable": "YES",
+      "column_default": null,
+      "ordinal_position": 13
+    },
+    {
+      "column_name": "owns_garment",
+      "data_type": "boolean",
+      "character_maximum_length": null,
+      "is_nullable": "YES",
+      "column_default": "true",
+      "ordinal_position": 14
+    },
+    {
+      "column_name": "size_guide_id",
+      "data_type": "integer",
+      "character_maximum_length": null,
+      "is_nullable": "YES",
+      "column_default": null,
+      "ordinal_position": 15
+    },
+    {
+      "column_name": "size_guide_entry_id",
+      "data_type": "integer",
+      "character_maximum_length": null,
+      "is_nullable": "YES",
+      "column_default": null,
+      "ordinal_position": 16
+    },
+    {
+      "column_name": "fit_feedback",
+      "data_type": "text",
+      "character_maximum_length": null,
+      "is_nullable": "YES",
+      "column_default": null,
+      "ordinal_position": 17
+    },
+    {
+      "column_name": "feedback_timestamp",
+      "data_type": "timestamp without time zone",
+      "character_maximum_length": null,
+      "is_nullable": "YES",
+      "column_default": null,
+      "ordinal_position": 18
+    },
+    {
+      "column_name": "notes",
+      "data_type": "text",
+      "character_maximum_length": null,
+      "is_nullable": "YES",
+      "column_default": null,
+      "ordinal_position": 19
+    },
+    {
+      "column_name": "created_at",
+      "data_type": "timestamp without time zone",
+      "character_maximum_length": null,
+      "is_nullable": "YES",
+      "column_default": "CURRENT_TIMESTAMP",
+      "ordinal_position": 20
+    },
+    {
+      "column_name": "created_by",
+      "data_type": "integer",
+      "character_maximum_length": null,
+      "is_nullable": "YES",
+      "column_default": null,
+      "ordinal_position": 21
+    },
+    {
+      "column_name": "updated_at",
+      "data_type": "timestamp without time zone",
+      "character_maximum_length": null,
+      "is_nullable": "YES",
+      "column_default": null,
+      "ordinal_position": 22
+    },
+    {
+      "column_name": "updated_by",
+      "data_type": "integer",
+      "character_maximum_length": null,
+      "is_nullable": "YES",
+      "column_default": null,
+      "ordinal_position": 23
+    },
+    {
+      "column_name": "image_url",
+      "data_type": "text",
+      "character_maximum_length": null,
+      "is_nullable": "YES",
+      "column_default": null,
+      "ordinal_position": 24
+    },
+    {
+      "column_name": "input_method",
+      "data_type": "character varying",
+      "character_maximum_length": 20,
+      "is_nullable": "YES",
+      "column_default": null,
+      "ordinal_position": 26
+    },
+    {
+      "column_name": "garment_guide_id",
+      "data_type": "integer",
+      "character_maximum_length": null,
+      "is_nullable": "YES",
+      "column_default": null,
+      "ordinal_position": 27
+    }
+  ],
+  "constraints": [
+    {
+      "constraint_name": "user_garments_pkey",
+      "constraint_type": "PRIMARY KEY",
+      "column_name": "id"
+    },
+    {
+      "constraint_name": "user_garments_brand_id_fkey",
+      "constraint_type": "FOREIGN KEY",
+      "column_name": "brand_id"
+    },
+    {
+      "constraint_name": "user_garments_category_id_fkey",
+      "constraint_type": "FOREIGN KEY",
+      "column_name": "category_id"
+    },
+    {
+      "constraint_name": "user_garments_created_by_fkey",
+      "constraint_type": "FOREIGN KEY",
+      "column_name": "created_by"
+    },
+    {
+      "constraint_name": "user_garments_size_guide_entry_id_fkey",
+      "constraint_type": "FOREIGN KEY",
+      "column_name": "size_guide_entry_id"
+    },
+    {
+      "constraint_name": "user_garments_size_guide_id_fkey",
+      "constraint_type": "FOREIGN KEY",
+      "column_name": "size_guide_id"
+    },
+    {
+      "constraint_name": "user_garments_subcategory_id_fkey",
+      "constraint_type": "FOREIGN KEY",
+      "column_name": "subcategory_id"
+    },
+    {
+      "constraint_name": "user_garments_updated_by_fkey",
+      "constraint_type": "FOREIGN KEY",
+      "column_name": "updated_by"
+    },
+    {
+      "constraint_name": "user_garments_user_id_fkey",
+      "constraint_type": "FOREIGN KEY",
+      "column_name": "user_id"
+    },
+    {
+      "constraint_name": "user_garments_garment_guide_id_fkey",
+      "constraint_type": "FOREIGN KEY",
+      "column_name": "garment_guide_id"
+    }
+  ],
+  "indexes": [],
+  "row_count": 13
+}

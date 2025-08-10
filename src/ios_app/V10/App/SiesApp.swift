@@ -60,23 +60,16 @@ struct SiesApp: App {
                             }
                             .tag(3)
                         
-                        ShopView()
-                            .environmentObject(userSettings)
-                            .tabItem {
-                                Label("Shop", systemImage: "bag")
-                            }
-                            .tag(4)
-                        
                         MoreView()
                             .environmentObject(userSettings)
                             .tabItem {
                                 Label("More", systemImage: "ellipsis")
                             }
-                            .tag(5)
+                            .tag(4)
                     }
                     .onChange(of: selectedTab) { oldValue, newValue in
                         print("🔄 TAB CHANGE: From \(oldValue) to \(newValue)")
-                        print("🔄 TAB NAMES: 0=Scan, 1=Finds, 2=Closet, 3=Fit, 4=Shop, 5=More")
+                        print("🔄 TAB NAMES: 0=Scan, 1=Finds, 2=Closet, 3=Fit, 4=More")
                     }
                 }
             }

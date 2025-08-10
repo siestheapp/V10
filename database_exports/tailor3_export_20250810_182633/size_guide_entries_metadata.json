@@ -1,0 +1,149 @@
+{
+  "table_name": "size_guide_entries",
+  "export_date": "2025-08-10T18:26:35.798253",
+  "columns": [
+    {
+      "column_name": "id",
+      "data_type": "integer",
+      "character_maximum_length": null,
+      "is_nullable": "NO",
+      "column_default": "nextval('size_guide_measurements_id_seq'::regclass)",
+      "ordinal_position": 1
+    },
+    {
+      "column_name": "size_guide_id",
+      "data_type": "integer",
+      "character_maximum_length": null,
+      "is_nullable": "YES",
+      "column_default": null,
+      "ordinal_position": 2
+    },
+    {
+      "column_name": "measurement_type",
+      "data_type": "text",
+      "character_maximum_length": null,
+      "is_nullable": "NO",
+      "column_default": null,
+      "ordinal_position": 3
+    },
+    {
+      "column_name": "size_label",
+      "data_type": "text",
+      "character_maximum_length": null,
+      "is_nullable": "NO",
+      "column_default": null,
+      "ordinal_position": 4
+    },
+    {
+      "column_name": "min_value",
+      "data_type": "numeric",
+      "character_maximum_length": null,
+      "is_nullable": "YES",
+      "column_default": null,
+      "ordinal_position": 5
+    },
+    {
+      "column_name": "max_value",
+      "data_type": "numeric",
+      "character_maximum_length": null,
+      "is_nullable": "YES",
+      "column_default": null,
+      "ordinal_position": 6
+    },
+    {
+      "column_name": "unit",
+      "data_type": "text",
+      "character_maximum_length": null,
+      "is_nullable": "YES",
+      "column_default": "'inches'::text",
+      "ordinal_position": 7
+    },
+    {
+      "column_name": "notes",
+      "data_type": "text",
+      "character_maximum_length": null,
+      "is_nullable": "YES",
+      "column_default": null,
+      "ordinal_position": 8
+    },
+    {
+      "column_name": "created_at",
+      "data_type": "timestamp without time zone",
+      "character_maximum_length": null,
+      "is_nullable": "YES",
+      "column_default": "CURRENT_TIMESTAMP",
+      "ordinal_position": 9
+    },
+    {
+      "column_name": "created_by",
+      "data_type": "integer",
+      "character_maximum_length": null,
+      "is_nullable": "YES",
+      "column_default": null,
+      "ordinal_position": 10
+    },
+    {
+      "column_name": "updated_at",
+      "data_type": "timestamp without time zone",
+      "character_maximum_length": null,
+      "is_nullable": "YES",
+      "column_default": null,
+      "ordinal_position": 11
+    },
+    {
+      "column_name": "updated_by",
+      "data_type": "integer",
+      "character_maximum_length": null,
+      "is_nullable": "YES",
+      "column_default": null,
+      "ordinal_position": 12
+    },
+    {
+      "column_name": "range",
+      "data_type": "text",
+      "character_maximum_length": null,
+      "is_nullable": "YES",
+      "column_default": null,
+      "ordinal_position": 13
+    }
+  ],
+  "constraints": [
+    {
+      "constraint_name": "size_guide_measurements_pkey",
+      "constraint_type": "PRIMARY KEY",
+      "column_name": "id"
+    },
+    {
+      "constraint_name": "size_guide_measurements_size_guide_id_measurement_type_size_key",
+      "constraint_type": "UNIQUE",
+      "column_name": "size_guide_id"
+    },
+    {
+      "constraint_name": "size_guide_measurements_size_guide_id_measurement_type_size_key",
+      "constraint_type": "UNIQUE",
+      "column_name": "measurement_type"
+    },
+    {
+      "constraint_name": "size_guide_measurements_size_guide_id_measurement_type_size_key",
+      "constraint_type": "UNIQUE",
+      "column_name": "size_label"
+    },
+    {
+      "constraint_name": "size_guide_measurements_size_guide_id_fkey",
+      "constraint_type": "FOREIGN KEY",
+      "column_name": "size_guide_id"
+    },
+    {
+      "constraint_name": "size_guide_measurements_created_by_fkey",
+      "constraint_type": "FOREIGN KEY",
+      "column_name": "created_by"
+    },
+    {
+      "constraint_name": "size_guide_measurements_updated_by_fkey",
+      "constraint_type": "FOREIGN KEY",
+      "column_name": "updated_by"
+    }
+  ],
+  "indexes": [],
+  "row_count": 199
+}

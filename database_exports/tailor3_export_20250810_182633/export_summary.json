@@ -1,0 +1,25 @@
+{
+  "export_date": "2025-08-10T18:26:47.246258",
+  "database_config": {
+    "database": "postgres",
+    "user": "postgres.lbilxlkchzpducggkrxx",
+    "host": "aws-0-us-east-2.pooler.supabase.com",
+    "port": "6543"
+  },
+  "tables_exported": [
+    "size_guides",
+    "size_guide_entries",
+    "garment_guides",
+    "garment_guide_entries",
+    "products",
+    "user_garments",
+    "admin_activity_log",
+    "audit_log",
+    "brands",
+    "garment_measurement_feedback",
+    "user_garment_feedback"
+  ],
+  "successful_exports": 11,
+  "failed_exports": 0,
+  "output_directory": "tailor3_export_20250810_182633"
+}

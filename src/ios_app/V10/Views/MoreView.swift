@@ -12,9 +12,6 @@ struct MoreView: View {
             NavigationLink(destination: AccountScreen()) {
                 Label("Account", systemImage: "person")
             }
-            NavigationLink(destination: BodyScreen()) {
-                Label("Body", systemImage: "figure.stand")
-            }
         }
         .navigationTitle("More")
     }

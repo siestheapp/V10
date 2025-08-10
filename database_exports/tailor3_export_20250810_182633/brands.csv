@@ -1,0 +1,12 @@
+id,name,region,default_unit,created_at,created_by,updated_at,updated_by,notes
+1,Lululemon,US,in,2025-06-29 20:04:33.141003,1,,,Known for athletic fits and garment-specific sizing.
+2,Patagonia,US,in,2025-06-30 00:49:58.745559,1,,,Outdoor and technical apparel
+5,Banana Republic,US,in,2025-06-30 04:17:57.157636,1,,,
+4,J.Crew,US,in,2025-06-30 03:47:19.007249,1,,,
+6,NN.07,US,in,2025-06-30 05:49:21.270791,1,,,
+8,Faherty,US,in,2025-07-04 04:34:59.290082,1,,,
+9,Theory,US,in,2025-07-26 14:44:09.667434,1,,,
+10,Reiss,US,in,2025-07-27 02:10:01.999577,1,,,
+11,Lacoste,France,in,2025-08-08 19:37:28.071296,,,,French luxury brand. Uses French sizing (42=L). Provides both product and body measurements.
+12,Uniqlo,Japan,in,2025-08-09 14:56:28.837370,,,,Japanese fast fashion retailer with international presence
+13,Vuori,USA,in,2025-08-09 17:32:53.254516,,,,Premium athletic and performance wear brand based in California

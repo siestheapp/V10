@@ -1,0 +1,217 @@
+{
+  "table_name": "size_guides",
+  "export_date": "2025-08-10T18:26:34.728929",
+  "columns": [
+    {
+      "column_name": "id",
+      "data_type": "integer",
+      "character_maximum_length": null,
+      "is_nullable": "NO",
+      "column_default": "nextval('size_guides_id_seq'::regclass)",
+      "ordinal_position": 1
+    },
+    {
+      "column_name": "brand_id",
+      "data_type": "integer",
+      "character_maximum_length": null,
+      "is_nullable": "YES",
+      "column_default": null,
+      "ordinal_position": 2
+    },
+    {
+      "column_name": "gender",
+      "data_type": "text",
+      "character_maximum_length": null,
+      "is_nullable": "NO",
+      "column_default": null,
+      "ordinal_position": 3
+    },
+    {
+      "column_name": "category_id",
+      "data_type": "integer",
+      "character_maximum_length": null,
+      "is_nullable": "YES",
+      "column_default": null,
+      "ordinal_position": 4
+    },
+    {
+      "column_name": "subcategory_id",
+      "data_type": "integer",
+      "character_maximum_length": null,
+      "is_nullable": "YES",
+      "column_default": null,
+      "ordinal_position": 5
+    },
+    {
+      "column_name": "fit_type",
+      "data_type": "text",
+      "character_maximum_length": null,
+      "is_nullable": "YES",
+      "column_default": "'Regular'::text",
+      "ordinal_position": 6
+    },
+    {
+      "column_name": "guide_level",
+      "data_type": "text",
+      "character_maximum_length": null,
+      "is_nullable": "YES",
+      "column_default": "'brand_level'::text",
+      "ordinal_position": 7
+    },
+    {
+      "column_name": "version",
+      "data_type": "integer",
+      "character_maximum_length": null,
+      "is_nullable": "YES",
+      "column_default": "1",
+      "ordinal_position": 8
+    },
+    {
+      "column_name": "source_url",
+      "data_type": "text",
+      "character_maximum_length": null,
+      "is_nullable": "YES",
+      "column_default": null,
+      "ordinal_position": 9
+    },
+    {
+      "column_name": "size_guide_header",
+      "data_type": "text",
+      "character_maximum_length": null,
+      "is_nullable": "YES",
+      "column_default": null,
+      "ordinal_position": 10
+    },
+    {
+      "column_name": "notes",
+      "data_type": "text",
+      "character_maximum_length": null,
+      "is_nullable": "YES",
+      "column_default": null,
+      "ordinal_position": 11
+    },
+    {
+      "column_name": "created_at",
+      "data_type": "timestamp without time zone",
+      "character_maximum_length": null,
+      "is_nullable": "YES",
+      "column_default": "CURRENT_TIMESTAMP",
+      "ordinal_position": 12
+    },
+    {
+      "column_name": "created_by",
+      "data_type": "integer",
+      "character_maximum_length": null,
+      "is_nullable": "YES",
+      "column_default": null,
+      "ordinal_position": 13
+    },
+    {
+      "column_name": "updated_at",
+      "data_type": "timestamp without time zone",
+      "character_maximum_length": null,
+      "is_nullable": "YES",
+      "column_default": null,
+      "ordinal_position": 14
+    },
+    {
+      "column_name": "updated_by",
+      "data_type": "integer",
+      "character_maximum_length": null,
+      "is_nullable": "YES",
+      "column_default": null,
+      "ordinal_position": 15
+    },
+    {
+      "column_name": "unit",
+      "data_type": "text",
+      "character_maximum_length": null,
+      "is_nullable": "YES",
+      "column_default": "'in'::text",
+      "ordinal_position": 16
+    },
+    {
+      "column_name": "specificity",
+      "data_type": "text",
+      "character_maximum_length": null,
+      "is_nullable": "YES",
+      "column_default": null,
+      "ordinal_position": 18
+    },
+    {
+      "column_name": "raw_source_text",
+      "data_type": "text",
+      "character_maximum_length": null,
+      "is_nullable": "YES",
+      "column_default": null,
+      "ordinal_position": 19
+    },
+    {
+      "column_name": "screenshot_path",
+      "data_type": "text",
+      "character_maximum_length": null,
+      "is_nullable": "YES",
+      "column_default": null,
+      "ordinal_position": 20
+    }
+  ],
+  "constraints": [
+    {
+      "constraint_name": "size_guides_brand_id_gender_category_id_fit_type_version_key",
+      "constraint_type": "UNIQUE",
+      "column_name": "brand_id"
+    },
+    {
+      "constraint_name": "size_guides_brand_id_gender_category_id_fit_type_version_key",
+      "constraint_type": "UNIQUE",
+      "column_name": "gender"
+    },
+    {
+      "constraint_name": "size_guides_brand_id_gender_category_id_fit_type_version_key",
+      "constraint_type": "UNIQUE",
+      "column_name": "category_id"
+    },
+    {
+      "constraint_name": "size_guides_brand_id_gender_category_id_fit_type_version_key",
+      "constraint_type": "UNIQUE",
+      "column_name": "fit_type"
+    },
+    {
+      "constraint_name": "size_guides_brand_id_gender_category_id_fit_type_version_key",
+      "constraint_type": "UNIQUE",
+      "column_name": "version"
+    },
+    {
+      "constraint_name": "size_guides_pkey",
+      "constraint_type": "PRIMARY KEY",
+      "column_name": "id"
+    },
+    {
+      "constraint_name": "size_guides_brand_id_fkey",
+      "constraint_type": "FOREIGN KEY",
+      "column_name": "brand_id"
+    },
+    {
+      "constraint_name": "size_guides_category_id_fkey",
+      "constraint_type": "FOREIGN KEY",
+      "column_name": "category_id"
+    },
+    {
+      "constraint_name": "size_guides_created_by_fkey",
+      "constraint_type": "FOREIGN KEY",
+      "column_name": "created_by"
+    },
+    {
+      "constraint_name": "size_guides_subcategory_id_fkey",
+      "constraint_type": "FOREIGN KEY",
+      "column_name": "subcategory_id"
+    },
+    {
+      "constraint_name": "size_guides_updated_by_fkey",
+      "constraint_type": "FOREIGN KEY",
+      "column_name": "updated_by"
+    }
+  ],
+  "indexes": [],
+  "row_count": 10
+}

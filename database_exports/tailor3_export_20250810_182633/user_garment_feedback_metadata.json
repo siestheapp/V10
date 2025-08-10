@@ -1,0 +1,78 @@
+{
+  "table_name": "user_garment_feedback",
+  "export_date": "2025-08-10T18:26:46.775436",
+  "columns": [
+    {
+      "column_name": "id",
+      "data_type": "integer",
+      "character_maximum_length": null,
+      "is_nullable": "NO",
+      "column_default": "nextval('user_garment_feedback_id_seq'::regclass)",
+      "ordinal_position": 1
+    },
+    {
+      "column_name": "user_garment_id",
+      "data_type": "integer",
+      "character_maximum_length": null,
+      "is_nullable": "YES",
+      "column_default": null,
+      "ordinal_position": 2
+    },
+    {
+      "column_name": "dimension",
+      "data_type": "text",
+      "character_maximum_length": null,
+      "is_nullable": "NO",
+      "column_default": null,
+      "ordinal_position": 3
+    },
+    {
+      "column_name": "feedback_code_id",
+      "data_type": "integer",
+      "character_maximum_length": null,
+      "is_nullable": "YES",
+      "column_default": null,
+      "ordinal_position": 4
+    },
+    {
+      "column_name": "created_at",
+      "data_type": "timestamp without time zone",
+      "character_maximum_length": null,
+      "is_nullable": "YES",
+      "column_default": "CURRENT_TIMESTAMP",
+      "ordinal_position": 5
+    },
+    {
+      "column_name": "created_by",
+      "data_type": "integer",
+      "character_maximum_length": null,
+      "is_nullable": "YES",
+      "column_default": null,
+      "ordinal_position": 6
+    }
+  ],
+  "constraints": [
+    {
+      "constraint_name": "user_garment_feedback_pkey",
+      "constraint_type": "PRIMARY KEY",
+      "column_name": "id"
+    },
+    {
+      "constraint_name": "user_garment_feedback_created_by_fkey",
+      "constraint_type": "FOREIGN KEY",
+      "column_name": "created_by"
+    },
+    {
+      "constraint_name": "user_garment_feedback_feedback_code_id_fkey",
+      "constraint_type": "FOREIGN KEY",
+      "column_name": "feedback_code_id"
+    },
+    {
+      "constraint_name": "user_garment_feedback_user_garment_id_fkey",
+      "constraint_type": "FOREIGN KEY",
+      "column_name": "user_garment_id"
+    }
+  ],
+  "indexes": [],
+  "row_count": 36
+}

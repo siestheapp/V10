@@ -1,0 +1,91 @@
+id,brand_id,gender,category_id,subcategory_id,fit_type,guide_level,version,source_url,size_guide_header,notes,created_at,created_by,updated_at,updated_by,unit,specificity,raw_source_text,screenshot_path
+10,8,Male,1,,NA,category_level,1,https://fahertybrand.com/pages/size-guide?srsltid=AfmBOorv1ix_wQbpy1-Hg7dc2IlMdCqDDshVnXxkHYHQm4N76-CzTmhC,Measurements for Men's Tops,Imported from Faherty Brand,2025-07-04 04:39:53.539362,1,2025-08-10 04:22:11.200979,,in,broad,"Department: Men
+Category: Tops
+Fit Type: Unspecified
+Unit: Inches
+
+Alpha Size,XS,S,M,L,XL,XXL,XXXL
+Neck,14,14-14.5,15-15.5,16-16.5,17-17.5,18-18.5,19-19.5
+Chest,34-36,37-39,40-41,42-44,45-47,48-51,52-54
+Waist,26-28,28-30,31-33,34-36,37-39,40-43,44-47
+Sleeve,32.5-33,32.5-34,34-35,35-36,36-36.5,36.5-37,37.5-38
+",https://drive.google.com/file/d/168iReUUOHPQngklueo5gctFwWDNj0RMw/view?usp=drive_link
+8,5,Male,1,,Regular,category_level,1,https://bananarepublic.gap.com/browse/info.do?cid=35404,Men's Shirts & Sweaters,Separate from outerwear guide; excluded 'belt' column because not worth bringing in for this category or distinguishing it from waist and hips,2025-06-30 04:21:39.447231,1,2025-08-10 04:22:11.200979,,in,unknown,"Department: Men
+Category: Shirts & Sweaters
+Fit Type: Regular
+Unit: Inches
+
+Size (US),Waist,Chest,Neck,Sleeve,Belt
+XXS,25-26,32-33,13-13½,31,
+XS,27-28,34-35,13-13½,32,
+S,29-31,36-37,14-14½,33,30-32
+M,32-33,38-40,15-15½,34,33-35
+L,34-35,41-44,16-16½,35,36-39
+XL,36-37,45-48,17-17½,35½,40-43
+XXL,38-39,49-52,18-18½,36,
+",https://drive.google.com/file/d/1tDwIZ-zX_eYtDyNEC3wlnmwe2PhdkXsA/view?usp=drive_link
+5,1,Male,1,,NA,category_level,1,https://shop.lululemon.com/help/size-guide/mens,Men's Size Guide (Tops),"Includes Coats & Jackets, Hoodies & Sweatshirts, Shirts, T-Shirts & Vests.",2025-06-29 20:34:01.783960,1,2025-08-10 04:22:11.200979,,in,broad,"Department: Men
+Category: Tops
+Fit Type: Unspecified
+Unit: Inches
+
+Alpha Size,XS,S,M,L,XL
+Dual Alpha Size,XS/S,XS/S,M/L,M/L,XL/XXL
+Your Chest,35""-36"",37""-38"",39""-40"",41""-42"",43""-45""
+",https://drive.google.com/file/d/1zzyto3euLrnzFUpjKCNH0ZhkhoB4oYT3/view?usp=sharing
+7,4,Male,1,,Regular,category_level,1,https://www.jcrew.com/r/size-charts?srsltid=AfmBOopqcNu-xPNkyQarb8xjFWzzAEt7ccMkhtJKvHMjb1H2DYUn84hO,Men's Tops,Excludes outerwear,2025-06-30 03:49:12.373718,1,2025-08-10 04:22:11.200979,,in,broad,"Department: Men
+Category: Tops
+Fit Type: Regular
+Unit: Inches
+
+Size (US),Chest,Neck,Waist,Arm Length
+XS,32-34,13-13.5,26-28,31-32
+S,35-37,14-14.5,29-31,32-33
+M,38-40,15-15.5,32-34,33-34
+L,41-43,16-16.5,35-37,34-35
+XL,44-46,17-17.5,38-40,35-36
+XXL,47-49,18-18.5,41-43,36-37
+XXXL,50-52,18-18.5,44-45,36-37
+",https://drive.google.com/file/d/1HjeQ-ZTXXCDRL2Wpk0UlC4KqAqEKU8aW/view?usp=drive_link
+6,2,Male,1,,NA,category_level,1,https://www.patagonia.com/guides/size-fit/mens/,Men’s Tops Size Chart,"No subcategories, applies to all tops",2025-06-30 00:52:30.855763,1,2025-08-10 04:22:11.200979,,in,broad,"Department: Men
+Category: Tops
+Fit Type: Unspecified
+Unit: Inches
+
+Alpha Size,Chest,Hip,Arm Length
+XXS,33 in,32 in,30 in
+XS,35 in,34 in,32 in
+S,37 in,36 in,33 in
+M,40 in,39 in,34 in
+L,44 in,43 in,35 in
+XL,47 in,46 in,36 in
+XXL,50 in,49 in,37 in
+XXXL,56 in,55 in,37.5 in
+",https://drive.google.com/file/d/1LL3utWUYcUQmmb-4CCYajj18YxK6bzEF/view?usp=drive_link
+11,9,Male,1,,Regular,category_level,1,https://www.theory.com/brenan-polo-shirt-in-pacific-linen/P0583702_100.html,Size Guide,,2025-07-26 14:51:06.843949,1,2025-08-10 04:22:11.200979,,in,unknown,"Theory Men's Polo Size Guide - Chest and Sleeve measurements in inches: XS(34.0-36.0 chest, 33.0-33.5 sleeve), S(36.0-38.0 chest, 33.5-34.0 sleeve), M(38.0-40.0 chest, 34.0-34.5 sleeve), L(40.0-42.0 chest, 34.5-35.0 sleeve), XL(42.0-44.0 chest, 35.0-35.5 sleeve), XXL(44.0-46.0 chest, 35.5-36.0 sleeve)",https://drive.google.com/file/d/1UO2oaAARfWAtqCZKTQqBBb-v7up4O9ES/view?usp=drive_link
+12,10,Male,1,,NA,category_level,1,https://www.reiss.com/style/st995959/c09907,Size Guide,,2025-07-27 02:12:38.536136,1,2025-08-10 04:22:11.200979,,in,unknown,"Reiss Men's Shirts Size Guide - Chest and Collar measurements in inches: XS(34 chest, 14.5 collar), S(36 chest, 15 collar), M(38 chest, 15.5 collar), L(40 chest, 16 collar), XL(42 chest, 16.5 collar), XXL(44 chest, 17 collar), 3XL(46 chest, 18 collar)",https://drive.google.com/file/d/1YJK0alljgr_DDymIPg44gWRzC_ENUlv2/view?usp=drive_link
+13,11,Male,1,,Regular,brand_level,1,https://www.lacoste.com/us/sizeguide,Men's Shirts,"Subcategory-specific guide for Men's Long Sleeve Shirts only. Lacoste maintains separate size guides for different product types (Polo Shirts, T-Shirts, Sweatshirts, Jackets & Coats, etc.) as shown in their product type dropdown. This is more specific than typical brand category guides. French sizing reference: 42=L.",2025-08-08 19:37:28.071296,1,2025-08-10 04:22:11.200979,,in,specific,"Men > Tops > Men's Shirts
+
+INCH    CM
+
+Letter Sizing    | XS-S | S   | S-M | M   | M-L | L   | L-XL | XL  | XL-2XL | 2XL | 1XG | 2XG
+Lacoste Sizing   | 37   | 38  | 39  | 40  | 41  | 42  | 43   | 44  | 45     | 46  | 48  | 50
+Neck Circumference | 14 | 14.5| 15  | 15.5| 15.8| 16  | 16.7 | 17  | 17.5   | 18  | 18.7| 19.5
+Chest Circumference| 35 | 37  | 38  | 40  | 41  | 43  | 44   | 46  | 48     | 49  | 53  | 57
+Pant Waist Circumference | 30 | 31 | 33 | 35 | 36 | 38 | 39 | 42 | 44 | 46 | 50 | 54",https://drive.google.com/file/d/1BCdI1Ku6151vehCFurmWskrKot7MucCx/view?usp=sharing
+14,12,Male,1,,NA,category_level,1,https://www.uniqlo.com/us/en/products/E455365-000/00/size?sizeDisplayCode=003&measurementUnit=inch,MEN Body dimensions - Common,"Universal size guide for all men's tops. Labeled as ""Common"" indicating broad applicability across all men's top categories. Includes height, chest, and waist measurements. Click on ""View body dimensions"" under the garment size guide to load this body size guide.",2025-08-09 14:56:28.837370,1,2025-08-10 04:22:11.200979,,in,broad,"MEN Body dimensions
+
+Common
+
+Size | Height | Chest | Waist
+     | feet   cm | inch  cm | inch  cm
+XXS  | 5'1""-5'4"" 155-165 | 31-33 78-84 | - -
+XS   | 5'1""-5'4"" 155-165 | 32-35 80-88 | 26-28 66-72  
+S    | 5'4""-5'8"" 165-175 | 35-38 88-96 | 27-30 68-76
+M    | 5'8""-6' 175-185 | 38-41 96-104 | 30-33 76-84
+L    | 5'8""-6' 175-185 | 41-44 104-112 | 33-36 84-92
+XL   | 5'8""-6' 175-185 | 44-47 112-120 | 36-39 92-100
+XXL  | 5'8""-6' 175-185 | 47-50 120-128 | 39-42 100-108
+3XL  | 5'8""-6' 175-185 | 50-53 128-136 | 42-45 108-116
+4XL  | - - | - - | 45-48 116-124",https://drive.google.com/file/d/1FTVm7h3mh45Rzvm2Q4Onjs5WoYX2HU4v/view?usp=drive_link
+16,13,Male,1,,Regular,category_level,1,https://help.vuoriclothing.com/en_us/sizing-guide-B1gIWdsLw,Men's Tops Size Guide,Universal size guide for Vuori men's tops. Chest measurements in inches. Data extracted from official size guide images.,2025-08-09 17:38:49.682496,1,2025-08-10 04:22:11.200979,,in,broad,"Vuori Men's Size Guide - Chest measurements in inches: XXS(33-35), XS(33-35), S(35-39), M(39-41), L(41-43), XL(43-46), XXL(46-49), 3XL(49-52)",https://drive.google.com/file/d/1ZpmUOqs_eDZjQxK6jQ78QWHvP87vuRHo/view?usp=drive_link

@@ -1,0 +1,195 @@
+{
+  "table_name": "products",
+  "export_date": "2025-08-10T18:26:38.907011",
+  "columns": [
+    {
+      "column_name": "id",
+      "data_type": "integer",
+      "character_maximum_length": null,
+      "is_nullable": "NO",
+      "column_default": "nextval('products_id_seq'::regclass)",
+      "ordinal_position": 1
+    },
+    {
+      "column_name": "brand_id",
+      "data_type": "integer",
+      "character_maximum_length": null,
+      "is_nullable": "YES",
+      "column_default": null,
+      "ordinal_position": 2
+    },
+    {
+      "column_name": "name",
+      "data_type": "text",
+      "character_maximum_length": null,
+      "is_nullable": "NO",
+      "column_default": null,
+      "ordinal_position": 3
+    },
+    {
+      "column_name": "category_id",
+      "data_type": "integer",
+      "character_maximum_length": null,
+      "is_nullable": "YES",
+      "column_default": null,
+      "ordinal_position": 4
+    },
+    {
+      "column_name": "price",
+      "data_type": "numeric",
+      "character_maximum_length": null,
+      "is_nullable": "YES",
+      "column_default": null,
+      "ordinal_position": 5
+    },
+    {
+      "column_name": "image_url",
+      "data_type": "text",
+      "character_maximum_length": null,
+      "is_nullable": "YES",
+      "column_default": null,
+      "ordinal_position": 6
+    },
+    {
+      "column_name": "product_url",
+      "data_type": "text",
+      "character_maximum_length": null,
+      "is_nullable": "YES",
+      "column_default": null,
+      "ordinal_position": 7
+    },
+    {
+      "column_name": "description",
+      "data_type": "text",
+      "character_maximum_length": null,
+      "is_nullable": "YES",
+      "column_default": null,
+      "ordinal_position": 8
+    },
+    {
+      "column_name": "is_active",
+      "data_type": "boolean",
+      "character_maximum_length": null,
+      "is_nullable": "YES",
+      "column_default": "true",
+      "ordinal_position": 9
+    },
+    {
+      "column_name": "created_at",
+      "data_type": "timestamp without time zone",
+      "character_maximum_length": null,
+      "is_nullable": "YES",
+      "column_default": "CURRENT_TIMESTAMP",
+      "ordinal_position": 10
+    },
+    {
+      "column_name": "external_id",
+      "data_type": "character varying",
+      "character_maximum_length": 100,
+      "is_nullable": "YES",
+      "column_default": null,
+      "ordinal_position": 11
+    },
+    {
+      "column_name": "source_type",
+      "data_type": "character varying",
+      "character_maximum_length": 20,
+      "is_nullable": "YES",
+      "column_default": "'manual'::character varying",
+      "ordinal_position": 12
+    },
+    {
+      "column_name": "original_price",
+      "data_type": "numeric",
+      "character_maximum_length": null,
+      "is_nullable": "YES",
+      "column_default": null,
+      "ordinal_position": 13
+    },
+    {
+      "column_name": "discount_percentage",
+      "data_type": "integer",
+      "character_maximum_length": null,
+      "is_nullable": "YES",
+      "column_default": null,
+      "ordinal_position": 14
+    },
+    {
+      "column_name": "sizes_available",
+      "data_type": "jsonb",
+      "character_maximum_length": null,
+      "is_nullable": "YES",
+      "column_default": null,
+      "ordinal_position": 15
+    },
+    {
+      "column_name": "colors_available",
+      "data_type": "jsonb",
+      "character_maximum_length": null,
+      "is_nullable": "YES",
+      "column_default": null,
+      "ordinal_position": 16
+    },
+    {
+      "column_name": "material",
+      "data_type": "character varying",
+      "character_maximum_length": 255,
+      "is_nullable": "YES",
+      "column_default": null,
+      "ordinal_position": 17
+    },
+    {
+      "column_name": "fit_type",
+      "data_type": "character varying",
+      "character_maximum_length": 100,
+      "is_nullable": "YES",
+      "column_default": null,
+      "ordinal_position": 18
+    },
+    {
+      "column_name": "last_scraped",
+      "data_type": "timestamp without time zone",
+      "character_maximum_length": null,
+      "is_nullable": "YES",
+      "column_default": null,
+      "ordinal_position": 19
+    },
+    {
+      "column_name": "scraping_metadata",
+      "data_type": "jsonb",
+      "character_maximum_length": null,
+      "is_nullable": "YES",
+      "column_default": null,
+      "ordinal_position": 20
+    }
+  ],
+  "constraints": [
+    {
+      "constraint_name": "products_pkey",
+      "constraint_type": "PRIMARY KEY",
+      "column_name": "id"
+    },
+    {
+      "constraint_name": "products_brand_id_fkey",
+      "constraint_type": "FOREIGN KEY",
+      "column_name": "brand_id"
+    },
+    {
+      "constraint_name": "products_category_id_fkey",
+      "constraint_type": "FOREIGN KEY",
+      "column_name": "category_id"
+    },
+    {
+      "constraint_name": "unique_brand_external_id",
+      "constraint_type": "UNIQUE",
+      "column_name": "brand_id"
+    },
+    {
+      "constraint_name": "unique_brand_external_id",
+      "constraint_type": "UNIQUE",
+      "column_name": "external_id"
+    }
+  ],
+  "indexes": [],
+  "row_count": 0
+}

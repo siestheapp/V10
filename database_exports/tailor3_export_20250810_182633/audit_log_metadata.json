@@ -1,0 +1,87 @@
+{
+  "table_name": "audit_log",
+  "export_date": "2025-08-10T18:26:42.599235",
+  "columns": [
+    {
+      "column_name": "id",
+      "data_type": "integer",
+      "character_maximum_length": null,
+      "is_nullable": "NO",
+      "column_default": "nextval('audit_log_id_seq'::regclass)",
+      "ordinal_position": 1
+    },
+    {
+      "column_name": "table_name",
+      "data_type": "text",
+      "character_maximum_length": null,
+      "is_nullable": "NO",
+      "column_default": null,
+      "ordinal_position": 2
+    },
+    {
+      "column_name": "operation",
+      "data_type": "text",
+      "character_maximum_length": null,
+      "is_nullable": "NO",
+      "column_default": null,
+      "ordinal_position": 3
+    },
+    {
+      "column_name": "row_id",
+      "data_type": "integer",
+      "character_maximum_length": null,
+      "is_nullable": "YES",
+      "column_default": null,
+      "ordinal_position": 4
+    },
+    {
+      "column_name": "old_data",
+      "data_type": "jsonb",
+      "character_maximum_length": null,
+      "is_nullable": "YES",
+      "column_default": null,
+      "ordinal_position": 5
+    },
+    {
+      "column_name": "new_data",
+      "data_type": "jsonb",
+      "character_maximum_length": null,
+      "is_nullable": "YES",
+      "column_default": null,
+      "ordinal_position": 6
+    },
+    {
+      "column_name": "changed_by",
+      "data_type": "text",
+      "character_maximum_length": null,
+      "is_nullable": "YES",
+      "column_default": "CURRENT_USER",
+      "ordinal_position": 7
+    },
+    {
+      "column_name": "changed_at",
+      "data_type": "timestamp with time zone",
+      "character_maximum_length": null,
+      "is_nullable": "YES",
+      "column_default": "now()",
+      "ordinal_position": 8
+    },
+    {
+      "column_name": "session_info",
+      "data_type": "jsonb",
+      "character_maximum_length": null,
+      "is_nullable": "YES",
+      "column_default": null,
+      "ordinal_position": 9
+    }
+  ],
+  "constraints": [
+    {
+      "constraint_name": "audit_log_pkey",
+      "constraint_type": "PRIMARY KEY",
+      "column_name": "id"
+    }
+  ],
+  "indexes": [],
+  "row_count": 527
+}
