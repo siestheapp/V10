@@ -178,17 +178,17 @@ def log_size_guide_entry_addition(size_guide_id: int, size_label: str, entry_id:
         details
     )
 
-def log_raw_size_guide_addition(brand_name: str, gender: str, category: str, raw_guide_id: int):
-    """Log raw size guide addition"""
+def log_raw_size_guide_addition(brand_name: str, gender: str, category: str, size_guide_id: int):
+    """Log raw size guide data addition (now stored in size_guides.raw_source_text)"""
     log_change(
-        "INSERT",
-        "raw_size_guides",
+        "UPDATE",
+        "size_guides",
         {
-            "description": f"Added raw size guide: {brand_name} {gender} {category}",
+            "description": f"Added raw source data: {brand_name} {gender} {category}",
             "brand_name": brand_name,
             "gender": gender,
             "category": category,
-            "raw_guide_id": raw_guide_id
+            "size_guide_id": size_guide_id
         }
     )
 

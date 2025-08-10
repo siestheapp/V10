@@ -431,12 +431,13 @@ def admin_upload_size_guide():
                 session['admin_id']
             ))
         
-        # Store raw size guide data
+        # Store raw source data in size_guides (migrated from raw_size_guides table)
         raw_text = f"Size guide for {new_brand_name or 'existing brand'} {gender} {category_id} - uploaded via admin interface"
         cursor.execute("""
-            INSERT INTO raw_size_guides (brand_id, gender, category_id, fit_type, source_url, screenshot_path, raw_text, uploaded_by)
-            VALUES (%s, %s, %s, 'Regular', %s, %s, %s, %s)
-        """, (brand_id, gender, category_id, source_url, screenshot_url, raw_text, session['admin_id']))
+            UPDATE size_guides 
+            SET raw_source_text = %s, screenshot_path = %s, updated_by = %s, updated_at = CURRENT_TIMESTAMP
+            WHERE id = %s
+        """, (raw_text, screenshot_url, session['admin_id'], size_guide_id))
         
         conn.commit()
         cursor.close()

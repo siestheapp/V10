@@ -8,7 +8,7 @@
 ## 🎯 **Current Issues**
 
 ### **Root Directory Clutter:**
-- ❌ Multiple similar startup scripts (`start_all*.sh`, `start_backend.sh`, etc.)
+- ❌ Multiple similar startup scripts (`start_all*.sh`, etc.) - Note: `start_backend.sh` is used by `be` alias
 - ❌ Outdated `todo.md` (last updated February)
 - ❌ Old test files that may not match current logic
 - ❌ User only uses `be` and `ws` commands
@@ -33,8 +33,7 @@ mkdir -p archive/old_tests
 mv todo.md archive/old_docs/
 mv test_*.py archive/old_tests/
 mv start_all*.sh archive/old_scripts/
-mv start_backend.sh archive/old_scripts/
-# Keep only: start_webservices.sh, stop_all.sh
+# Keep: start_backend.sh, start_webservices.sh, stop_all.sh (used by be/ws aliases)
 ```
 
 ### **Phase 2: Create Clean Structure**
@@ -79,8 +78,7 @@ V10/
 
 ### **📦 ARCHIVE (Outdated):**
 - `todo.md` → February, superseded by new system
-- `start_all*.sh` → Multiple versions, confusing
-- `start_backend.sh` → Redundant
+- `start_all*.sh` → Multiple versions, confusing (keep `start_backend.sh` - used by `be` alias)
 - `test_*.py` → May be outdated, logic changing
 - Old documentation → Keep for reference but move
 
@@ -141,7 +139,7 @@ cat dev/logs/database_changes.log
 - Create user vs developer doc separation
 
 ### **Step 4: Test & Validate**
-- Ensure `be` and `ws` equivalents work
+- ✅ Ensure `be` and `ws` aliases work (FIXED: path resolution issues resolved)
 - Test port management tools
 - Verify database scripts function
 
@@ -149,7 +147,7 @@ cat dev/logs/database_changes.log
 
 ## ❓ **Questions for User**
 
-1. **What do `be` and `ws` actually run?** (aliases or script names?)
+1. ✅ **What do `be` and `ws` actually run?** → RESOLVED: `be` runs `start_backend.sh`, `ws` runs `start_webservices.sh`
 2. **Any other commands you use regularly?**
 3. **Safe to archive February `todo.md`?** (or should we extract anything first?)
 4. **Keep test files?** (might be useful for reference even if outdated?)

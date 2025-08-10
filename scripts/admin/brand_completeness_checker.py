@@ -171,8 +171,8 @@ def generate_fix_commands(brand_name):
             print(f"   VALUES ({brand_id}, 'Chest', 'chest', 'How to measure chest...', 'source_url', 1);")
         
         elif table == 'screenshots':
-            print("   # Update raw_size_guides with screenshot path:")
-            print(f"   UPDATE raw_size_guides SET screenshot_path = 'screenshot_url' WHERE brand_id = {brand_id};")
+            print("   # Update size_guides with screenshot path:")
+            print(f"   UPDATE size_guides SET screenshot_path = 'screenshot_url' WHERE brand_id = {brand_id};")
     
     cursor.close()
     conn.close()

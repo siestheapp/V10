@@ -1,7 +1,11 @@
 #!/bin/bash
 
 # Activate virtual environment and start the web services
-cd "$(dirname "$0")"
+# Get the project root directory - handle both direct execution and symlink execution
+SCRIPT_PATH="$(readlink -f "$0" 2>/dev/null || realpath "$0" 2>/dev/null || echo "$0")"
+SCRIPT_DIR="$(dirname "$SCRIPT_PATH")"
+PROJECT_ROOT="$(cd "$SCRIPT_DIR/../.." && pwd)"
+cd "$SCRIPT_DIR"
 
 # Check if servers are already running on ports 5001 and 5002
 echo "🔍 Checking if servers are already running on ports 5001 and 5002..."
@@ -34,15 +38,15 @@ fi
 
 # Activate virtual environment
 echo "🔧 Activating virtual environment..."
-source ../venv/bin/activate
+source "$PROJECT_ROOT/venv/bin/activate"
 
 # Start the Web Garment Manager (port 5001)
 echo "🚀 Starting Web Garment Manager on http://127.0.0.1:5001..."
-python ../scripts/admin/web_garment_manager.py &
+python "$PROJECT_ROOT/scripts/admin/web_garment_manager.py" &
 
 # Start the Admin Interface (port 5002)
 echo "🔧 Starting Admin Interface on http://127.0.0.1:5002..."
-python ../scripts/admin/admin_garment_manager.py &
+python "$PROJECT_ROOT/scripts/admin/admin_garment_manager.py" &
 
 echo "✅ Both web services started!"
 echo "📱 Web Garment Manager: http://localhost:5001"

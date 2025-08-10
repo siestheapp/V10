@@ -40,12 +40,12 @@ def main():
     print('\n📦 ARCHIVING OLD FILES:')
     
     files_to_archive = [
-        # Old startup scripts (keep start_webservices.sh, stop_all.sh, and start_backend.sh)
+        # Old startup scripts (keep start_backend.sh, start_webservices.sh, stop_all.sh)
         ('start_all_clipboard.sh', 'archive/old_scripts/'),
         ('start_all_cursor.sh', 'archive/old_scripts/'),
         ('start_all_separate.sh', 'archive/old_scripts/'),
         ('start_all.sh', 'archive/old_scripts/'),
-        # Keep start_backend.sh and start_webservices.sh - user's aliases depend on them!
+        # Keep start_backend.sh and start_webservices.sh - user's be/ws aliases depend on them!
         
         # Old documentation
         ('todo.md', 'archive/old_docs/'),

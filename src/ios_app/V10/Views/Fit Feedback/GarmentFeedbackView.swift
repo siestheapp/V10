@@ -22,7 +22,7 @@ struct GarmentFeedbackView: View {
     
     // Garment measurement feedback options (new)
     let garmentFeedbackOptions = [
-        "center_back_length": [
+        "body_length": [
             (30, "Too Long"),
             (31, "Too Short"), 
             (32, "Right Length")
@@ -112,7 +112,7 @@ struct GarmentFeedbackView: View {
     // Get display name for garment measurement type
     private func garmentMeasurementDisplayName(_ type: String) -> String {
         switch type {
-        case "center_back_length": return "Body Length Back"
+        case "body_length": return "Body Length Back"
         case "shoulder_width": return "Shoulder Width"
         case "chest_width": return "Body Width" 
         case "sleeve_length": return "Sleeve Length"

@@ -2463,13 +2463,13 @@ async def get_garment_measurements(garment_id: int):
         # Get garment measurements
         cur.execute("""
             SELECT 
-                gm.measurement_type,
-                gm.measurement_value,
-                gm.unit,
-                gm.measurement_source
-            FROM garment_measurements gm
-            WHERE gm.user_garment_id = %s
-            ORDER BY gm.measurement_type
+                gge.measurement_type,
+                gge.measurement_value,
+                gge.unit,
+                gge.measurement_source
+            FROM garment_guide_entries gge
+            WHERE gge.user_garment_id = %s
+            ORDER BY gge.measurement_type
         """, (garment_id,))
         
         measurements_data = cur.fetchall()

@@ -1,7 +1,11 @@
 #!/bin/bash
 
 # Start web services with port cleanup
-cd "$(dirname "$0")"
+# Get the project root directory - handle both direct execution and symlink execution
+SCRIPT_PATH="$(readlink -f "$0" 2>/dev/null || realpath "$0" 2>/dev/null || echo "$0")"
+SCRIPT_DIR="$(dirname "$SCRIPT_PATH")"
+PROJECT_ROOT="$(cd "$SCRIPT_DIR/../.." && pwd)"
+cd "$SCRIPT_DIR"
 
 # Check if servers are already running on ports 5001 and 5002
 echo "🔍 Checking if servers are already running on ports 5001 and 5002..."
@@ -34,4 +38,4 @@ fi
 
 # Start the web services
 echo "🚀 Starting web services..."
-./tools/start_web_services.sh
+"$PROJECT_ROOT/dev/tools/start_web_services.sh"

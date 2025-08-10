@@ -34,6 +34,12 @@
 
 ## 🔧 **Development Tools**
 
+### **Shell Aliases (Quick Commands)**
+- **`be`** - Start backend server (runs `start_backend.sh`)
+- **`ws`** - Start web services (runs `start_webservices.sh`)
+- **`stopservers`** - Stop all running servers
+
+### **Scripts & Utilities**
 - **[Database Logger](dev/scripts/database/database_change_logger.py)** - Database change logging utility
 - **[Port Checker](dev/scripts/ports/check_ports.py)** - Check running services
 - **[Kill Ports](dev/scripts/ports/kill_ports.py)** - Stop services

@@ -346,3 +346,4 @@ Your ingestion is successful when:
 ---
 
 **This guide is based on actual successful ingestion. Copy the patterns, adapt the data, and you'll have reliable size guide ingestion every time!** 🚀
+
