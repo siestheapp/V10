@@ -13,6 +13,7 @@ from fit_zone_calculator import FitZoneCalculator
 import json
 from urllib.parse import urlparse
 import openai
+from size_guide_compatibility import get_user_garment_measurements_wide_format
 from contextlib import asynccontextmanager
 import os
 from dotenv import load_dotenv
@@ -173,63 +174,31 @@ def get_db():
 
 @app.get("/user/{user_id}/closet")
 async def get_closet(user_id: int):
-    conn = get_db()
-    cur = conn.cursor()
+    conn = None
+    cur = None
     
     try:
-        cur.execute("""
-            SELECT 
-                ug.id as garment_id,
-                b.name as brand_name,
-                c.name as category,
-                ug.size_label as size,
-                sge.chest_min,
-                sge.chest_max,
-                sge.sleeve_min,
-                sge.sleeve_max,
-                sge.waist_min,
-                sge.waist_max,
-                sge.neck_min,
-                sge.neck_max,
-                sge.hip_min,
-                sge.hip_max,
-                sge.center_back_length,
-                ug.fit_feedback,
-                ug.created_at,
-                ug.owns_garment,
-                ug.product_name,
-                ug.image_url,
-                ug.product_url,
-                (SELECT feedback_code_id FROM user_garment_feedback 
-                 WHERE user_garment_id = ug.id AND dimension = 'overall' 
-                 ORDER BY created_at DESC LIMIT 1) as overall_feedback_code,
-                (SELECT feedback_code_id FROM user_garment_feedback 
-                 WHERE user_garment_id = ug.id AND dimension = 'chest' 
-                 ORDER BY created_at DESC LIMIT 1) as chest_feedback_code,
-                (SELECT feedback_code_id FROM user_garment_feedback 
-                 WHERE user_garment_id = ug.id AND dimension = 'sleeve' 
-                 ORDER BY created_at DESC LIMIT 1) as sleeve_feedback_code,
-                (SELECT feedback_code_id FROM user_garment_feedback 
-                 WHERE user_garment_id = ug.id AND dimension = 'neck' 
-                 ORDER BY created_at DESC LIMIT 1) as neck_feedback_code,
-                (SELECT feedback_code_id FROM user_garment_feedback 
-                 WHERE user_garment_id = ug.id AND dimension = 'waist' 
-                 ORDER BY created_at DESC LIMIT 1) as waist_feedback_code,
-                (SELECT feedback_code_id FROM user_garment_feedback 
-                 WHERE user_garment_id = ug.id AND dimension = 'hip' 
-                 ORDER BY created_at DESC LIMIT 1) as hip_feedback_code
-            FROM user_garments ug
-            JOIN brands b ON ug.brand_id = b.id
-            LEFT JOIN categories c ON ug.category_id = c.id
-            LEFT JOIN size_guide_entries_with_brand sge ON 
-                ug.size_guide_entry_id = sge.id
-            WHERE ug.user_id = %s 
-            AND ug.owns_garment = true
-            ORDER BY c.name, ug.created_at DESC
-        """, (user_id,))
+        # Use compatibility layer to get garments with measurements in wide format
+        db_config = {
+            "database": DB_CONFIG["database"],
+            "user": DB_CONFIG["user"], 
+            "password": DB_CONFIG["password"],
+            "host": DB_CONFIG["host"],
+            "port": DB_CONFIG.get("port", "5432")
+        }
         
-        garments = cur.fetchall()
-        print(f"Raw SQL results: {garments}")  # Debug log
+        garments = get_user_garment_measurements_wide_format(db_config, user_id)
+        
+        # Get feedback for each garment
+        conn = get_db()
+        cur = conn.cursor()
+        
+        # Get feedback for each garment
+        for garment in garments:
+            garment_id = garment['garment_id']
+            # Get feedback codes for this garment (simplified - skip for MVP)
+            for dimension in ['overall', 'chest', 'sleeve', 'neck', 'waist', 'hip']:
+                garment[f'{dimension}_feedback_code'] = None
         
         # Get feedback codes for mapping
         cur.execute("SELECT id, feedback_text FROM feedback_codes")
@@ -274,13 +243,13 @@ async def get_closet(user_id: int):
                 "id": g["garment_id"],
                 "brand": g["brand_name"],
                 "category": g["category"],
-                "size": g["size"],
+                "size": g["size_label"],  # Fixed: use size_label not size
                 "measurements": measurements,
-                "fitFeedback": get_feedback_text(g["overall_feedback_code"]),
-                "chestFit": get_feedback_text(g["chest_feedback_code"]),
-                "sleeveFit": get_feedback_text(g["sleeve_feedback_code"]),
-                "neckFit": get_feedback_text(g["neck_feedback_code"]),
-                "waistFit": get_feedback_text(g["waist_feedback_code"]),
+                "fitFeedback": get_feedback_text(g.get("overall_feedback_code")),
+                "chestFit": get_feedback_text(g.get("chest_feedback_code")),
+                "sleeveFit": get_feedback_text(g.get("sleeve_feedback_code")),
+                "neckFit": get_feedback_text(g.get("neck_feedback_code")),
+                "waistFit": get_feedback_text(g.get("waist_feedback_code")),
                 "createdAt": g["created_at"].isoformat() if g["created_at"] else None,
                 "ownsGarment": bool(g["owns_garment"]),
                 "productName": g["product_name"],
@@ -292,9 +261,14 @@ async def get_closet(user_id: int):
         print(f"Formatted response: {formatted_garments}")  # Debug log
         return formatted_garments
         
+    except Exception as e:
+        print(f"Error in get_closet: {str(e)}")
+        raise HTTPException(status_code=500, detail=str(e))
     finally:
-        cur.close()
-        conn.close()
+        if cur:
+            cur.close()
+        if conn:
+            conn.close()
 
 @app.get("/user/{user_id}/measurements")
 async def get_user_measurements(user_id: str):
@@ -1118,7 +1092,7 @@ async def get_test_user_data(user_id: str):
                 u.email,
                 u.created_at,
                 u.gender,
-                u.unit_preference,
+                u.preferred_units,
                 (
                     SELECT COUNT(*) 
                     FROM user_garments 
@@ -1132,9 +1106,10 @@ async def get_test_user_data(user_id: str):
                     LIMIT 1
                 ) as last_garment_input,
                 (
-                    SELECT array_agg(DISTINCT brand_name) 
-                    FROM user_garments 
-                    WHERE user_id = u.id AND owns_garment = true
+                    SELECT array_agg(DISTINCT b.name) 
+                    FROM user_garments ug
+                    JOIN brands b ON ug.brand_id = b.id
+                    WHERE ug.user_id = u.id AND ug.owns_garment = true
                 ) as brands_owned
             FROM users u
             WHERE u.id = %s
@@ -1158,12 +1133,13 @@ async def get_test_user_data(user_id: str):
         cur.execute("""
             SELECT 
                 ug.id,
-                COALESCE(ug.product_name, ug.category) as garment_name,
-                ug.brand_name,
+                COALESCE(ug.product_name, c.name) as garment_name,
+                b.name as brand_name,
                 ug.size_label,
-                COALESCE(uff.overall_fit, ug.fit_feedback) as feedback
+                ug.fit_feedback as feedback
             FROM user_garments ug
-            LEFT JOIN user_garment_feedback uff ON ug.id = uff.user_garment_id
+            JOIN brands b ON ug.brand_id = b.id
+            LEFT JOIN categories c ON ug.category_id = c.id
             WHERE ug.user_id = %s AND ug.owns_garment = true
             ORDER BY ug.created_at DESC
             LIMIT 5
@@ -1176,7 +1152,7 @@ async def get_test_user_data(user_id: str):
             "email": user_info['email'],
             "createdAt": user_info['created_at'].isoformat(),
             "gender": user_info['gender'],
-            "unitPreference": user_info['unit_preference'],
+            "unitPreference": user_info['preferred_units'],
             "totalGarments": user_info['total_garments'],
             "lastGarmentInput": user_info['last_garment_input'].isoformat() if user_info['last_garment_input'] else None,
             "brandsOwned": user_info['brands_owned'] or [],
@@ -3021,31 +2997,102 @@ async def get_shop_recommendations(request: dict):
                 "has_more": False
             }
 
-        # Initialize the MultiDimensionalFitAnalyzer
-        from multi_dimensional_fit_analyzer import MultiDimensionalFitAnalyzer
-        analyzer = MultiDimensionalFitAnalyzer(DB_CONFIG)
+        # SIMPLIFIED MVP: Return products with basic fit scores
+        # TODO: Replace with AI-driven fit logic later
         
         recommendations = []
         
-        # Get fit analysis for each product (with timeout protection)
-        processed_count = 0
-        filtered_count = 0  # Track how many products were filtered out by fit zones
-        max_processing_time = 10  # seconds
-        start_time = datetime.now()
+        # For MVP: Simple logic - return products with mock fit scores
+        for product in products[:limit]:
+            # Create simplified recommendation
+            recommendation = {
+                "id": product['id'],
+                "brand": product['brand_name'],
+                "productName": product['product_name'],
+                "category": product['category_name'],
+                "price": f"${product['price']:.2f}" if product['price'] else "Price not available",
+                "imageUrl": product['image_url'],
+                "productUrl": product['product_url'],
+                "fitScore": 0.8,  # Mock fit score for MVP
+                "confidence": "Medium",  # Mock confidence
+                "fitDescription": "Good match based on your profile",  # Mock description
+                "primaryConcerns": [],  # No concerns for MVP
+                "sizeRecommendation": "M"  # Mock size recommendation
+            }
+            recommendations.append(recommendation)
         
-        for product in products:
-            # Check if we've spent too much time processing
-            if (datetime.now() - start_time).total_seconds() > max_processing_time:
-                print(f"Processing timeout reached, returning {len(recommendations)} recommendations")
-                break
-                
-            try:
-                # Get comprehensive size recommendations for this brand/category
-                fit_result = analyzer.get_comprehensive_size_recommendations(
-                    user_id=user_id,
-                    brand_name=product['brand_name'],
-                    category='Tops'  # We only have Tops category for now
-                )
+        # Close database connections
+        cur.close()
+        conn.close()
+        
+        return {
+            "recommendations": recommendations,
+            "total_count": len(recommendations),
+            "has_more": len(products) > limit
+        }
+        
+    except Exception as e:
+        print(f"Error in get_shop_recommendations: {str(e)}")
+        return {
+            "recommendations": [],
+            "total_count": 0,
+            "has_more": False
+        }
+
+# OLD COMPLEX LOGIC BELOW - REMOVED FOR MVP
+# The rest of this function was removed for MVP simplification
+# TODO: Replace with AI-driven fit logic
+
+@app.get("/database/insights")
+def get_database_insights():
+    """Get database insights and statistics for AI analysis (developer/admin use only)"""
+    try:
+        conn = get_db()
+        cur = conn.cursor()
+        
+        insights = {}
+        
+        # Get table row counts
+        tables = ['users', 'brands', 'categories', 'size_guides', 'size_guide_entries', 
+                 'user_garments', 'user_garment_feedback', 'products']
+        
+        for table in tables:
+            cur.execute(f"SELECT COUNT(*) FROM {table}")
+            count = cur.fetchone()[0]
+            insights[f"{table}_count"] = count
+        
+        return insights
+        
+    except Exception as e:
+        print(f"Error getting database insights: {str(e)}")
+        return {"error": str(e)}
+        
+    finally:
+        cur.close()
+        conn.close()
+
+def trigger_schema_evolution():
+    """Trigger schema evolution tracking"""
+    pass
+
+def trigger_db_snapshot():
+    # Run the snapshot script in the background, only in development
+    if os.getenv("ENVIRONMENT") == "development":
+        subprocess.Popen(["python", "scripts/database/db_snapshot.py"])
+
+@app.get("/user/{user_id}/body-measurements")
+async def get_user_body_measurements(user_id: str):
+    try:
+        # SIMPLIFIED MVP: Return basic body measurements
+        # TODO: Replace with working BodyMeasurementEstimator after fixing queries
+        
+        return {
+            "estimated_chest": None,
+            "estimated_neck": None,
+            "estimated_arm_length": None,
+            "unit": "in",
+            "message": "Body measurement estimation temporarily disabled for MVP"
+        }
                 
                 if fit_result and len(fit_result) > 0:
                     # Find the best recommendation from the fit analysis
