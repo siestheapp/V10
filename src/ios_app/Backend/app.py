@@ -2460,17 +2460,50 @@ async def get_garment_measurements(garment_id: int):
         conn = get_db_connection()
         cur = conn.cursor(cursor_factory=RealDictCursor)
         
-        # Get garment measurements
+        # Get garment measurements from size guide entries
         cur.execute("""
             SELECT 
-                gm.measurement_type,
-                gm.measurement_value,
-                gm.unit,
-                gm.measurement_source
-            FROM garment_measurements gm
-            WHERE gm.user_garment_id = %s
-            ORDER BY gm.measurement_type
-        """, (garment_id,))
+                'chest' as measurement_type,
+                CASE 
+                    WHEN sge.chest_min = sge.chest_max THEN sge.chest_min::text
+                    ELSE sge.chest_min::text || '-' || sge.chest_max::text
+                END as measurement_value,
+                'inches' as unit,
+                'size_guide' as measurement_source
+            FROM user_garments ug
+            LEFT JOIN size_guide_entries sge ON ug.size_guide_entry_id = sge.id
+            WHERE ug.id = %s AND sge.chest_min IS NOT NULL
+            
+            UNION ALL
+            
+            SELECT 
+                'neck' as measurement_type,
+                CASE 
+                    WHEN sge.neck_min = sge.neck_max THEN sge.neck_min::text
+                    ELSE sge.neck_min::text || '-' || sge.neck_max::text
+                END as measurement_value,
+                'inches' as unit,
+                'size_guide' as measurement_source
+            FROM user_garments ug
+            LEFT JOIN size_guide_entries sge ON ug.size_guide_entry_id = sge.id
+            WHERE ug.id = %s AND sge.neck_min IS NOT NULL
+            
+            UNION ALL
+            
+            SELECT 
+                'sleeve' as measurement_type,
+                CASE 
+                    WHEN sge.sleeve_min = sge.sleeve_max THEN sge.sleeve_min::text
+                    ELSE sge.sleeve_min::text || '-' || sge.sleeve_max::text
+                END as measurement_value,
+                'inches' as unit,
+                'size_guide' as measurement_source
+            FROM user_garments ug
+            LEFT JOIN size_guide_entries sge ON ug.size_guide_entry_id = sge.id
+            WHERE ug.id = %s AND sge.sleeve_min IS NOT NULL
+            
+            ORDER BY measurement_type
+        """, (garment_id, garment_id, garment_id))
         
         measurements_data = cur.fetchall()
         
@@ -2551,10 +2584,10 @@ async def update_garment_feedback(garment_id: int, request: dict):
             
             # Get current garment feedback values BEFORE changing them (for undo)
             current_garment_feedback = await conn.fetch("""
-                SELECT gmf.measurement_type, fc.feedback_text, gmf.id
-                FROM garment_measurement_feedback gmf
-                JOIN feedback_codes fc ON gmf.feedback_code_id = fc.id
-                WHERE gmf.user_garment_id = $1
+                SELECT ugf.dimension as measurement_type, fc.feedback_text, ugf.id
+                FROM user_garment_feedback ugf
+                JOIN feedback_codes fc ON ugf.feedback_code_id = fc.id
+                WHERE ugf.user_garment_id = $1
             """, garment_id)
             
             # Store previous values for undo
@@ -2620,7 +2653,7 @@ async def update_garment_feedback(garment_id: int, request: dict):
             if garment_feedback:
                 # Delete old garment feedback entries
                 await conn.execute("""
-                    DELETE FROM garment_measurement_feedback 
+                    DELETE FROM user_garment_feedback 
                     WHERE user_garment_id = $1
                 """, garment_id)
                 
@@ -2639,9 +2672,9 @@ async def update_garment_feedback(garment_id: int, request: dict):
                         if feedback_code:
                             # Insert new garment feedback
                             new_id = await conn.fetchval("""
-                                INSERT INTO garment_measurement_feedback (
+                                INSERT INTO user_garment_feedback (
                                     user_garment_id,
-                                    measurement_type,
+                                    dimension,
                                     feedback_code_id
                                 ) VALUES ($1, $2, $3) RETURNING id
                             """, 
