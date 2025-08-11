@@ -1,0 +1,72 @@
+#!/bin/bash
+
+# stopservers - Quick command to stop all V10 development servers
+# Can be run from anywhere in the project
+
+# Colors for output
+RED='\033[0;31m'
+GREEN='\033[0;32m'
+YELLOW='\033[1;33m'
+BLUE='\033[0;34m'
+NC='\033[0m' # No Color
+
+echo -e "${BLUE}🛑 Stopping V10 Development Servers...${NC}"
+
+# Common V10 ports
+PORTS=(8006 5001 5002)
+
+success=0
+total=0
+
+for port in "${PORTS[@]}"; do
+    ((total++))
+    
+    # Check if port is active
+    if lsof -i :$port > /dev/null 2>&1; then
+        # Get process info
+        process_info=$(lsof -i :$port | grep LISTEN | head -1)
+        pid=$(echo "$process_info" | awk '{print $2}')
+        process_name=$(echo "$process_info" | awk '{print $1}')
+        
+        echo -e "${YELLOW}🔍 Found $process_name (PID: $pid) on port $port${NC}"
+        
+        # Try graceful termination first
+        if kill "$pid" 2>/dev/null; then
+            sleep 1
+            # Check if process is still running
+            if ! kill -0 "$pid" 2>/dev/null; then
+                echo -e "${GREEN}✅ Stopped $process_name on port $port${NC}"
+                ((success++))
+            else
+                # Force kill if graceful termination failed
+                if kill -9 "$pid" 2>/dev/null; then
+                    echo -e "${GREEN}⚡ Force stopped $process_name on port $port${NC}"
+                    ((success++))
+                else
+                    echo -e "${RED}❌ Failed to stop process on port $port${NC}"
+                fi
+            fi
+        else
+            echo -e "${RED}❌ Failed to stop process on port $port${NC}"
+        fi
+    else
+        echo -e "${YELLOW}ℹ️  No process running on port $port${NC}"
+    fi
+done
+
+echo -e "\n${BLUE}📊 Summary: Stopped $success/$total active server processes${NC}"
+
+# Also kill any python app.py processes that might be running
+echo -e "\n${BLUE}🔍 Checking for any remaining Python server processes...${NC}"
+python_pids=$(ps aux | grep -E "python.*app\.py" | grep -v grep | awk '{print $2}')
+
+if [ ! -z "$python_pids" ]; then
+    echo -e "${YELLOW}Found Python app.py processes: $python_pids${NC}"
+    echo $python_pids | xargs kill -9 2>/dev/null
+    echo -e "${GREEN}✅ Stopped remaining Python processes${NC}"
+else
+    echo -e "${YELLOW}ℹ️  No additional Python processes found${NC}"
+fi
+
+echo -e "\n${GREEN}🎉 All V10 servers stopped!${NC}"
+echo -e "${YELLOW}💡 Use 'lsof -i :8006 -i :5001 -i :5002' to verify ports are free${NC}"

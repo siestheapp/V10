@@ -1,0 +1,5 @@
+#!/bin/bash
+# vrun - Run commands with V10 virtual environment activated
+cd /Users/seandavey/projects/V10
+source venv/bin/activate
+exec "$@"

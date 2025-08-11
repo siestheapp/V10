@@ -22,7 +22,7 @@ case $choice in
         echo "✅ Admin monitoring command copied to clipboard!"
         ;;
     4)
-        echo "cd /Users/seandavey/projects/V10 && ./stop_all.sh" | pbcopy
+        echo "stopservers" | pbcopy
         echo "✅ Stop all services command copied to clipboard!"
         ;;
     *)

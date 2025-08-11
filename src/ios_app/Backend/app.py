@@ -2181,6 +2181,8 @@ def extract_brand_from_url(url: str) -> dict:
             return {"brand_name": "Patagonia", "brand_id": 2}  # Patagonia = ID 2 in DB
         elif "lululemon.com" in domain:
             return {"brand_name": "Lululemon", "brand_id": 1}  # Lululemon = ID 1 in DB
+        elif "nn07.com" in domain:
+            return {"brand_name": "NN.07", "brand_id": 6}  # NN.07 = ID 6 in DB
         else:
             # Try to extract from database
             conn = get_db()

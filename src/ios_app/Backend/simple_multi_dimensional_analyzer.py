@@ -152,101 +152,30 @@ class SimpleMultiDimensionalAnalyzer:
             # Fallback: Calculate missing profiles using expensive query (SLOW FALLBACK)
             self.logger.info(f"🔄 Some profiles missing from cache, calculating from scratch...")
             
-            conn = self.get_connection()
-            cursor = conn.cursor()
-            
-            # Get user's garments with measurements and positive feedback
-            query = """
-                SELECT 
-                    ug.id, b.name as brand, ug.product_name, ug.size_label,
-                    sge.chest_min, sge.chest_max, sge.chest_range,
-                    sge.neck_min, sge.neck_max, sge.neck_range,
-                    sge.sleeve_min, sge.sleeve_max, sge.sleeve_range,
-                    sge.waist_min, sge.waist_max, sge.waist_range,
-                    sge.hip_min, sge.hip_max, sge.hip_range,
-                    -- Get feedback for each dimension (prioritize specific, fall back to overall)
-                    COALESCE(
-                        (SELECT fc.feedback_text FROM user_garment_feedback ugf 
-                         JOIN feedback_codes fc ON ugf.feedback_code_id = fc.id 
-                         WHERE ugf.user_garment_id = ug.id AND ugf.dimension = 'chest' 
-                         ORDER BY ugf.created_at DESC LIMIT 1),
-                        (SELECT fc.feedback_text FROM user_garment_feedback ugf 
-                         JOIN feedback_codes fc ON ugf.feedback_code_id = fc.id 
-                         WHERE ugf.user_garment_id = ug.id AND ugf.dimension = 'overall' 
-                         ORDER BY ugf.created_at DESC LIMIT 1)
-                    ) as chest_feedback,
-                    COALESCE(
-                        (SELECT fc.feedback_text FROM user_garment_feedback ugf 
-                         JOIN feedback_codes fc ON ugf.feedback_code_id = fc.id 
-                         WHERE ugf.user_garment_id = ug.id AND ugf.dimension = 'neck' 
-                         ORDER BY ugf.created_at DESC LIMIT 1),
-                        (SELECT fc.feedback_text FROM user_garment_feedback ugf 
-                         JOIN feedback_codes fc ON ugf.feedback_code_id = fc.id 
-                         WHERE ugf.user_garment_id = ug.id AND ugf.dimension = 'overall' 
-                         ORDER BY ugf.created_at DESC LIMIT 1)
-                    ) as neck_feedback,
-                    COALESCE(
-                        (SELECT fc.feedback_text FROM user_garment_feedback ugf 
-                         JOIN feedback_codes fc ON ugf.feedback_code_id = fc.id 
-                         WHERE ugf.user_garment_id = ug.id AND ugf.dimension = 'sleeve' 
-                         ORDER BY ugf.created_at DESC LIMIT 1),
-                        (SELECT fc.feedback_text FROM user_garment_feedback ugf 
-                         JOIN feedback_codes fc ON ugf.feedback_code_id = fc.id 
-                         WHERE ugf.user_garment_id = ug.id AND ugf.dimension = 'overall' 
-                         ORDER BY ugf.created_at DESC LIMIT 1)
-                    ) as sleeve_feedback,
-                    COALESCE(
-                        (SELECT fc.feedback_text FROM user_garment_feedback ugf 
-                         JOIN feedback_codes fc ON ugf.feedback_code_id = fc.id 
-                         WHERE ugf.user_garment_id = ug.id AND ugf.dimension = 'waist' 
-                         ORDER BY ugf.created_at DESC LIMIT 1),
-                        (SELECT fc.feedback_text FROM user_garment_feedback ugf 
-                         JOIN feedback_codes fc ON ugf.feedback_code_id = fc.id 
-                         WHERE ugf.user_garment_id = ug.id AND ugf.dimension = 'overall' 
-                         ORDER BY ugf.created_at DESC LIMIT 1)
-                    ) as waist_feedback,
-                    COALESCE(
-                        (SELECT fc.feedback_text FROM user_garment_feedback ugf 
-                         JOIN feedback_codes fc ON ugf.feedback_code_id = fc.id 
-                         WHERE ugf.user_garment_id = ug.id AND ugf.dimension = 'hip' 
-                         ORDER BY ugf.created_at DESC LIMIT 1),
-                        (SELECT fc.feedback_text FROM user_garment_feedback ugf 
-                         JOIN feedback_codes fc ON ugf.feedback_code_id = fc.id 
-                         WHERE ugf.user_garment_id = ug.id AND ugf.dimension = 'overall' 
-                         ORDER BY ugf.created_at DESC LIMIT 1)
-                    ) as hip_feedback
-                FROM user_garments ug
-                JOIN brands b ON ug.brand_id = b.id
-                LEFT JOIN size_guide_entries sge ON ug.size_guide_entry_id = sge.id
-                WHERE ug.user_id = %s AND ug.owns_garment = true
-                AND sge.id IS NOT NULL  -- Must have measurements
-                ORDER BY ug.created_at DESC
-            """
-            
-            cursor.execute(query, (user_id,))
-            garments = cursor.fetchall()
-            cursor.close()
-            conn.close()
+            # Use compatibility layer to get user garment measurements
+            from size_guide_compatibility import get_user_garment_measurements_wide_format
+            garments = get_user_garment_measurements_wide_format(self.db_config, user_id)
             
             # Process garments to create dimension profiles
             dimension_data = {}
             
             for garment in garments:
-                (garment_id, brand, product_name, size_label,
-                 chest_min, chest_max, chest_range,
-                 neck_min, neck_max, neck_range,
-                 sleeve_min, sleeve_max, sleeve_range,
-                 waist_min, waist_max, waist_range,
-                 hip_min, hip_max, hip_range,
-                 chest_feedback, neck_feedback, sleeve_feedback, waist_feedback, hip_feedback) = garment
+                # Extract values from dictionary (compatibility layer format)
+                garment_id = garment.get('garment_id')
+                brand = garment.get('brand_name')
+                product_name = garment.get('product_name')
+                size_label = garment.get('size_label')
+                
+                # Get feedback for each dimension (from fit_feedback field)
+                overall_feedback = garment.get('fit_feedback')
                 
                 # Process each dimension
                 dimensions = {
-                    'chest': (chest_min, chest_max, chest_range, chest_feedback),
-                    'neck': (neck_min, neck_max, neck_range, neck_feedback),
-                    'sleeve': (sleeve_min, sleeve_max, sleeve_range, sleeve_feedback),
-                    'waist': (waist_min, waist_max, waist_range, waist_feedback),
-                    'hip': (hip_min, hip_max, hip_range, hip_feedback)
+                    'chest': (garment.get('chest_min'), garment.get('chest_max'), garment.get('chest_range'), overall_feedback),
+                    'neck': (garment.get('neck_min'), garment.get('neck_max'), garment.get('neck_range'), overall_feedback),
+                    'sleeve': (garment.get('sleeve_min'), garment.get('sleeve_max'), garment.get('sleeve_range'), overall_feedback),
+                    'waist': (garment.get('waist_min'), garment.get('waist_max'), garment.get('waist_range'), overall_feedback),
+                    'hip': (garment.get('hip_min'), garment.get('hip_max'), garment.get('hip_range'), overall_feedback)
                 }
                 
                 for dim_name, (min_val, max_val, range_str, feedback) in dimensions.items():
@@ -321,55 +250,14 @@ class SimpleMultiDimensionalAnalyzer:
             return None
 
     def _get_brand_size_guide(self, brand_name: str, category: str) -> List[Dict[str, Any]]:
-        """Get brand's size guide entries"""
+        """Get brand's size guide entries using compatibility layer"""
         try:
-            conn = self.get_connection()
-            cursor = conn.cursor()
+            from size_guide_compatibility import get_size_guide_entries_wide_format
             
-            query = """
-                SELECT 
-                    sge.size_label,
-                    sge.chest_min, sge.chest_max, sge.chest_range,
-                    sge.neck_min, sge.neck_max, sge.neck_range,
-                    sge.sleeve_min, sge.sleeve_max, sge.sleeve_range,
-                    sge.waist_min, sge.waist_max, sge.waist_range,
-                    sge.hip_min, sge.hip_max, sge.hip_range
-                FROM size_guide_entries sge
-                JOIN size_guides sg ON sge.size_guide_id = sg.id
-                JOIN brands b ON sg.brand_id = b.id
-                JOIN categories c ON sg.category_id = c.id
-                WHERE b.name = %s AND c.name = %s
-                ORDER BY 
-                    CASE sge.size_label
-                        WHEN 'XS' THEN 1
-                        WHEN 'S' THEN 2
-                        WHEN 'M' THEN 3
-                        WHEN 'L' THEN 4
-                        WHEN 'XL' THEN 5
-                        WHEN 'XXL' THEN 6
-                        ELSE 7
-                    END
-            """
+            # Use the compatibility layer to get wide format entries
+            size_entries = get_size_guide_entries_wide_format(self.db_config, brand_name, category)
             
-            cursor.execute(query, (brand_name, category))
-            entries = cursor.fetchall()
-            cursor.close()
-            conn.close()
-            
-            # Convert to structured format
-            size_entries = []
-            for entry in entries:
-                entry_dict = dict(zip([
-                    'size_label',
-                    'chest_min', 'chest_max', 'chest_range',
-                    'neck_min', 'neck_max', 'neck_range',
-                    'sleeve_min', 'sleeve_max', 'sleeve_range',
-                    'waist_min', 'waist_max', 'waist_range',
-                    'hip_min', 'hip_max', 'hip_range'
-                ], entry))
-                
-                size_entries.append(entry_dict)
-            
+            self.logger.info(f"Retrieved {len(size_entries)} size guide entries for {brand_name} {category}")
             return size_entries
             
         except Exception as e:

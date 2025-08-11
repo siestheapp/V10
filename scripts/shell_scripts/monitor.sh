@@ -47,7 +47,7 @@ case $choice in
         echo "🔧 Admin Interface: http://localhost:5002/admin/login"
         ;;
     5)
-        ./stop_all.sh
+        ./stopservers
         ;;
     *)
         echo "❌ Invalid option"
