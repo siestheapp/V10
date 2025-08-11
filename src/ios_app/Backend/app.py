@@ -1,4 +1,4 @@
-# New FastAPI application using tailor2 schema
+# New FastAPI application using tailor3 schema
 import asyncio
 from fastapi import FastAPI, HTTPException
 from pydantic import BaseModel
@@ -196,9 +196,18 @@ async def get_closet(user_id: int):
         # Get feedback for each garment
         for garment in garments:
             garment_id = garment['garment_id']
-            # Get feedback codes for this garment (simplified - skip for MVP)
+            # Get actual feedback codes for this garment from user_garment_feedback table
             for dimension in ['overall', 'chest', 'sleeve', 'neck', 'waist', 'hip']:
-                garment[f'{dimension}_feedback_code'] = None
+                cur.execute("""
+                    SELECT fc.id
+                    FROM user_garment_feedback ugf 
+                    JOIN feedback_codes fc ON ugf.feedback_code_id = fc.id
+                    WHERE ugf.user_garment_id = %s AND ugf.dimension = %s 
+                    ORDER BY ugf.created_at DESC LIMIT 1
+                """, (garment_id, dimension))
+                
+                result = cur.fetchone()
+                garment[f'{dimension}_feedback_code'] = result['id'] if result else None
         
         # Get feedback codes for mapping
         cur.execute("SELECT id, feedback_text FROM feedback_codes")
@@ -876,8 +885,8 @@ def process_new_garment(product_link: str, size_label: str, user_id: int):
 @app.get("/brands/{brand_id}/measurements")
 async def get_brand_measurements(brand_id: int):
     try:
-        conn = get_db_connection()
-        cur = conn.cursor(cursor_factory=RealDictCursor)
+        conn = get_db()
+        cur = conn.cursor()
         
         # First verify the brand exists
         cur.execute("SELECT name FROM brands WHERE id = %s", (brand_id,))
@@ -885,33 +894,27 @@ async def get_brand_measurements(brand_id: int):
         if not brand:
             raise HTTPException(status_code=404, detail="Brand not found")
 
-        # Get all available measurements for this brand
+        # Get all available measurements for this brand from normalized size_guide_entries
         cur.execute("""
-            SELECT 
-                chest_range,
-                neck_range,
-                sleeve_range,
-                waist_range
-            FROM size_guides 
-            WHERE brand_id = %s 
-            LIMIT 1
+            SELECT DISTINCT sge.measurement_type
+            FROM size_guides sg
+            JOIN size_guide_entries sge ON sg.id = sge.size_guide_id
+            WHERE sg.brand_id = %s
         """, (brand_id,))
-        size_guide = cur.fetchone()
+        measurement_types = cur.fetchall()
 
-        if not size_guide:
-            print(f"No size guide found for brand {brand_id}")
+        if not measurement_types:
+            print(f"No size guide entries found for brand {brand_id}")
             measurements = ['overall']  # Default to just overall if no size guide
         else:
             # Build measurements array based on what's available
             measurements = ['overall']  # Always include overall
-            if size_guide.get('chest_range'):
-                measurements.append('chest')
-            if size_guide.get('neck_range'):
-                measurements.append('neck')
-            if size_guide.get('sleeve_range'):
-                measurements.append('sleeve')
-            if size_guide.get('waist_range'):
-                measurements.append('waist')
+            available_types = [row['measurement_type'] for row in measurement_types]
+            
+            # Add measurements in preferred order if they exist
+            for measurement_type in ['chest', 'neck', 'sleeve', 'waist', 'hip']:
+                if measurement_type in available_types:
+                    measurements.append(measurement_type)
 
         return {
             "measurements": measurements,
@@ -1192,8 +1195,8 @@ async def get_brands():
             cur.execute("""
                 SELECT DISTINCT b.id, b.name 
                 FROM brands b
-                INNER JOIN size_guides_v2 sg ON b.id = sg.brand_id
-                WHERE sg.gender = 'Men'
+                INNER JOIN size_guides sg ON b.id = sg.brand_id
+                WHERE sg.gender = 'Male'
                 ORDER BY b.name
             """)
             brands = cur.fetchall()
@@ -1204,11 +1207,14 @@ async def get_brands():
                 # For each brand, get its categories and measurements from men's size guides
                 cur.execute("""
                     SELECT DISTINCT 
-                        category,
-                        measurements_available
-                    FROM size_guides_v2 
-                    WHERE brand_id = %s
-                    AND gender = 'Men'
+                        c.name as category,
+                        ARRAY_AGG(DISTINCT sge.measurement_type) as measurements_available
+                    FROM size_guides sg
+                    LEFT JOIN categories c ON sg.category_id = c.id
+                    LEFT JOIN size_guide_entries sge ON sg.id = sge.size_guide_id
+                    WHERE sg.brand_id = %s
+                    AND sg.gender = 'Male'
+                    GROUP BY c.name
                 """, (brand["id"],))
                 
                 size_guides = cur.fetchall()
@@ -1251,9 +1257,12 @@ async def chat_measurements(request: ChatRequest):
             with conn.cursor() as cur:
                 # Get available measurements for the category
                 cur.execute("""
-                    SELECT DISTINCT category, measurements_available
-                    FROM size_guides_v2
-                    WHERE category ILIKE %s
+                    SELECT DISTINCT c.name as category, ARRAY_AGG(DISTINCT sge.measurement_type) as measurements_available
+                    FROM size_guides sg
+                    LEFT JOIN categories c ON sg.category_id = c.id
+                    LEFT JOIN size_guide_entries sge ON sg.id = sge.size_guide_id
+                    WHERE c.name ILIKE %s
+                    GROUP BY c.name
                 """, ('%' + request.message.split()[0] + '%',))
                 measurements = cur.fetchall()
 
@@ -2198,27 +2207,20 @@ def extract_brand_from_url(url: str) -> dict:
 async def get_brand_measurements_for_feedback(brand_id: int) -> dict:
     """Get available measurements for feedback collection"""
     async with pool.acquire() as conn:
-        size_guide = await conn.fetchrow("""
-            SELECT 
-                chest_min, chest_max,
-                neck_min, neck_max,
-                sleeve_min, sleeve_max,
-                waist_min, waist_max
-            FROM size_guides_v2 
-            WHERE brand_id = $1 
-            LIMIT 1
+        # Get available measurement types for this brand
+        measurement_types = await conn.fetch("""
+            SELECT DISTINCT sge.measurement_type
+            FROM size_guides sg
+            JOIN size_guide_entries sge ON sg.id = sge.size_guide_id
+            WHERE sg.brand_id = $1
         """, brand_id)
         
         measurements = ['overall']  # Always include overall
-        if size_guide:
-            if size_guide.get('chest_min') is not None and size_guide.get('chest_max') is not None:
-                measurements.append('chest')
-            if size_guide.get('neck_min') is not None and size_guide.get('neck_max') is not None:
-                measurements.append('neck')
-            if size_guide.get('sleeve_min') is not None and size_guide.get('sleeve_max') is not None:
-                measurements.append('sleeve')
-            if size_guide.get('waist_min') is not None and size_guide.get('waist_max') is not None:
-                measurements.append('waist')
+        
+        # Add measurements based on what's available for this brand
+        for measurement_type in measurement_types:
+            if measurement_type['measurement_type'] not in measurements:
+                measurements.append(measurement_type['measurement_type'])
         
         return {
             "measurements": measurements,
@@ -2240,7 +2242,7 @@ async def get_size_measurements(brand_id: int, size_label: str) -> dict:
                 neck_min, neck_max,
                 sleeve_min, sleeve_max,
                 waist_min, waist_max
-            FROM size_guides_v2 
+            FROM size_guide_entries_with_brand 
             WHERE brand_id = $1 AND size_label = $2
         """, brand_id, size_label)
         
@@ -2363,7 +2365,7 @@ async def get_brand_size_guide(brand_id: int) -> list:
                 sleeve_min, sleeve_max,
                 waist_min, waist_max,
                 neck_min, neck_max
-            FROM size_guides_v2 
+            FROM size_guide_entries_with_brand 
             WHERE brand_id = $1
             ORDER BY size_label
         """, brand_id)
