@@ -2592,8 +2592,10 @@ async def update_garment_feedback(garment_id: int, request: dict):
         async with pool.acquire() as conn:
             # Verify the garment belongs to the user
             garment = await conn.fetchrow("""
-                SELECT id, brand_id, size_label FROM user_garments 
-                WHERE id = $1 AND user_id = $2
+                SELECT ug.id, g.brand_id, ug.size_label 
+                FROM user_garments ug
+                LEFT JOIN garments g ON ug.garment_id = g.id
+                WHERE ug.id = $1 AND ug.user_id = $2
             """, garment_id, user_id)
             
             if not garment:
