@@ -177,6 +177,8 @@ async def get_closet(user_id: int):
     cur = conn.cursor()
     
     try:
+        # Try to use materialized view first for better performance
+        # If it doesn't exist or isn't refreshed, fall back to subqueries
         cur.execute("""
             SELECT 
                 ug.id as garment_id,
@@ -197,32 +199,47 @@ async def get_closet(user_id: int):
                 ug.fit_feedback,
                 ug.created_at,
                 ug.owns_garment,
-                ug.product_name,
-                ug.image_url,
-                ug.product_url,
-                (SELECT feedback_code_id FROM user_garment_feedback 
-                 WHERE user_garment_id = ug.id AND dimension = 'overall' 
-                 ORDER BY created_at DESC LIMIT 1) as overall_feedback_code,
-                (SELECT feedback_code_id FROM user_garment_feedback 
-                 WHERE user_garment_id = ug.id AND dimension = 'chest' 
-                 ORDER BY created_at DESC LIMIT 1) as chest_feedback_code,
-                (SELECT feedback_code_id FROM user_garment_feedback 
-                 WHERE user_garment_id = ug.id AND dimension = 'sleeve' 
-                 ORDER BY created_at DESC LIMIT 1) as sleeve_feedback_code,
-                (SELECT feedback_code_id FROM user_garment_feedback 
-                 WHERE user_garment_id = ug.id AND dimension = 'neck' 
-                 ORDER BY created_at DESC LIMIT 1) as neck_feedback_code,
-                (SELECT feedback_code_id FROM user_garment_feedback 
-                 WHERE user_garment_id = ug.id AND dimension = 'waist' 
-                 ORDER BY created_at DESC LIMIT 1) as waist_feedback_code,
-                (SELECT feedback_code_id FROM user_garment_feedback 
-                 WHERE user_garment_id = ug.id AND dimension = 'hip' 
-                 ORDER BY created_at DESC LIMIT 1) as hip_feedback_code
+                g.product_name,
+                g.image_url,
+                g.product_url,
+                -- Use materialized view if available, otherwise fall back to subqueries
+                COALESCE(ufc.overall_feedback, 
+                    (SELECT fc.feedback_text FROM user_garment_feedback ugf
+                     JOIN feedback_codes fc ON ugf.feedback_code_id = fc.id
+                     WHERE ugf.user_garment_id = ug.id AND ugf.dimension = 'overall'
+                     ORDER BY ugf.created_at DESC LIMIT 1)) as overall_feedback,
+                COALESCE(ufc.chest_feedback,
+                    (SELECT fc.feedback_text FROM user_garment_feedback ugf
+                     JOIN feedback_codes fc ON ugf.feedback_code_id = fc.id
+                     WHERE ugf.user_garment_id = ug.id AND ugf.dimension = 'chest'
+                     ORDER BY ugf.created_at DESC LIMIT 1)) as chest_feedback,
+                COALESCE(ufc.sleeve_feedback,
+                    (SELECT fc.feedback_text FROM user_garment_feedback ugf
+                     JOIN feedback_codes fc ON ugf.feedback_code_id = fc.id
+                     WHERE ugf.user_garment_id = ug.id AND ugf.dimension = 'sleeve'
+                     ORDER BY ugf.created_at DESC LIMIT 1)) as sleeve_feedback,
+                COALESCE(ufc.neck_feedback,
+                    (SELECT fc.feedback_text FROM user_garment_feedback ugf
+                     JOIN feedback_codes fc ON ugf.feedback_code_id = fc.id
+                     WHERE ugf.user_garment_id = ug.id AND ugf.dimension = 'neck'
+                     ORDER BY ugf.created_at DESC LIMIT 1)) as neck_feedback,
+                COALESCE(ufc.waist_feedback,
+                    (SELECT fc.feedback_text FROM user_garment_feedback ugf
+                     JOIN feedback_codes fc ON ugf.feedback_code_id = fc.id
+                     WHERE ugf.user_garment_id = ug.id AND ugf.dimension = 'waist'
+                     ORDER BY ugf.created_at DESC LIMIT 1)) as waist_feedback,
+                COALESCE(ufc.hip_feedback,
+                    (SELECT fc.feedback_text FROM user_garment_feedback ugf
+                     JOIN feedback_codes fc ON ugf.feedback_code_id = fc.id
+                     WHERE ugf.user_garment_id = ug.id AND ugf.dimension = 'hip'
+                     ORDER BY ugf.created_at DESC LIMIT 1)) as hip_feedback
             FROM user_garments ug
-            JOIN brands b ON ug.brand_id = b.id
-            LEFT JOIN categories c ON ug.category_id = c.id
+            LEFT JOIN garments g ON ug.garment_id = g.id
+            LEFT JOIN brands b ON g.brand_id = b.id
+            LEFT JOIN categories c ON g.category_id = c.id
             LEFT JOIN size_guide_entries_with_brand sge ON 
                 ug.size_guide_entry_id = sge.id
+            LEFT JOIN user_feedback_current ufc ON ufc.user_garment_id = ug.id
             WHERE ug.user_id = %s 
             AND ug.owns_garment = true
             ORDER BY c.name, ug.created_at DESC
@@ -231,21 +248,11 @@ async def get_closet(user_id: int):
         garments = cur.fetchall()
         print(f"Raw SQL results: {garments}")  # Debug log
         
-        # Get feedback codes for mapping
-        cur.execute("SELECT id, feedback_text FROM feedback_codes")
-        feedback_codes = {row['id']: row['feedback_text'] for row in cur.fetchall()}
-        
         def format_measurement(value):
             """Format a measurement value without trailing .00 for integers"""
             if isinstance(value, (int, float)):
                 return str(int(value)) if value.is_integer() else f"{value:.2f}"
             return str(value)
-        
-        def get_feedback_text(feedback_code_id):
-            """Get feedback text from feedback code ID"""
-            if feedback_code_id and feedback_code_id in feedback_codes:
-                return feedback_codes[feedback_code_id]
-            return None
         
         formatted_garments = []
         for g in garments:
@@ -273,14 +280,14 @@ async def get_closet(user_id: int):
             garment = {
                 "id": g["garment_id"],
                 "brand": g["brand_name"],
-                "category": g["category"],
+                "category": g["category"] or "Unknown",
                 "size": g["size"],
                 "measurements": measurements,
-                "fitFeedback": get_feedback_text(g["overall_feedback_code"]),
-                "chestFit": get_feedback_text(g["chest_feedback_code"]),
-                "sleeveFit": get_feedback_text(g["sleeve_feedback_code"]),
-                "neckFit": get_feedback_text(g["neck_feedback_code"]),
-                "waistFit": get_feedback_text(g["waist_feedback_code"]),
+                "fitFeedback": g["overall_feedback"],
+                "chestFit": g["chest_feedback"],
+                "sleeveFit": g["sleeve_feedback"],
+                "neckFit": g["neck_feedback"],
+                "waistFit": g["waist_feedback"],
                 "createdAt": g["created_at"].isoformat() if g["created_at"] else None,
                 "ownsGarment": bool(g["owns_garment"]),
                 "productName": g["product_name"],
@@ -473,8 +480,9 @@ def get_user_garments_with_all_dimensions(user_id: str) -> list:
                  WHERE ugf.user_garment_id = ug.id AND ugf.dimension = 'sleeve' 
                  ORDER BY ugf.created_at DESC LIMIT 1) as sleeve_feedback
             FROM user_garments ug
-            JOIN brands b ON ug.brand_id = b.id
-            JOIN categories c ON ug.category_id = c.id
+            LEFT JOIN garments g ON ug.garment_id = g.id
+            LEFT JOIN brands b ON g.brand_id = b.id
+            LEFT JOIN categories c ON g.category_id = c.id
             LEFT JOIN size_guide_entries sge ON ug.size_guide_entry_id = sge.id
             WHERE ug.user_id = %s AND ug.owns_garment = true
             ORDER BY ug.created_at DESC
@@ -660,8 +668,9 @@ def get_user_garments(user_id: str) -> list:
                  WHERE ugf.user_garment_id = ug.id AND ugf.dimension = 'neck' 
                  ORDER BY ugf.created_at DESC LIMIT 1) as neck_feedback
             FROM user_garments ug
-            JOIN brands b ON ug.brand_id = b.id
-            LEFT JOIN categories c ON ug.category_id = c.id
+            LEFT JOIN garments g ON ug.garment_id = g.id
+            LEFT JOIN brands b ON g.brand_id = b.id
+            LEFT JOIN categories c ON g.category_id = c.id
             LEFT JOIN size_guide_entries_with_brand sge ON 
                 ug.size_guide_entry_id = sge.id
             WHERE ug.user_id = %s
@@ -2442,7 +2451,7 @@ def calculate_size_recommendation(user_profile: dict, brand_sizes: list) -> dict
 
 @app.get("/fit_feedback_options")
 async def get_fit_feedback_options():
-    """Provide fit feedback options for dropdown"""
+    """Provide fit feedback options for dropdown (legacy endpoint for backward compatibility)"""
     return {
         "feedbackOptions": [
             {"value": 1, "label": "Too tight"},
@@ -2452,6 +2461,34 @@ async def get_fit_feedback_options():
             {"value": 5, "label": "Too loose"}
         ]
     }
+
+@app.get("/fit_feedback_options/{dimension}")
+async def get_fit_feedback_options_by_dimension(dimension: str):
+    """Get appropriate feedback codes for a specific dimension"""
+    conn = get_db()
+    cur = conn.cursor()
+    
+    try:
+        # Use the database function to get dimension-specific options
+        cur.execute("""
+            SELECT get_feedback_options(%s) as options
+        """, (dimension,))
+        
+        result = cur.fetchone()
+        
+        if result and result['options']:
+            return {"feedbackOptions": result['options']}
+        else:
+            # Fallback to default options if dimension not found
+            return await get_fit_feedback_options()
+            
+    except Exception as e:
+        print(f"Error getting feedback options for {dimension}: {e}")
+        # Return default options on error
+        return await get_fit_feedback_options()
+    finally:
+        cur.close()
+        conn.close()
 
 @app.get("/garment/{garment_id}/measurements")
 async def get_garment_measurements(garment_id: int):
