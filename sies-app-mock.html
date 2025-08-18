@@ -11,11 +11,11 @@
             box-sizing: border-box;
         }
 
-        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
-        @import url('https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;500;600;700&display=swap');
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
+        @import url('https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&display=swap');
 
         body {
-            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
             background: #f5f5f5;
             display: flex;
             justify-content: center;
@@ -154,10 +154,12 @@
         }
 
         .section-title {
-            font-size: 20px;
+            font-family: 'DM Sans', sans-serif;
+            font-size: 22px;
             font-weight: 600;
             color: #1a1a1a;
             text-align: left;
+            letter-spacing: -0.02em;
         }
 
         /* Main Content */
@@ -174,6 +176,13 @@
             border-radius: 20px;
             overflow: hidden;
             box-shadow: 0 2px 16px rgba(0, 0, 0, 0.08);
+            cursor: pointer;
+            transition: transform 0.2s ease, box-shadow 0.2s ease;
+        }
+
+        .product-card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 24px rgba(0, 0, 0, 0.12);
         }
 
         .product-image-container {
@@ -187,8 +196,36 @@
             background: #f8f9fa;
         }
 
+        /* Tap indicator overlay */
+        .tap-indicator {
+            position: absolute;
+            top: 12px;
+            right: 12px;
+            background: rgba(0, 0, 0, 0.7);
+            color: white;
+            padding: 6px 10px;
+            border-radius: 16px;
+            font-size: 11px;
+            font-weight: 500;
+            display: flex;
+            align-items: center;
+            gap: 3px;
+        }
+
+        .tap-icon {
+            width: 12px;
+            height: 12px;
+        }
+
         .product-info {
             padding: 20px;
+        }
+
+        .brand-price-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 16px;
         }
 
         .brand-name {
@@ -198,33 +235,15 @@
             color: #8e8e93;
             text-transform: uppercase;
             letter-spacing: 1px;
-            margin-bottom: 8px;
-        }
-
-        .product-name {
-            font-family: 'Playfair Display', serif;
-            font-size: 20px;
-            font-weight: 500;
-            color: #1a1a1a;
             margin: 0;
-            line-height: 1.3;
-            flex: 1;
-        }
-
-        .product-name-row {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 8px;
         }
 
         .price {
-            font-family: 'Inter', sans-serif;
-            font-size: 15px;
-            font-weight: 500;
+            font-family: 'DM Sans', sans-serif;
+            font-size: 18px;
+            font-weight: 600;
             color: #1a1a1a;
             margin: 0;
-            flex-shrink: 0;
         }
 
         /* Fit Badge - The Trust Signal */
@@ -251,15 +270,15 @@
         .fit-details {
             background: #f8f9fa;
             border-radius: 16px;
-            padding: 16px;
+            padding: 8px 20px 16px 20px;
             margin-bottom: 16px;
         }
 
         .fit-item {
             display: flex;
-            justify-content: space-between;
+            justify-content: flex-start;
             align-items: center;
-            padding: 10px 0;
+            padding: 8px 0;
             border-bottom: 1px solid #e5e7eb;
         }
 
@@ -269,33 +288,44 @@
 
         .fit-measurement {
             font-family: 'Inter', sans-serif;
-            font-size: 14px;
-            color: #6b7280;
+            font-size: 15px;
+            color: #4b5563;
             font-weight: 400;
+            line-height: 1.3;
+        }
+
+        .fit-measurement.allow-wrap {
+            white-space: normal;
         }
 
         .closet-item-link {
-            color: #007aff;
-            text-decoration: underline;
-            cursor: pointer;
+            color: #667eea;
+            text-decoration: none;
+            font-weight: 500;
+            border-bottom: 1px solid rgba(102, 126, 234, 0.3);
+            transition: all 0.2s ease;
         }
 
         .closet-item-link:hover {
-            color: #0056b3;
+            color: #4c51bf;
+            border-bottom-color: #4c51bf;
         }
 
         .recommended-size-row {
             display: flex;
             justify-content: space-between;
             align-items: center;
-            margin-bottom: 16px;
+            margin-bottom: 8px;
+            padding: 12px 16px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            border-radius: 12px;
+            color: white;
         }
 
         .recommended-size-text {
-            font-family: 'Inter', sans-serif;
-            font-size: 14px;
-            font-weight: 500;
-            color: #6b7280;
+            font-family: 'DM Sans', sans-serif;
+            font-size: 15px;
+            font-weight: 600;
             margin: 0;
         }
 
@@ -303,12 +333,13 @@
             font-family: 'Inter', sans-serif;
             display: inline-flex;
             align-items: center;
-            background: #10b981;
+            background: rgba(255, 255, 255, 0.2);
             color: white;
             padding: 6px 12px;
             border-radius: 16px;
             font-size: 12px;
             font-weight: 600;
+            backdrop-filter: blur(10px);
         }
 
         .fit-status {
@@ -347,8 +378,8 @@
             font-size: 13px;
             color: #6b7280;
             text-align: center;
-            font-style: italic;
             font-weight: 400;
+            font-style: italic;
         }
 
         /* Bottom Tab Bar */
@@ -450,12 +481,17 @@
                 <div class="product-card">
                     <div class="product-image-container">
                         <img src="https://images.urbndata.com/is/image/Anthropologie/4130652010091_256_b?$redesign-zoom-5x$" alt="The Jocelyn Sleeveless Slip Midi Dress" class="product-image">
+                        <div class="tap-indicator">
+                            <svg class="tap-icon" viewBox="0 0 24 24" fill="currentColor">
+                                <path d="M7 14l5-5 5 5z"/>
+                            </svg>
+                            Tap for details
+                        </div>
                     </div>
                     
                     <div class="product-info">
-                        <div class="brand-name">ANTHROPOLOGIE</div>
-                        <div class="product-name-row">
-                            <div class="product-name">Jocelyn Sleeveless Slip Midi Dress</div>
+                        <div class="brand-price-row">
+                            <div class="brand-name">ANTHROPOLOGIE</div>
                             <div class="price">$168.00</div>
                         </div>
                         <div class="recommended-size-row">
@@ -470,7 +506,7 @@
                             </div>
                             
                             <div class="fit-item">
-                                <span class="fit-measurement">Hips (37.5"): 0.5″ slimmer than your <span class="closet-item-link">Aritzia dress</span>.</span>
+                                <span class="fit-measurement allow-wrap">Hips (37.5"): 0.5″ slimmer than your <span class="closet-item-link">Aritzia dress</span>.</span>
                             </div>
                             
                             <div class="fit-item">
@@ -501,7 +537,7 @@
                 </a>
                 <a href="#" class="tab-item">
                     <svg class="tab-icon" viewBox="0 0 24 24" fill="currentColor">
-                        <path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/>
+                        <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/>
                     </svg>
                     <span>Saved</span>
                 </a>
