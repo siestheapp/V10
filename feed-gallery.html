@@ -63,17 +63,40 @@
 body{font-family:Inter,system-ui,-apple-system,"Segoe UI",Roboto,Helvetica,Arial;background:var(--bg);color:var(--ink);
   min-height:100vh;display:flex;align-items:center;justify-content:center;padding:0}
 
-/* iPhone Frame (Photorealistic Style) */
-.phone{width:430px;height:932px;border-radius:55px;background:linear-gradient(135deg, #E8E8E8 0%, #D0D0D0 50%, #B8B8B8 100%);padding:5px;box-shadow:0 20px 60px rgba(0,0,0,0.3), 0 8px 24px rgba(0,0,0,0.2), inset 0 1px 0 rgba(255,255,255,0.3)}
-.screen{height:100%;background:var(--ink-900);border-radius:50px;overflow:hidden;position:relative;display:flex;flex-direction:column;border:1px solid rgba(0,0,0,0.1)}
+/* iPhone 15 Pro Max Frame (Photorealistic Titanium) */
+.phone{width:430px;height:932px;border-radius:65px;background:linear-gradient(135deg, #E8E8E8 0%, #D0D0D0 20%, #B8B8B8 40%, #A8A8A8 60%, #989898 80%, #888888 100%);padding:6px;box-shadow:0 30px 100px rgba(0,0,0,0.5), 0 15px 40px rgba(0,0,0,0.3), 0 5px 15px rgba(0,0,0,0.2), inset 0 3px 6px rgba(255,255,255,0.5), inset 0 -2px 4px rgba(0,0,0,0.3);position:relative}
+.phone::before{content:"";position:absolute;top:0;left:0;right:0;bottom:0;border-radius:65px;background:linear-gradient(45deg, rgba(255,255,255,0.15) 0%, transparent 30%, rgba(0,0,0,0.05) 70%, rgba(255,255,255,0.05) 100%);pointer-events:none}
+.phone::after{content:"";position:absolute;top:2px;left:2px;right:2px;bottom:2px;border-radius:63px;background:linear-gradient(135deg, rgba(255,255,255,0.1) 0%, transparent 50%, rgba(0,0,0,0.1) 100%);pointer-events:none}
+.screen{height:100%;background:var(--ink-900);border-radius:59px;overflow:hidden;position:relative;display:flex;flex-direction:column;border:1px solid rgba(0,0,0,0.2);box-shadow:inset 0 0 0 5px #000, inset 0 1px 2px rgba(255,255,255,.08), inset 0 -1px 2px rgba(0,0,0,.35)}
 
 /* Dynamic Island */
-.island{position:absolute;top:9px;left:50%;transform:translateX(-50%);width:126px;height:37px;background:#000;border-radius:19px;z-index:2}
+.island{position:absolute;top:12px;left:50%;transform:translateX(-50%);width:126px;height:37px;background:#000;border-radius:19px;z-index:2}
+
+/* Action Button (iPhone 15 Pro Max) */
+.action-button{position:absolute;left:-3px;top:120px;width:10px;height:62px;background:linear-gradient(90deg, #A8A8A8 0%, #C0C0C0 30%, #D0D0D0 50%, #C0C0C0 70%, #A8A8A8 100%);border-radius:0 5px 5px 0;box-shadow:inset 2px 0 3px rgba(0,0,0,0.4), inset -1px 0 2px rgba(255,255,255,0.3), 1px 0 2px rgba(0,0,0,0.2)}
+
+/* Volume buttons (left side) */
+.btn-volume{position:absolute;left:-3px;width:10px;background:linear-gradient(90deg, #A8A8A8 0%, #C0C0C0 30%, #D0D0D0 50%, #C0C0C0 70%, #A8A8A8 100%);border-radius:0 5px 5px 0;box-shadow:inset 2px 0 3px rgba(0,0,0,0.4), inset -1px 0 2px rgba(255,255,255,0.3), 1px 0 2px rgba(0,0,0,0.2)}
+.btn-volume.up{top:210px;height:70px}
+.btn-volume.down{top:298px;height:70px}
+
+/* Power button (right side) */
+.btn-power{position:absolute;right:-3px;top:270px;width:10px;height:110px;background:linear-gradient(270deg, #A8A8A8 0%, #C0C0C0 30%, #D0D0D0 50%, #C0C0C0 70%, #A8A8A8 100%);border-radius:5px 0 0 5px;box-shadow:inset -2px 0 3px rgba(0,0,0,0.4), inset 1px 0 2px rgba(255,255,255,0.3), -1px 0 2px rgba(0,0,0,0.2)}
+
+/* Antenna bands */
+.antenna{position:absolute;width:16px;height:2px;background:linear-gradient(90deg, rgba(255,255,255,.5), rgba(0,0,0,.15));opacity:.6;border-radius:2px}
+.antenna.lt{left:6px;top:86px;transform:rotate(90deg)}
+.antenna.lb{left:6px;bottom:86px;transform:rotate(90deg)}
+.antenna.rt{right:6px;top:140px;transform:rotate(90deg)}
+.antenna.rb{right:6px;bottom:140px;transform:rotate(90deg)}
+
+/* Dynamic Island subtle highlight */
+.island::before{content:"";position:absolute;inset:2px;border-radius:17px;background:linear-gradient(180deg, rgba(255,255,255,.12), rgba(255,255,255,0));opacity:.35}
 
 /* Status Bar */
-.status{height:54px;margin-top:5px;display:flex;align-items:center;justify-content:space-between;padding:0 30px;font-weight:600;color:#fff;font-size:17px;letter-spacing:-.02em}
+.status{height:54px;margin-top:8px;display:flex;align-items:center;justify-content:space-between;padding:0 24px;font-weight:600;color:#fff;font-size:17px;letter-spacing:-.02em}
 .status .right{display:flex;align-items:center;gap:6px}
-.status .right img{height:13px;width:auto;display:block}
+.status .right img{height:13px;width:auto;display:block;filter:invert(1)}
 
 /* App Content */
 .header{padding:var(--space-4) var(--space-24) var(--space-4);display:flex;justify-content:space-between;align-items:center}
@@ -297,6 +320,14 @@ body{font-family:Inter,system-ui,-apple-system,"Segoe UI",Roboto,Helvetica,Arial
 </head>
 <body class="view-feed">
   <div class="phone">
+      <div class="action-button"></div>
+      <div class="btn-volume up"></div>
+      <div class="btn-volume down"></div>
+      <div class="btn-power"></div>
+      <div class="antenna lt"></div>
+      <div class="antenna lb"></div>
+      <div class="antenna rt"></div>
+      <div class="antenna rb"></div>
       <div class="screen">
         <div class="island"></div>
         <div class="status"><div>9:41</div><div class="right"><img src="Cellular Connection.svg" alt="cell"/><img src="Wifi.svg" alt="wifi"/><img src="Battery.svg" alt="battery"/></div></div>
