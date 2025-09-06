@@ -405,46 +405,50 @@ body{font-family:Inter,system-ui,-apple-system,"Segoe UI",Roboto,Helvetica,Arial
 
               <!-- Expanded details (Peer Match Focus) -->
               <div class="details hidden" id="fitDetails1">
-                <!-- Match Comparison -->
-                <div style="padding:16px;background:rgba(255,255,255,0.03);border-radius:12px;border:1px solid rgba(255,255,255,0.08);">
-                  <p style="font-size:13px;color:#6A7683;margin-bottom:12px;">You both wear <strong style="color:#00A3A3;">Bryson 2</strong> perfectly</p>
-                  
-                  <div style="display:grid;grid-template-columns:1fr 40px 1fr;gap:8px;font-size:14px;">
-                    <!-- Headers -->
-                    <div style="font-weight:600;color:#fff;">You</div>
-                    <div></div>
-                    <div style="font-weight:600;color:#fff;">Match</div>
-                    
-                    <!-- Height -->
-                    <div style="color:#A0A0A0;">5'6"</div>
-                    <div style="text-align:center;color:#00A3A3;">✓</div>
-                    <div style="color:#A0A0A0;">5'6"</div>
-                    
-                    <!-- Bust -->
-                    <div style="color:#A0A0A0;">34" bust</div>
-                    <div style="text-align:center;color:#00A3A3;">✓</div>
-                    <div style="color:#A0A0A0;">34"</div>
-                    
-                    <!-- Waist -->
-                    <div style="color:#A0A0A0;">26" waist</div>
-                    <div style="text-align:center;color:#00A3A3;">✓</div>
-                    <div style="color:#A0A0A0;">26"</div>
-                    
-                    <!-- Hips -->
-                    <div style="color:#A0A0A0;">37" hips</div>
-                    <div style="text-align:center;color:#6A7683;">↓1"</div>
-                    <div style="color:#A0A0A0;">36"</div>
-                  </div>
-                  
-                  <div style="margin-top:16px;padding:12px;background:rgba(0,163,163,0.1);border-radius:8px;border:1px solid rgba(0,163,163,0.2);">
-                    <p style="font-size:14px;color:#fff;line-height:1.5;">Match says: <em>"Slightly loose in bust/waist but the elastic at bust helps. Perfect in hips."</em></p>
-                  </div>
-                  
-                  <!-- CTA to view closet -->
-                  <button onclick="showMatchCloset()" style="margin-top:16px;width:100%;padding:14px 24px;background:linear-gradient(180deg, rgba(255,255,255,.08) 0%, rgba(255,255,255,0) 8%), #00A3A3;color:white;border:none;border-radius:12px;font-weight:600;font-size:15px;cursor:pointer;transition:all 0.2s ease;box-shadow:0 4px 12px rgba(0,163,163,0.3);">
-                    View match's full closet →
-                  </button>
+                <div class="item">
+                  <p class="advice-inline">You both wear <strong class="accent">Bryson 2</strong> <span class="muted">(perfect fit)</span></p>
                 </div>
+                
+                <!-- Body Comparison -->
+                <div class="spec">
+                  <span class="measure"><strong>Height —</strong> Both 5'6"</span>
+                  <span class="badge" style="background:#E0F7F7;color:#00A3A3;border-color:#00A3A3;">Match</span>
+                </div>
+                <div class="divider"></div>
+                
+                <div class="spec">
+                  <span class="measure"><strong>Bust —</strong> Both 34"</span>
+                  <span class="badge" style="background:#E0F7F7;color:#00A3A3;border-color:#00A3A3;">Match</span>
+                </div>
+                <div class="divider"></div>
+                
+                <div class="spec">
+                  <span class="measure"><strong>Waist —</strong> Both 26"</span>
+                  <span class="badge" style="background:#E0F7F7;color:#00A3A3;border-color:#00A3A3;">Match</span>
+                </div>
+                <div class="divider"></div>
+                
+                <div class="spec">
+                  <span class="measure"><strong>Hips —</strong> <span class="muted">You: 37" • Match: 36"</span></span>
+                  <span class="badge">-1"</span>
+                </div>
+                
+                <!-- Match Feedback -->
+                <div style="margin-top:16px;padding:12px 14px;background:rgba(0,163,163,0.08);border-radius:12px;border:1px solid rgba(0,163,163,0.15);display:flex;align-items:center;gap:12px;">
+                  <div style="width:32px;height:32px;background:#00A3A3;border-radius:50%;display:flex;align-items:center;justify-content:center;flex-shrink:0;">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="3">
+                      <path d="M7 13l3 3 7-7"/>
+                    </svg>
+                  </div>
+                  <div style="flex:1;">
+                    <p style="font-size:14px;color:#fff;margin:0;"><strong>Match feedback:</strong> "Works great, elastic helps"</p>
+                  </div>
+                </div>
+                
+                <!-- View Closet CTA -->
+                <button onclick="showMatchCloset()" style="margin-top:20px;width:100%;padding:14px 24px;background:linear-gradient(180deg, rgba(255,255,255,.08) 0%, rgba(255,255,255,0) 8%), #00A3A3;color:white;border:none;border-radius:24px;font-weight:700;font-size:15px;cursor:pointer;transition:all 0.2s ease;box-shadow:0 6px 20px rgba(0,163,163,0.3);">
+                  View match's full closet →
+                </button>
               </div>
 
               <div class="shop-row">

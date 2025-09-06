@@ -3670,11 +3670,192 @@ You're absolutely right! When we have a peer match, that's the valuable signal -
 
 ---
 
+<details><summary>Edit file: /Users/seandavey/Downloads/freestyle/freestyle-app.html</summary>
 
+undefined
+
+**Chunk 1**
+Lines added: 20, lines removed: 34
+
+```diff
+@@ -404,58 +404,44 @@
+                </div>
+  
+-               <!-- Expanded details -->
++               <!-- Expanded details (Peer Match Focus) -->
+                <div class="details hidden" id="fitDetails1">
+-                 <div class="item">
+-                   <p class="advice-inline">Match based on shared <strong class="accent">Bryson 2</strong> measurements (34/26/37)</p>
+-                 </div>
+-                 <div class="spec">
+-                   <span class="measure"><strong>Bust —</strong> Looser <span class="muted">(35–36″ vs 34″)</span></span>
+-                   <span class="badge">+1–2″</span>
+-                 </div>
+-                 <div class="divider"></div>
+-                 <div class="spec">
+-                   <span class="measure"><strong>Waist —</strong> Looser <span class="muted">(27–28″ vs 26″)</span></span>
+-                   <span class="badge">+1–2″</span>
+-                 </div>
+-                 <div class="divider"></div>
+-                 <div class="spec">
+-                   <span class="measure"><strong>Hips —</strong> Matches <span class="muted">(37–38″ vs 37″)</span></span>
+-                   <span class="badge">≈</span>
+-                 </div>
+-                 <p class="advice-inline advice-next">Match feedback: "Slightly loose in bust/waist but the elastic at bust helps. Perfect in hips."</p>
+-                 
+                  <!-- Match Comparison -->
+-                 <div style="margin-top:20px;padding:16px;background:#EFF3F6;border-radius:12px;">
+-                   <h4 style="font-size:13px;font-weight:600;color:#2A3642;margin-bottom:12px;letter-spacing:0.5px;">YOUR MATCH COMPARISON</h4>
++                 <div style="padding:16px;background:rgba(255,255,255,0.03);border-radius:12px;border:1px solid rgba(255,255,255,0.08);">
++                   <p style="font-size:13px;color:#6A7683;margin-bottom:12px;">You both wear <strong style="color:#00A3A3;">Bryson 2</strong> perfectly</p>
++                   
+                    <div style="display:grid;grid-template-columns:1fr 40px 1fr;gap:8px;font-size:14px;">
+                      <!-- Headers -->
+-                     <div style="font-weight:600;color:#0B0F14;">You</div>
++                     <div style="font-weight:600;color:#fff;">You</div>
+                      <div></div>
+-                     <div style="font-weight:600;color:#0B0F14;">Match</div>
++                     <div style="font-weight:600;color:#fff;">Match</div>
+                      
+                      <!-- Height -->
+-                     <div style="color:#2A3642;">5'6"</div>
++                     <div style="color:#A0A0A0;">5'6"</div>
+                      <div style="text-align:center;color:#00A3A3;">✓</div>
+-                     <div style="color:#2A3642;">5'6"</div>
++                     <div style="color:#A0A0A0;">5'6"</div>
+                      
+                      <!-- Bust -->
+-                     <div style="color:#2A3642;">34" bust</div>
++                     <div style="color:#A0A0A0;">34" bust</div>
+                      <div style="text-align:center;color:#00A3A3;">✓</div>
+-                     <div style="color:#2A3642;">34"</div>
++                     <div style="color:#A0A0A0;">34"</div>
+                      
+                      <!-- Waist -->
+-                     <div style="color:#2A3642;">26" waist</div>
++                     <div style="color:#A0A0A0;">26" waist</div>
+                      <div style="text-align:center;color:#00A3A3;">✓</div>
+-                     <div style="color:#2A3642;">26"</div>
++                     <div style="color:#A0A0A0;">26"</div>
+                      
+                      <!-- Hips -->
+-                     <div style="color:#2A3642;">37" hips</div>
++                     <div style="color:#A0A0A0;">37" hips</div>
+                      <div style="text-align:center;color:#6A7683;">↓1"</div>
+-                     <div style="color:#2A3642;">36"</div>
++                     <div style="color:#A0A0A0;">36"</div>
++                   </div>
++                   
++                   <div style="margin-top:16px;padding:12px;background:rgba(0,163,163,0.1);border-radius:8px;border:1px solid rgba(0,163,163,0.2);">
++                     <p style="font-size:14px;color:#fff;line-height:1.5;">Match says: <em>"Slightly loose in bust/waist but the elastic at bust helps. Perfect in hips."</em></p>
+                    </div>
+                    
+                    <!-- CTA to view closet -->
+-                   <button onclick="showMatchCloset()" style="margin-top:16px;width:100%;padding:12px 24px;background:#00A3A3;color:white;border:none;border-radius:12px;font-weight:600;font-size:14px;cursor:pointer;transition:all 0.2s ease;">
+-                     View match's closet →
++                   <button onclick="showMatchCloset()" style="margin-top:16px;width:100%;padding:14px 24px;background:linear-gradient(180deg, rgba(255,255,255,.08) 0%, rgba(255,255,255,0) 8%), #00A3A3;color:white;border:none;border-radius:12px;font-weight:600;font-size:15px;cursor:pointer;transition:all 0.2s ease;box-shadow:0 4px 12px rgba(0,163,163,0.3);">
++                     View match's full closet →
+                    </button>
+                  </div>
+```
+
+</details>
 
 ---
 
+<think><details><summary>Thought Process</summary>Good, I've simplified the peer match card. Now I should keep the size guide card (Card 2 - Jocelyn dress) as is since that's our fallback when there's no peer match. The user is right that mixing both methods creates cognitive overload. The separation is cleaner:
 
+1. Card 1 (Fleur dress): Pure peer match - "Your match wears this, here's how you compare, here's what they said"
+2. Card 2 (Jocelyn dress): Pure size guide - "Based on your Bryson measurements, here's how this compares"
+
+This creates a clear hierarchy:
+- When we have a peer match → show peer info only
+- When we don't → fall back to size guide comparisons
+
+Let me commit this change.</details></think>
+
+---
+
+Perfect! I've simplified the peer match card to focus purely on the human connection. Now it's much cleaner:
+
+**Peer Match Card (Fleur dress):**
+- Shows you both wear Bryson 2 perfectly
+- Simple physical comparison
+- Match's actual feedback in a highlighted box
+- Direct path to see more of their closet
+
+**Size Guide Card (Jocelyn dress):**
+- Remains as the fallback when no peer match exists
+- Shows measurement comparisons against your Bryson baseline
+
+This creates a clear mental model:
+- **Have a match?** → "Someone just like you wears S in this"
+- **No match?** → "Based on measurements, S should fit"
+
+The cognitive load is much lower now - one concept per card instead of mixing methods.
+
+---
+
+```bash
+git add -A && git commit -m "Simplify peer match UI - remove cognitive overload
+
+- Peer match cards now focus purely on human connection
+- Removed size guide measurements from peer match expansion
+- Cleaner format: shared anchor item, physical comparison, match feedback
+- Size guide remains as fallback when no peer match exists
+- One concept per card for better mental model
+- Enhanced visual hierarchy with better contrast and spacing"
+```
+
+```
+seandavey@MacBook-Air-3 freestyle % git add -A && git commit -m "Simplify peer match UI - remove cognitive o
+verload
+
+- Peer match cards now focus purely on human connection
+- Removed size guide measurements from peer match expansion
+- Cleaner format: shared anchor item, physical comparison, match feedback
+- Size guide remains as fallback when no peer match exists
+- One concept per card for better megit add -A && git commit -m "Simplify peer match UI - remove cognitive o
+- Enhanced visual hierarchy with better contrast and spacing"tch feedback
+[master dfe2980] Simplify peer match UI - remove cognitive overload
+ 2 files changed, 345 insertions(+), 34 deletions(-)
+seandavey@MacBook-Air-3 freestyle %
+```
+
+---
+
+<think><details><summary>Thought Process</summary>Great! The changes are committed. The user has successfully identified that mixing SG (size guide) and PP (peer-to-peer) comparisons in the same card creates cognitive overload. The simplified approach is much cleaner:
+
+1. When we have a peer match (like Emma with the Fleur dress): Show only the peer connection - they share a body double, here's how they compare physically, here's what the match says about fit, and here's the match's closet
+
+2. When we don't have a peer match (like the Jocelyn dress): Fall back to size guide comparisons against their anchor item (Bryson 2)
+
+This creates a clear hierarchy and reduces the mental processing required. The user can quickly understand: "Someone like me wears this" vs "Based on measurements, this should fit."</details></think>
+
+---
+
+Excellent! The UI is now much cleaner with a clear information hierarchy:
+
+## **What We Achieved:**
+
+### **Peer Match (Primary Signal):**
+- Focus on human connection: "You both wear Bryson 2"
+- Simple body comparison grid
+- Real feedback from match
+- Direct path to valuable closet data
+
+### **Size Guide (Fallback):**
+- Only shows when no peer match exists
+- Measurement-based predictions
+- Still valuable but clearly secondary
+
+### **Cognitive Benefits:**
+1. **One concept per card** - no mixing methods
+2. **Clear mental model** - peer > measurements
+3. **Progressive disclosure** - details on demand
+4. **Trust building** - real people, real sizes
+
+The separation makes the value proposition clearer: "We found someone just like you who owns this" is immediately more compelling than measurement math. And when we don't have that match, we gracefully fall back to the size guide approach.
 
 ---
 
