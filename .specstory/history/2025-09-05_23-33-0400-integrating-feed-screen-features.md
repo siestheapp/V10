@@ -2156,3 +2156,166 @@ Should I update the recommendation to be more definitive about S being the corre
 
 ---
 
+_**User (2025-09-05 21:15-0400)**_
+
+ok lets do a commit
+
+---
+
+_**Assistant**_
+
+<think><details><summary>Thought Process</summary>The user wants to commit the changes we've made. I should use git to commit the current state of the work.</details></think>
+
+---
+
+```bash
+cd /Users/seandavey/Downloads/freestyle && git add -A && git status
+```
+
+```
+
+On branch master
+Changes to be committed:
+  (use "git restore --staged <file>..." to unstage)
+        modified:   .specstory/history/2025-09-05_18-32-0400-move-files-to-archi
+ve-except-specific-ones.md
+        new file:   .specstory/history/2025-09-05_23-33-0400-integrating-feed-sc
+reen-features.md
+        modified:   freestyle-app.html
+        new file:   measurement-profiles.json
+        modified:   mockup-data.js
+
+```
+
+---
+
+<think><details><summary>Thought Process</summary>Good, all our changes are staged. Now let's commit them with a descriptive message about what we accomplished.</details></think>
+
+---
+
+```bash
+git commit -m "Integrate peer-to-peer and size guide matching in feed
+
+- Added Emma as Lily's body double (both wear Bryson 2)
+- Created measurement-profiles.json to track user fit data
+- Updated feed with two Anthropologie dresses:
+  1. Fleur Dress: Shows Emma's peer match (98% confidence)
+  2. Jocelyn Dress: Shows size guide comparison to Bryson 2
+- Implemented expandable fit details with measurement comparisons
+- Added visual indicators for peer vs size guide recommendations
+- Established data structure for pilot phase with anchor items"
+```
+
+```
+<ed data structure for pilot phase with anchor items"
+[master 9038448] Integrate peer-to-peer and size guide matching in feed
+ 5 files changed, 3523 insertions(+), 26 deletions(-)
+ create mode 100644 .specstory/history/2025-09-05_23-33-0400-integrating-feed-screen-features.md
+ create mode 100644 measurement-profiles.json
+seandavey@MacBook-Air-3 freestyle %
+```
+
+---
+
+<think><details><summary>Thought Process</summary>Great! The commit is successful. Let me check the git log to confirm and provide a summary to the user.</details></think>
+
+---
+
+```bash
+git log --oneline -5
+```
+
+```
+seandavey@MacBook-Air-3 freestyle % git log --oneline -5
+9038448 (HEAD -> master) Integrate peer-to-peer and size guide matching in feed
+5f3ce97 Finalize unified app with consistent styling, dark filter strip, and seamless navigation
+bf8adae Create unified freestyle-app with seamless navigation between feed and closet screens
+28ab4e7 soften product image gradient for better visibility
+21fce65 adding numbers to top left corners of pages (not mockups)
+seandavey@MacBook-Air-3 freestyle %
+```
+
+---
+
+<think><details><summary>Thought Process</summary>Perfect! The commit has been successfully created. I should summarize what we've accomplished for the user.</details></think>
+
+---
+
+Perfect! I've successfully committed all the changes. Here's what we accomplished in this session:
+
+## **Commit Summary: Peer-to-Peer & Size Guide Integration**
+
+### **Key Features Added:**
+1. **Emma as Lily's Body Double**
+   - Both wear Bryson Dress Size 2 (34/26/37)
+   - Emma's second anchor: Anthropologie Fleur S
+
+2. **New Data Architecture:**
+   - Created `measurement-profiles.json` to track user measurements
+   - Updated `mockup-data.js` with Emma's complete profile
+   - Established pilot phase data structure
+
+3. **Feed Enhancements:**
+   - **Card 1:** Fleur Dress - Shows Emma owns it (98% match)
+   - **Card 2:** Jocelyn Dress - Pure size guide comparison to Bryson 2
+   - Expandable fit details with measurement comparisons
+   - Visual indicators (badges, colors) for peer vs size guide
+
+4. **Product Decisions:**
+   - Hybrid approach: Peer data when available, size guide as fallback
+   - Both women size for largest measurement (hips)
+   - Clear confidence hierarchy established
+
+The app now demonstrates both sizing methods working together seamlessly!
+
+---
+
+_**User (2025-09-05 21:15-0400)**_
+
+i wonder if we need the actual product name visible here...id rather keep it stored as metadata but it takes up room and idk if it adds that much value...plus it not beign there incentiveies the user to click on shop to find out what its called...what do you think
+
+---
+
+_**Assistant**_
+
+<think><details><summary>Thought Process</summary>The user is asking about whether to show the product name "The Fleur Strapless Satin Maxi Slip Dress" in the feed card. They make a good point - it takes up visual space and removing it could create more curiosity/incentive to click through. Let me think about the pros and cons:
+
+Pros of removing:
+- Cleaner, less cluttered interface
+- Creates curiosity - users need to engage to learn more
+- More focus on the key info (size, price, peer match)
+- Matches the aesthetic of the mockup they showed
+
+Cons of removing:
+- Less information for decision making
+- Some users might want to know what they're looking at
+
+Looking at the mockup image they shared, it seems like they've already made this decision - the product name isn't visible in their design. They just show the brand, price, and the peer match info.</details></think>
+
+---
+
+You're absolutely right! Looking at your mockup, it's much cleaner without the product name. The focus should be on:
+
+1. **Visual** - The dress image speaks for itself
+2. **Peer signal** - "Emma owns this"  
+3. **Key decision data** - Size, price, brand
+4. **Action** - Shop button reveals the name
+
+Removing the product name:
+- **Creates curiosity** → drives clicks
+- **Reduces cognitive load** → cleaner scan
+- **Emphasizes what matters** → size confidence, not product names
+- **Matches shopping behavior** → people shop visually first
+
+Let me remove the product names from both cards:
+
+---
+
+
+
+---
+
+
+
+---
+
