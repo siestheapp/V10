@@ -3345,6 +3345,331 @@ Now let me add the Match Closet screen after the existing Closet screen:
 
 ---
 
+<details><summary>Edit file: /Users/seandavey/Downloads/freestyle/freestyle-app.html</summary>
+
+undefined
+
+**Chunk 1**
+Lines added: 104, lines removed: undefined
+
+```diff
+@@ -588,4 +588,108 @@
+          </div>
+        </div>
++ 
++       <!-- MATCH CLOSET SCREEN -->
++       <div id="matchClosetScreen" class="app-screen">
++         <!-- Back button header -->
++         <div style="padding:16px 24px;display:flex;align-items:center;gap:12px;border-bottom:1px solid rgba(255,255,255,0.08);">
++           <button onclick="backToFeed()" style="background:none;border:none;color:#00A3A3;padding:0;cursor:pointer;">
++             <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
++               <line x1="19" y1="12" x2="5" y2="12"></line>
++               <polyline points="12 19 5 12 12 5"></polyline>
++             </svg>
++           </button>
++           <h2 style="font-size:20px;font-weight:600;color:#fff;letter-spacing:-0.01em;">Match's Closet</h2>
++         </div>
++         
++         <!-- Match stats bar -->
++         <div style="background:#232A32;padding:16px 24px;border-bottom:1px solid rgba(255,255,255,0.08);">
++           <div style="font-size:13px;color:#6A7683;margin-bottom:8px;">Based on Bryson 2 match</div>
++           <div style="display:flex;align-items:center;gap:20px;">
++             <span style="color:#fff;font-weight:600;font-size:15px;">5'6" • 34/26/36</span>
++             <span style="color:#00A3A3;font-size:14px;">98% match</span>
++           </div>
++           <div style="display:flex;gap:24px;margin-top:12px;padding-top:12px;border-top:1px solid rgba(255,255,255,0.08);">
++             <div style="font-size:13px;">
++               <span style="color:#fff;font-weight:600;">15</span>
++               <span style="color:#6A7683;"> items</span>
++             </div>
++             <div style="font-size:13px;">
++               <span style="color:#fff;font-weight:600;">8</span>
++               <span style="color:#6A7683;"> brands</span>
++             </div>
++             <div style="font-size:13px;">
++               <span style="color:#6A7683;">Typical: </span>
++               <span style="color:#fff;font-weight:600;">Size 2/S</span>
++             </div>
++           </div>
++         </div>
++         
++         <!-- Match's items grid -->
++         <div style="padding:16px 24px 96px;overflow-y:auto;flex:1;">
++           <div style="display:grid;grid-template-columns:repeat(2,1fr);gap:10px;">
++             <!-- Ganni Dress -->
++             <div style="position:relative;border-radius:16px;overflow:hidden;background:#232A32;border:1px solid rgba(255,255,255,0.04);">
++               <img src="https://cdn.shopify.com/s/files/1/0071/2475/9514/products/F6769_999_1.jpg?v=1678902657" style="width:100%;height:220px;object-fit:cover;">
++               <div style="position:absolute;top:12px;left:12px;padding:6px 10px;background:rgba(18,26,34,0.75);backdrop-filter:blur(12px);color:#fff;font-size:11px;font-weight:500;border-radius:8px;border:1px solid rgba(255,255,255,0.12);">36</div>
++               <div style="padding:12px;">
++                 <div style="font-size:11px;color:#6A7683;letter-spacing:0.5px;">GANNI</div>
++                 <div style="font-size:13px;color:#fff;margin-top:4px;">Cotton Poplin Dress</div>
++               </div>
++             </div>
++             
++             <!-- Aritzia Top -->
++             <div style="position:relative;border-radius:16px;overflow:hidden;background:#232A32;border:1px solid rgba(255,255,255,0.04);">
++               <img src="https://aritzia.scene7.com/is/image/Aritzia/s24_01_a08_106589_1274_off_a?wid=500" style="width:100%;height:220px;object-fit:cover;">
++               <div style="position:absolute;top:12px;left:12px;padding:6px 10px;background:rgba(18,26,34,0.75);backdrop-filter:blur(12px);color:#fff;font-size:11px;font-weight:500;border-radius:8px;border:1px solid rgba(255,255,255,0.12);">S</div>
++               <div style="padding:12px;">
++                 <div style="font-size:11px;color:#6A7683;letter-spacing:0.5px;">ARITZIA</div>
++                 <div style="font-size:13px;color:#fff;margin-top:4px;">Contour Knit Top</div>
++               </div>
++             </div>
++             
++             <!-- Rouje Dress -->
++             <div style="position:relative;border-radius:16px;overflow:hidden;background:#232A32;border:1px solid rgba(255,255,255,0.04);">
++               <img src="https://www.rouje.com/media/catalog/product/g/a/gabin_dress_ecru_flowers_1.jpg?width=750" style="width:100%;height:220px;object-fit:cover;">
++               <div style="position:absolute;top:12px;left:12px;padding:6px 10px;background:rgba(18,26,34,0.75);backdrop-filter:blur(12px);color:#fff;font-size:11px;font-weight:500;border-radius:8px;border:1px solid rgba(255,255,255,0.12);">36</div>
++               <div style="padding:12px;">
++                 <div style="font-size:11px;color:#6A7683;letter-spacing:0.5px;">ROUJE</div>
++                 <div style="font-size:13px;color:#fff;margin-top:4px;">Gabin Dress</div>
++                 <div style="font-size:11px;color:#FF6B5A;margin-top:4px;">Runs large</div>
++               </div>
++             </div>
++             
++             <!-- Dôen Top -->
++             <div style="position:relative;border-radius:16px;overflow:hidden;background:#232A32;border:1px solid rgba(255,255,255,0.04);">
++               <img src="https://shopdoen.com/cdn/shop/products/DOEN_SP24_Ecom_Clea_Lillet_001_1400x.jpg?v=1707426923" style="width:100%;height:220px;object-fit:cover;">
++               <div style="position:absolute;top:12px;left:12px;padding:6px 10px;background:rgba(18,26,34,0.75);backdrop-filter:blur(12px);color:#fff;font-size:11px;font-weight:500;border-radius:8px;border:1px solid rgba(255,255,255,0.12);">S</div>
++               <div style="padding:12px;">
++                 <div style="font-size:11px;color:#6A7683;letter-spacing:0.5px;">DÔEN</div>
++                 <div style="font-size:13px;color:#fff;margin-top:4px;">Clea Top</div>
++               </div>
++             </div>
++             
++             <!-- Sézane Cardigan -->
++             <div style="position:relative;border-radius:16px;overflow:hidden;background:#232A32;border:1px solid rgba(255,255,255,0.04);">
++               <img src="https://media.sezane.com/image/upload/c_fill,d_placeholder_dark.png,fl_progressive:semi,h_816,q_auto:eco,w_582/v1/website/Josephine/2024/02_Spring/1_launches/launch4_hiver/christie_cardigan_ecru_1.jpg" style="width:100%;height:220px;object-fit:cover;">
++               <div style="position:absolute;top:12px;left:12px;padding:6px 10px;background:rgba(18,26,34,0.75);backdrop-filter:blur(12px);color:#fff;font-size:11px;font-weight:500;border-radius:8px;border:1px solid rgba(255,255,255,0.12);">S</div>
++               <div style="padding:12px;">
++                 <div style="font-size:11px;color:#6A7683;letter-spacing:0.5px;">SÉZANE</div>
++                 <div style="font-size:13px;color:#fff;margin-top:4px;">Christie Cardigan</div>
++               </div>
++             </div>
++             
++             <!-- Realisation Skirt -->
++             <div style="position:relative;border-radius:16px;overflow:hidden;background:#232A32;border:1px solid rgba(255,255,255,0.04);">
++               <img src="https://cdn.shopify.com/s/files/1/0889/6810/products/naomi-skirt-bordeaux-fleur-1.jpg?v=1677653431" style="width:100%;height:220px;object-fit:cover;">
++               <div style="position:absolute;top:12px;left:12px;padding:6px 10px;background:rgba(18,26,34,0.75);backdrop-filter:blur(12px);color:#fff;font-size:11px;font-weight:500;border-radius:8px;border:1px solid rgba(255,255,255,0.12);">S</div>
++               <div style="padding:12px;">
++                 <div style="font-size:11px;color:#6A7683;letter-spacing:0.5px;">REALISATION PAR</div>
++                 <div style="font-size:13px;color:#fff;margin-top:4px;">Naomi Skirt</div>
++                 <div style="font-size:11px;color:#FF6B5A;margin-top:4px;">Runs small</div>
++               </div>
++             </div>
++           </div>
++         </div>
++       </div>
+        </div><!-- End app-wrapper -->
+  
+```
+
+</details>
+
+---
+
+<think><details><summary>Thought Process</summary>Now I need to add the JavaScript functions to handle navigation to the match closet screen. Let me add the showMatchCloset() and backToFeed() functions to the script section.</details></think>
+
+---
+
+Now let me add the JavaScript to handle navigation between screens:
+
+---
+
+<details><summary>Edit file: /Users/seandavey/Downloads/freestyle/freestyle-app.html</summary>
+
+undefined
+
+**Chunk 1**
+Lines added: 2, lines removed: 1
+
+```diff
+@@ -757,5 +757,6 @@
+  const screens = {
+    feed: document.getElementById('feedScreen'),
+-   closet: document.getElementById('closetScreen')
++   closet: document.getElementById('closetScreen'),
++   matchCloset: document.getElementById('matchClosetScreen')
+  };
+  
+```
+
+</details>
+
+---
+
+<think><details><summary>Thought Process</summary>Now I need to add the showMatchCloset() and backToFeed() functions. Let me add them after the existing navigation code.</details></think>
+
+---
+
+<details><summary>Edit file: /Users/seandavey/Downloads/freestyle/freestyle-app.html</summary>
+
+undefined
+
+**Chunk 1**
+Lines added: 21, lines removed: undefined
+
+```diff
+@@ -782,4 +782,25 @@
+    });
+  });
++ 
++ // Navigate to match closet
++ function showMatchCloset() {
++   // Hide all screens
++   Object.values(screens).forEach(s => s.classList.remove('active'));
++   // Show match closet
++   screens.matchCloset.classList.add('active');
++   // Remove active tab (we're in a sub-screen)
++   tabs.forEach(t => t.classList.remove('active'));
++ }
++ 
++ // Navigate back to feed
++ function backToFeed() {
++   // Hide all screens
++   Object.values(screens).forEach(s => s.classList.remove('active'));
++   // Show feed
++   screens.feed.classList.add('active');
++   // Activate feed tab
++   tabs.forEach(t => t.classList.remove('active'));
++   document.querySelector('.tab[data-screen="feed"]').classList.add('active');
++ }
+  
+  // Card 1 expansion (Fleur dress with Emma)
+```
+
+</details>
+
+---
+
+<think><details><summary>Thought Process</summary>Perfect! I've implemented the full feature. Let me commit these changes with a descriptive commit message.</details></think>
+
+---
+
+Perfect! I've implemented the complete match discovery feature. Here's what's been added:
+
+## **What's Implemented:**
+
+### **1. Side-by-Side Comparison (in expanded card):**
+- Clean comparison table showing You vs Match
+- Visual indicators: ✓ for matches, ↓1" for differences
+- Shows height, bust, waist, hips
+- Uses design tokens: `#EFF3F6` background, `#00A3A3` for matches
+
+### **2. "View match's closet" Button:**
+- Primary CTA with `#00A3A3` background
+- Full width for easy tapping
+- Clear arrow indicating navigation
+
+### **3. Match's Closet Screen:**
+- **Header:** Back button + "Match's Closet" title
+- **Stats Bar:** Shows measurements (5'6" • 34/26/36), 98% match, item/brand counts
+- **Items Grid:** 2-column layout showing actual items with sizes
+- **Visual details:** 
+  - Size badges on each item
+  - Brand names and item names
+  - Special notes like "Runs large" or "Runs small" in coral color
+  - Uses dark theme consistent with app
+
+### **4. Navigation:**
+- `showMatchCloset()` function navigates from feed to match closet
+- `backToFeed()` returns to feed with proper tab state
+- Smooth screen transitions
+
+The implementation follows our design tokens and creates a clear path for Lily to understand her match's measurements and see exactly what sizes work for someone with nearly identical measurements. Want to test it out or make any adjustments?
+
+---
+
+```bash
+git add -A && git commit -m "Add match discovery feature with side-by-side comparison and closet view
+
+- Added side-by-side measurement comparison in expanded card
+- Shows You vs Match with visual indicators for matches/differences
+- Implemented 'View match's closet' button leading to new screen
+- Created Match Closet screen showing:
+  - Match stats (5'6\" • 34/26/36 • 98% match)
+  - Item/brand counts and typical size
+  - Grid of actual items with sizes and fit notes
+- Added navigation functions for smooth screen transitions
+- Uses design system tokens for consistent styling
+- Privacy-conscious: shows as 'Match' not personal name initially"
+```
+
+```
+seandavey@MacBook-Air-3 freestyle % >....                                                                   
+  - Grid of actual items with sizes and fit notes
+- Added navigation functions for smooth screen transitions
+  - Grid of actual items with sizes and fit notesg
+- Privacy-conscious: shows as 'Match' not personal name initially"
+[master b329318] Add match discovery feature with side-by-side comparison and closet view
+ 2 files changed, 940 insertions(+), 21 deletions(-)
+seandavey@MacBook-Air-3 freestyle %
+```
+
+---
+
+<think><details><summary>Thought Process</summary>Great! The commit was successful. The match discovery feature has been fully implemented and committed. The user can now:
+
+1. See a side-by-side comparison in the expanded card
+2. Click to view the match's closet
+3. Browse actual items with sizes from their body double
+
+The implementation follows the design system tokens and maintains privacy by showing "Match" instead of a personal name initially.</details></think>
+
+---
+
+Excellent! The match discovery feature is now fully implemented and committed. 
+
+## **Summary of What We Built:**
+
+1. **Simplified UI** - Cleaned up text wrapping with "Match owns this" badge and "Size S • 98% match" button
+
+2. **Side-by-side comparison** - Clear visual showing where measurements match/differ without sensitive weight data
+
+3. **Direct closet access** - Skip intermediate screens, go straight to valuable size data
+
+4. **Match's Closet screen** - Shows actual items with sizes, making it immediately useful ("Oh, she wears 36 in Ganni!")
+
+5. **Privacy-first approach** - Shows as "Match" not "Emma" initially, building trust gradually
+
+The flow now provides real value: Lily can see someone with her exact measurements wears specific sizes in specific brands, removing the guesswork from online shopping. The implementation uses our design tokens for consistency and maintains the dark theme aesthetic throughout.
+
+Ready to test it in your browser!
+
+---
+
+_**User (2025-09-05 21:15-0400)**_
+
+i think doing the SG + PP comparison together is cognitive overload...when we have a PP match lets just show that info...the user can see they share a size with this person, here is how they compare to the other person in terms of physical details, and here (photo) is another dress/size that person wears that the user might also like. the SG comparison can be a fallback
+
+---
+
+_**Assistant**_
+
+
+
+---
+
+<think><details><summary>Thought Process</summary>The user is making a great point about cognitive overload. They're suggesting that when we have a peer-to-peer (PP) match, we should:
+1. ONLY show the PP information (not mix it with size guide comparisons)
+2. Show how they compare physically to the match
+3. Show the match's actual items/sizes
+4. Use size guide (SG) comparisons only as a fallback when there's no PP match
+
+So for the Anthropologie Fleur dress (Card 1), which Emma owns, we should:
+- Remove the size guide style measurements comparison (the "Bust — Looser (35-36" vs 34")" stuff)
+- Keep the match comparison (the side-by-side You vs Match)
+- Keep the match feedback
+- Keep the link to view match's closet
+
+This will be much cleaner and less overwhelming. The card should focus on: "Your match wears S in this dress, here's how you compare physically, here's what they said about fit, and here's their closet to see more."</details></think>
+
+---
+
+You're absolutely right! When we have a peer match, that's the valuable signal - no need to muddy it with size guide comparisons. Let me simplify the PP card to focus purely on the match relationship:
+
+---
+
 
 
 ---
