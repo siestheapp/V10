@@ -196,24 +196,24 @@ body{font-family:Inter,system-ui,-apple-system,"Segoe UI",Roboto,Helvetica,Arial
 .micro{color:var(--ink-300);font-size:14px;font-weight:500;margin-top:6px}
 
 /* Expanded details */
-.details{background:var(--ink-700);border:1px solid var(--ink-500);border-radius:var(--radius-card);padding:var(--space-12) var(--space-16) var(--space-8);transition:max-height .35s ease,opacity .25s ease;box-shadow:0 2px 8px rgba(0,0,0,0.1), inset 0 1px 0 rgba(255,255,255,0.05)}
-.item{padding:var(--space-8) 0}
+.details{background:var(--ink-700);border:1px solid var(--ink-500);border-radius:var(--radius-card);padding:var(--space-8) var(--space-16) var(--space-6);transition:max-height .35s ease,opacity .25s ease;box-shadow:0 2px 8px rgba(0,0,0,0.1), inset 0 1px 0 rgba(255,255,255,0.05)}
+.item{padding:var(--space-6) 0}
 .item+ .item{border-top:1px solid var(--ink-500)}
 .measure{font-size:14px;line-height:1.55;color:#fff}
 .measure strong{font-size:15px;font-weight:700;color:#fff}
 .measure .muted{color:var(--ink-300);font-weight:400}
 
 /* Spec rows with delta badges (expanded state) */
-.spec{display:flex;align-items:center;justify-content:space-between;padding:var(--space-12) 0}
+.spec{display:flex;align-items:center;justify-content:space-between;padding:var(--space-8) 0}
 .badge{display:inline-flex;align-items:center;justify-content:center;min-width:68px;font-size:14px;line-height:1;padding:var(--space-8) var(--space-12);border-radius:var(--radius-pill);background:var(--petrol-100);color:var(--petrol-600);font-weight:700;border:1px solid var(--petrol-400)}
-.details .divider{height:1px;background:var(--ink-500);margin:6px 0;border-radius:1px}
+.details .divider{height:1px;background:var(--ink-500);margin:4px 0;border-radius:1px}
 
 /* Accent highlight for key references (subtle teal) */
 .accent{color:var(--petrol-600);font-weight:600}
 
 /* Inline advisory note (enhanced visibility) */
-.details .advice-inline{margin:6px 0 2px;font-size:15px;line-height:1.55;color:var(--ink-300);font-weight:500}
-.advice-next{margin-top:14px}
+.details .advice-inline{margin:4px 0 2px;font-size:15px;line-height:1.4;color:var(--ink-300);font-weight:500}
+.advice-next{margin-top:10px}
 .details .advice-inline b{color:var(--petrol-600)}
 
 /* Feed vs detail states */
@@ -434,9 +434,9 @@ body{font-family:Inter,system-ui,-apple-system,"Segoe UI",Roboto,Helvetica,Arial
                 </div>
                 
                 <!-- Match Feedback -->
-                <div style="margin-top:16px;padding:12px 14px;background:rgba(0,163,163,0.08);border-radius:12px;border:1px solid rgba(0,163,163,0.15);display:flex;align-items:center;gap:12px;">
-                  <div style="width:32px;height:32px;background:#00A3A3;border-radius:50%;display:flex;align-items:center;justify-content:center;flex-shrink:0;">
-                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="3">
+                <div style="margin-top:10px;padding:10px 12px;background:rgba(0,163,163,0.08);border-radius:12px;border:1px solid rgba(0,163,163,0.15);display:flex;align-items:center;gap:10px;">
+                  <div style="width:28px;height:28px;background:#00A3A3;border-radius:50%;display:flex;align-items:center;justify-content:center;flex-shrink:0;">
+                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="3">
                       <path d="M7 13l3 3 7-7"/>
                     </svg>
                   </div>
@@ -446,7 +446,7 @@ body{font-family:Inter,system-ui,-apple-system,"Segoe UI",Roboto,Helvetica,Arial
                 </div>
                 
                 <!-- View Closet CTA -->
-                <button onclick="showMatchCloset()" style="margin-top:20px;width:100%;padding:14px 24px;background:linear-gradient(180deg, rgba(255,255,255,.08) 0%, rgba(255,255,255,0) 8%), #00A3A3;color:white;border:none;border-radius:24px;font-weight:700;font-size:15px;cursor:pointer;transition:all 0.2s ease;box-shadow:0 6px 20px rgba(0,163,163,0.3);">
+                <button onclick="showMatchCloset()" style="margin-top:12px;width:100%;padding:12px 20px;background:linear-gradient(180deg, rgba(255,255,255,.08) 0%, rgba(255,255,255,0) 8%), #00A3A3;color:white;border:none;border-radius:24px;font-weight:700;font-size:15px;cursor:pointer;transition:all 0.2s ease;box-shadow:0 6px 20px rgba(0,163,163,0.3);">
                   View match's full closet →
                 </button>
               </div>

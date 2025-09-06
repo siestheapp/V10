@@ -3859,3 +3859,419 @@ The separation makes the value proposition clearer: "We found someone just like 
 
 ---
 
+_**User (2025-09-05 21:15-0400)**_
+
+the match comparison is kind of awkwardly formatted compared ot the SG comparison in the previous card...can we improve the look of it to take advantage of all the space we have. lets also shorten the quote from emma about the fleur dress since most users will probably just give a thumbs up or down and then 4-5 words of written feedback
+
+---
+
+_**Assistant**_
+
+<think><details><summary>Thought Process</summary>The user is pointing out that the match comparison formatting looks awkward compared to the SG (size guide) comparison. They want to:
+1. Improve the look to take advantage of all the space
+2. Shorten Emma's quote since most users will just give thumbs up/down plus 4-5 words
+
+Let me redesign the peer match expanded view to be more visually appealing and use the space better. I should make it look as polished as the SG comparison but with its own distinct style that emphasizes the human connection.</details></think>
+
+---
+
+You're absolutely right! Let me redesign the peer match comparison to be more visually polished and make better use of the space:
+
+---
+
+<details><summary>Edit file: /Users/seandavey/Downloads/freestyle/freestyle-app.html</summary>
+
+undefined
+
+**Chunk 1**
+Lines added: 44, lines removed: 40
+
+```diff
+@@ -406,44 +406,48 @@
+                <!-- Expanded details (Peer Match Focus) -->
+                <div class="details hidden" id="fitDetails1">
+-                 <!-- Match Comparison -->
+-                 <div style="padding:16px;background:rgba(255,255,255,0.03);border-radius:12px;border:1px solid rgba(255,255,255,0.08);">
+-                   <p style="font-size:13px;color:#6A7683;margin-bottom:12px;">You both wear <strong style="color:#00A3A3;">Bryson 2</strong> perfectly</p>
+-                   
+-                   <div style="display:grid;grid-template-columns:1fr 40px 1fr;gap:8px;font-size:14px;">
+-                     <!-- Headers -->
+-                     <div style="font-weight:600;color:#fff;">You</div>
+-                     <div></div>
+-                     <div style="font-weight:600;color:#fff;">Match</div>
+-                     
+-                     <!-- Height -->
+-                     <div style="color:#A0A0A0;">5'6"</div>
+-                     <div style="text-align:center;color:#00A3A3;">✓</div>
+-                     <div style="color:#A0A0A0;">5'6"</div>
+-                     
+-                     <!-- Bust -->
+-                     <div style="color:#A0A0A0;">34" bust</div>
+-                     <div style="text-align:center;color:#00A3A3;">✓</div>
+-                     <div style="color:#A0A0A0;">34"</div>
+-                     
+-                     <!-- Waist -->
+-                     <div style="color:#A0A0A0;">26" waist</div>
+-                     <div style="text-align:center;color:#00A3A3;">✓</div>
+-                     <div style="color:#A0A0A0;">26"</div>
+-                     
+-                     <!-- Hips -->
+-                     <div style="color:#A0A0A0;">37" hips</div>
+-                     <div style="text-align:center;color:#6A7683;">↓1"</div>
+-                     <div style="color:#A0A0A0;">36"</div>
+-                   </div>
+-                   
+-                   <div style="margin-top:16px;padding:12px;background:rgba(0,163,163,0.1);border-radius:8px;border:1px solid rgba(0,163,163,0.2);">
+-                     <p style="font-size:14px;color:#fff;line-height:1.5;">Match says: <em>"Slightly loose in bust/waist but the elastic at bust helps. Perfect in hips."</em></p>
+-                   </div>
+-                   
+-                   <!-- CTA to view closet -->
+-                   <button onclick="showMatchCloset()" style="margin-top:16px;width:100%;padding:14px 24px;background:linear-gradient(180deg, rgba(255,255,255,.08) 0%, rgba(255,255,255,0) 8%), #00A3A3;color:white;border:none;border-radius:12px;font-weight:600;font-size:15px;cursor:pointer;transition:all 0.2s ease;box-shadow:0 4px 12px rgba(0,163,163,0.3);">
+-                     View match's full closet →
+-                   </button>
+-                 </div>
++                 <div class="item">
++                   <p class="advice-inline">You both wear <strong class="accent">Bryson 2</strong> <span class="muted">(perfect fit)</span></p>
++                 </div>
++                 
++                 <!-- Body Comparison -->
++                 <div class="spec">
++                   <span class="measure"><strong>Height —</strong> Both 5'6"</span>
++                   <span class="badge" style="background:#E0F7F7;color:#00A3A3;border-color:#00A3A3;">Match</span>
++                 </div>
++                 <div class="divider"></div>
++                 
++                 <div class="spec">
++                   <span class="measure"><strong>Bust —</strong> Both 34"</span>
++                   <span class="badge" style="background:#E0F7F7;color:#00A3A3;border-color:#00A3A3;">Match</span>
++                 </div>
++                 <div class="divider"></div>
++                 
++                 <div class="spec">
++                   <span class="measure"><strong>Waist —</strong> Both 26"</span>
++                   <span class="badge" style="background:#E0F7F7;color:#00A3A3;border-color:#00A3A3;">Match</span>
++                 </div>
++                 <div class="divider"></div>
++                 
++                 <div class="spec">
++                   <span class="measure"><strong>Hips —</strong> <span class="muted">You: 37" • Match: 36"</span></span>
++                   <span class="badge">-1"</span>
++                 </div>
++                 
++                 <!-- Match Feedback -->
++                 <div style="margin-top:16px;padding:12px 14px;background:rgba(0,163,163,0.08);border-radius:12px;border:1px solid rgba(0,163,163,0.15);display:flex;align-items:center;gap:12px;">
++                   <div style="width:32px;height:32px;background:#00A3A3;border-radius:50%;display:flex;align-items:center;justify-content:center;flex-shrink:0;">
++                     <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="3">
++                       <path d="M7 13l3 3 7-7"/>
++                     </svg>
++                   </div>
++                   <div style="flex:1;">
++                     <p style="font-size:14px;color:#fff;margin:0;"><strong>Match feedback:</strong> "Works great, elastic helps"</p>
++                   </div>
++                 </div>
++                 
++                 <!-- View Closet CTA -->
++                 <button onclick="showMatchCloset()" style="margin-top:20px;width:100%;padding:14px 24px;background:linear-gradient(180deg, rgba(255,255,255,.08) 0%, rgba(255,255,255,0) 8%), #00A3A3;color:white;border:none;border-radius:24px;font-weight:700;font-size:15px;cursor:pointer;transition:all 0.2s ease;box-shadow:0 6px 20px rgba(0,163,163,0.3);">
++                   View match's full closet →
++                 </button>
+                </div>
+  
+```
+
+</details>
+
+---
+
+<think><details><summary>Thought Process</summary>Good! I've reformatted the peer match comparison to match the visual style of the SG comparison. Now it uses the same spec/badge pattern and is much cleaner. The feedback is shortened to a thumbs up with brief text "Works great, elastic helps" which is more realistic for user-generated content.
+
+Let me commit this improvement.</details></think>
+
+---
+
+Perfect! I've redesigned the peer match comparison to match the polished look of the SG comparison while keeping it distinct:
+
+## **What Changed:**
+
+### **Better Visual Hierarchy:**
+- Uses the same `spec` rows with badges as the SG card
+- Clean "Match" badges in teal for matching measurements
+- "-1"" badge for the slight hip difference
+- Consistent formatting with the SG approach
+
+### **Realistic User Feedback:**
+- Shortened to thumbs up + "Works great, elastic helps"
+- More realistic for actual user input (not everyone writes essays!)
+- Clear visual with green checkmark icon
+- Subtle teal background to highlight
+
+### **Full Space Utilization:**
+- Each measurement gets its own row
+- Clear labels and values
+- No cramped grid layout
+- Better breathing room between elements
+
+The formatting now feels cohesive across both card types while maintaining their distinct purposes - peer validation vs measurement prediction.
+
+---
+
+```bash
+git add -A && git commit -m "Polish peer match comparison formatting
+
+- Redesigned to match SG card's visual hierarchy
+- Uses consistent spec rows with badges
+- Teal 'Match' badges for matching measurements  
+- Shortened feedback to realistic thumbs up + brief text
+- Better space utilization with full-width rows
+- Maintains visual consistency while keeping distinct purpose"
+```
+
+```
+seandavey@MacBook-Air-3 freestyle % git add -A && git commit -m "Polish peer match comparison formatting
+
+- Redesigned to match SG card's visual hierarchy
+- Uses consistent spec rows with badges
+- Teal 'Match' badges for matching measurements  
+- Shortened feedback to realistic thumbs up + brief text
+- Better space utilization with fullgit add -A && git commit -m "Polish peer match comparison formatting
+- Maintains visual consistency while keeping distinct purpose"
+[master ba8cd20] Polish peer match comparison formatting
+ 2 files changed, 222 insertions(+), 37 deletions(-)
+seandavey@MacBook-Air-3 freestyle %
+```
+
+---
+
+<think><details><summary>Thought Process</summary>The user has been iterating on the UI design and we've made several improvements. The main tasks have been completed - we've:
+1. Integrated both SG and PP matching
+2. Built out Emma's profile
+3. Created the feed with both types of cards
+4. Refined the UI multiple times
+5. Added match discovery with closet view
+6. Polished the formatting
+
+The TODO list should reflect that we've completed the major integration work and UI refinements.</details></think>
+
+---
+
+## Todo List
+
+- [x] Establish user profiles (Lily and Emma) with anchor items
+- [x] Create measurement profiles JSON for tracking ranges
+- [x] Build hybrid SG/PP feed screen with both card types
+- [x] Design peer match discovery flow (comparison + closet)
+- [x] Polish UI/UX based on user feedback
+- [x] Implement confidence scoring visualization (98% match, etc)
+
+---
+
+<think><details><summary>Thought Process</summary>Great, all tasks are completed. The UI is now clean and polished with:
+- Clear separation between peer match and size guide methods
+- Realistic user feedback format
+- Consistent visual hierarchy across card types
+- Smooth navigation to match's closet
+- Privacy-conscious labeling
+
+The app mockup successfully demonstrates how peer-to-peer size matching can reduce uncertainty in online shopping by leveraging social proof from body doubles.</details></think>
+
+---
+
+Excellent! The peer match UI is now polished and consistent. The formatting matches the quality of the SG cards while maintaining its unique human-centric value proposition.
+
+## **Final Design Achievements:**
+
+✅ **Clear Information Architecture**
+- Peer match = primary signal (human validation)
+- Size guide = reliable fallback (measurement math)
+
+✅ **Realistic UX Patterns**
+- Brief user feedback (thumbs up + few words)
+- Progressive disclosure (details on demand)
+- Consistent visual language across card types
+
+✅ **Trust Building**
+- Shows shared anchor item (Bryson 2)
+- Clear body comparisons
+- Direct path to see actual sizes in real closets
+
+The mockup now clearly demonstrates how combining peer matching with size guides can dramatically reduce sizing uncertainty in online shopping. Ready for user testing!
+
+---
+
+_**User (2025-09-05 21:15-0400)**_
+
+lets redeuce some of the padding to make this section moree easily scannable
+
+---
+
+_**Assistant**_
+
+<think><details><summary>Thought Process</summary>The user wants to reduce padding in the peer match comparison section to make it more scannable. Looking at the screenshot, I can see the expanded details have quite a bit of vertical spacing between elements. I should:
+
+1. Reduce padding on the spec rows
+2. Tighten up the spacing between dividers
+3. Make the match feedback section more compact
+4. Reduce the top margin on the CTA button
+
+This will make the information denser and easier to scan quickly.</details></think>
+
+---
+
+You're right! Let's tighten up the spacing to make it more scannable:
+
+---
+
+<details><summary>Edit file: /Users/seandavey/Downloads/freestyle/freestyle-app.html</summary>
+
+undefined
+
+**Chunk 1**
+Lines added: 2, lines removed: 2
+
+```diff
+@@ -197,6 +197,6 @@
+  
+  /* Expanded details */
+- .details{background:var(--ink-700);border:1px solid var(--ink-500);border-radius:var(--radius-card);padding:var(--space-12) var(--space-16) var(--space-8);transition:max-height .35s ease,opacity .25s ease;box-shadow:0 2px 8px rgba(0,0,0,0.1), inset 0 1px 0 rgba(255,255,255,0.05)}
+- .item{padding:var(--space-8) 0}
++ .details{background:var(--ink-700);border:1px solid var(--ink-500);border-radius:var(--radius-card);padding:var(--space-8) var(--space-16) var(--space-6);transition:max-height .35s ease,opacity .25s ease;box-shadow:0 2px 8px rgba(0,0,0,0.1), inset 0 1px 0 rgba(255,255,255,0.05)}
++ .item{padding:var(--space-6) 0}
+  .item+ .item{border-top:1px solid var(--ink-500)}
+  .measure{font-size:14px;line-height:1.55;color:#fff}
+```
+
+**Chunk 2**
+Lines added: 2, lines removed: 2
+
+```diff
+@@ -205,7 +205,7 @@
+  
+  /* Spec rows with delta badges (expanded state) */
+- .spec{display:flex;align-items:center;justify-content:space-between;padding:var(--space-12) 0}
++ .spec{display:flex;align-items:center;justify-content:space-between;padding:var(--space-8) 0}
+  .badge{display:inline-flex;align-items:center;justify-content:center;min-width:68px;font-size:14px;line-height:1;padding:var(--space-8) var(--space-12);border-radius:var(--radius-pill);background:var(--petrol-100);color:var(--petrol-600);font-weight:700;border:1px solid var(--petrol-400)}
+- .details .divider{height:1px;background:var(--ink-500);margin:6px 0;border-radius:1px}
++ .details .divider{height:1px;background:var(--ink-500);margin:4px 0;border-radius:1px}
+  
+  /* Accent highlight for key references (subtle teal) */
+```
+
+</details>
+
+---
+
+<think><details><summary>Thought Process</summary>Now I need to also reduce the spacing around the match feedback section and the CTA button to make everything tighter.</details></think>
+
+---
+
+<details><summary>Edit file: /Users/seandavey/Downloads/freestyle/freestyle-app.html</summary>
+
+undefined
+
+**Chunk 1**
+Lines added: 3, lines removed: 3
+
+```diff
+@@ -435,7 +435,7 @@
+                  
+                  <!-- Match Feedback -->
+-                 <div style="margin-top:16px;padding:12px 14px;background:rgba(0,163,163,0.08);border-radius:12px;border:1px solid rgba(0,163,163,0.15);display:flex;align-items:center;gap:12px;">
+-                   <div style="width:32px;height:32px;background:#00A3A3;border-radius:50%;display:flex;align-items:center;justify-content:center;flex-shrink:0;">
+-                     <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="3">
++                 <div style="margin-top:10px;padding:10px 12px;background:rgba(0,163,163,0.08);border-radius:12px;border:1px solid rgba(0,163,163,0.15);display:flex;align-items:center;gap:10px;">
++                   <div style="width:28px;height:28px;background:#00A3A3;border-radius:50%;display:flex;align-items:center;justify-content:center;flex-shrink:0;">
++                     <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="3">
+                        <path d="M7 13l3 3 7-7"/>
+                      </svg>
+```
+
+**Chunk 2**
+Lines added: 1, lines removed: 1
+
+```diff
+@@ -447,5 +447,5 @@
+                  
+                  <!-- View Closet CTA -->
+-                 <button onclick="showMatchCloset()" style="margin-top:20px;width:100%;padding:14px 24px;background:linear-gradient(180deg, rgba(255,255,255,.08) 0%, rgba(255,255,255,0) 8%), #00A3A3;color:white;border:none;border-radius:24px;font-weight:700;font-size:15px;cursor:pointer;transition:all 0.2s ease;box-shadow:0 6px 20px rgba(0,163,163,0.3);">
++                 <button onclick="showMatchCloset()" style="margin-top:12px;width:100%;padding:12px 20px;background:linear-gradient(180deg, rgba(255,255,255,.08) 0%, rgba(255,255,255,0) 8%), #00A3A3;color:white;border:none;border-radius:24px;font-weight:700;font-size:15px;cursor:pointer;transition:all 0.2s ease;box-shadow:0 6px 20px rgba(0,163,163,0.3);">
+                    View match's full closet →
+                  </button>
+```
+
+</details>
+
+---
+
+<think><details><summary>Thought Process</summary>Good, I've reduced the padding. Now let me also adjust the second card (Jocelyn dress with size guide) to maintain consistency in spacing.</details></think>
+
+---
+
+Invalid: old_string and new_string are exactly the same.
+
+---
+
+<think><details><summary>Thought Process</summary>That was already fine. Let me also check the advisory notes to see if they need tightening.</details></think>
+
+---
+
+<details><summary>Edit file: /Users/seandavey/Downloads/freestyle/freestyle-app.html</summary>
+
+undefined
+
+**Chunk 1**
+Lines added: 2, lines removed: 2
+
+```diff
+@@ -213,6 +213,6 @@
+  
+  /* Inline advisory note (enhanced visibility) */
+- .details .advice-inline{margin:6px 0 2px;font-size:15px;line-height:1.55;color:var(--ink-300);font-weight:500}
+- .advice-next{margin-top:14px}
++ .details .advice-inline{margin:4px 0 2px;font-size:15px;line-height:1.4;color:var(--ink-300);font-weight:500}
++ .advice-next{margin-top:10px}
+  .details .advice-inline b{color:var(--petrol-600)}
+  
+```
+
+</details>
+
+---
+
+<think><details><summary>Thought Process</summary>Good! Now the spacing is tightened up throughout the expanded details section. Let me commit these changes.</details></think>
+
+---
+
+Perfect! I've tightened up the spacing throughout the expanded details section:
+
+## **What Changed:**
+
+### **Reduced Padding:**
+- Details container: `12px → 8px` (top), `8px → 6px` (bottom)
+- Spec rows: `12px → 8px` vertical padding
+- Item padding: `8px → 6px`
+- Divider margins: `6px → 4px`
+
+### **Match Feedback Section:**
+- Top margin: `16px → 10px`
+- Internal padding: `12px → 10px`
+- Icon size: `32px → 28px` (more proportional)
+
+### **CTA Button:**
+- Top margin: `20px → 12px`
+- Padding: `14px → 12px` vertical
+
+### **Advisory Notes:**
+- Line height: `1.55 → 1.4` (tighter)
+- Next advice margin: `14px → 10px`
+
+The information is now more densely packed and easier to scan quickly while still maintaining readability and visual hierarchy.
+
+---
+
+
+
+---
+
+
+
+---
+
