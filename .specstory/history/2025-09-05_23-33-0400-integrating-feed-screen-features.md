@@ -2575,6 +2575,776 @@ Lines added: 6, lines removed: 3
 
 ---
 
+<details><summary>Edit file: /Users/seandavey/Downloads/freestyle/freestyle-app.html</summary>
+
+undefined
+
+**Chunk 1**
+Lines added: 3, lines removed: 3
+
+```diff
+@@ -384,9 +384,9 @@
+                  <span class="label">
+                    <span style="display:flex;align-items:center;gap:6px;">
+-                     <span style="width:20px;height:20px;background:#00A3A3;border-radius:50%;display:flex;align-items:center;justify-content:center;color:white;font-weight:600;font-size:10px;">E</span>
+-                     <span>Emma's Size: <strong>S</strong></span>
++                     <span style="width:20px;height:20px;background:#00A3A3;border-radius:50%;display:flex;align-items:center;justify-content:center;color:white;font-weight:600;font-size:10px;">✓</span>
++                     <span>Matched Size: <strong>S</strong></span>
+                    </span>
+                  </span>
+-                 <span class="match" id="match1" style="background:rgba(0,163,163,0.1);color:#00A3A3;border-color:#00A3A3;">98% match</span>
++                 <span class="match" id="match1" style="background:rgba(0,163,163,0.1);color:#00A3A3;border-color:#00A3A3;">98% body match</span>
+                </button>
+  
+```
+
+</details>
+
+---
+
+<think><details><summary>Thought Process</summary>Good! Now I need to update the feed summary section to be clearer about the connection. Let me update the peer match summary to better explain the relationship upfront.</details></think>
+
+---
+
+<details><summary>Edit file: /Users/seandavey/Downloads/freestyle/freestyle-app.html</summary>
+
+undefined
+
+**Chunk 1**
+Lines added: 2, lines removed: 2
+
+```diff
+@@ -432,8 +432,8 @@
+                <div class="tip-summary" id="fitSummary1">
+                  <div style="margin-bottom:8px;">
+-                   <strong style="color:#00A3A3;">✓ Peer Match:</strong> Emma owns this in S (you both wear Bryson 2)
++                   <strong style="color:#00A3A3;">✓ Size Match:</strong> Someone with your exact Bryson 2 measurements owns this in S
+                  </div>
+                  <div style="font-size:13px;color:rgba(0,0,0,0.7);">
+-                   <strong>Fit notes:</strong> Slightly loose in bust/waist, perfect in hips. Elastic bust helps.
++                   <strong>Their notes:</strong> Slightly loose in bust/waist, perfect in hips. Elastic bust helps.
+                  </div>
+                </div>
+```
+
+</details>
+
+---
+
+<think><details><summary>Thought Process</summary>Now I also need to update the expanded details section to be consistent with this depersonalized approach. Instead of "Based on your shared Bryson 2 with Emma", it should be more descriptive about the match without assuming familiarity.</details></think>
+
+---
+
+<details><summary>Edit file: /Users/seandavey/Downloads/freestyle/freestyle-app.html</summary>
+
+undefined
+
+**Chunk 1**
+Lines added: 1, lines removed: 1
+
+```diff
+@@ -410,5 +410,5 @@
+                <div class="details hidden" id="fitDetails1">
+                  <div class="item">
+-                   <p class="advice-inline">Based on your shared <strong class="accent">Bryson 2</strong> with Emma</p>
++                   <p class="advice-inline">Match based on shared <strong class="accent">Bryson 2</strong> measurements (34/26/37)</p>
+                  </div>
+                  <div class="spec">
+```
+
+</details>
+
+---
+
+<think><details><summary>Thought Process</summary>Now I need to update the Emma's notes in the expanded view to be consistent with the depersonalized approach - changing "Emma's notes" to something like "Match notes" or "Their notes".</details></think>
+
+---
+
+<details><summary>Edit file: /Users/seandavey/Downloads/freestyle/freestyle-app.html</summary>
+
+undefined
+
+**Chunk 1**
+Lines added: 1, lines removed: 1
+
+```diff
+@@ -426,5 +426,5 @@
+                    <span class="badge">≈</span>
+                  </div>
+-                 <p class="advice-inline advice-next">Emma's notes: "Slightly loose in bust/waist but the elastic at bust helps. Perfect in hips."</p>
++                 <p class="advice-inline advice-next">Match feedback: "Slightly loose in bust/waist but the elastic at bust helps. Perfect in hips."</p>
+                </div>
+  
+```
+
+</details>
+
+---
+
+<think><details><summary>Thought Process</summary>Perfect! Now let me create a commit for these Phase 1 changes that make the peer matching more descriptive and less assumptive about user relationships.</details></think>
+
+---
+
+```bash
+git add -A && git commit -m "Implement Phase 1 of peer match UX improvements
+
+- Changed 'Emma owns this' → 'Size match owns this'
+- Added subtitle 'Based on Bryson 2' to badge for context
+- Changed 'Emma's Size: S' → 'Matched Size: S'
+- Changed '98% match' → '98% body match' for clarity
+- Updated summary to explain the connection without assuming familiarity
+- Changed personal references to functional ones (e.g., 'Their notes' vs 'Emma's notes')
+- Made relationship clear upfront without requiring prior knowledge"
+```
+
+```
+<hip clear upfront without requiring prior knowledge"
+[master 1e8784d] Implement Phase 1 of peer match UX improvements
+ 2 files changed, 277 insertions(+), 10 deletions(-)
+seandavey@MacBook-Air-3 freestyle %
+```
+
+---
+
+<think><details><summary>Thought Process</summary>Perfect! I've successfully implemented Phase 1 of the UX improvements. Let me now create a summary of what was changed and why it's better.</details></think>
+
+---
+
+Perfect! I've implemented Phase 1 of the UX improvements. Here's what changed:
+
+## **Before → After:**
+
+### **Badge:**
+❌ "Emma owns this" → ✅ "Size match owns this"
+- Added subtitle: "Based on Bryson 2"
+- Changed icon from "E" to "✓"
+
+### **CTA Button:**
+❌ "Emma's Size: S" → ✅ "Matched Size: S"  
+❌ "98% match" → ✅ "98% body match"
+
+### **Summary:**
+❌ "Emma owns this in S (you both wear Bryson 2)"
+✅ "Someone with your exact Bryson 2 measurements owns this in S"
+
+### **Expanded Notes:**
+❌ "Emma's notes" → ✅ "Match feedback"
+❌ "Based on your shared Bryson 2 with Emma"
+✅ "Match based on shared Bryson 2 measurements (34/26/37)"
+
+## **Why This Works Better:**
+
+1. **No assumed intimacy** - Describes the relationship functionally
+2. **Context upfront** - "Based on Bryson 2" visible immediately
+3. **Clear value prop** - "body match" and "matched size" explain the benefit
+4. **Builds trust gradually** - Function first, familiarity later
+
+The user now understands WHY this matters without needing to know WHO Emma is. The connection is clear: same anchor item = same sizes.
+
+---
+
+_**User (2025-09-05 21:15-0400)**_
+
+how cna we improve from a ui perspective...seems like were running onto multiple lines in a few places, but again i want your perspective sicne youa re the ux/ui expert and i am just the founder floating my thoughts
+
+---
+
+_**Assistant**_
+
+<think><details><summary>Thought Process</summary>The user is right - looking at the mockup, there are several UI issues:
+
+1. The badge "Size match owns this" with "Based on Bryson 2" is running onto multiple lines
+2. The summary text at the bottom is also wrapping awkwardly
+3. The button text "Matched Size: S" with "98% body match" seems crowded
+
+As a UX/UI expert, I should address:
+- Visual hierarchy 
+- Information density
+- Scanability
+- Mobile constraints (limited width)
+
+Let me think about better solutions that are more concise and cleaner.</details></think>
+
+---
+
+You're absolutely right - the text wrapping is hurting readability and polish. Let me analyze this from a UI perspective:
+
+## **Current Problems:**
+
+1. **Badge is too wordy** - "Size match owns this" + subtitle is information overload
+2. **Button feels cramped** - Two concepts fighting for space
+3. **Summary is redundant** - Repeating what's already shown above
+
+## **My Professional Recommendations:**
+
+### **Option A: Extreme Simplification (My Pick)**
+```
+Badge: "Match owns this" (no subtitle)
+Button: "Size S • 98% match"
+Summary: Remove entirely (redundant)
+```
+
+### **Option B: Icon-Forward**
+```
+Badge: Just "✓ Match" 
+Button: "Matched: S" + "98%"
+Summary: "Why: Same Bryson 2"
+```
+
+### **Option C: Progressive Disclosure**
+```
+Badge: "98% match"
+Button: "Best Fit: S"
+Summary: Tap to see why (expandable)
+```
+
+## **My Recommendation as UX Expert:**
+
+**Simplify aggressively.** The current design is trying to explain too much upfront. Users scan, they don't read.
+
+Let me implement the cleanest version:
+
+---
+
+Tool search_replace not found. Try switching to Agent mode.
+
+---
+
+<think><details><summary>Thought Process</summary>I need to use the correct tool. Let me use the str_replace_editor tool or write the file.</details></think>
+
+---
+
+Tool str_replace_editor not found.
+
+---
+
+<think><details><summary>Thought Process</summary>Let me read the file first to get the exact content, then write the updated version.</details></think>
+
+---
+
+Read file: undefined
+
+---
+
+<think><details><summary>Thought Process</summary>I need to use a different approach. Let me use the write function to update the entire file with the cleaner UI improvements. I'll focus on:
+
+1. Simplifying the badge text
+2. Making the button more concise
+3. Removing or simplifying the summary
+
+Let me read more of the file to see the complete structure.</details></think>
+
+---
+
+Read file: undefined
+
+---
+
+<think><details><summary>Thought Process</summary>Let me create a cleaner version by rewriting key parts. I'll focus on making the UI more concise and avoiding text wrapping issues.</details></think>
+
+---
+
+_**User (2025-09-05 21:15-0400)**_
+
+switching to agent so you can omplement option A
+
+---
+
+_**Assistant**_
+
+<think><details><summary>Thought Process</summary>The user wants me to implement Option A which I recommended:
+- Badge: "Match owns this" (no subtitle)
+- Button: "Size S • 98% match"
+- Summary: Remove entirely (redundant)
+
+Let me make these changes to the freestyle-app.html file.</details></think>
+
+---
+
+I'll implement Option A for a cleaner, more streamlined UI. Let me make these changes:
+
+---
+
+<details><summary>Edit file: /Users/seandavey/Downloads/freestyle/freestyle-app.html</summary>
+
+undefined
+
+**Chunk 1**
+Lines added: 3, lines removed: 6
+
+```diff
+@@ -363,10 +363,7 @@
+                
+                <!-- Peer match indicator -->
+-               <div class="peer-badge" style="position:absolute;top:16px;left:16px;background:rgba(255,255,255,0.95);backdrop-filter:blur(10px);border-radius:12px;padding:8px 12px;display:flex;flex-direction:column;gap:4px;box-shadow:0 2px 8px rgba(0,0,0,0.1);">
+-                 <div style="display:flex;align-items:center;gap:8px;">
+-                   <span style="width:24px;height:24px;background:linear-gradient(135deg,#00A3A3,#16B5B5);border-radius:50%;display:flex;align-items:center;justify-content:center;color:white;font-weight:600;font-size:12px;">✓</span>
+-                   <span style="font-size:13px;font-weight:600;color:#0B0F14;">Size match owns this</span>
+-                 </div>
+-                 <span style="font-size:11px;color:#6A7683;padding-left:32px;">Based on Bryson 2</span>
++               <div class="peer-badge" style="position:absolute;top:16px;left:16px;background:rgba(255,255,255,0.95);backdrop-filter:blur(10px);border-radius:12px;padding:8px 12px;display:flex;align-items:center;gap:8px;box-shadow:0 2px 8px rgba(0,0,0,0.1);">
++                 <span style="width:24px;height:24px;background:linear-gradient(135deg,#00A3A3,#16B5B5);border-radius:50%;display:flex;align-items:center;justify-content:center;color:white;font-weight:600;font-size:12px;">✓</span>
++                 <span style="font-size:13px;font-weight:600;color:#0B0F14;">Match owns this</span>
+                </div>
+                
+```
+
+</details>
+
+---
+
+<think><details><summary>Thought Process</summary>Good, I've simplified the badge. Now I need to update the button to show "Size S • 98% match" and remove the redundant summary.</details></think>
+
+---
+
+<details><summary>Edit file: /Users/seandavey/Downloads/freestyle/freestyle-app.html</summary>
+
+undefined
+
+**Chunk 1**
+Lines added: 2, lines removed: 2
+
+```diff
+@@ -382,8 +382,8 @@
+                    <span style="display:flex;align-items:center;gap:6px;">
+                      <span style="width:20px;height:20px;background:#00A3A3;border-radius:50%;display:flex;align-items:center;justify-content:center;color:white;font-weight:600;font-size:10px;">✓</span>
+-                     <span>Matched Size: <strong>S</strong></span>
++                     <span>Size <strong>S</strong> • 98% match</span>
+                    </span>
+                  </span>
+-                 <span class="match" id="match1" style="background:rgba(0,163,163,0.1);color:#00A3A3;border-color:#00A3A3;">98% body match</span>
++                 <span class="match" id="match1" style="background:rgba(0,163,163,0.1);color:#00A3A3;border-color:#00A3A3;">View fit</span>
+                </button>
+  
+```
+
+</details>
+
+---
+
+<think><details><summary>Thought Process</summary>Now I need to remove the redundant summary (tip-summary) section since the information is already clear from the badge and button. Let me remove that entire section.</details></think>
+
+---
+
+<details><summary>Edit file: /Users/seandavey/Downloads/freestyle/freestyle-app.html</summary>
+
+undefined
+
+**Chunk 1**
+Lines added: undefined, lines removed: 10
+
+```diff
+@@ -426,14 +426,4 @@
+                </div>
+  
+-               <!-- Feed summary with peer data -->
+-               <div class="tip-summary" id="fitSummary1">
+-                 <div style="margin-bottom:8px;">
+-                   <strong style="color:#00A3A3;">✓ Size Match:</strong> Someone with your exact Bryson 2 measurements owns this in S
+-                 </div>
+-                 <div style="font-size:13px;color:rgba(0,0,0,0.7);">
+-                   <strong>Their notes:</strong> Slightly loose in bust/waist, perfect in hips. Elastic bust helps.
+-                 </div>
+-               </div>
+-               
+                <div class="shop-row">
+                  <a class="shop-link" href="https://www.anthropologie.com/shop/the-fleur-strapless-satin-maxi-slip-dress4?category=dresses&color=526&type=STANDARD&quantity=1" target="_blank" rel="noopener noreferrer">Shop S</a>
+```
+
+</details>
+
+---
+
+<think><details><summary>Thought Process</summary>Good! I've successfully implemented Option A for the first card (the Fleur dress with peer match). Now I should also update the "View fit" text to change to "Hide fit" when expanded. Let me update the JavaScript to handle this.</details></think>
+
+---
+
+<details><summary>Edit file: /Users/seandavey/Downloads/freestyle/freestyle-app.html</summary>
+
+undefined
+
+**Chunk 1**
+Lines added: 2, lines removed: 2
+
+```diff
+@@ -656,10 +656,10 @@
+        card1.classList.add('view-feed');
+        sizeCta1.setAttribute('aria-expanded', 'false');
+-       match1.textContent = '98% match';
++       match1.textContent = 'View fit';
+      } else {
+        card1.classList.remove('view-feed');
+        card1.classList.add('view-detail');
+        sizeCta1.setAttribute('aria-expanded', 'true');
+-       match1.textContent = 'Hide details';
++       match1.textContent = 'Hide fit';
+      }
+    });
+```
+
+</details>
+
+---
+
+<think><details><summary>Thought Process</summary>Let me commit these UI improvements. I've successfully implemented Option A which simplifies the UI by:
+1. Shortened the badge to just "Match owns this"
+2. Combined the button text to "Size S • 98% match"
+3. Removed the redundant summary section
+4. Updated the button text to "View fit" / "Hide fit"</details></think>
+
+---
+
+```bash
+git add -A && git commit -m "Simplify UI with cleaner text hierarchy (Option A)
+
+- Badge: 'Match owns this' (removed subtitle for cleaner look)
+- Button: 'Size S • 98% match' (single line, consolidated info)
+- Removed redundant summary section (information already in badge/button)
+- Changed button action text to 'View fit' / 'Hide fit'
+- Eliminated text wrapping issues for better visual polish"
+```
+
+---
+
+<think><details><summary>Thought Process</summary>The user skipped the commit. They may want to see the changes first or make additional modifications. Let me wait for their feedback on what they'd like to do next.</details></think>
+
+---
+
+_**User (2025-09-05 21:15-0400)**_
+
+i dont want to commit ntil i see
+
+---
+
+_**Assistant**_
+
+<think><details><summary>Thought Process</summary>The user wants to see the changes before committing. I should show them what the current state looks like after the simplifications I made. Let me describe the changes clearly so they can visualize it.</details></think>
+
+---
+
+Understood! Let me show you what we've simplified:
+
+## **What Changed (Option A Implementation):**
+
+### **Badge (top left of image):**
+Before: 
+```
+✓ Size match owns this
+  Based on Bryson 2
+```
+After:
+```
+✓ Match owns this
+```
+
+### **Button (main CTA):**
+Before:
+```
+✓ Matched Size: S    [98% body match]
+```
+After:
+```
+✓ Size S • 98% match    [View fit]
+```
+
+### **Summary section:**
+Before:
+```
+✓ Size Match: Someone with your exact Bryson 2 measurements owns this in S
+Their notes: Slightly loose in bust/waist, perfect in hips. Elastic bust helps.
+```
+After:
+**Removed entirely** (redundant with button info)
+
+## **Result:**
+- **Cleaner** - No multi-line text wrapping
+- **Scannable** - Key info (S, 98% match) in one glance
+- **Less redundant** - Each element has unique purpose
+- **More action-oriented** - "View fit" is clearer than "Fit details"
+
+The interface is now much tighter and more professional. Want to see it in your browser to check how it looks?
+
+---
+
+_**User (2025-09-05 21:15-0400)**_
+
+ok i like this version more, but there should be a way for lily to learn more about this 'match'. i think a button inside the dropdown should take her to emma's closet. and somewhere on the page should be emma's stats (so lily can directly say ok we have the same x and y but different z by 1")...i want you to plan a design for this that adheres to our existing design system @freestyle-tokens.css @freestyle-tokens.json and design best practices. starting in ask then i will switch to agent when we have a plan to execute
+
+---
+
+_**Assistant**_
+
+<think><details><summary>Thought Process</summary>The user wants to add a way for Lily to learn more about her "match" (Emma). They want:
+1. A button in the dropdown that takes her to Emma's closet
+2. Emma's stats shown somewhere so Lily can compare measurements directly
+
+They want me to plan a design that adheres to their design system and best practices. Let me think about this:
+
+Current state:
+- We have a card that expands to show fit details
+- The match is anonymous ("Match owns this")
+- No way to learn more about the match
+
+What we need:
+1. A way to surface Emma's profile/stats
+2. A link to Emma's closet
+3. Keep it within the design system
+
+Options:
+1. Add a "View match profile" button in the expanded state
+2. Show match stats in the expanded view
+3. Create a mini profile card within the expansion
+
+Design considerations:
+- Don't overwhelm with too much info upfront
+- Progressive disclosure
+- Use existing tokens from the design system
+- Maintain visual hierarchy</details></think>
+
+---
+
+Excellent point! Let's design a way for Lily to discover more about her match while maintaining trust and privacy. Here's my plan:
+
+## **Design Proposal: Match Discovery**
+
+### **Phase 1: Expanded Card Enhancement**
+When Lily clicks "View fit", add a new section:
+
+```
+[Existing measurement comparisons]
+
+--- New Section ---
+📊 Match Profile
+Height: 5'6" (same as you)
+Weight: 118 lbs (4 lbs lighter)
+Typical size: 2 (same as you)
+
+[View Match's Closet →] button
+```
+
+### **Phase 2: Match Stats Card**
+Style using our tokens:
+- Background: `var(--canvas-50)` (#EFF3F6)
+- Border: 1px solid `var(--canvas-100)` 
+- Radius: `var(--radius-card)` (16px)
+- Text: `var(--ink-500)` for labels, `var(--ink-900)` for values
+- Comparison badges: `var(--petrol-100)` for matches, subtle gray for differences
+
+### **Phase 3: Visual Treatment**
+```
+Match Profile
+├─ 5'6" | 118 lbs        [compact stats]
+├─ ✓ Same Bryson 2        [shared anchor - var(--petrol-400)]
+├─ 14 shared brands       [trust signal]
+└─ [Explore closet →]     [CTA button]
+```
+
+### **Alternative Approach: Side-by-side Comparison**
+```
+You          Match
+---          ---
+5'6"    =    5'6"   ✓
+122 lbs      118 lbs
+34/26/37     34/26/36
+```
+
+### **Privacy Considerations:**
+- Initially show as "Match" not "Emma"
+- Reveal name only after viewing closet
+- Add "Why am I seeing this?" link
+
+### **Button Styling (using tokens):**
+```css
+.match-closet-btn {
+  background: var(--petrol-500);
+  color: white;
+  border-radius: var(--radius-btn);
+  padding: var(--space-12) var(--space-24);
+  box-shadow: var(--elev-0);
+}
+```
+
+### **My Recommendation:**
+Add a subtle match profile card in the expanded view with:
+1. **Key stats** (height/weight/typical size)
+2. **Difference indicators** (same/±1"/etc)
+3. **Trust builder** ("14 items in common")
+4. **Clear CTA** to explore their closet
+
+Should we go with the inline stats or side-by-side comparison? And how much should we reveal initially vs after clicking through?
+
+---
+
+_**User (2025-09-05 21:15-0400)**_
+
+i think i like side by side. lets not show weight tho since hip/waist numbers already imply it. i think instead of an emma stats screen it should just go directly to emma's closet and her stats will be shown there but also her dresses/sizes. what do you think?
+
+---
+
+_**Assistant**_
+
+<think><details><summary>Thought Process</summary>The user wants:
+1. Side-by-side comparison (no weight shown)
+2. Direct link to Emma's closet (not a stats page)
+3. Emma's stats shown within her closet view
+
+This makes sense because:
+- Weight is sensitive and unnecessary when we have measurements
+- Going directly to the closet is more actionable
+- Seeing her actual items + sizes is the real value
+
+So the flow would be:
+1. Expanded card shows side-by-side comparison
+2. "View match's closet" button
+3. Takes you to Emma's closet screen with her stats at top + her items below
+
+This is much cleaner and more useful than an intermediate stats screen.</details></think>
+
+---
+
+Perfect approach! Skip the weight (sensitive and redundant) and go straight to the value - her actual closet. Here's my refined plan:
+
+## **Design: Side-by-Side + Direct to Closet**
+
+### **In Expanded Card:**
+```
+Your Match Comparison
+─────────────────────
+You          Match
+5'6"    =    5'6"    ✓
+34"     =    34"     ✓ bust
+26"     =    26"     ✓ waist  
+37"     =    36"     ↓ hips
+
+[View match's closet →]
+```
+
+### **When Clicking "View match's closet":**
+Takes you to a new screen showing:
+
+```
+← Back to your feed
+
+Match's Closet
+Based on Bryson 2 match • 5'6" • 34/26/36
+
+[Stats bar]
+15 items • 8 brands • Size 2/S typical
+
+[Grid of items]
+├─ Ganni Dress - 36
+├─ Aritzia Top - S  
+├─ Rouje Skirt - 36
+└─ [etc...]
+```
+
+### **Design Benefits:**
+1. **No intermediate screen** - straight to value
+2. **Stats contextual** - shown where they matter (with the clothes)
+3. **Privacy maintained** - still "Match" not "Emma" initially
+4. **Actionable** - can immediately see "oh she wears 36 in Ganni"
+
+### **Visual Treatment:**
+- Comparison: Clean table with `var(--petrol-400)` for matches
+- Differences: Subtle `var(--ink-300)` with arrow indicators
+- CTA button: Primary style with `var(--petrol-500)`
+- Match closet header: Compact stats bar using `var(--canvas-50)` background
+
+### **Privacy Evolution:**
+- First visit: "Match's Closet"
+- After exploring: "Emma's Closet" 
+- Eventually: Profile photo, style preferences
+
+Does this flow feel right? The side-by-side gives confidence, then the closet delivers the actual value. Ready to implement?
+
+---
+
+_**User (2025-09-05 21:15-0400)**_
+
+yes. implement
+
+---
+
+_**Assistant**_
+
+<think><details><summary>Thought Process</summary>The user wants me to implement the side-by-side comparison in the expanded card and a button to view the match's closet. Let me:
+
+1. Add the side-by-side comparison table to the expanded details section
+2. Add a button to view match's closet
+3. Create a new screen/view for the match's closet
+4. Use the design tokens from the CSS file
+
+Let me start by adding the comparison table to the expanded card for the Fleur dress (Card 1).</details></think>
+
+---
+
+I'll implement the side-by-side comparison and match closet feature. Let me start by adding the comparison to the expanded card:
+
+---
+
+<details><summary>Edit file: /Users/seandavey/Downloads/freestyle/freestyle-app.html</summary>
+
+undefined
+
+**Chunk 1**
+Lines added: 36, lines removed: undefined
+
+```diff
+@@ -424,4 +424,40 @@
+                  </div>
+                  <p class="advice-inline advice-next">Match feedback: "Slightly loose in bust/waist but the elastic at bust helps. Perfect in hips."</p>
++                 
++                 <!-- Match Comparison -->
++                 <div style="margin-top:20px;padding:16px;background:#EFF3F6;border-radius:12px;">
++                   <h4 style="font-size:13px;font-weight:600;color:#2A3642;margin-bottom:12px;letter-spacing:0.5px;">YOUR MATCH COMPARISON</h4>
++                   <div style="display:grid;grid-template-columns:1fr 40px 1fr;gap:8px;font-size:14px;">
++                     <!-- Headers -->
++                     <div style="font-weight:600;color:#0B0F14;">You</div>
++                     <div></div>
++                     <div style="font-weight:600;color:#0B0F14;">Match</div>
++                     
++                     <!-- Height -->
++                     <div style="color:#2A3642;">5'6"</div>
++                     <div style="text-align:center;color:#00A3A3;">✓</div>
++                     <div style="color:#2A3642;">5'6"</div>
++                     
++                     <!-- Bust -->
++                     <div style="color:#2A3642;">34" bust</div>
++                     <div style="text-align:center;color:#00A3A3;">✓</div>
++                     <div style="color:#2A3642;">34"</div>
++                     
++                     <!-- Waist -->
++                     <div style="color:#2A3642;">26" waist</div>
++                     <div style="text-align:center;color:#00A3A3;">✓</div>
++                     <div style="color:#2A3642;">26"</div>
++                     
++                     <!-- Hips -->
++                     <div style="color:#2A3642;">37" hips</div>
++                     <div style="text-align:center;color:#6A7683;">↓1"</div>
++                     <div style="color:#2A3642;">36"</div>
++                   </div>
++                   
++                   <!-- CTA to view closet -->
++                   <button onclick="showMatchCloset()" style="margin-top:16px;width:100%;padding:12px 24px;background:#00A3A3;color:white;border:none;border-radius:12px;font-weight:600;font-size:14px;cursor:pointer;transition:all 0.2s ease;">
++                     View match's closet →
++                   </button>
++                 </div>
+                </div>
+  
+```
+
+</details>
+
+---
+
+<think><details><summary>Thought Process</summary>Now I need to create the match closet screen. I'll add it as a new app screen similar to the existing feed and closet screens. Let me add the HTML for the match closet screen after the closet screen section.</details></think>
+
+---
+
+Now let me add the Match Closet screen after the existing Closet screen:
+
+---
+
 
 
 ---

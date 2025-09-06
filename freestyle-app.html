@@ -362,12 +362,9 @@ body{font-family:Inter,system-ui,-apple-system,"Segoe UI",Roboto,Helvetica,Arial
               <img class="img" src="https://images.urbndata.com/is/image/Anthropologie/4130608080008_526_b?$a15-pdp-detail-shot$&fit=constrain&fmt=webp&qlt=80&wid=1314" alt="Anthropologie Fleur Strapless Dress"/>
               
               <!-- Peer match indicator -->
-              <div class="peer-badge" style="position:absolute;top:16px;left:16px;background:rgba(255,255,255,0.95);backdrop-filter:blur(10px);border-radius:12px;padding:8px 12px;display:flex;flex-direction:column;gap:4px;box-shadow:0 2px 8px rgba(0,0,0,0.1);">
-                <div style="display:flex;align-items:center;gap:8px;">
-                  <span style="width:24px;height:24px;background:linear-gradient(135deg,#00A3A3,#16B5B5);border-radius:50%;display:flex;align-items:center;justify-content:center;color:white;font-weight:600;font-size:12px;">✓</span>
-                  <span style="font-size:13px;font-weight:600;color:#0B0F14;">Size match owns this</span>
-                </div>
-                <span style="font-size:11px;color:#6A7683;padding-left:32px;">Based on Bryson 2</span>
+              <div class="peer-badge" style="position:absolute;top:16px;left:16px;background:rgba(255,255,255,0.95);backdrop-filter:blur(10px);border-radius:12px;padding:8px 12px;display:flex;align-items:center;gap:8px;box-shadow:0 2px 8px rgba(0,0,0,0.1);">
+                <span style="width:24px;height:24px;background:linear-gradient(135deg,#00A3A3,#16B5B5);border-radius:50%;display:flex;align-items:center;justify-content:center;color:white;font-weight:600;font-size:12px;">✓</span>
+                <span style="font-size:13px;font-weight:600;color:#0B0F14;">Match owns this</span>
               </div>
               
               <!-- Save/Heart button -->
@@ -384,10 +381,10 @@ body{font-family:Inter,system-ui,-apple-system,"Segoe UI",Roboto,Helvetica,Arial
                 <span class="label">
                   <span style="display:flex;align-items:center;gap:6px;">
                     <span style="width:20px;height:20px;background:#00A3A3;border-radius:50%;display:flex;align-items:center;justify-content:center;color:white;font-weight:600;font-size:10px;">✓</span>
-                    <span>Matched Size: <strong>S</strong></span>
+                    <span>Size <strong>S</strong> • 98% match</span>
                   </span>
                 </span>
-                <span class="match" id="match1" style="background:rgba(0,163,163,0.1);color:#00A3A3;border-color:#00A3A3;">98% body match</span>
+                <span class="match" id="match1" style="background:rgba(0,163,163,0.1);color:#00A3A3;border-color:#00A3A3;">View fit</span>
               </button>
 
               <div class="divider main-divider"></div>
@@ -426,18 +423,44 @@ body{font-family:Inter,system-ui,-apple-system,"Segoe UI",Roboto,Helvetica,Arial
                   <span class="badge">≈</span>
                 </div>
                 <p class="advice-inline advice-next">Match feedback: "Slightly loose in bust/waist but the elastic at bust helps. Perfect in hips."</p>
+                
+                <!-- Match Comparison -->
+                <div style="margin-top:20px;padding:16px;background:#EFF3F6;border-radius:12px;">
+                  <h4 style="font-size:13px;font-weight:600;color:#2A3642;margin-bottom:12px;letter-spacing:0.5px;">YOUR MATCH COMPARISON</h4>
+                  <div style="display:grid;grid-template-columns:1fr 40px 1fr;gap:8px;font-size:14px;">
+                    <!-- Headers -->
+                    <div style="font-weight:600;color:#0B0F14;">You</div>
+                    <div></div>
+                    <div style="font-weight:600;color:#0B0F14;">Match</div>
+                    
+                    <!-- Height -->
+                    <div style="color:#2A3642;">5'6"</div>
+                    <div style="text-align:center;color:#00A3A3;">✓</div>
+                    <div style="color:#2A3642;">5'6"</div>
+                    
+                    <!-- Bust -->
+                    <div style="color:#2A3642;">34" bust</div>
+                    <div style="text-align:center;color:#00A3A3;">✓</div>
+                    <div style="color:#2A3642;">34"</div>
+                    
+                    <!-- Waist -->
+                    <div style="color:#2A3642;">26" waist</div>
+                    <div style="text-align:center;color:#00A3A3;">✓</div>
+                    <div style="color:#2A3642;">26"</div>
+                    
+                    <!-- Hips -->
+                    <div style="color:#2A3642;">37" hips</div>
+                    <div style="text-align:center;color:#6A7683;">↓1"</div>
+                    <div style="color:#2A3642;">36"</div>
+                  </div>
+                  
+                  <!-- CTA to view closet -->
+                  <button onclick="showMatchCloset()" style="margin-top:16px;width:100%;padding:12px 24px;background:#00A3A3;color:white;border:none;border-radius:12px;font-weight:600;font-size:14px;cursor:pointer;transition:all 0.2s ease;">
+                    View match's closet →
+                  </button>
+                </div>
               </div>
 
-              <!-- Feed summary with peer data -->
-              <div class="tip-summary" id="fitSummary1">
-                <div style="margin-bottom:8px;">
-                  <strong style="color:#00A3A3;">✓ Size Match:</strong> Someone with your exact Bryson 2 measurements owns this in S
-                </div>
-                <div style="font-size:13px;color:rgba(0,0,0,0.7);">
-                  <strong>Their notes:</strong> Slightly loose in bust/waist, perfect in hips. Elastic bust helps.
-                </div>
-              </div>
-              
               <div class="shop-row">
                 <a class="shop-link" href="https://www.anthropologie.com/shop/the-fleur-strapless-satin-maxi-slip-dress4?category=dresses&color=526&type=STANDARD&quantity=1" target="_blank" rel="noopener noreferrer">Shop S</a>
               </div>
@@ -564,6 +587,110 @@ body{font-family:Inter,system-ui,-apple-system,"Segoe UI",Roboto,Helvetica,Arial
           </div>
         </div>
       </div>
+
+      <!-- MATCH CLOSET SCREEN -->
+      <div id="matchClosetScreen" class="app-screen">
+        <!-- Back button header -->
+        <div style="padding:16px 24px;display:flex;align-items:center;gap:12px;border-bottom:1px solid rgba(255,255,255,0.08);">
+          <button onclick="backToFeed()" style="background:none;border:none;color:#00A3A3;padding:0;cursor:pointer;">
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <line x1="19" y1="12" x2="5" y2="12"></line>
+              <polyline points="12 19 5 12 12 5"></polyline>
+            </svg>
+          </button>
+          <h2 style="font-size:20px;font-weight:600;color:#fff;letter-spacing:-0.01em;">Match's Closet</h2>
+        </div>
+        
+        <!-- Match stats bar -->
+        <div style="background:#232A32;padding:16px 24px;border-bottom:1px solid rgba(255,255,255,0.08);">
+          <div style="font-size:13px;color:#6A7683;margin-bottom:8px;">Based on Bryson 2 match</div>
+          <div style="display:flex;align-items:center;gap:20px;">
+            <span style="color:#fff;font-weight:600;font-size:15px;">5'6" • 34/26/36</span>
+            <span style="color:#00A3A3;font-size:14px;">98% match</span>
+          </div>
+          <div style="display:flex;gap:24px;margin-top:12px;padding-top:12px;border-top:1px solid rgba(255,255,255,0.08);">
+            <div style="font-size:13px;">
+              <span style="color:#fff;font-weight:600;">15</span>
+              <span style="color:#6A7683;"> items</span>
+            </div>
+            <div style="font-size:13px;">
+              <span style="color:#fff;font-weight:600;">8</span>
+              <span style="color:#6A7683;"> brands</span>
+            </div>
+            <div style="font-size:13px;">
+              <span style="color:#6A7683;">Typical: </span>
+              <span style="color:#fff;font-weight:600;">Size 2/S</span>
+            </div>
+          </div>
+        </div>
+        
+        <!-- Match's items grid -->
+        <div style="padding:16px 24px 96px;overflow-y:auto;flex:1;">
+          <div style="display:grid;grid-template-columns:repeat(2,1fr);gap:10px;">
+            <!-- Ganni Dress -->
+            <div style="position:relative;border-radius:16px;overflow:hidden;background:#232A32;border:1px solid rgba(255,255,255,0.04);">
+              <img src="https://cdn.shopify.com/s/files/1/0071/2475/9514/products/F6769_999_1.jpg?v=1678902657" style="width:100%;height:220px;object-fit:cover;">
+              <div style="position:absolute;top:12px;left:12px;padding:6px 10px;background:rgba(18,26,34,0.75);backdrop-filter:blur(12px);color:#fff;font-size:11px;font-weight:500;border-radius:8px;border:1px solid rgba(255,255,255,0.12);">36</div>
+              <div style="padding:12px;">
+                <div style="font-size:11px;color:#6A7683;letter-spacing:0.5px;">GANNI</div>
+                <div style="font-size:13px;color:#fff;margin-top:4px;">Cotton Poplin Dress</div>
+              </div>
+            </div>
+            
+            <!-- Aritzia Top -->
+            <div style="position:relative;border-radius:16px;overflow:hidden;background:#232A32;border:1px solid rgba(255,255,255,0.04);">
+              <img src="https://aritzia.scene7.com/is/image/Aritzia/s24_01_a08_106589_1274_off_a?wid=500" style="width:100%;height:220px;object-fit:cover;">
+              <div style="position:absolute;top:12px;left:12px;padding:6px 10px;background:rgba(18,26,34,0.75);backdrop-filter:blur(12px);color:#fff;font-size:11px;font-weight:500;border-radius:8px;border:1px solid rgba(255,255,255,0.12);">S</div>
+              <div style="padding:12px;">
+                <div style="font-size:11px;color:#6A7683;letter-spacing:0.5px;">ARITZIA</div>
+                <div style="font-size:13px;color:#fff;margin-top:4px;">Contour Knit Top</div>
+              </div>
+            </div>
+            
+            <!-- Rouje Dress -->
+            <div style="position:relative;border-radius:16px;overflow:hidden;background:#232A32;border:1px solid rgba(255,255,255,0.04);">
+              <img src="https://www.rouje.com/media/catalog/product/g/a/gabin_dress_ecru_flowers_1.jpg?width=750" style="width:100%;height:220px;object-fit:cover;">
+              <div style="position:absolute;top:12px;left:12px;padding:6px 10px;background:rgba(18,26,34,0.75);backdrop-filter:blur(12px);color:#fff;font-size:11px;font-weight:500;border-radius:8px;border:1px solid rgba(255,255,255,0.12);">36</div>
+              <div style="padding:12px;">
+                <div style="font-size:11px;color:#6A7683;letter-spacing:0.5px;">ROUJE</div>
+                <div style="font-size:13px;color:#fff;margin-top:4px;">Gabin Dress</div>
+                <div style="font-size:11px;color:#FF6B5A;margin-top:4px;">Runs large</div>
+              </div>
+            </div>
+            
+            <!-- Dôen Top -->
+            <div style="position:relative;border-radius:16px;overflow:hidden;background:#232A32;border:1px solid rgba(255,255,255,0.04);">
+              <img src="https://shopdoen.com/cdn/shop/products/DOEN_SP24_Ecom_Clea_Lillet_001_1400x.jpg?v=1707426923" style="width:100%;height:220px;object-fit:cover;">
+              <div style="position:absolute;top:12px;left:12px;padding:6px 10px;background:rgba(18,26,34,0.75);backdrop-filter:blur(12px);color:#fff;font-size:11px;font-weight:500;border-radius:8px;border:1px solid rgba(255,255,255,0.12);">S</div>
+              <div style="padding:12px;">
+                <div style="font-size:11px;color:#6A7683;letter-spacing:0.5px;">DÔEN</div>
+                <div style="font-size:13px;color:#fff;margin-top:4px;">Clea Top</div>
+              </div>
+            </div>
+            
+            <!-- Sézane Cardigan -->
+            <div style="position:relative;border-radius:16px;overflow:hidden;background:#232A32;border:1px solid rgba(255,255,255,0.04);">
+              <img src="https://media.sezane.com/image/upload/c_fill,d_placeholder_dark.png,fl_progressive:semi,h_816,q_auto:eco,w_582/v1/website/Josephine/2024/02_Spring/1_launches/launch4_hiver/christie_cardigan_ecru_1.jpg" style="width:100%;height:220px;object-fit:cover;">
+              <div style="position:absolute;top:12px;left:12px;padding:6px 10px;background:rgba(18,26,34,0.75);backdrop-filter:blur(12px);color:#fff;font-size:11px;font-weight:500;border-radius:8px;border:1px solid rgba(255,255,255,0.12);">S</div>
+              <div style="padding:12px;">
+                <div style="font-size:11px;color:#6A7683;letter-spacing:0.5px;">SÉZANE</div>
+                <div style="font-size:13px;color:#fff;margin-top:4px;">Christie Cardigan</div>
+              </div>
+            </div>
+            
+            <!-- Realisation Skirt -->
+            <div style="position:relative;border-radius:16px;overflow:hidden;background:#232A32;border:1px solid rgba(255,255,255,0.04);">
+              <img src="https://cdn.shopify.com/s/files/1/0889/6810/products/naomi-skirt-bordeaux-fleur-1.jpg?v=1677653431" style="width:100%;height:220px;object-fit:cover;">
+              <div style="position:absolute;top:12px;left:12px;padding:6px 10px;background:rgba(18,26,34,0.75);backdrop-filter:blur(12px);color:#fff;font-size:11px;font-weight:500;border-radius:8px;border:1px solid rgba(255,255,255,0.12);">S</div>
+              <div style="padding:12px;">
+                <div style="font-size:11px;color:#6A7683;letter-spacing:0.5px;">REALISATION PAR</div>
+                <div style="font-size:13px;color:#fff;margin-top:4px;">Naomi Skirt</div>
+                <div style="font-size:11px;color:#FF6B5A;margin-top:4px;">Runs small</div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
       </div><!-- End app-wrapper -->
 
       <!-- Tab bar -->
@@ -629,7 +756,8 @@ body{font-family:Inter,system-ui,-apple-system,"Segoe UI",Roboto,Helvetica,Arial
 // Screen navigation
 const screens = {
   feed: document.getElementById('feedScreen'),
-  closet: document.getElementById('closetScreen')
+  closet: document.getElementById('closetScreen'),
+  matchCloset: document.getElementById('matchClosetScreen')
 };
 
 const tabs = document.querySelectorAll('.tab');
@@ -654,6 +782,27 @@ tabs.forEach(tab => {
   });
 });
 
+// Navigate to match closet
+function showMatchCloset() {
+  // Hide all screens
+  Object.values(screens).forEach(s => s.classList.remove('active'));
+  // Show match closet
+  screens.matchCloset.classList.add('active');
+  // Remove active tab (we're in a sub-screen)
+  tabs.forEach(t => t.classList.remove('active'));
+}
+
+// Navigate back to feed
+function backToFeed() {
+  // Hide all screens
+  Object.values(screens).forEach(s => s.classList.remove('active'));
+  // Show feed
+  screens.feed.classList.add('active');
+  // Activate feed tab
+  tabs.forEach(t => t.classList.remove('active'));
+  document.querySelector('.tab[data-screen="feed"]').classList.add('active');
+}
+
 // Card 1 expansion (Fleur dress with Emma)
 const sizeCta1 = document.getElementById('sizeCta1');
 const match1 = document.getElementById('match1');
@@ -668,12 +817,12 @@ if(sizeCta1) {
       card1.classList.remove('view-detail');
       card1.classList.add('view-feed');
       sizeCta1.setAttribute('aria-expanded', 'false');
-      match1.textContent = '98% match';
+      match1.textContent = 'View fit';
     } else {
       card1.classList.remove('view-feed');
       card1.classList.add('view-detail');
       sizeCta1.setAttribute('aria-expanded', 'true');
-      match1.textContent = 'Hide details';
+      match1.textContent = 'Hide fit';
     }
   });
 }
