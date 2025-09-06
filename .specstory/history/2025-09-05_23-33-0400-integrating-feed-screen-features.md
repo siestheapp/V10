@@ -2311,6 +2311,270 @@ Let me remove the product names from both cards:
 
 ---
 
+<details><summary>Edit file: /Users/seandavey/Downloads/freestyle/freestyle-app.html</summary>
+
+undefined
+
+**Chunk 1**
+Lines added: undefined, lines removed: 1
+
+```diff
+@@ -403,5 +403,4 @@
+                  </div>
+                </div>
+-               <div class="micro" style="margin-top:4px;">The Fleur Strapless Satin Maxi Slip Dress</div>
+  
+                <!-- Expanded details -->
+```
+
+</details>
+
+---
+
+<think><details><summary>Thought Process</summary>Good, I removed it from the first card. Now let me remove it from the second card as well.</details></think>
+
+---
+
+<details><summary>Edit file: /Users/seandavey/Downloads/freestyle/freestyle-app.html</summary>
+
+undefined
+
+**Chunk 1**
+Lines added: undefined, lines removed: 1
+
+```diff
+@@ -484,5 +484,4 @@
+                  </div>
+                </div>
+-               <div class="micro" style="margin-top:4px;">The Jocelyn Sleeveless Slip Midi Dress by Maeve</div>
+  
+                <!-- Expanded details -->
+```
+
+</details>
+
+---
+
+<think><details><summary>Thought Process</summary>Perfect! I've removed the product names from both cards. Now the feed is cleaner and more focused on the essential information. The user is right - this creates more incentive to click through and keeps the interface cleaner.</details></think>
+
+---
+
+Perfect! I've removed the product names from both cards. Now the feed is much cleaner and focuses on what matters:
+
+## **What's Visible:**
+✅ **Brand** (ANTHROPOLOGIE)
+✅ **Price** ($228 / $168)
+✅ **Peer match** (Emma owns this)
+✅ **Size recommendation** (S)
+✅ **Trust signal** (Free returns)
+
+## **What's Hidden (Creates Curiosity):**
+❌ Product name → Discover when you shop
+❌ Excessive details → Get by expanding
+
+This aligns with your mockup perfectly. The visual hierarchy is now:
+1. **Image** does the selling
+2. **Peer signal** builds trust  
+3. **Price/brand** for quick qualification
+4. **CTA** to learn more
+
+The product names are still in the metadata (alt text, links) for SEO/accessibility but not cluttering the visual interface. Want to commit this cleaner version?
+
+---
+
+_**User (2025-09-05 21:15-0400)**_
+
+yes
+
+---
+
+_**Assistant**_
+
+<think><details><summary>Thought Process</summary>The user wants to commit the changes where we removed the product names from the feed cards.</details></think>
+
+---
+
+```bash
+git add -A && git commit -m "Remove product names from feed cards for cleaner UI
+
+- Removed product name text from both Anthropologie cards
+- Keeps focus on visual, price, brand, and peer signals
+- Product names still in metadata but not visible
+- Creates curiosity and encourages click-through
+- Cleaner visual hierarchy matches mockup design"
+```
+
+```
+<h\n- Cleaner visual hierarchy matches mockup design"
+[master ea9841a] Remove product names from feed cards for cleaner UI
+ 2 files changed, 163 insertions(+), 2 deletions(-)
+seandavey@MacBook-Air-3 freestyle %
+```
+
+---
+
+<think><details><summary>Thought Process</summary>The commit was successful. The changes have been saved - removing the product names from both feed cards to create a cleaner UI that matches the user's mockup vision.</details></think>
+
+---
+
+Done! Committed the cleaner feed design without product names. The UI now has better visual hierarchy and creates intrigue that drives engagement - exactly like your mockup shows.
+
+---
+
+_**User (2025-09-05 21:15-0400)**_
+
+the other thing im unsure of is how to communicate the PP part...like emma owns this....but does lily know who emma is? also it says emma's size S in the button...you both wear Bryson 2 is kind of buried in a card...same with the 'peer match' fact. i want your opinion as an expert ux/ui designer on how to handle this. we dont have to change any of the things i pointed out- i want your opinion on what to do, but im pointing things out so we can have a fuller conversation. lets talk through the challenge and the best solutions
+
+---
+
+_**Assistant**_
+
+<think><details><summary>Thought Process</summary>This is a great UX challenge. The user is pointing out a fundamental issue with the peer matching feature - there's no context about who Emma is and why Lily should trust her recommendation. Let me think through this systematically:
+
+Current issues:
+1. "Emma owns this" - but who is Emma to Lily?
+2. The connection (both wear Bryson 2) is buried
+3. The term "Peer Match" might be unclear
+4. The trust signal isn't immediately clear
+
+Key UX principles to consider:
+- Progressive disclosure vs upfront clarity
+- Trust building through transparency
+- Cognitive load management
+- Visual hierarchy
+
+Possible solutions:
+1. Introduce Emma earlier (onboarding/profile section)
+2. Make the connection more prominent
+3. Use clearer language
+4. Show the relationship visually
+5. Create a "body double" or "size twin" concept that's explained once
+
+Let me provide thoughtful UX recommendations.</details></think>
+
+---
+
+Excellent UX challenge! You're absolutely right - the current design assumes Lily knows who Emma is and why she should care. Let's talk through this systematically:
+
+## **The Core Problem:**
+**Trust requires context.** "Emma owns this" means nothing without establishing:
+1. Who Emma is
+2. Why her size matters to Lily
+3. What connects them
+
+## **Option 1: Upfront Context (My Recommendation)**
+Change the badge to be more descriptive:
+```
+"Size twin owns this"
+or
+"Your match owns this"
+```
+
+Then in the CTA button:
+```
+"Size S • 98% body match"
+```
+
+And make the summary more prominent:
+```
+"Emma wears S (you both wear Reformation 2)"
+```
+
+## **Option 2: Discovery Pattern**
+First time Lily sees a peer match, show a one-time tooltip:
+```
+"👯‍♀️ Size Twin Found!
+Emma shares your exact measurements.
+Her sizes = your sizes."
+```
+
+## **Option 3: Relationship Badge**
+Replace "Emma" with the relationship:
+```
+Badge: "Bryson 2 match owns this"
+Button: "Matched Size: S"
+Summary: "From someone your exact size"
+```
+
+## **Option 4: Visual Hierarchy Fix**
+Move the connection UP in importance:
+```
+Badge: "Emma (Bryson 2 match)"
+Button: "Her Size: S = Your Size: S"
+Summary: [Remove - redundant]
+```
+
+## **My Professional Recommendation:**
+
+**Phase 1 (Now):** Use descriptive labels
+- Change "Emma owns this" → "Size match owns this"
+- Change "Emma's Size" → "Matched size"
+- Add subtitle to badge: "Based on Bryson 2"
+
+**Phase 2 (After onboarding):** Personalize it
+- During onboarding: "We found 3 size twins!"
+- Show Emma's profile briefly
+- Then use her name (now meaningful)
+
+**Phase 3 (Scale):** Social proof
+- "Emma + 2 others wear S"
+- Build familiarity over time
+
+The key insight: **Don't assume intimacy that doesn't exist yet.** Build from function ("size match") to familiarity ("Emma") to friendship ("your style twin").
+
+What's your instinct - should we lead with the functional relationship or try to build the personal connection?
+
+---
+
+_**User (2025-09-05 21:15-0400)**_
+
+ok execute phase 1. i like your idea
+
+---
+
+_**Assistant**_
+
+<think><details><summary>Thought Process</summary>The user wants me to implement Phase 1 of my recommendation:
+- Change "Emma owns this" → "Size match owns this"
+- Change "Emma's Size" → "Matched size"
+- Add subtitle to badge: "Based on Bryson 2"
+
+Let me update the freestyle-app.html file with these changes.</details></think>
+
+---
+
+<details><summary>Edit file: /Users/seandavey/Downloads/freestyle/freestyle-app.html</summary>
+
+undefined
+
+**Chunk 1**
+Lines added: 6, lines removed: 3
+
+```diff
+@@ -363,7 +363,10 @@
+                
+                <!-- Peer match indicator -->
+-               <div class="peer-badge" style="position:absolute;top:16px;left:16px;background:rgba(255,255,255,0.95);backdrop-filter:blur(10px);border-radius:12px;padding:8px 12px;display:flex;align-items:center;gap:8px;box-shadow:0 2px 8px rgba(0,0,0,0.1);">
+-                 <span style="width:24px;height:24px;background:linear-gradient(135deg,#00A3A3,#16B5B5);border-radius:50%;display:flex;align-items:center;justify-content:center;color:white;font-weight:600;font-size:12px;">E</span>
+-                 <span style="font-size:13px;font-weight:600;color:#0B0F14;">Emma owns this</span>
++               <div class="peer-badge" style="position:absolute;top:16px;left:16px;background:rgba(255,255,255,0.95);backdrop-filter:blur(10px);border-radius:12px;padding:8px 12px;display:flex;flex-direction:column;gap:4px;box-shadow:0 2px 8px rgba(0,0,0,0.1);">
++                 <div style="display:flex;align-items:center;gap:8px;">
++                   <span style="width:24px;height:24px;background:linear-gradient(135deg,#00A3A3,#16B5B5);border-radius:50%;display:flex;align-items:center;justify-content:center;color:white;font-weight:600;font-size:12px;">✓</span>
++                   <span style="font-size:13px;font-weight:600;color:#0B0F14;">Size match owns this</span>
++                 </div>
++                 <span style="font-size:11px;color:#6A7683;padding-left:32px;">Based on Bryson 2</span>
+                </div>
+                
+```
+
+</details>
+
+---
+
+<think><details><summary>Thought Process</summary>Good, I've updated the badge. Now I need to update the CTA button to say "Matched size" instead of "Emma's Size".</details></think>
+
+---
+
 
 
 ---

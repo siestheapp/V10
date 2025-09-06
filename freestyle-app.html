@@ -362,9 +362,12 @@ body{font-family:Inter,system-ui,-apple-system,"Segoe UI",Roboto,Helvetica,Arial
               <img class="img" src="https://images.urbndata.com/is/image/Anthropologie/4130608080008_526_b?$a15-pdp-detail-shot$&fit=constrain&fmt=webp&qlt=80&wid=1314" alt="Anthropologie Fleur Strapless Dress"/>
               
               <!-- Peer match indicator -->
-              <div class="peer-badge" style="position:absolute;top:16px;left:16px;background:rgba(255,255,255,0.95);backdrop-filter:blur(10px);border-radius:12px;padding:8px 12px;display:flex;align-items:center;gap:8px;box-shadow:0 2px 8px rgba(0,0,0,0.1);">
-                <span style="width:24px;height:24px;background:linear-gradient(135deg,#00A3A3,#16B5B5);border-radius:50%;display:flex;align-items:center;justify-content:center;color:white;font-weight:600;font-size:12px;">E</span>
-                <span style="font-size:13px;font-weight:600;color:#0B0F14;">Emma owns this</span>
+              <div class="peer-badge" style="position:absolute;top:16px;left:16px;background:rgba(255,255,255,0.95);backdrop-filter:blur(10px);border-radius:12px;padding:8px 12px;display:flex;flex-direction:column;gap:4px;box-shadow:0 2px 8px rgba(0,0,0,0.1);">
+                <div style="display:flex;align-items:center;gap:8px;">
+                  <span style="width:24px;height:24px;background:linear-gradient(135deg,#00A3A3,#16B5B5);border-radius:50%;display:flex;align-items:center;justify-content:center;color:white;font-weight:600;font-size:12px;">✓</span>
+                  <span style="font-size:13px;font-weight:600;color:#0B0F14;">Size match owns this</span>
+                </div>
+                <span style="font-size:11px;color:#6A7683;padding-left:32px;">Based on Bryson 2</span>
               </div>
               
               <!-- Save/Heart button -->
@@ -380,11 +383,11 @@ body{font-family:Inter,system-ui,-apple-system,"Segoe UI",Roboto,Helvetica,Arial
               <button class="size-cta" id="sizeCta1" aria-expanded="false">
                 <span class="label">
                   <span style="display:flex;align-items:center;gap:6px;">
-                    <span style="width:20px;height:20px;background:#00A3A3;border-radius:50%;display:flex;align-items:center;justify-content:center;color:white;font-weight:600;font-size:10px;">E</span>
-                    <span>Emma's Size: <strong>S</strong></span>
+                    <span style="width:20px;height:20px;background:#00A3A3;border-radius:50%;display:flex;align-items:center;justify-content:center;color:white;font-weight:600;font-size:10px;">✓</span>
+                    <span>Matched Size: <strong>S</strong></span>
                   </span>
                 </span>
-                <span class="match" id="match1" style="background:rgba(0,163,163,0.1);color:#00A3A3;border-color:#00A3A3;">98% match</span>
+                <span class="match" id="match1" style="background:rgba(0,163,163,0.1);color:#00A3A3;border-color:#00A3A3;">98% body match</span>
               </button>
 
               <div class="divider main-divider"></div>
@@ -406,7 +409,7 @@ body{font-family:Inter,system-ui,-apple-system,"Segoe UI",Roboto,Helvetica,Arial
               <!-- Expanded details -->
               <div class="details hidden" id="fitDetails1">
                 <div class="item">
-                  <p class="advice-inline">Based on your shared <strong class="accent">Bryson 2</strong> with Emma</p>
+                  <p class="advice-inline">Match based on shared <strong class="accent">Bryson 2</strong> measurements (34/26/37)</p>
                 </div>
                 <div class="spec">
                   <span class="measure"><strong>Bust —</strong> Looser <span class="muted">(35–36″ vs 34″)</span></span>
@@ -422,16 +425,16 @@ body{font-family:Inter,system-ui,-apple-system,"Segoe UI",Roboto,Helvetica,Arial
                   <span class="measure"><strong>Hips —</strong> Matches <span class="muted">(37–38″ vs 37″)</span></span>
                   <span class="badge">≈</span>
                 </div>
-                <p class="advice-inline advice-next">Emma's notes: "Slightly loose in bust/waist but the elastic at bust helps. Perfect in hips."</p>
+                <p class="advice-inline advice-next">Match feedback: "Slightly loose in bust/waist but the elastic at bust helps. Perfect in hips."</p>
               </div>
 
               <!-- Feed summary with peer data -->
               <div class="tip-summary" id="fitSummary1">
                 <div style="margin-bottom:8px;">
-                  <strong style="color:#00A3A3;">✓ Peer Match:</strong> Emma owns this in S (you both wear Bryson 2)
+                  <strong style="color:#00A3A3;">✓ Size Match:</strong> Someone with your exact Bryson 2 measurements owns this in S
                 </div>
                 <div style="font-size:13px;color:rgba(0,0,0,0.7);">
-                  <strong>Fit notes:</strong> Slightly loose in bust/waist, perfect in hips. Elastic bust helps.
+                  <strong>Their notes:</strong> Slightly loose in bust/waist, perfect in hips. Elastic bust helps.
                 </div>
               </div>
               
