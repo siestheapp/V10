@@ -1,0 +1,169 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Fit Range Explorer</title>
+  <style>
+    body {
+      font-family: sans-serif;
+      background: #f9f9f9;
+      padding: 40px;
+      color: #1f1f1f;
+    }
+
+    .fit-container {
+      max-width: 420px;
+      margin: 0 auto;
+      background: white;
+      border-radius: 16px;
+      padding: 24px;
+      box-shadow: 0 6px 18px rgba(0,0,0,0.05);
+    }
+
+    .fit-toggle {
+      display: flex;
+      justify-content: center;
+      gap: 8px;
+      margin-bottom: 16px;
+    }
+
+    .fit-toggle button {
+      font-weight: 600;
+      padding: 8px 16px;
+      border-radius: 999px;
+      border: 1px solid #ddd;
+      background: #fff;
+      cursor: pointer;
+      transition: all 0.2s ease;
+    }
+
+    .fit-toggle button.active {
+      background: #f2eaff;
+      color: #8F6AAE;
+      border-color: transparent;
+    }
+
+    .fit-label {
+      text-align: center;
+      font-weight: bold;
+      margin-bottom: 8px;
+    }
+
+    .fit-range {
+      position: relative;
+      height: 60px;
+      margin: 24px 0;
+    }
+
+    .base-line {
+      position: absolute;
+      top: 50%;
+      left: 0;
+      right: 0;
+      height: 2px;
+      background: #ccc;
+      transform: translateY(-50%);
+    }
+
+    .highlight {
+      position: absolute;
+      top: 50%;
+      height: 4px;
+      background: #8F6AAE;
+      border-radius: 2px;
+      transition: left 0.3s ease, width 0.3s ease;
+      transform: translateY(-50%);
+    }
+
+    .range-labels {
+      display: flex;
+      justify-content: space-between;
+      font-size: 13px;
+      color: #666;
+      margin-top: 4px;
+    }
+
+    .curve {
+      position: absolute;
+      bottom: 10px;
+      left: 0;
+      right: 0;
+      height: 30px;
+      pointer-events: none;
+    }
+
+    svg {
+      width: 100%;
+      height: 100%;
+    }
+  </style>
+</head>
+<body>
+
+<div class="fit-container">
+  <div class="fit-toggle">
+    <button class="active" data-fit="good">✅ Good</button>
+    <button data-fit="relaxed">🧘 Relaxed</button>
+    <button data-fit="tight">✨ Tight</button>
+  </div>
+
+  <div class="fit-label" id="rangeText">Good Fit Range: 31″ – 34″</div>
+
+  <div class="fit-range">
+    <div class="base-line"></div>
+    <div class="highlight" id="highlight" style="left: 20%; width: 40%;"></div>
+
+    <div class="curve">
+      <svg viewBox="0 0 100 30" preserveAspectRatio="none">
+        <path d="M0 30 C 20 10, 40 0, 50 15 C 60 30, 80 10, 100 30" 
+              fill="rgba(143,106,174,0.1)" stroke="rgba(143,106,174,0.4)" stroke-width="1"/>
+      </svg>
+    </div>
+  </div>
+
+  <div class="range-labels">
+    <span>30″</span>
+    <span>36″</span>
+  </div>
+</div>
+
+<script>
+  const ranges = {
+    good: {
+      label: "Good Fit Range: 31″ – 34″",
+      left: "20%",
+      width: "40%"
+    },
+    relaxed: {
+      label: "Relaxed Fit Range: 33″ – 36″",
+      left: "50%",
+      width: "40%"
+    },
+    tight: {
+      label: "Tight Fit Range: 30″ – 32″",
+      left: "0%",
+      width: "25%"
+    }
+  };
+
+  const buttons = document.querySelectorAll(".fit-toggle button");
+  const highlight = document.getElementById("highlight");
+  const rangeText = document.getElementById("rangeText");
+
+  buttons.forEach(btn => {
+    btn.addEventListener("click", () => {
+      buttons.forEach(b => b.classList.remove("active"));
+      btn.classList.add("active");
+
+      const fitType = btn.dataset.fit;
+      const range = ranges[fitType];
+
+      highlight.style.left = range.left;
+      highlight.style.width = range.width;
+      rangeText.textContent = range.label;
+    });
+  });
+</script>
+
+</body>
+</html>

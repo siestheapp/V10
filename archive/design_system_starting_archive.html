@@ -1,0 +1,1045 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Design System Showcase</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: Inter, system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial, sans-serif;
+            background-color: #F7F9FB;
+            color: #0B0F14;
+            line-height: 1.5;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 32px 24px;
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 32px;
+        }
+
+        .display {
+            font-size: 44px;
+            font-weight: 700;
+            line-height: 1.1;
+            letter-spacing: -0.02em;
+            background: linear-gradient(135deg, #00A3A3 0%, #7FE1FF 50%, #A6FFCB 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            margin-bottom: 16px;
+        }
+
+        .section {
+            margin-bottom: 32px;
+            padding: 24px;
+            background: white;
+            border-radius: 16px;
+            box-shadow: 0 1px 2px rgba(0,0,0,.06);
+        }
+
+        .section-title {
+            font-size: 28px;
+            font-weight: 600;
+            line-height: 1.2;
+            letter-spacing: -0.01em;
+            color: #0B0F14;
+            margin-bottom: 24px;
+            padding-bottom: 8px;
+            border-bottom: 2px solid #E9EEF1;
+        }
+
+        /* Color Palette */
+        .color-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 24px;
+        }
+
+        .color-family {
+            background: #EFF3F6;
+            padding: 16px;
+            border-radius: 12px;
+        }
+
+        .color-family-title {
+            font-size: 18px;
+            font-weight: 600;
+            line-height: 1.3;
+            letter-spacing: -0.005em;
+            margin-bottom: 12px;
+            color: #2A3642;
+        }
+
+        .color-swatch {
+            display: flex;
+            align-items: center;
+            margin-bottom: 8px;
+            padding: 8px;
+            background: white;
+            border-radius: 8px;
+        }
+
+        .color-box {
+            width: 40px;
+            height: 40px;
+            border-radius: 8px;
+            margin-right: 12px;
+            border: 1px solid rgba(0,0,0,0.1);
+        }
+
+        .color-info {
+            flex: 1;
+        }
+
+        .color-name {
+            font-size: 16px;
+            font-weight: 500;
+            line-height: 1.5;
+            color: #0B0F14;
+        }
+
+        .color-value {
+            font-size: 12px;
+            font-weight: 400;
+            line-height: 1.4;
+            color: #6A7683;
+            font-family: monospace;
+        }
+
+        .gradient-box {
+            width: 100%;
+            height: 60px;
+            border-radius: 12px;
+            background: linear-gradient(135deg, #00A3A3 0%, #7FE1FF 50%, #A6FFCB 100%);
+            margin-bottom: 8px;
+        }
+
+        /* Typography */
+        .typography-sample {
+            margin-bottom: 24px;
+            padding: 16px;
+            background: #F7F9FB;
+            border-radius: 12px;
+        }
+
+        .type-display {
+            font-size: 44px;
+            font-weight: 700;
+            line-height: 1.1;
+            letter-spacing: -0.02em;
+            color: #0B0F14;
+        }
+
+        .type-h2 {
+            font-size: 28px;
+            font-weight: 600;
+            line-height: 1.2;
+            letter-spacing: -0.01em;
+            color: #121A22;
+        }
+
+        .type-h3 {
+            font-size: 18px;
+            font-weight: 600;
+            line-height: 1.3;
+            letter-spacing: -0.005em;
+            color: #2A3642;
+        }
+
+        .type-body {
+            font-size: 16px;
+            font-weight: 400;
+            line-height: 1.5;
+            color: #2A3642;
+        }
+
+        .type-body-medium {
+            font-size: 16px;
+            font-weight: 500;
+            line-height: 1.5;
+            color: #121A22;
+        }
+
+        .type-caption {
+            font-size: 12px;
+            font-weight: 400;
+            line-height: 1.4;
+            color: #6A7683;
+        }
+
+        /* Components */
+        .component-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 24px;
+        }
+
+        .card {
+            background: white;
+            border-radius: 16px;
+            padding: 24px;
+            box-shadow: 0 8px 24px rgba(11,15,20,.08);
+            border: 1px solid #E9EEF1;
+        }
+
+        .button {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            padding: 12px 24px;
+            border-radius: 12px;
+            font-size: 16px;
+            font-weight: 500;
+            text-decoration: none;
+            border: none;
+            cursor: pointer;
+            margin: 4px;
+            transition: all 0.2s ease;
+        }
+
+        .btn-primary {
+            background: #00A3A3;
+            color: white;
+        }
+
+        .btn-primary:hover {
+            background: #009090;
+            transform: translateY(-1px);
+            box-shadow: 0 4px 12px rgba(0,163,163,0.3);
+        }
+
+        .btn-secondary {
+            background: #EFF3F6;
+            color: #2A3642;
+        }
+
+        .btn-secondary:hover {
+            background: #E9EEF1;
+        }
+
+        .btn-pill {
+            border-radius: 999px;
+            background: linear-gradient(135deg, #00A3A3 0%, #16B5B5 100%);
+            color: white;
+            padding: 8px 16px;
+            font-size: 12px;
+        }
+
+        /* Shadows showcase */
+        .shadow-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 24px;
+        }
+
+        .shadow-card {
+            background: white;
+            padding: 24px;
+            border-radius: 16px;
+            text-align: center;
+        }
+
+        .shadow-0 { box-shadow: 0 1px 2px rgba(0,0,0,.06); }
+        .shadow-1 { box-shadow: 0 8px 24px rgba(11,15,20,.08); }
+        .shadow-2 { box-shadow: 0 20px 60px rgba(0,0,0,.18); }
+
+        /* Spacing showcase */
+        .spacing-demo {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 16px;
+            margin-top: 16px;
+        }
+
+        .spacing-box {
+            background: #16B5B5;
+            color: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 12px;
+            font-weight: 500;
+            border-radius: 4px;
+        }
+
+        .spec-label {
+            font-size: 12px;
+            color: #6A7683;
+            margin-bottom: 8px;
+            font-family: monospace;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1 class="display">Design System</h1>
+            <p class="type-body">A comprehensive visual showcase of your design tokens</p>
+        </div>
+
+        <!-- Colors -->
+        <div class="section">
+            <h2 class="section-title">Color Palette</h2>
+            <div class="color-grid">
+                <div class="color-family">
+                    <h3 class="color-family-title">Ink</h3>
+                    <div class="color-swatch">
+                        <div class="color-box" style="background-color: #0B0F14;"></div>
+                        <div class="color-info">
+                            <div class="color-name">Ink 900</div>
+                            <div class="color-value">#0B0F14</div>
+                        </div>
+                    </div>
+                    <div class="color-swatch">
+                        <div class="color-box" style="background-color: #121A22;"></div>
+                        <div class="color-info">
+                            <div class="color-name">Ink 700</div>
+                            <div class="color-value">#121A22</div>
+                        </div>
+                    </div>
+                    <div class="color-swatch">
+                        <div class="color-box" style="background-color: #2A3642;"></div>
+                        <div class="color-info">
+                            <div class="color-name">Ink 500</div>
+                            <div class="color-value">#2A3642</div>
+                        </div>
+                    </div>
+                    <div class="color-swatch">
+                        <div class="color-box" style="background-color: #6A7683;"></div>
+                        <div class="color-info">
+                            <div class="color-name">Ink 300</div>
+                            <div class="color-value">#6A7683</div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="color-family">
+                    <h3 class="color-family-title">Canvas</h3>
+                    <div class="color-swatch">
+                        <div class="color-box" style="background-color: #F7F9FB;"></div>
+                        <div class="color-info">
+                            <div class="color-name">Canvas 0</div>
+                            <div class="color-value">#F7F9FB</div>
+                        </div>
+                    </div>
+                    <div class="color-swatch">
+                        <div class="color-box" style="background-color: #EFF3F6;"></div>
+                        <div class="color-info">
+                            <div class="color-name">Canvas 50</div>
+                            <div class="color-value">#EFF3F6</div>
+                        </div>
+                    </div>
+                    <div class="color-swatch">
+                        <div class="color-box" style="background-color: #E9EEF1;"></div>
+                        <div class="color-info">
+                            <div class="color-name">Canvas 100</div>
+                            <div class="color-value">#E9EEF1</div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="color-family">
+                    <h3 class="color-family-title">Petrol</h3>
+                    <div class="color-swatch">
+                        <div class="color-box" style="background-color: #009090;"></div>
+                        <div class="color-info">
+                            <div class="color-name">Petrol 600</div>
+                            <div class="color-value">#009090</div>
+                        </div>
+                    </div>
+                    <div class="color-swatch">
+                        <div class="color-box" style="background-color: #00A3A3;"></div>
+                        <div class="color-info">
+                            <div class="color-name">Petrol 500</div>
+                            <div class="color-value">#00A3A3</div>
+                        </div>
+                    </div>
+                    <div class="color-swatch">
+                        <div class="color-box" style="background-color: #16B5B5;"></div>
+                        <div class="color-info">
+                            <div class="color-name">Petrol 400</div>
+                            <div class="color-value">#16B5B5</div>
+                        </div>
+                    </div>
+                    <div class="color-swatch">
+                        <div class="color-box" style="background-color: #E0F7F7;"></div>
+                        <div class="color-info">
+                            <div class="color-name">Petrol 100</div>
+                            <div class="color-value">#E0F7F7</div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="color-family">
+                    <h3 class="color-family-title">Accent Colors</h3>
+                    <div class="color-swatch">
+                        <div class="color-box" style="background-color: #A6FFCB;"></div>
+                        <div class="color-info">
+                            <div class="color-name">Mint 400</div>
+                            <div class="color-value">#A6FFCB</div>
+                        </div>
+                    </div>
+                    <div class="color-swatch">
+                        <div class="color-box" style="background-color: #7FE1FF;"></div>
+                        <div class="color-info">
+                            <div class="color-name">Ice 300</div>
+                            <div class="color-value">#7FE1FF</div>
+                        </div>
+                    </div>
+                    <div class="color-swatch">
+                        <div class="color-box" style="background-color: #FF6B5A;"></div>
+                        <div class="color-info">
+                            <div class="color-name">Coral 500</div>
+                            <div class="color-value">#FF6B5A</div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="color-family">
+                    <h3 class="color-family-title">Brand Gradient</h3>
+                    <div class="gradient-box"></div>
+                    <div class="color-value">linear-gradient(135deg, #00A3A3 0%, #7FE1FF 50%, #A6FFCB 100%)</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Typography -->
+        <div class="section">
+            <h2 class="section-title">Typography</h2>
+            <div class="typography-sample">
+                <div class="spec-label">Display - 44px/110%/700/-0.02em</div>
+                <div class="type-display">Display Heading</div>
+            </div>
+            <div class="typography-sample">
+                <div class="spec-label">H2 - 28px/120%/600/-0.01em</div>
+                <div class="type-h2">Section Heading</div>
+            </div>
+            <div class="typography-sample">
+                <div class="spec-label">H3 - 18px/130%/600/-0.005em</div>
+                <div class="type-h3">Subsection Heading</div>
+            </div>
+            <div class="typography-sample">
+                <div class="spec-label">Body - 16px/150%/400</div>
+                <div class="type-body">This is body text for paragraphs and general content. It provides good readability and comfortable reading experience.</div>
+            </div>
+            <div class="typography-sample">
+                <div class="spec-label">Body Medium - 16px/150%/500</div>
+                <div class="type-body-medium">This is medium weight body text for emphasis and important content.</div>
+            </div>
+            <div class="typography-sample">
+                <div class="spec-label">Caption - 12px/140%/400</div>
+                <div class="type-caption">This is caption text for labels, metadata, and supplementary information.</div>
+            </div>
+        </div>
+
+        <!-- Components -->
+        <div class="section">
+            <h2 class="section-title">Components</h2>
+            <div class="component-grid">
+                <div class="card">
+                    <h3 class="type-h3" style="margin-bottom: 16px;">Buttons</h3>
+                    <div>
+                        <button class="button btn-primary">Primary Button</button>
+                        <button class="button btn-secondary">Secondary Button</button>
+                        <span class="btn-pill">Pill Badge</span>
+                    </div>
+                </div>
+
+                <div class="card">
+                    <h3 class="type-h3" style="margin-bottom: 16px;">Card Component</h3>
+                    <p class="type-body" style="margin-bottom: 12px;">This card uses 16px border radius with elevation shadow.</p>
+                    <p class="type-caption">Border radius: 16px</p>
+                </div>
+
+                <div class="card" style="background: linear-gradient(135deg, #E0F7F7 0%, #F7F9FB 100%);">
+                    <h3 class="type-h3" style="margin-bottom: 16px;">Gradient Background</h3>
+                    <p class="type-body">Example of using brand colors in subtle gradients.</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Shadows -->
+        <div class="section">
+            <h2 class="section-title">Elevation & Shadows</h2>
+            <div class="shadow-grid">
+                <div class="shadow-card shadow-0">
+                    <h3 class="type-h3" style="margin-bottom: 8px;">Elevation 0</h3>
+                    <div class="spec-label">0 1px 2px rgba(0,0,0,.06)</div>
+                </div>
+                <div class="shadow-card shadow-1">
+                    <h3 class="type-h3" style="margin-bottom: 8px;">Elevation 1</h3>
+                    <div class="spec-label">0 8px 24px rgba(11,15,20,.08)</div>
+                </div>
+                <div class="shadow-card shadow-2">
+                    <h3 class="type-h3" style="margin-bottom: 8px;">Elevation 2</h3>
+                    <div class="spec-label">0 20px 60px rgba(0,0,0,.18)</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Spacing -->
+        <div class="section">
+            <h2 class="section-title">Spacing System</h2>
+            <div class="spacing-demo">
+                <div class="spacing-box" style="width: 4px; height: 40px;">4px</div>
+                <div class="spacing-box" style="width: 8px; height: 40px;">8px</div>
+                <div class="spacing-box" style="width: 12px; height: 40px;">12px</div>
+                <div class="spacing-box" style="width: 16px; height: 40px;">16px</div>
+                <div class="spacing-box" style="width: 24px; height: 40px;">24px</div>
+                <div class="spacing-box" style="width: 32px; height: 40px;">32px</div>
+            </div>
+        </div>
+
+        <!-- Part 2: Sies App Color Palette -->
+        <div style="margin-top: 64px; padding-top: 32px; border-top: 2px solid #E9EEF1;">
+            <div class="header">
+                <div style="font-size: 44px; font-weight: 700; line-height: 1.1; letter-spacing: -0.02em; background: linear-gradient(180deg, #E8F6F7, #8FBFD1 60%, #7AA3FF); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; margin-bottom: 8px;">sies</div>
+                <div style="font-size: 12px; font-weight: 400; line-height: 1.4; color: #6A7683; font-family: monospace; margin-bottom: 16px;">linear-gradient(180deg, #E8F6F7, #8FBFD1 60%, #7AA3FF)</div>
+                <h1 class="display" style="background: linear-gradient(135deg, #78c6c9 0%, #7aa3ff 50%, #3ad69b 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;">Part 2: Sies App</h1>
+                <p class="type-body">Dark theme color palette extracted from the Sies mobile app</p>
+            </div>
+
+            <!-- Sies Colors -->
+            <div class="section" style="background: #0f1115; color: #e9ecf1; border: 1px solid #2a2f3a;">
+                <h2 class="section-title" style="color: #e9ecf1; border-bottom-color: #2a2f3a;">Sies Color Palette</h2>
+                <div class="color-grid">
+                    <div class="color-family" style="background: #151822; border: 1px solid #2a2f3a;">
+                        <h3 class="color-family-title" style="color: #e9ecf1;">Base Colors</h3>
+                        <div class="color-swatch" style="background: #1a1f2a;">
+                            <div class="color-box" style="background-color: #0f1115;"></div>
+                            <div class="color-info">
+                                <div class="color-name" style="color: #e9ecf1;">Background</div>
+                                <div class="color-value" style="color: #b6bdc8;">#0f1115</div>
+                            </div>
+                        </div>
+                        <div class="color-swatch" style="background: #1a1f2a;">
+                            <div class="color-box" style="background-color: #151822;"></div>
+                            <div class="color-info">
+                                <div class="color-name" style="color: #e9ecf1;">Card</div>
+                                <div class="color-value" style="color: #b6bdc8;">#151822</div>
+                            </div>
+                        </div>
+                        <div class="color-swatch" style="background: #1a1f2a;">
+                            <div class="color-box" style="background-color: #e9ecf1;"></div>
+                            <div class="color-info">
+                                <div class="color-name" style="color: #e9ecf1;">Ink</div>
+                                <div class="color-value" style="color: #b6bdc8;">#e9ecf1</div>
+                            </div>
+                        </div>
+                        <div class="color-swatch" style="background: #1a1f2a;">
+                            <div class="color-box" style="background-color: #b6bdc8;"></div>
+                            <div class="color-info">
+                                <div class="color-name" style="color: #e9ecf1;">Muted</div>
+                                <div class="color-value" style="color: #b6bdc8;">#b6bdc8</div>
+                            </div>
+                        </div>
+                        <div class="color-swatch" style="background: #1a1f2a;">
+                            <div class="color-box" style="background-color: #2a2f3a;"></div>
+                            <div class="color-info">
+                                <div class="color-name" style="color: #e9ecf1;">Line</div>
+                                <div class="color-value" style="color: #b6bdc8;">#2a2f3a</div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="color-family" style="background: #151822; border: 1px solid #2a2f3a;">
+                        <h3 class="color-family-title" style="color: #e9ecf1;">Accent Colors</h3>
+                        <div class="color-swatch" style="background: #1a1f2a;">
+                            <div class="color-box" style="background-color: #78c6c9;"></div>
+                            <div class="color-info">
+                                <div class="color-name" style="color: #e9ecf1;">Accent Teal</div>
+                                <div class="color-value" style="color: #b6bdc8;">#78c6c9</div>
+                            </div>
+                        </div>
+                        <div class="color-swatch" style="background: #1a1f2a;">
+                            <div class="color-box" style="background-color: #7aa3ff;"></div>
+                            <div class="color-info">
+                                <div class="color-name" style="color: #e9ecf1;">Accent Blue</div>
+                                <div class="color-value" style="color: #b6bdc8;">#7aa3ff</div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="color-family" style="background: #151822; border: 1px solid #2a2f3a;">
+                        <h3 class="color-family-title" style="color: #e9ecf1;">Status Colors</h3>
+                        <div class="color-swatch" style="background: #1a1f2a;">
+                            <div class="color-box" style="background-color: #3ad69b;"></div>
+                            <div class="color-info">
+                                <div class="color-name" style="color: #e9ecf1;">Good Fit</div>
+                                <div class="color-value" style="color: #b6bdc8;">#3ad69b</div>
+                            </div>
+                        </div>
+                        <div class="color-swatch" style="background: #1a1f2a;">
+                            <div class="color-box" style="background-color: #ff6b6b;"></div>
+                            <div class="color-info">
+                                <div class="color-name" style="color: #e9ecf1;">Tight Fit</div>
+                                <div class="color-value" style="color: #b6bdc8;">#ff6b6b</div>
+                            </div>
+                        </div>
+                        <div class="color-swatch" style="background: #1a1f2a;">
+                            <div class="color-box" style="background-color: #ffd166;"></div>
+                            <div class="color-info">
+                                <div class="color-name" style="color: #e9ecf1;">Relaxed Fit</div>
+                                <div class="color-value" style="color: #b6bdc8;">#ffd166</div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="color-family" style="background: #151822; border: 1px solid #2a2f3a;">
+                        <h3 class="color-family-title" style="color: #e9ecf1;">Sies Gradients</h3>
+                        <div style="width: 100%; height: 60px; border-radius: 12px; background: linear-gradient(180deg, #E8F6F7, #8FBFD1 60%, #7AA3FF); margin-bottom: 8px;"></div>
+                        <div class="color-value" style="color: #b6bdc8;">Logo Gradient</div>
+                        <div style="width: 100%; height: 60px; border-radius: 12px; background: radial-gradient(1200px 600px at 20% -10%, rgba(122,163,255,.12), transparent 60%), radial-gradient(1000px 500px at 120% 10%, rgba(120,198,201,.12), transparent 60%), #0f1115; margin: 12px 0 8px 0; border: 1px solid #2a2f3a;"></div>
+                        <div class="color-value" style="color: #b6bdc8;">Background Gradient</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Sies Components Demo -->
+            <div class="section" style="background: #0f1115; color: #e9ecf1; border: 1px solid #2a2f3a;">
+                <h2 class="section-title" style="color: #e9ecf1; border-bottom-color: #2a2f3a;">Sies Components</h2>
+                <div class="component-grid">
+                    <!-- Mobile Card Example -->
+                    <div style="background: #151822; border: 1px solid #2a2f3a; border-radius: 16px; padding: 16px; box-shadow: 0 6px 20px rgba(0,0,0,.25);">
+                        <div style="display: flex; align-items: center; gap: 10px; margin-bottom: 12px;">
+                            <div style="width: 36px; height: 36px; border-radius: 50%; background: linear-gradient(135deg, #78c6c9, #7aa3ff);"></div>
+                            <div>
+                                <div style="font-weight: 600; font-size: 13px; color: #e9ecf1;">Friend Name</div>
+                                <div style="color: #b6bdc8; font-size: 12px;">2h ago · NYC</div>
+                            </div>
+                        </div>
+                        <div style="height: 120px; background: linear-gradient(135deg, #2a2f3a, #151822); border-radius: 12px; margin-bottom: 12px; position: relative; display: flex; align-items: center; justify-content: center; color: #b6bdc8;">
+                            <span>Product Image</span>
+                        </div>
+                        <div style="display: flex; align-items: center; gap: 8px;">
+                            <div style="width: 8px; height: 8px; border-radius: 50%; background: #3ad69b;"></div>
+                            <span style="color: #b6bdc8; font-size: 12px;">Perfect fit</span>
+                        </div>
+                    </div>
+
+                    <!-- Status Dots -->
+                    <div style="background: #151822; border: 1px solid #2a2f3a; border-radius: 16px; padding: 24px;">
+                        <h3 style="color: #e9ecf1; margin-bottom: 16px; font-size: 16px;">Fit Status Indicators</h3>
+                        <div style="display: flex; flex-direction: column; gap: 12px;">
+                            <div style="display: flex; align-items: center; gap: 12px;">
+                                <div style="width: 12px; height: 12px; border-radius: 50%; background: #3ad69b;"></div>
+                                <span style="color: #e9ecf1; font-size: 14px;">Perfect Fit</span>
+                            </div>
+                            <div style="display: flex; align-items: center; gap: 12px;">
+                                <div style="width: 12px; height: 12px; border-radius: 50%; background: #ff6b6b;"></div>
+                                <span style="color: #e9ecf1; font-size: 14px;">Tight Fit</span>
+                            </div>
+                            <div style="display: flex; align-items: center; gap: 12px;">
+                                <div style="width: 12px; height: 12px; border-radius: 50%; background: #ffd166;"></div>
+                                <span style="color: #e9ecf1; font-size: 14px;">Relaxed Fit</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Toggle Component -->
+                    <div style="background: #151822; border: 1px solid #2a2f3a; border-radius: 16px; padding: 24px;">
+                        <h3 style="color: #e9ecf1; margin-bottom: 16px; font-size: 16px;">Toggle Switch</h3>
+                        <div style="display: flex; align-items: center; gap: 12px;">
+                            <div style="position: relative; width: 34px; height: 20px; background: #78c6c9; border-radius: 999px;">
+                                <div style="position: absolute; width: 16px; height: 16px; background: white; border-radius: 50%; top: 2px; right: 2px;"></div>
+                            </div>
+                            <span style="color: #b6bdc8; font-size: 12px;">Active state</span>
+                        </div>
+                        <div style="display: flex; align-items: center; gap: 12px; margin-top: 12px;">
+                            <div style="position: relative; width: 34px; height: 20px; background: #303947; border-radius: 999px;">
+                                <div style="position: absolute; width: 16px; height: 16px; background: white; border-radius: 50%; top: 2px; left: 2px;"></div>
+                            </div>
+                            <span style="color: #b6bdc8; font-size: 12px;">Inactive state</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Part 3: Sies Original Design System -->
+        <div style="margin-top: 64px; padding-top: 32px; border-top: 2px solid #E9EEF1;">
+            <div class="header">
+                <div style="font-size: 44px; font-weight: 700; line-height: 1.1; letter-spacing: -0.02em; background: linear-gradient(180deg, #F1DCE3, #8B7F83); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; margin-bottom: 8px;">sies</div>
+                <div style="font-size: 12px; font-weight: 400; line-height: 1.4; color: #6A7683; font-family: monospace; margin-bottom: 16px;">linear-gradient(180deg, #F1DCE3, #8B7F83)</div>
+                <h1 class="display" style="background: linear-gradient(135deg, #7C4DFF 0%, #F1DCE3 50%, #8B7F83 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;">Part 3: Sies Original</h1>
+                <p class="type-body">Light theme design system from the original Sies CSS framework</p>
+            </div>
+
+            <!-- Original Sies Colors -->
+            <div class="section">
+                <h2 class="section-title">Sies Original Color Palette</h2>
+                <div class="color-grid">
+                    <div class="color-family">
+                        <h3 class="color-family-title">Brand Primary</h3>
+                        <div class="color-swatch">
+                            <div class="color-box" style="background-color: #F1DCE3;"></div>
+                            <div class="color-info">
+                                <div class="color-name">Primary Start</div>
+                                <div class="color-value">#F1DCE3</div>
+                            </div>
+                        </div>
+                        <div class="color-swatch">
+                            <div class="color-box" style="background-color: #8B7F83;"></div>
+                            <div class="color-info">
+                                <div class="color-name">Primary End</div>
+                                <div class="color-value">#8B7F83</div>
+                            </div>
+                        </div>
+                        <div style="width: 100%; height: 60px; border-radius: 12px; background: linear-gradient(180deg, #F1DCE3, #8B7F83); margin: 12px 0 8px 0;"></div>
+                        <div class="color-value">Brand Primary Gradient</div>
+                    </div>
+
+                    <div class="color-family">
+                        <h3 class="color-family-title">Accent (CTA)</h3>
+                        <div class="color-swatch">
+                            <div class="color-box" style="background-color: #7C4DFF;"></div>
+                            <div class="color-info">
+                                <div class="color-name">Accent</div>
+                                <div class="color-value">#7C4DFF</div>
+                            </div>
+                        </div>
+                        <div class="color-swatch">
+                            <div class="color-box" style="background-color: #693ACC;"></div>
+                            <div class="color-info">
+                                <div class="color-name">Accent Hover</div>
+                                <div class="color-value">#693ACC</div>
+                            </div>
+                        </div>
+                        <div class="color-swatch">
+                            <div class="color-box" style="background-color: #5B2FD6;"></div>
+                            <div class="color-info">
+                                <div class="color-name">Accent Press</div>
+                                <div class="color-value">#5B2FD6</div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="color-family">
+                        <h3 class="color-family-title">Text</h3>
+                        <div class="color-swatch">
+                            <div class="color-box" style="background-color: #1A1A1A;"></div>
+                            <div class="color-info">
+                                <div class="color-name">Text Strong</div>
+                                <div class="color-value">#1A1A1A</div>
+                            </div>
+                        </div>
+                        <div class="color-swatch">
+                            <div class="color-box" style="background-color: #444444;"></div>
+                            <div class="color-info">
+                                <div class="color-name">Text Body</div>
+                                <div class="color-value">#444444</div>
+                            </div>
+                        </div>
+                        <div class="color-swatch">
+                            <div class="color-box" style="background-color: #777777;"></div>
+                            <div class="color-info">
+                                <div class="color-name">Text Muted</div>
+                                <div class="color-value">#777777</div>
+                            </div>
+                        </div>
+                        <div class="color-swatch">
+                            <div class="color-box" style="background-color: #FFFFFF; border: 1px solid #E6E6E6;"></div>
+                            <div class="color-info">
+                                <div class="color-name">Text Invert</div>
+                                <div class="color-value">#FFFFFF</div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="color-family">
+                        <h3 class="color-family-title">Surfaces</h3>
+                        <div class="color-swatch">
+                            <div class="color-box" style="background-color: #FFFFFF; border: 1px solid #E6E6E6;"></div>
+                            <div class="color-info">
+                                <div class="color-name">Background</div>
+                                <div class="color-value">#FFFFFF</div>
+                            </div>
+                        </div>
+                        <div class="color-swatch">
+                            <div class="color-box" style="background-color: #FAFAFA;"></div>
+                            <div class="color-info">
+                                <div class="color-name">Background Muted</div>
+                                <div class="color-value">#FAFAFA</div>
+                            </div>
+                        </div>
+                        <div class="color-swatch">
+                            <div class="color-box" style="background-color: #F7F5F6;"></div>
+                            <div class="color-info">
+                                <div class="color-name">Background Card</div>
+                                <div class="color-value">#F7F5F6</div>
+                            </div>
+                        </div>
+                        <div class="color-swatch">
+                            <div class="color-box" style="background-color: #E6E6E6;"></div>
+                            <div class="color-info">
+                                <div class="color-name">Border</div>
+                                <div class="color-value">#E6E6E6</div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="color-family">
+                        <h3 class="color-family-title">States</h3>
+                        <div class="color-swatch">
+                            <div class="color-box" style="background-color: #2ECC71;"></div>
+                            <div class="color-info">
+                                <div class="color-name">Success</div>
+                                <div class="color-value">#2ECC71</div>
+                            </div>
+                        </div>
+                        <div class="color-swatch">
+                            <div class="color-box" style="background-color: #F39C12;"></div>
+                            <div class="color-info">
+                                <div class="color-name">Warning</div>
+                                <div class="color-value">#F39C12</div>
+                            </div>
+                        </div>
+                        <div class="color-swatch">
+                            <div class="color-box" style="background-color: #E74C3C;"></div>
+                            <div class="color-info">
+                                <div class="color-name">Error</div>
+                                <div class="color-value">#E74C3C</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Original Sies Components -->
+            <div class="section">
+                <h2 class="section-title">Sies Original Components</h2>
+                <div class="component-grid">
+                    <!-- Buttons -->
+                    <div class="card">
+                        <h3 class="type-h3" style="margin-bottom: 16px;">Button System</h3>
+                        <div style="display: flex; flex-direction: column; gap: 12px;">
+                            <button style="display: inline-flex; align-items: center; justify-content: center; padding: 12px 20px; border-radius: 12px; font-weight: 600; font-size: 16px; border: none; cursor: pointer; background: #7C4DFF; color: white; box-shadow: 0 2px 8px rgba(0,0,0,0.08);">Primary Button</button>
+                            <button style="display: inline-flex; align-items: center; justify-content: center; padding: 12px 20px; border-radius: 12px; font-weight: 600; font-size: 16px; cursor: pointer; background: transparent; color: #7C4DFF; border: 2px solid #7C4DFF;">Secondary Button</button>
+                            <button style="display: inline-flex; align-items: center; justify-content: center; padding: 8px 10px; border-radius: 12px; font-weight: 600; font-size: 16px; border: none; cursor: pointer; background: transparent; color: #444444;">Ghost Button</button>
+                        </div>
+                    </div>
+
+                    <!-- Card Component -->
+                    <div style="background: #F7F5F6; border: 1px solid #E6E6E6; border-radius: 16px; padding: 24px; box-shadow: 0 1px 3px rgba(0,0,0,0.06);">
+                        <h3 class="type-h3" style="margin-bottom: 16px; color: #1A1A1A;">Card Component</h3>
+                        <p class="type-body" style="margin-bottom: 12px; color: #444444;">This card uses the original Sies styling with soft backgrounds and subtle shadows.</p>
+                        <div style="display: inline-block; padding: 6px 10px; border-radius: 999px; background: #FAFAFA; color: #777777; font-size: 13px; font-weight: 500;">Kicker Badge</div>
+                    </div>
+
+                    <!-- Hero Section Preview -->
+                    <div class="card">
+                        <h3 class="type-h3" style="margin-bottom: 16px;">Hero Section</h3>
+                        <div style="text-align: left;">
+                            <div style="display: inline-block; padding: 6px 10px; border-radius: 999px; background: #FAFAFA; color: #777777; font-size: 13px; font-weight: 500; margin-bottom: 12px;">New Feature</div>
+                            <div style="font-size: 28px; font-weight: 600; color: #1A1A1A; margin-bottom: 8px;">Section Heading</div>
+                            <p style="color: #444444; margin-bottom: 16px;">Description text with proper hierarchy and spacing.</p>
+                            <button style="display: inline-flex; align-items: center; justify-content: center; padding: 12px 20px; border-radius: 12px; font-weight: 600; font-size: 16px; border: none; cursor: pointer; background: #7C4DFF; color: white; box-shadow: 0 2px 8px rgba(0,0,0,0.08);">Get Started</button>
+                        </div>
+                    </div>
+
+                    <!-- Input Component -->
+                    <div class="card">
+                        <h3 class="type-h3" style="margin-bottom: 16px;">Form Input</h3>
+                        <input style="width: 100%; padding: 12px 14px; border-radius: 10px; border: 1px solid #E6E6E6; background: #FFF; font-size: 16px;" placeholder="Enter your email" />
+                        <p style="font-size: 14px; color: #777777; margin-top: 8px;">Focus state shows purple accent border</p>
+                    </div>
+
+                    <!-- Feature Item -->
+                    <div class="card">
+                        <h3 class="type-h3" style="margin-bottom: 16px;">Feature Layout</h3>
+                        <div style="display: grid; grid-template-columns: 40px 1fr; gap: 16px; align-items: flex-start;">
+                            <div style="width: 40px; height: 40px; border-radius: 12px; background: linear-gradient(180deg, #F1DCE3, #8B7F83);"></div>
+                            <div>
+                                <div style="font-weight: 500; color: #1A1A1A; margin-bottom: 4px;">Feature Title</div>
+                                <div style="color: #444444; font-size: 14px;">Feature description with icon and proper spacing alignment.</div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- CTA Band -->
+                    <div style="border-radius: 20px; padding: 32px; background: linear-gradient(180deg, #F1DCE3, #8B7F83); color: #1A1A1A;">
+                        <h3 class="type-h3" style="margin-bottom: 16px; color: #1A1A1A;">Call to Action Band</h3>
+                        <p style="color: #1A1A1A; margin-bottom: 12px;">Full-width promotional section with brand gradient background.</p>
+                        <div style="font-size: 11px; font-family: monospace; color: rgba(26,26,26,0.7); word-break: break-all; margin-bottom: 16px;">background: linear-gradient(180deg, #F1DCE3, #8B7F83)</div>
+                        <button style="display: inline-flex; align-items: center; justify-content: center; padding: 12px 20px; border-radius: 12px; font-weight: 600; font-size: 16px; border: none; cursor: pointer; background: #7C4DFF; color: white; box-shadow: 0 2px 8px rgba(0,0,0,0.08);">Take Action</button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Design Token Reference -->
+            <div class="section">
+                <h2 class="section-title">Design Tokens Reference</h2>
+                <div class="component-grid">
+                    <div class="card">
+                        <h3 class="type-h3" style="margin-bottom: 16px;">Spacing Scale</h3>
+                        <div style="display: flex; flex-direction: column; gap: 8px;">
+                            <div style="display: flex; align-items: center; gap: 12px;">
+                                <div style="width: 4px; height: 20px; background: #7C4DFF;"></div>
+                                <span style="font-size: 12px; font-family: monospace; color: #777777;">2xs: 4px</span>
+                            </div>
+                            <div style="display: flex; align-items: center; gap: 12px;">
+                                <div style="width: 8px; height: 20px; background: #7C4DFF;"></div>
+                                <span style="font-size: 12px; font-family: monospace; color: #777777;">xs: 8px</span>
+                            </div>
+                            <div style="display: flex; align-items: center; gap: 12px;">
+                                <div style="width: 12px; height: 20px; background: #7C4DFF;"></div>
+                                <span style="font-size: 12px; font-family: monospace; color: #777777;">sm: 12px</span>
+                            </div>
+                            <div style="display: flex; align-items: center; gap: 12px;">
+                                <div style="width: 16px; height: 20px; background: #7C4DFF;"></div>
+                                <span style="font-size: 12px; font-family: monospace; color: #777777;">md: 16px</span>
+                            </div>
+                            <div style="display: flex; align-items: center; gap: 12px;">
+                                <div style="width: 24px; height: 20px; background: #7C4DFF;"></div>
+                                <span style="font-size: 12px; font-family: monospace; color: #777777;">lg: 24px</span>
+                            </div>
+                            <div style="display: flex; align-items: center; gap: 12px;">
+                                <div style="width: 32px; height: 20px; background: #7C4DFF;"></div>
+                                <span style="font-size: 12px; font-family: monospace; color: #777777;">xl: 32px</span>
+                            </div>
+                            <div style="display: flex; align-items: center; gap: 12px;">
+                                <div style="width: 48px; height: 20px; background: #7C4DFF;"></div>
+                                <span style="font-size: 12px; font-family: monospace; color: #777777;">2xl: 48px</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="card">
+                        <h3 class="type-h3" style="margin-bottom: 16px;">Border Radius</h3>
+                        <div style="display: flex; flex-direction: column; gap: 12px;">
+                            <div style="display: flex; align-items: center; gap: 12px;">
+                                <div style="width: 30px; height: 30px; background: #F1DCE3; border-radius: 8px;"></div>
+                                <span style="font-size: 12px; font-family: monospace; color: #777777;">xs: 8px</span>
+                            </div>
+                            <div style="display: flex; align-items: center; gap: 12px;">
+                                <div style="width: 30px; height: 30px; background: #F1DCE3; border-radius: 10px;"></div>
+                                <span style="font-size: 12px; font-family: monospace; color: #777777;">sm: 10px</span>
+                            </div>
+                            <div style="display: flex; align-items: center; gap: 12px;">
+                                <div style="width: 30px; height: 30px; background: #F1DCE3; border-radius: 12px;"></div>
+                                <span style="font-size: 12px; font-family: monospace; color: #777777;">md: 12px</span>
+                            </div>
+                            <div style="display: flex; align-items: center; gap: 12px;">
+                                <div style="width: 30px; height: 30px; background: #F1DCE3; border-radius: 16px;"></div>
+                                <span style="font-size: 12px; font-family: monospace; color: #777777;">lg: 16px</span>
+                            </div>
+                            <div style="display: flex; align-items: center; gap: 12px;">
+                                <div style="width: 30px; height: 30px; background: #F1DCE3; border-radius: 20px;"></div>
+                                <span style="font-size: 12px; font-family: monospace; color: #777777;">xl: 20px</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="card">
+                        <h3 class="type-h3" style="margin-bottom: 16px;">Typography Scale</h3>
+                        <div style="display: flex; flex-direction: column; gap: 8px;">
+                            <div style="font-size: 48px; font-weight: 700; letter-spacing: -0.02em; color: #1A1A1A; line-height: 1.15;">Display</div>
+                            <div style="font-size: 42px; font-weight: 700; letter-spacing: -0.02em; color: #1A1A1A; line-height: 1.15;">H1</div>
+                            <div style="font-size: 28px; font-weight: 600; color: #1A1A1A;">H2</div>
+                            <div style="font-size: 20px; font-weight: 500; color: #444444;">H3</div>
+                            <div style="font-size: 16px; font-weight: 400; color: #444444;">Body</div>
+                            <div style="font-size: 14px; font-weight: 400; color: #777777;">Caption</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Part 4: Gradient Reference -->
+        <div style="margin-top: 64px; padding-top: 32px; border-top: 2px solid #E9EEF1;">
+            <div class="header">
+                <h1 class="display">Part 4: Gradient Reference</h1>
+                <p class="type-body">Complete CSS gradient code for easy copying</p>
+            </div>
+
+            <div class="section">
+                <h2 class="section-title">All Gradients with Code</h2>
+                <div class="component-grid">
+                    <!-- Original Design System Brand Gradient -->
+                    <div class="card">
+                        <h3 class="type-h3" style="margin-bottom: 16px;">Original Design System</h3>
+                        <div style="width: 100%; height: 60px; border-radius: 12px; background: linear-gradient(135deg, #00A3A3 0%, #7FE1FF 50%, #A6FFCB 100%); margin-bottom: 12px;"></div>
+                        <div class="spec-label">Brand Gradient</div>
+                        <div style="font-family: monospace; font-size: 12px; color: #2A3642; background: #F7F9FB; padding: 12px; border-radius: 8px; word-break: break-all; line-height: 1.4;">linear-gradient(135deg, #00A3A3 0%, #7FE1FF 50%, #A6FFCB 100%)</div>
+                    </div>
+
+                    <!-- Sies Mobile App Logo Gradient -->
+                    <div class="card">
+                        <h3 class="type-h3" style="margin-bottom: 16px;">Sies Mobile App</h3>
+                        <div style="width: 100%; height: 60px; border-radius: 12px; background: linear-gradient(180deg, #E8F6F7, #8FBFD1 60%, #7AA3FF); margin-bottom: 12px;"></div>
+                        <div class="spec-label">Logo Gradient</div>
+                        <div style="font-family: monospace; font-size: 12px; color: #2A3642; background: #F7F9FB; padding: 12px; border-radius: 8px; word-break: break-all; line-height: 1.4;">linear-gradient(180deg, #E8F6F7, #8FBFD1 60%, #7AA3FF)</div>
+                    </div>
+
+                    <!-- Sies Mobile App Complex Background -->
+                    <div class="card">
+                        <h3 class="type-h3" style="margin-bottom: 16px;">Sies Mobile App</h3>
+                        <div style="width: 100%; height: 60px; border-radius: 12px; background: radial-gradient(1200px 600px at 20% -10%, rgba(122,163,255,.12), transparent 60%), radial-gradient(1000px 500px at 120% 10%, rgba(120,198,201,.12), transparent 60%), #0f1115; margin-bottom: 12px; border: 1px solid #E9EEF1;"></div>
+                        <div class="spec-label">Complex Background Gradient</div>
+                        <div style="font-family: monospace; font-size: 11px; color: #2A3642; background: #F7F9FB; padding: 12px; border-radius: 8px; word-break: break-all; line-height: 1.4;">radial-gradient(1200px 600px at 20% -10%, rgba(122,163,255,.12), transparent 60%), radial-gradient(1000px 500px at 120% 10%, rgba(120,198,201,.12), transparent 60%), #0f1115</div>
+                        <div style="margin-top: 8px; font-size: 12px; color: #6A7683;">Two layered radial gradients with fallback color</div>
+                    </div>
+
+                    <!-- Sies Original Brand Gradient -->
+                    <div class="card">
+                        <h3 class="type-h3" style="margin-bottom: 16px;">Sies Original</h3>
+                        <div style="width: 100%; height: 60px; border-radius: 12px; background: linear-gradient(180deg, #F1DCE3, #8B7F83); margin-bottom: 12px;"></div>
+                        <div class="spec-label">Brand Primary Gradient</div>
+                        <div style="font-family: monospace; font-size: 12px; color: #2A3642; background: #F7F9FB; padding: 12px; border-radius: 8px; word-break: break-all; line-height: 1.4;">linear-gradient(180deg, #F1DCE3, #8B7F83)</div>
+                    </div>
+
+                    <!-- Header Gradients Used for Text -->
+                    <div class="card">
+                        <h3 class="type-h3" style="margin-bottom: 16px;">Text Gradients</h3>
+                        <div style="margin-bottom: 16px;">
+                            <div style="font-size: 28px; font-weight: 600; background: linear-gradient(135deg, #00A3A3 0%, #7FE1FF 50%, #A6FFCB 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; margin-bottom: 8px;">Design System</div>
+                            <div class="spec-label">Part 1 Header</div>
+                            <div style="font-family: monospace; font-size: 12px; color: #2A3642; background: #F7F9FB; padding: 12px; border-radius: 8px; word-break: break-all; line-height: 1.4; margin-bottom: 16px;">linear-gradient(135deg, #00A3A3 0%, #7FE1FF 50%, #A6FFCB 100%)</div>
+
+                            <div style="font-size: 28px; font-weight: 600; background: linear-gradient(135deg, #78c6c9 0%, #7aa3ff 50%, #3ad69b 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; margin-bottom: 8px;">Part 2: Sies App</div>
+                            <div class="spec-label">Part 2 Header</div>
+                            <div style="font-family: monospace; font-size: 12px; color: #2A3642; background: #F7F9FB; padding: 12px; border-radius: 8px; word-break: break-all; line-height: 1.4; margin-bottom: 16px;">linear-gradient(135deg, #78c6c9 0%, #7aa3ff 50%, #3ad69b 100%)</div>
+
+                            <div style="font-size: 28px; font-weight: 600; background: linear-gradient(135deg, #7C4DFF 0%, #F1DCE3 50%, #8B7F83 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; margin-bottom: 8px;">Part 3: Sies Original</div>
+                            <div class="spec-label">Part 3 Header</div>
+                            <div style="font-family: monospace; font-size: 12px; color: #2A3642; background: #F7F9FB; padding: 12px; border-radius: 8px; word-break: break-all; line-height: 1.4;">linear-gradient(135deg, #7C4DFF 0%, #F1DCE3 50%, #8B7F83 100%)</div>
+                        </div>
+                    </div>
+
+                    <!-- Usage Notes -->
+                    <div class="card" style="grid-column: 1 / -1;">
+                        <h3 class="type-h3" style="margin-bottom: 16px;">Usage Notes</h3>
+                        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 16px;">
+                            <div>
+                                <h4 style="font-size: 14px; font-weight: 600; margin-bottom: 8px; color: #0B0F14;">For Background:</h4>
+                                <code style="font-size: 12px; background: #EFF3F6; padding: 4px 8px; border-radius: 4px;">background: [gradient-code];</code>
+                            </div>
+                            <div>
+                                <h4 style="font-size: 14px; font-weight: 600; margin-bottom: 8px; color: #0B0F14;">For Text:</h4>
+                                <div style="font-size: 12px;">
+                                    <code style="background: #EFF3F6; padding: 4px 8px; border-radius: 4px; display: block; margin-bottom: 4px;">background: [gradient-code];</code>
+                                    <code style="background: #EFF3F6; padding: 4px 8px; border-radius: 4px; display: block; margin-bottom: 4px;">-webkit-background-clip: text;</code>
+                                    <code style="background: #EFF3F6; padding: 4px 8px; border-radius: 4px; display: block; margin-bottom: 4px;">background-clip: text;</code>
+                                    <code style="background: #EFF3F6; padding: 4px 8px; border-radius: 4px; display: block;">-webkit-text-fill-color: transparent;</code>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+</html>

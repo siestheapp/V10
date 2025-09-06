@@ -1,0 +1,209 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>Freestyle — Your Fit Feed (Data-Driven)</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<!-- Include the data model -->
+<script src="./mockup-data.js"></script>
+<style>
+/* [Previous CSS styles would go here - keeping it minimal for demo] */
+:root{
+  --ink-900:#0B0F14; --ink-700:#121A22; --ink-500:#2A3642; --ink-300:#6A7683;
+  --canvas-0:#F7F9FB; --canvas-50:#EFF3F6; --canvas-100:#E9EEF1;
+  --petrol-600:#009090; --petrol-500:#00A3A3; --petrol-400:#16B5B5; --petrol-100:#E0F7F7;
+  --brand-sheen: linear-gradient(135deg,#00A3A3 0%,#7FE1FF 50%,#A6FFCB 100%);
+  --radius-card:16px; --radius-btn:12px; --radius-pill:999px;
+  --space-4:4px; --space-8:8px; --space-12:12px; --space-16:16px; --space-24:24px; --space-32:32px;
+  --elev-1: 0 8px 24px rgba(11,15,20,.08);
+}
+*{margin:0;padding:0;box-sizing:border-box}
+body{font-family:Inter,system-ui,-apple-system,"Segoe UI",Roboto,Helvetica,Arial;background:var(--ink-900);color:#fff;min-height:100vh;display:flex;align-items:center;justify-content:center;padding:0}
+
+/* iPhone Frame */
+.phone{width:430px;height:932px;border-radius:65px;background:linear-gradient(135deg, #E8E8E8 0%, #D0D0D0 20%, #B8B8B8 40%, #A8A8A8 60%, #989898 80%, #888888 100%);padding:6px;box-shadow:0 30px 100px rgba(0,0,0,0.5), 0 15px 40px rgba(0,0,0,0.3), 0 5px 15px rgba(0,0,0,0.2), inset 0 3px 6px rgba(255,255,255,0.5), inset 0 -2px 4px rgba(0,0,0,0.3);position:relative}
+.screen{height:100%;background:var(--ink-900);border-radius:59px;overflow:hidden;position:relative;display:flex;flex-direction:column;border:1px solid rgba(0,0,0,0.2);box-shadow:inset 0 0 0 5px #000, inset 0 1px 2px rgba(255,255,255,.08), inset 0 -1px 2px rgba(0,0,0,.35)}
+
+/* Dynamic Island */
+.island{position:absolute;top:12px;left:50%;transform:translateX(-50%);width:126px;height:37px;background:#000;border-radius:19px;z-index:2}
+
+/* Status Bar */
+.status{height:54px;margin-top:8px;display:flex;align-items:center;justify-content:space-between;padding:0 24px;font-weight:600;color:#fff;font-size:17px;letter-spacing:-.02em}
+.status .right{display:flex;align-items:center;gap:6px}
+.status .right img{height:13px;width:auto;display:block;filter:invert(1)}
+
+/* App Content */
+.header{padding:var(--space-4) var(--space-24) var(--space-4);display:flex;justify-content:space-between;align-items:center}
+.logo{font-weight:600;font-size:32px;letter-spacing:-.01em;background:var(--brand-sheen);-webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent}
+
+.section{padding:0 var(--space-24) var(--space-8);}
+.heading-inline{display:flex;align-items:baseline;gap:var(--space-12);margin:0 0 var(--space-8);flex-wrap:wrap}
+.heading-main{font-size:28px;font-weight:700;color:#fff;letter-spacing:-0.01em;line-height:1.2}
+.heading-sub-inline{font-size:16px;font-weight:600;color:var(--ink-300);letter-spacing:-.005em;line-height:1.2}
+
+/* Chips */
+.chips{display:flex;gap:8px;padding-top:10px;overflow-x:auto;-webkit-overflow-scrolling:touch;scrollbar-width:none;margin-top:6px}
+.chips::-webkit-scrollbar{display:none}
+.chip{border:1px solid var(--ink-500);background:var(--ink-700);color:#fff;border-radius:var(--radius-pill);padding:var(--space-12) var(--space-16);font-size:13px;font-weight:500;white-space:nowrap;transition:all 0.2s ease}
+.chip.is-active{border-color:var(--petrol-500);background:var(--petrol-500);color:#fff;font-weight:600;box-shadow:0 2px 8px rgba(0,163,163,.3)}
+
+/* Feed */
+.feed{padding:0 var(--space-24) 96px;overflow-y:auto}
+
+/* Card */
+.card{background:var(--ink-700);border:1px solid var(--ink-500);border-radius:var(--radius-card);overflow:hidden;transition:transform 0.2s ease;margin-bottom:var(--space-24)}
+.card:hover{transform:translateY(-2px)}
+
+.imgbox{position:relative;overflow:hidden;border-radius:var(--radius-card)}
+.img{width:100%;height:440px;object-fit:cover;object-position:center 22%}
+
+/* Size CTA */
+.size-cta{position:relative;display:flex;align-items:center;justify-content:space-between;gap:var(--space-12);width:100%;margin:var(--space-12) 0 10px;padding:var(--space-16) var(--space-24);border:none;border-radius:var(--space-24);color:#fff;background:linear-gradient(180deg, rgba(255,255,255,.08) 0%, rgba(255,255,255,0) 8%), var(--brand-sheen);font:700 15px/1 Inter;cursor:pointer;transform:translateZ(0);transition:all 0.2s ease}
+.size-cta:hover{transform:translateY(-1px)}
+.size-cta .label{font:800 17px/1.1 Inter;letter-spacing:-.005em;display:flex;align-items:center;gap:var(--space-8)}
+.size-cta .match{display:inline-flex;align-items:center;gap:var(--space-8);padding:var(--space-8) var(--space-16);border-radius:var(--radius-pill);background:rgba(255,255,255,.8);border:1px solid rgba(255,255,255,.95);color:#1F1F1F;font:600 13px/1 Inter;backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px)}
+
+.info{position:relative;margin-top:-10px;padding:var(--space-16) var(--space-16) var(--space-12)}
+.divider{height:1px;background:rgba(255,255,255,.08);margin:8px 0 8px;border-radius:1px}
+
+/* Metadata */
+.row{display:flex;align-items:center;justify-content:space-between;margin-bottom:var(--space-8);padding:0 var(--space-12) 0 var(--space-8)}
+.left-meta{display:flex;align-items:center;gap:var(--space-8)}
+.brand{font-size:12px;letter-spacing:.3px;color:var(--ink-300);font-weight:600}
+.price{font-weight:700;font-size:17px;color:#fff}
+.trust-item{display:flex;align-items:center;gap:var(--space-8);font-size:14px;color:var(--ink-300);font-weight:500}
+.trust-item svg{width:16px;height:16px;color:#4ade80;position:relative;top:1px}
+
+.micro{color:var(--ink-300);font-size:14px;font-weight:500;margin-top:6px;padding:0 var(--space-12) 0 var(--space-8)}
+
+/* Tab bar */
+.tabs{position:absolute;left:0;right:0;bottom:0;height:83px;background:rgba(11,15,20,.75);border-top:1px solid rgba(255,255,255,.08);backdrop-filter:blur(16px);-webkit-backdrop-filter:blur(16px);display:flex;justify-content:space-around;align-items:flex-start;padding-top:8px;padding-bottom:34px}
+.tab{display:flex;flex-direction:column;align-items:center;gap:6px;text-decoration:none;color:var(--ink-300);font-size:11px;font-weight:500;transition:color 0.2s ease}
+.tab.active{color:var(--petrol-600);font-weight:600}
+.ico{width:28px;height:28px;display:block}
+</style>
+</head>
+<body>
+  <div class="phone">
+    <div class="island"></div>
+    <div class="screen">
+      <div class="status">
+        <div>9:41</div>
+        <div class="right">
+          <img src="Cellular Connection.svg" alt="cell"/>
+          <img src="Wifi.svg" alt="wifi"/>
+          <img src="Battery.svg" alt="battery"/>
+        </div>
+      </div>
+
+      <div class="header">
+        <div class="logo">Freestyle</div>
+      </div>
+
+      <div class="section">
+        <div class="heading-inline">
+          <h1 class="heading-main">Explore</h1>
+          <span class="heading-sub-inline">Curated based on your sizes.</span>
+        </div>
+
+        <div class="chips">
+          <button class="chip is-active">Wedding guest</button>
+          <button class="chip">Midi</button>
+          <button class="chip">Under $250</button>
+          <button class="chip">Quick ship</button>
+          <button class="chip">New in</button>
+        </div>
+      </div>
+
+      <div class="feed" id="productFeed">
+        <!-- Products will be dynamically generated here -->
+      </div>
+
+      <div class="tabs">
+        <a class="tab" href="#"><svg class="ico" viewBox="0 0 256 256" aria-hidden="true"><path fill="currentColor" d="M241,150.65s0,0,0-.05a51.33,51.33,0,0,0-2.53-5.9L196.93,50.18a12,12,0,0,0-2.5-3.65,36,36,0,0,0-50.92,0A12,12,0,0,0,140,55V76H116V55a12,12,0,0,0-3.51-8.48,36,36,0,0,0-50.92,0,12,12,0,0,0-2.5,3.65L17.53,144.7A51.33,51.33,0,0,0,15,150.6s0,0,0,.05A52,52,0,1,0,116,168V100h24v68a52,52,0,1,0,101-17.35ZM80,62.28a12,12,0,0,1,12-1.22v63.15a51.9,51.9,0,0,0-35.9-7.62ZM64,196a28,28,0,1,1,28-28A28,28,0,0,1,64,196ZM164,61.06a12.06,12.06,0,0,1,12,1.22l23.87,54.31a51.9,51.9,0,0,0-35.9,7.62ZM192,196a28,28,0,1,1,28-28A28,28,0,0,1,192,196Z"/></svg><span>Find</span></a>
+        <a class="tab active" href="#"><svg class="ico" viewBox="0 0 256 256" aria-hidden="true"><path fill="currentColor" d="M225.24,174.74a12,12,0,0,1-1.58,16.89C205.49,206.71,189.06,212,174.15,212c-19.76,0-36.86-9.29-51.88-17.44-25.06-13.62-44.86-24.37-74.61.3a12,12,0,1,1-15.32-18.48c42.25-35,75-17.23,101.39-2.92,25.06,13.61,44.86,24.37,74.61-.3A12,12,0,0,1,225.24,174.74Zm-16.9-57.59c-29.75,24.67-49.55,13.91-74.61.3-26.35-14.3-59.14-32.11-101.39,2.92a12,12,0,0,0,15.32,18.48c29.75-24.67,49.55-13.92,74.61-.3,15,8.15,32.12,17.44,51.88,17.44,14.91,0,31.34-5.29,49.51-20.36a12,12,0,0,0-15.32-18.48ZM47.66,82.84c29.75-24.67,49.55-13.92,74.61-.3,15,8.15,32.12,17.44,51.88,17.44,14.91,0,31.34-5.29,49.51-20.36a12,12,0,0,0-15.32-18.48c-29.75,24.67-49.55,13.92-74.61.3-26.35-14.3-59.14-32.11-101.39,2.93A12,12,0,1,0,47.66,82.84Z"/></svg><span>Feed</span></a>
+        <a class="tab" href="#"><svg class="ico" viewBox="0 0 256 256" aria-hidden="true"><path fill="currentColor" d="M244,168,148,96l19.2-14.4A12,12,0,0,0,172,72a44,44,0,0,0-87.66-5.48,12,12,0,1,0,23.82,3,20,20,0,0,1,39.09-2.92L121,86.24c-.15.1-.29.21-.43.32L12,168a20,20,0,0,0,12,36H232a20,20,0,0,0,12-36ZM36,180l92-69,92,69Z"/></svg><span>Closet</span></a>
+        <a class="tab" href="#"><svg class="ico" viewBox="0 0 256 256" aria-hidden="true"><path fill="currentColor" d="M234.38,210a123.36,123.36,0,0,0-60.78-53.23,76,76,0,1,0-91.2,0A123.36,123.36,0,0,0,21.62,210a12,12,0,1,0,20.77,12c18.12-31.32,50.12-50,85.61-50s67.49,18.69,85.61,50a12,12,0,0,0,20.77-12ZM76,96a52,52,0,1,1,52,52A52.06,52.06,0,0,1,76,96Z"/></svg><span>Profile</span></a>
+      </div>
+    </div>
+  </div>
+
+<script>
+// Generate product cards from data
+function generateProductCard(product) {
+  const recommendation = product.recommendation;
+  const peerData = product.peerData;
+  const comparison = MockupHelpers.getFitComparison(product.id);
+  
+  return `
+    <div class="card">
+      <div class="imgbox">
+        <img class="img" src="${product.image}" alt="${product.name}"/>
+      </div>
+
+      <div class="info">
+        <button class="size-cta" type="button" aria-expanded="false">
+          <span class="label">
+            <svg class="measure-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width:16px;height:16px;">
+              <path d="M3 7v10a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V9a2 2 0 0 0-2-2H5a2 2 0 0 0-2 2z"/>
+              <line x1="8" y1="1" x2="8" y2="4"/>
+              <line x1="16" y1="1" x2="16" y2="4"/>
+            </svg>
+            Best Fit: <strong>${recommendation.bestSize}</strong>
+          </span>
+          <span class="match">${recommendation.confidence}% match</span>
+        </button>
+
+        <div class="divider"></div>
+
+        <div class="row">
+          <div class="left-meta">
+            <div class="brand">${product.brand.toUpperCase()}</div>
+            <span style="color:#c4c4c4;">|</span>
+            <div class="price">${MockupHelpers.formatPrice(product.price)}</div>
+          </div>
+          <div class="trust-item">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M20 6L9 17l-5-5"/>
+            </svg>
+            Free returns
+          </div>
+        </div>
+        
+        <div class="micro">${product.name}</div>
+        
+        <div class="micro" style="margin-top:8px;color:var(--petrol-400);">
+          ${comparison.tip}
+        </div>
+        
+        ${peerData ? `
+        <div class="micro" style="margin-top:8px;">
+          <strong>${peerData.sizeTwins.length} size twins</strong> wear ${recommendation.bestSize} • 
+          <strong>${peerData.totalWearers} total</strong> • ⭐ ${peerData.averageRating}
+        </div>
+        ` : ''}
+      </div>
+    </div>
+  `;
+}
+
+// Initialize the feed
+document.addEventListener('DOMContentLoaded', function() {
+  const feed = document.getElementById('productFeed');
+  
+  // Generate cards for each product
+  MOCKUP_DATA.products.forEach(product => {
+    feed.innerHTML += generateProductCard(product);
+  });
+  
+  console.log('Feed initialized with', MOCKUP_DATA.products.length, 'products');
+  console.log('User profile:', MOCKUP_DATA.user.name, MOCKUP_DATA.user.measurements);
+  console.log('Size twins:', MOCKUP_DATA.sizeTwins.length);
+});
+</script>
+
+</body>
+</html>
