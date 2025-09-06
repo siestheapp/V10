@@ -195,6 +195,42 @@ body{font-family:Inter,system-ui,-apple-system,"Segoe UI",Roboto,Helvetica,Arial
 
 .micro{color:var(--ink-300);font-size:14px;font-weight:500;margin-top:6px}
 
+/* Expanded details */
+.details{background:var(--ink-700);border:1px solid var(--ink-500);border-radius:var(--radius-card);padding:var(--space-12) var(--space-16) var(--space-8);transition:max-height .35s ease,opacity .25s ease;box-shadow:0 2px 8px rgba(0,0,0,0.1), inset 0 1px 0 rgba(255,255,255,0.05)}
+.item{padding:var(--space-8) 0}
+.item+ .item{border-top:1px solid var(--ink-500)}
+.measure{font-size:14px;line-height:1.55;color:#fff}
+.measure strong{font-size:15px;font-weight:700;color:#fff}
+.measure .muted{color:var(--ink-300);font-weight:400}
+
+/* Spec rows with delta badges (expanded state) */
+.spec{display:flex;align-items:center;justify-content:space-between;padding:var(--space-12) 0}
+.badge{display:inline-flex;align-items:center;justify-content:center;min-width:68px;font-size:14px;line-height:1;padding:var(--space-8) var(--space-12);border-radius:var(--radius-pill);background:var(--petrol-100);color:var(--petrol-600);font-weight:700;border:1px solid var(--petrol-400)}
+.details .divider{height:1px;background:var(--ink-500);margin:6px 0;border-radius:1px}
+
+/* Accent highlight for key references (subtle teal) */
+.accent{color:var(--petrol-600);font-weight:600}
+
+/* Inline advisory note (enhanced visibility) */
+.details .advice-inline{margin:6px 0 2px;font-size:15px;line-height:1.55;color:var(--ink-300);font-weight:500}
+.advice-next{margin-top:14px}
+.details .advice-inline b{color:var(--petrol-600)}
+
+/* Feed vs detail states */
+.hidden{display:none}
+.view-feed .details{display:none}
+.view-detail .details{display:block}
+/* Hide non-essential commerce/meta when expanded */
+.view-detail .divider.main-divider,
+.view-detail .row,
+.view-detail .micro{display:none}
+/* hide feed summary in expanded view */
+.view-detail .tip-summary{display:none}
+/* hide shop link in expanded view */
+.view-detail .shop-row{display:none}
+/* Tighten spacing above first line in details */
+.view-detail .details{padding-top:4px}
+
 /* CLOSET SCREEN STYLES */
 /* Filters - Dark strip like original */
 .filters{position:relative;z-index:4;background:var(--ink-900);padding:var(--space-10) var(--space-24);border-bottom:1px solid rgba(255,255,255,.08)}
@@ -276,7 +312,7 @@ body{font-family:Inter,system-ui,-apple-system,"Segoe UI",Roboto,Helvetica,Arial
 .btn-primary:active{transform:scale(.98)}
 </style>
 </head>
-<body>
+<body class="view-feed">
   <div class="phone">
     <div class="action-button"></div>
     <div class="btn-volume up"></div>
@@ -320,12 +356,19 @@ body{font-family:Inter,system-ui,-apple-system,"Segoe UI",Roboto,Helvetica,Arial
         </div>
 
         <div class="feed">
+          <!-- Card 1: Anthropologie Fleur (Emma owns) -->
           <div class="card">
             <div class="imgbox">
-              <img class="img" src="https://images.urbndata.com/is/image/Anthropologie/4130652010091_256_b?$redesign-zoom-5x$" alt="Anthropologie slip dress"/>
+              <img class="img" src="https://images.urbndata.com/is/image/Anthropologie/4130608080008_526_b?$a15-pdp-detail-shot$&fit=constrain&fmt=webp&qlt=80&wid=1314" alt="Anthropologie Fleur Strapless Dress"/>
+              
+              <!-- Peer match indicator -->
+              <div class="peer-badge" style="position:absolute;top:16px;left:16px;background:rgba(255,255,255,0.95);backdrop-filter:blur(10px);border-radius:12px;padding:8px 12px;display:flex;align-items:center;gap:8px;box-shadow:0 2px 8px rgba(0,0,0,0.1);">
+                <span style="width:24px;height:24px;background:linear-gradient(135deg,#00A3A3,#16B5B5);border-radius:50%;display:flex;align-items:center;justify-content:center;color:white;font-weight:600;font-size:12px;">E</span>
+                <span style="font-size:13px;font-weight:600;color:#0B0F14;">Emma owns this</span>
+              </div>
               
               <!-- Save/Heart button -->
-              <button class="save-btn" id="saveBtn" title="Save to favorites">
+              <button class="save-btn" id="saveBtn1" title="Save to favorites">
                 <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                   <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/>
                 </svg>
@@ -333,8 +376,88 @@ body{font-family:Inter,system-ui,-apple-system,"Segoe UI",Roboto,Helvetica,Arial
             </div>
 
             <div class="info">
-              <!-- Enhanced CTA with icon -->
-              <button class="size-cta" type="button">
+              <!-- Enhanced CTA with peer match -->
+              <button class="size-cta" id="sizeCta1" aria-expanded="false">
+                <span class="label">
+                  <span style="display:flex;align-items:center;gap:6px;">
+                    <span style="width:20px;height:20px;background:#00A3A3;border-radius:50%;display:flex;align-items:center;justify-content:center;color:white;font-weight:600;font-size:10px;">E</span>
+                    <span>Emma's Size: <strong>S</strong></span>
+                  </span>
+                </span>
+                <span class="match" id="match1" style="background:rgba(0,163,163,0.1);color:#00A3A3;border-color:#00A3A3;">98% match</span>
+              </button>
+
+              <div class="divider main-divider"></div>
+
+              <div class="row">
+                <div class="left-meta">
+                  <div class="brand">ANTHROPOLOGIE</div>
+                  <span style="color:#c4c4c4;">|</span>
+                  <div class="price">$228.00</div>
+                </div>
+                <div class="trust-item">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M20 6L9 17l-5-5"/>
+                  </svg>
+                  Free returns
+                </div>
+              </div>
+              <div class="micro" style="margin-top:4px;">The Fleur Strapless Satin Maxi Slip Dress</div>
+
+              <!-- Expanded details -->
+              <div class="details hidden" id="fitDetails1">
+                <div class="item">
+                  <p class="advice-inline">Based on your shared <strong class="accent">Bryson 2</strong> with Emma</p>
+                </div>
+                <div class="spec">
+                  <span class="measure"><strong>Bust —</strong> Looser <span class="muted">(35–36″ vs 34″)</span></span>
+                  <span class="badge">+1–2″</span>
+                </div>
+                <div class="divider"></div>
+                <div class="spec">
+                  <span class="measure"><strong>Waist —</strong> Looser <span class="muted">(27–28″ vs 26″)</span></span>
+                  <span class="badge">+1–2″</span>
+                </div>
+                <div class="divider"></div>
+                <div class="spec">
+                  <span class="measure"><strong>Hips —</strong> Matches <span class="muted">(37–38″ vs 37″)</span></span>
+                  <span class="badge">≈</span>
+                </div>
+                <p class="advice-inline advice-next">Emma's notes: "Slightly loose in bust/waist but the elastic at bust helps. Perfect in hips."</p>
+              </div>
+
+              <!-- Feed summary with peer data -->
+              <div class="tip-summary" id="fitSummary1">
+                <div style="margin-bottom:8px;">
+                  <strong style="color:#00A3A3;">✓ Peer Match:</strong> Emma owns this in S (you both wear Bryson 2)
+                </div>
+                <div style="font-size:13px;color:rgba(0,0,0,0.7);">
+                  <strong>Fit notes:</strong> Slightly loose in bust/waist, perfect in hips. Elastic bust helps.
+                </div>
+              </div>
+              
+              <div class="shop-row">
+                <a class="shop-link" href="https://www.anthropologie.com/shop/the-fleur-strapless-satin-maxi-slip-dress4?category=dresses&color=526&type=STANDARD&quantity=1" target="_blank" rel="noopener noreferrer">Shop S</a>
+              </div>
+            </div>
+          </div>
+
+          <!-- Card 2: Original Anthropologie Jocelyn Dress -->
+          <div class="card">
+            <div class="imgbox">
+              <img class="img" src="https://images.urbndata.com/is/image/Anthropologie/4130652010091_256_b?$redesign-zoom-5x$" alt="Anthropologie Jocelyn Dress"/>
+              
+              <!-- Save/Heart button -->
+              <button class="save-btn" id="saveBtn2" title="Save to favorites">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/>
+                </svg>
+              </button>
+            </div>
+
+            <div class="info">
+              <!-- Size guide based CTA -->
+              <button class="size-cta" id="sizeCta2" aria-expanded="false">
                 <span class="label">
                   <svg class="measure-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                     <path d="M3 7v10a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V9a2 2 0 0 0-2-2H5a2 2 0 0 0-2 2z"/>
@@ -343,10 +466,10 @@ body{font-family:Inter,system-ui,-apple-system,"Segoe UI",Roboto,Helvetica,Arial
                   </svg>
                   Best Fit: <strong>S</strong>
                 </span>
-                <span class="match">Fit details</span>
+                <span class="match" id="match2">Fit details</span>
               </button>
 
-              <div class="divider"></div>
+              <div class="divider main-divider"></div>
 
               <div class="row">
                 <div class="left-meta">
@@ -363,12 +486,34 @@ body{font-family:Inter,system-ui,-apple-system,"Segoe UI",Roboto,Helvetica,Arial
               </div>
               <div class="micro" style="margin-top:4px;">The Jocelyn Sleeveless Slip Midi Dress by Maeve</div>
 
+              <!-- Expanded details -->
+              <div class="details hidden" id="fitDetails2">
+                <div class="item">
+                  <p class="advice-inline">Compared to your size: <strong class="accent">Bryson 2</strong> <span class="muted">(perfect fit)</span></p>
+                </div>
+                <div class="spec">
+                  <span class="measure"><strong>Bust —</strong> Looser <span class="muted">(35–36″ vs 34″)</span></span>
+                  <span class="badge">+1–2″</span>
+                </div>
+                <div class="divider"></div>
+                <div class="spec">
+                  <span class="measure"><strong>Waist —</strong> Looser <span class="muted">(27–28″ vs 26″)</span></span>
+                  <span class="badge">+1–2″</span>
+                </div>
+                <div class="divider"></div>
+                <div class="spec">
+                  <span class="measure"><strong>Hips —</strong> Matches <span class="muted">(37–38″ vs 37″)</span></span>
+                  <span class="badge">≈</span>
+                </div>
+                <p class="advice-inline advice-next">Prefer a slimmer look? XS will match the bust (33–34″) and waist (25–26″) but feel tight at hips (35–36″ vs your 37″)</p>
+              </div>
+
               <!-- Feed summary -->
-              <div class="tip-summary">
-                <div>Fits like your <strong>Bryson Dress</strong> — roomier bust, matching waist & hips.</div>
+              <div class="tip-summary" id="fitSummary2">
+                <div>Based on your <strong>Bryson 2</strong> — slightly roomier in bust & waist, perfect hips.</div>
               </div>
               <div class="shop-row">
-                <a class="shop-link" href="#" target="_blank" rel="noopener noreferrer">Shop S</a>
+                <a class="shop-link" href="https://www.anthropologie.com/shop/the-jocelyn-sleeveless-slip-midi-dress-by-maeve?category=top-rated-dresses&color=256&type=STANDARD&quantity=1" target="_blank" rel="noopener noreferrer">Shop S</a>
               </div>
             </div>
           </div>
@@ -508,6 +653,54 @@ tabs.forEach(tab => {
   });
 });
 
+// Card 1 expansion (Fleur dress with Emma)
+const sizeCta1 = document.getElementById('sizeCta1');
+const match1 = document.getElementById('match1');
+const fitDetails1 = document.getElementById('fitDetails1');
+const fitSummary1 = document.getElementById('fitSummary1');
+const card1 = sizeCta1?.closest('.card');
+
+if(sizeCta1) {
+  sizeCta1.addEventListener('click', () => {
+    const isExpanded = card1.classList.contains('view-detail');
+    if(isExpanded) {
+      card1.classList.remove('view-detail');
+      card1.classList.add('view-feed');
+      sizeCta1.setAttribute('aria-expanded', 'false');
+      match1.textContent = '98% match';
+    } else {
+      card1.classList.remove('view-feed');
+      card1.classList.add('view-detail');
+      sizeCta1.setAttribute('aria-expanded', 'true');
+      match1.textContent = 'Hide details';
+    }
+  });
+}
+
+// Card 2 expansion (Jocelyn dress)
+const sizeCta2 = document.getElementById('sizeCta2');
+const match2 = document.getElementById('match2');
+const fitDetails2 = document.getElementById('fitDetails2');
+const fitSummary2 = document.getElementById('fitSummary2');
+const card2 = sizeCta2?.closest('.card');
+
+if(sizeCta2) {
+  sizeCta2.addEventListener('click', () => {
+    const isExpanded = card2.classList.contains('view-detail');
+    if(isExpanded) {
+      card2.classList.remove('view-detail');
+      card2.classList.add('view-feed');
+      sizeCta2.setAttribute('aria-expanded', 'false');
+      match2.textContent = 'Fit details';
+    } else {
+      card2.classList.remove('view-feed');
+      card2.classList.add('view-detail');
+      sizeCta2.setAttribute('aria-expanded', 'true');
+      match2.textContent = 'Hide details';
+    }
+  });
+}
+
 // Generate closet item cards from data
 function generateClosetCard(item) {
   return `
@@ -607,16 +800,34 @@ modal?.addEventListener('click',(e)=>{
 closeBtn?.addEventListener('click',()=> modal.classList.remove('open'));
 
 // Save button functionality
-const saveBtn = document.getElementById('saveBtn');
-if(saveBtn) {
-  saveBtn.addEventListener('click', (e) => {
+const saveBtn1 = document.getElementById('saveBtn1');
+if(saveBtn1) {
+  saveBtn1.addEventListener('click', (e) => {
     e.preventDefault();
-    saveBtn.classList.toggle('saved');
-    const isSaved = saveBtn.classList.contains('saved');
-    saveBtn.title = isSaved ? 'Remove from favorites' : 'Save to favorites';
+    saveBtn1.classList.toggle('saved');
+    const isSaved = saveBtn1.classList.contains('saved');
+    saveBtn1.title = isSaved ? 'Remove from favorites' : 'Save to favorites';
     
     // Update heart icon
-    const svg = saveBtn.querySelector('svg');
+    const svg = saveBtn1.querySelector('svg');
+    if(isSaved) {
+      svg.innerHTML = '<path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z" fill="currentColor"/>';
+    } else {
+      svg.innerHTML = '<path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z" fill="none" stroke="currentColor" stroke-width="2"/>';
+    }
+  });
+}
+
+const saveBtn2 = document.getElementById('saveBtn2');
+if(saveBtn2) {
+  saveBtn2.addEventListener('click', (e) => {
+    e.preventDefault();
+    saveBtn2.classList.toggle('saved');
+    const isSaved = saveBtn2.classList.contains('saved');
+    saveBtn2.title = isSaved ? 'Remove from favorites' : 'Save to favorites';
+    
+    // Update heart icon
+    const svg = saveBtn2.querySelector('svg');
     if(isSaved) {
       svg.innerHTML = '<path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z" fill="currentColor"/>';
     } else {

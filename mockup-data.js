@@ -7,7 +7,7 @@ const MOCKUP_DATA = {
     id: 'lily_001',
     name: 'Lily',
     age: 26,
-    height: '5\'5"',
+    height: '5\'6"',
     weight: '122 lbs',
     measurements: {
       bust: 34,
@@ -123,24 +123,86 @@ const MOCKUP_DATA = {
   // Size Twins (users with similar measurements)
   sizeTwins: [
     {
-      id: 'emma_002',
+      id: 'emma_001',
       name: 'Emma',
-      age: 24,
-      location: 'Los Angeles, CA',
+      age: 28,
+      height: '5\'6"',
+      weight: '118 lbs',
+      location: 'San Francisco, CA',
       measurements: {
         bust: 34,
         waist: 26,
-        hips: 37
+        hips: 36
       },
       typicalSize: '2',
       matchScore: 98,
-      sharedItems: 12,
-      avatar: 'https://images.unsplash.com/photo-1494790108755-2616b612b786?w=100&h=100&fit=crop&crop=face'
+      
+      // Emma's anchor items (required for pilot)
+      anchorItems: {
+        reformation: {
+          name: 'Bryson Dress',
+          size: '2',
+          fit: 'perfect'
+        },
+        nonReformation: {
+          brand: 'Aritzia',
+          name: 'Contour Knit Dress',
+          size: 'S',
+          fit: 'perfect'
+        }
+      },
+      
+      // Emma's additional closet items
+      closet: [
+        {
+          id: 'emma_ganni',
+          brand: 'Ganni',
+          name: 'Cotton Poplin Midi Dress',
+          size: '36',
+          fit: 'perfect',
+          category: 'dress'
+        },
+        {
+          id: 'emma_rouje',
+          brand: 'Rouje',
+          name: 'Gabin Dress',
+          size: '36',
+          fit: 'slightly loose',
+          category: 'dress'
+        },
+        {
+          id: 'emma_doen',
+          brand: 'Dôen',
+          name: 'Clea Top',
+          size: 'S',
+          fit: 'perfect',
+          category: 'top'
+        },
+        {
+          id: 'emma_sezane',
+          brand: 'Sézane',
+          name: 'Christie Cardigan',
+          size: 'S',
+          fit: 'perfect',
+          category: 'knitwear'
+        },
+        {
+          id: 'emma_realisation',
+          brand: 'Realisation Par',
+          name: 'Naomi Skirt',
+          size: 'S',
+          fit: 'runs small',
+          category: 'skirt'
+        }
+      ],
+      
+      sharedWithLily: ['Reformation Bryson Dress (2)'],
+      avatar: 'E' // Simple initial for now
     },
     {
       id: 'sophia_003',
       name: 'Sophia',
-      age: 28,
+      age: 27,
       location: 'New York, NY',
       measurements: {
         bust: 33,
