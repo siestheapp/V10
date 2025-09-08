@@ -170,17 +170,36 @@ struct ScanTab: View {
     @State private var selectedImage: UIImage?
     @State private var productLink: String = ""
     @State private var sizeRecommendation: SizeRecommendationResponse?
+    @State private var tryOnSession: TryOnSession?
     @State private var isAnalyzing = false
     @State private var analysisError: String?
     @State private var navigateToFitFeedback = false
+    @State private var navigateToTryOn = false
+    
+    // Add mode selection
+    @State private var selectedMode: ScanMode = .tryOn
     
     // Add user fit zones data
     @State private var userFitZones: ComprehensiveMeasurementData?
     @State private var isLoadingFitZones = false
+    
+    enum ScanMode: String, CaseIterable {
+        case tryOn = "Try-On"
+        case recommendation = "Size Recommendation"
+    }
 
     var body: some View {
         NavigationView {
             VStack(spacing: 30) {
+                // Mode selector
+                Picker("Mode", selection: $selectedMode) {
+                    ForEach(ScanMode.allCases, id: \.self) { mode in
+                        Text(mode.rawValue).tag(mode)
+                    }
+                }
+                .pickerStyle(SegmentedPickerStyle())
+                .padding(.horizontal, 40)
+                
                 // Scan Tag Section
                 VStack(spacing: 15) {
                     Text("Scan")
@@ -233,9 +252,9 @@ struct ScanTab: View {
                 }
                 .padding(.horizontal, 40)
                 
-                // Smart Size Recommendation Section
+                // URL Input Section
                 VStack(alignment: .leading, spacing: 15) {
-                    Text("Get Size Recommendation")
+                    Text(selectedMode == .tryOn ? "Log a Try-On" : "Get Size Recommendation")
                         .font(.headline)
                         .frame(maxWidth: .infinity, alignment: .leading)
                     
@@ -246,8 +265,12 @@ struct ScanTab: View {
                             .disabled(isAnalyzing)
                         
                         if !productLink.isEmpty && !isAnalyzing {
-                            Button("Analyze") {
-                                analyzeProduct()
+                            Button(selectedMode == .tryOn ? "Start Try-On" : "Analyze") {
+                                if selectedMode == .tryOn {
+                                    startTryOnSession()
+                                } else {
+                                    analyzeProduct()
+                                }
                             }
                             .buttonStyle(.borderedProminent)
                         }
@@ -259,7 +282,7 @@ struct ScanTab: View {
                         HStack {
                             ProgressView()
                                 .scaleEffect(0.8)
-                            Text("Analyzing product and finding your best size...")
+                            Text(selectedMode == .tryOn ? "Preparing try-on session..." : "Analyzing product and finding your best size...")
                                 .font(.caption)
                                 .foregroundColor(.secondary)
                         }
@@ -332,6 +355,14 @@ struct ScanTab: View {
                                             .stroke(Color.blue.opacity(0.3), lineWidth: 1)
                                     )
                             )
+                        }
+                        .buttonStyle(PlainButtonStyle())
+                    }
+                    
+                    // Try-On Session Display
+                    if let session = tryOnSession {
+                        NavigationLink(destination: ProductConfirmationView(session: session)) {
+                            TryOnPreviewCard(session: session)
                         }
                         .buttonStyle(PlainButtonStyle())
                     }
@@ -469,6 +500,60 @@ struct ScanTab: View {
                     self.sizeRecommendation = recommendation
                 } catch {
                     analysisError = "Failed to parse recommendation: \(error.localizedDescription)"
+                    print("Decode error: \(error)")
+                }
+            }
+        }.resume()
+    }
+    
+    private func startTryOnSession() {
+        guard !productLink.isEmpty else { return }
+        
+        isAnalyzing = true
+        analysisError = nil
+        tryOnSession = nil
+        
+        guard let url = URL(string: "\(Config.baseURL)/tryon/start") else {
+            analysisError = "Invalid API URL"
+            isAnalyzing = false
+            return
+        }
+        
+        let requestBody = [
+            "product_url": productLink,
+            "user_id": "1"
+        ]
+        
+        guard let jsonData = try? JSONSerialization.data(withJSONObject: requestBody) else {
+            analysisError = "Failed to encode request"
+            isAnalyzing = false
+            return
+        }
+        
+        var request = URLRequest(url: url)
+        request.httpMethod = "POST"
+        request.setValue("application/json", forHTTPHeaderField: "Content-Type")
+        request.httpBody = jsonData
+        
+        URLSession.shared.dataTask(with: request) { data, response, error in
+            DispatchQueue.main.async {
+                isAnalyzing = false
+                
+                if let error = error {
+                    analysisError = "Network error: \(error.localizedDescription)"
+                    return
+                }
+                
+                guard let data = data else {
+                    analysisError = "No data received"
+                    return
+                }
+                
+                do {
+                    let session = try JSONDecoder().decode(TryOnSession.self, from: data)
+                    self.tryOnSession = session
+                } catch {
+                    analysisError = "Failed to parse try-on session: \(error.localizedDescription)"
                     print("Decode error: \(error)")
                 }
             }
@@ -792,6 +877,68 @@ struct SizeRecommendationView: View {
     }
     
 
+}
+
+// MARK: - Try-On Preview Card
+struct TryOnPreviewCard: View {
+    let session: TryOnSession
+    
+    var body: some View {
+        VStack(alignment: .leading, spacing: 12) {
+            HStack {
+                Text(session.brand)
+                    .font(.caption)
+                    .foregroundColor(.secondary)
+                    .textCase(.uppercase)
+                Spacer()
+                Image(systemName: "chevron.right")
+                    .foregroundColor(.blue)
+                    .font(.caption)
+            }
+            
+            HStack(spacing: 12) {
+                Image(systemName: "tshirt")
+                    .font(.title)
+                    .foregroundColor(.blue)
+                
+                VStack(alignment: .leading, spacing: 2) {
+                    Text("Try-On Session")
+                        .font(.title)
+                        .fontWeight(.bold)
+                        .foregroundColor(.primary)
+                    
+                    Text("Ready to log your fit experience")
+                        .font(.subheadline)
+                        .foregroundColor(.blue)
+                }
+                
+                Spacer()
+                
+                VStack {
+                    Text("\(session.sizeOptions.count)")
+                        .font(.title2)
+                        .fontWeight(.bold)
+                        .foregroundColor(.blue)
+                    Text("sizes")
+                        .font(.caption2)
+                        .foregroundColor(.secondary)
+                }
+            }
+            
+            Text("Tap to start logging your try-on")
+                .font(.caption)
+                .foregroundColor(.blue)
+        }
+        .padding()
+        .background(
+            RoundedRectangle(cornerRadius: 12)
+                .fill(Color(.systemGray6))
+                .overlay(
+                    RoundedRectangle(cornerRadius: 12)
+                        .stroke(Color.blue.opacity(0.3), lineWidth: 1)
+                )
+        )
+    }
 }
 
 // MARK: - Size Recommendation Screen (moved to separate file)

@@ -11,6 +11,7 @@ from datetime import datetime
 from fastapi.middleware.cors import CORSMiddleware
 from fit_zone_calculator import FitZoneCalculator
 import json
+import time
 from urllib.parse import urlparse
 import openai
 from contextlib import asynccontextmanager
@@ -174,11 +175,12 @@ def get_db():
 @app.get("/user/{user_id}/closet")
 async def get_closet(user_id: int):
     conn = get_db()
-    cur = conn.cursor()
+    # Ensure dictionary rows for downstream .get() usage
+    cur = conn.cursor(cursor_factory=psycopg2.extras.RealDictCursor)
     
     try:
-        # Try to use materialized view first for better performance
-        # If it doesn't exist or isn't refreshed, fall back to subqueries
+        # Try to use materialized view first for better performance.
+        # If it doesn't exist, we'll fall back to the base table.
         cur.execute("""
             SELECT 
                 ug.id as garment_id,
@@ -193,8 +195,6 @@ async def get_closet(user_id: int):
                 sge.waist_max,
                 sge.neck_min,
                 sge.neck_max,
-                sge.hip_min,
-                sge.hip_max,
                 sge.center_back_length,
                 ug.fit_feedback,
                 ug.created_at,
@@ -244,7 +244,69 @@ async def get_closet(user_id: int):
             AND ug.owns_garment = true
             ORDER BY c.name, ug.created_at DESC
         """, (user_id,))
-        
+    except Exception:
+        # Fallback: use base table if the materialized view is unavailable
+        conn.rollback()
+        cur.close()
+        cur = conn.cursor(cursor_factory=psycopg2.extras.RealDictCursor)
+        cur.execute("""
+            SELECT 
+                ug.id as garment_id,
+                b.name as brand_name,
+                c.name as category,
+                ug.size_label as size,
+                sge.chest_min,
+                sge.chest_max,
+                sge.sleeve_min,
+                sge.sleeve_max,
+                sge.waist_min,
+                sge.waist_max,
+                sge.neck_min,
+                sge.neck_max,
+                sge.center_back_length,
+                ug.fit_feedback,
+                ug.created_at,
+                ug.owns_garment,
+                g.product_name,
+                g.image_url,
+                g.product_url,
+                -- Feedback fallbacks from historical table
+                (SELECT fc.feedback_text FROM user_garment_feedback ugf
+                 JOIN feedback_codes fc ON ugf.feedback_code_id = fc.id
+                 WHERE ugf.user_garment_id = ug.id AND ugf.dimension = 'overall'
+                 ORDER BY ugf.created_at DESC LIMIT 1) as overall_feedback,
+                (SELECT fc.feedback_text FROM user_garment_feedback ugf
+                 JOIN feedback_codes fc ON ugf.feedback_code_id = fc.id
+                 WHERE ugf.user_garment_id = ug.id AND ugf.dimension = 'chest'
+                 ORDER BY ugf.created_at DESC LIMIT 1) as chest_feedback,
+                (SELECT fc.feedback_text FROM user_garment_feedback ugf
+                 JOIN feedback_codes fc ON ugf.feedback_code_id = fc.id
+                 WHERE ugf.user_garment_id = ug.id AND ugf.dimension = 'sleeve'
+                 ORDER BY ugf.created_at DESC LIMIT 1) as sleeve_feedback,
+                (SELECT fc.feedback_text FROM user_garment_feedback ugf
+                 JOIN feedback_codes fc ON ugf.feedback_code_id = fc.id
+                 WHERE ugf.user_garment_id = ug.id AND ugf.dimension = 'neck'
+                 ORDER BY ugf.created_at DESC LIMIT 1) as neck_feedback,
+                (SELECT fc.feedback_text FROM user_garment_feedback ugf
+                 JOIN feedback_codes fc ON ugf.feedback_code_id = fc.id
+                 WHERE ugf.user_garment_id = ug.id AND ugf.dimension = 'waist'
+                 ORDER BY ugf.created_at DESC LIMIT 1) as waist_feedback,
+                (SELECT fc.feedback_text FROM user_garment_feedback ugf
+                 JOIN feedback_codes fc ON ugf.feedback_code_id = fc.id
+                 WHERE ugf.user_garment_id = ug.id AND ugf.dimension = 'hip'
+                 ORDER BY ugf.created_at DESC LIMIT 1) as hip_feedback
+            FROM user_garments ug
+            LEFT JOIN garments g ON ug.garment_id = g.id
+            LEFT JOIN brands b ON g.brand_id = b.id
+            LEFT JOIN categories c ON g.category_id = c.id
+            LEFT JOIN size_guide_entries sge ON 
+                ug.size_guide_entry_id = sge.id
+            WHERE ug.user_id = %s 
+            AND ug.owns_garment = true
+            ORDER BY c.name, ug.created_at DESC
+        """, (user_id,))
+
+    try:
         garments = cur.fetchall()
         print(f"Raw SQL results: {garments}")  # Debug log
         
@@ -1383,6 +1445,159 @@ async def process_garment_url(request: dict):
         
     except Exception as e:
         print(f"Error processing garment URL: {str(e)}")
+        raise HTTPException(status_code=500, detail=str(e))
+
+@app.post("/tryon/start")
+async def start_tryon_session(request: dict):
+    """
+    Start a try-on session - extract product info and prepare for feedback collection
+    This is separate from size recommendations - focused on collecting user feedback
+    """
+    try:
+        product_url = request.get("product_url")
+        user_id = request.get("user_id", "1")
+        
+        if not product_url:
+            raise HTTPException(status_code=400, detail="Product URL is required")
+        
+        print(f"🎯 Starting try-on session for: {product_url}")
+        
+        # Extract brand from URL
+        brand_info = extract_brand_from_url(product_url)
+        if not brand_info:
+            raise HTTPException(status_code=400, detail="Could not identify brand from URL")
+        
+        # Extract product name and image
+        product_name = extract_product_name_from_url(product_url)
+        product_image = extract_product_image_from_url(product_url)
+        
+        # Get available measurements for this brand
+        brand_measurements = await get_brand_measurements_for_feedback(brand_info["brand_id"])
+        
+        # Get size options for this brand
+        size_options = await get_brand_size_options(brand_info["brand_id"])
+        
+        return {
+            "session_id": f"tryon_{user_id}_{int(time.time())}",
+            "brand": brand_info["brand_name"],
+            "brand_id": brand_info["brand_id"],
+            "product_name": product_name,
+            "product_url": product_url,
+            "product_image": product_image,
+            "available_measurements": brand_measurements["measurements"],
+            "feedback_options": brand_measurements["feedbackOptions"],
+            "size_options": size_options,
+            "next_step": "size_selection_and_feedback"
+        }
+        
+    except Exception as e:
+        print(f"Error starting try-on session: {str(e)}")
+        raise HTTPException(status_code=500, detail=str(e))
+
+@app.post("/tryon/submit")
+async def submit_tryon_feedback(request: dict):
+    """
+    Submit try-on feedback - this is where the user provides their fit experience
+    """
+    try:
+        user_id = request.get("user_id", "1")
+        session_id = request.get("session_id")
+        product_url = request.get("product_url")
+        brand_id = request.get("brand_id")
+        size_tried = request.get("size_tried")
+        feedback = request.get("feedback")  # {chest: 3, neck: 2, sleeve: 4, overall: 3}
+        notes = request.get("notes", "")
+        try_on_location = request.get("try_on_location", "Store")
+        
+        if not all([session_id, product_url, brand_id, size_tried, feedback]):
+            raise HTTPException(status_code=400, detail="Missing required fields")
+        
+        print(f"📝 Submitting try-on feedback: {size_tried} - {feedback}")
+        
+        # Extract product name
+        product_name = extract_product_name_from_url(product_url)
+        
+        async with pool.acquire() as conn:
+            # Create try-on garment entry (NOT owned)
+            garment_id = await conn.fetchval("""
+                INSERT INTO user_garments (
+                    user_id, brand_id, category_id, size_label,
+                    product_name, product_url, image_url, owns_garment,
+                    try_on_date, try_on_location, try_on_notes, created_at
+                ) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, NOW(), $9, $10, NOW())
+                RETURNING id
+            """, int(user_id), brand_id, 1, size_tried, 
+                product_name, product_url, None, False, 
+                try_on_location, notes)
+            
+            # Get size measurements for this brand/size
+            measurements = await conn.fetchrow("""
+                SELECT sge.* FROM size_guide_entries sge
+                JOIN size_guides sg ON sge.size_guide_id = sg.id
+                WHERE sg.brand_id = $1 AND sge.size_label = $2
+                LIMIT 1
+            """, brand_id, size_tried)
+            
+            # Store feedback for each dimension
+            feedback_stored = []
+            for dimension, rating in feedback.items():
+                if dimension != 'overall' and rating is not None:
+                    # Map rating to feedback text
+                    feedback_text = {
+                        1: "Too Tight",
+                        2: "Tight but I Like It", 
+                        3: "Good Fit",
+                        4: "Loose but I Like It",
+                        5: "Too Loose"
+                    }.get(rating, "Good Fit")
+                    
+                    # Get feedback code ID
+                    feedback_code_id = await conn.fetchval("""
+                        SELECT id FROM feedback_codes 
+                        WHERE feedback_text = $1
+                    """, feedback_text)
+                    
+                    if feedback_code_id:
+                        await conn.execute("""
+                            INSERT INTO user_garment_feedback 
+                            (user_garment_id, dimension, feedback_code_id, created_at)
+                            VALUES ($1, $2, $3, NOW())
+                        """, garment_id, dimension, feedback_code_id)
+                        
+                        feedback_stored.append({
+                            "dimension": dimension,
+                            "rating": rating,
+                            "feedback_text": feedback_text
+                        })
+            
+            # Generate immediate insights
+            insights = await generate_tryon_insights(
+                user_id, brand_id, size_tried, feedback, measurements, feedback_stored
+            )
+            
+            # Log the try-on action
+            await conn.execute("""
+                INSERT INTO user_actions (
+                    user_id, action_type, target_table, target_id, metadata, created_at
+                ) VALUES ($1, $2, $3, $4, $5, NOW())
+            """, int(user_id), 'try_on_feedback', 'user_garments', garment_id, json.dumps({
+                'session_id': session_id,
+                'brand_id': brand_id,
+                'size_tried': size_tried,
+                'feedback_summary': feedback,
+                'insights_generated': True
+            }))
+            
+            return {
+                "garment_id": garment_id,
+                "status": "success",
+                "insights": insights,
+                "feedback_stored": feedback_stored,
+                "message": "Try-on feedback saved successfully"
+            }
+    
+    except Exception as e:
+        print(f"Error submitting try-on feedback: {str(e)}")
         raise HTTPException(status_code=500, detail=str(e))
 
 @app.post("/garment/size-recommendation")
@@ -3403,7 +3618,16 @@ def extract_product_name_from_url(product_url: str) -> str:
     try:
         # Add headers to mimic a real browser request
         headers = {
-            'User-Agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36'
+            'User-Agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36',
+            'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,*/*;q=0.8',
+            'Accept-Language': 'en-US,en;q=0.5',
+            'Accept-Encoding': 'gzip, deflate, br',
+            'Connection': 'keep-alive',
+            'Upgrade-Insecure-Requests': '1',
+            'Sec-Fetch-Dest': 'document',
+            'Sec-Fetch-Mode': 'navigate',
+            'Sec-Fetch-Site': 'none',
+            'Cache-Control': 'max-age=0'
         }
         
         response = requests.get(product_url, headers=headers, timeout=10)
@@ -3417,10 +3641,14 @@ def extract_product_name_from_url(product_url: str) -> str:
             'h1.product-title',
             'h1[class*="title"]',
             'h1[class*="product"]',
-            'h1',
+            'h1',  # J.Crew uses simple h1
             '[data-testid="product-name"]',
             '.product-name',
-            '.product-title'
+            '.product-title',
+            # J.Crew specific selectors
+            'h1[data-testid="product-hero-title"]',
+            '.product-hero-title',
+            '.product-details h1'
         ]
         
         for selector in product_name_selectors:
@@ -3441,10 +3669,37 @@ def extract_product_name_from_url(product_url: str) -> str:
             if title_text and len(title_text) > 3:
                 return title_text
         
-        return "Product Name Not Found"
+        # Fallback: extract from URL path
+        return extract_product_name_from_url_path(product_url)
         
     except Exception as e:
         print(f"⚠️ Failed to extract product name from {product_url}: {str(e)}")
+        return extract_product_name_from_url_path(product_url)
+
+def extract_product_name_from_url_path(product_url: str) -> str:
+    """Extract product name from URL path as fallback"""
+    try:
+        from urllib.parse import urlparse, unquote
+        parsed = urlparse(product_url)
+        path_parts = parsed.path.strip('/').split('/')
+        
+        # For J.Crew URLs like: /p/mens/categories/clothing/shirts/broken-in-oxford/broken-in-organic-cotton-oxford-shirt/BE996
+        if 'jcrew.com' in product_url.lower():
+            # Look for the product name part (usually the last meaningful part before the product code)
+            for part in reversed(path_parts):
+                if part and not part.isdigit() and len(part) > 3 and not part.isupper():
+                    # Decode URL encoding and format nicely
+                    name = unquote(part).replace('-', ' ').title()
+                    return name
+        
+        # Generic fallback
+        for part in reversed(path_parts):
+            if part and not part.isdigit() and len(part) > 3:
+                name = unquote(part).replace('-', ' ').title()
+                return name
+        
+        return "Product Name Not Found"
+    except:
         return "Product Name Not Found"
 
 def get_brand_placeholder_image(brand_name: str) -> str:
@@ -3496,6 +3751,8 @@ def extract_product_image_from_url(product_url: str) -> str:
             'img[data-testid="product-hero-image"]',
             'img[class*="hero-image"]',
             'img[class*="product-hero"]',
+            'img[class*="product-image"]',
+            'img[class*="main-image"]',
             # Generic
             'img[class*="main-image"]',
             'img[class*="primary-image"]',
@@ -3584,3 +3841,86 @@ if __name__ == "__main__":
         port=8006,  # Backend API port
         reload=reload_enabled
     ) 
+
+# Helper functions for try-on flow
+async def get_brand_size_options(brand_id: int) -> list:
+    """Get available size options for a brand"""
+    async with pool.acquire() as conn:
+        sizes = await conn.fetch("""
+            SELECT DISTINCT sge.size_label,
+                CASE sge.size_label
+                    WHEN 'XS' THEN 1
+                    WHEN 'S' THEN 2
+                    WHEN 'M' THEN 3
+                    WHEN 'L' THEN 4
+                    WHEN 'XL' THEN 5
+                    WHEN 'XXL' THEN 6
+                    ELSE 99
+                END as size_order
+            FROM size_guide_entries sge
+            JOIN size_guides sg ON sge.size_guide_id = sg.id
+            WHERE sg.brand_id = $1
+            ORDER BY size_order
+        """, brand_id)
+        
+        return [size['size_label'] for size in sizes]
+
+async def generate_tryon_insights(user_id, brand_id, size_tried, feedback, measurements, feedback_stored):
+    """Generate immediate insights after try-on"""
+    insights = {
+        "summary": "",
+        "key_findings": [],
+        "measurement_analysis": {},
+        "recommendations": [],
+        "confidence": "low"  # Will increase with more data
+    }
+    
+    # Analyze feedback patterns
+    tight_areas = [dim for dim, rating in feedback.items() if rating <= 2 and dim != 'overall']
+    loose_areas = [dim for dim, rating in feedback.items() if rating >= 4 and dim != 'overall']
+    good_areas = [dim for dim, rating in feedback.items() if rating == 3 and dim != 'overall']
+    
+    # Get brand name
+    async with pool.acquire() as conn:
+        brand_name = await conn.fetchval("SELECT name FROM brands WHERE id = $1", brand_id)
+    
+    # Generate summary
+    if not tight_areas and not loose_areas:
+        insights["summary"] = f"✅ {brand_name} size {size_tried} fits you well!"
+        insights["confidence"] = "high"
+    elif len(tight_areas) == 1 and not loose_areas:
+        insights["summary"] = f"🔶 {brand_name} {size_tried} is close - just tight in {tight_areas[0]}"
+        insights["confidence"] = "medium"
+    elif len(loose_areas) == 1 and not tight_areas:
+        insights["summary"] = f"🔶 {brand_name} {size_tried} is close - just loose in {loose_areas[0]}"
+        insights["confidence"] = "medium"
+    else:
+        insights["summary"] = f"⚠️ {brand_name} {size_tried} has multiple fit issues"
+        insights["confidence"] = "low"
+    
+    # Add specific findings
+    for area in tight_areas:
+        insights["key_findings"].append(f"Size {size_tried} is tight in {area}")
+        insights["recommendations"].append(f"Consider size {get_next_size_up(size_tried)} for better {area} fit")
+    
+    for area in loose_areas:
+        insights["key_findings"].append(f"Size {size_tried} is loose in {area}")
+        insights["recommendations"].append(f"Consider size {get_next_size_down(size_tried)} for better {area} fit")
+    
+    # Add measurement analysis if available
+    if measurements:
+        for dimension in ['chest', 'neck', 'sleeve', 'waist']:
+            if hasattr(measurements, f'{dimension}_min') and getattr(measurements, f'{dimension}_min'):
+                min_val = getattr(measurements, f'{dimension}_min')
+                max_val = getattr(measurements, f'{dimension}_max')
+                insights["measurement_analysis"][dimension] = f"{min_val}-{max_val}\""
+    
+    return insights
+
+def get_next_size_up(size):
+    size_map = {'XS': 'S', 'S': 'M', 'M': 'L', 'L': 'XL', 'XL': 'XXL'}
+    return size_map.get(size, size)
+
+def get_next_size_down(size):
+    size_map = {'S': 'XS', 'M': 'S', 'L': 'M', 'XL': 'L', 'XXL': 'XL'}
+    return size_map.get(size, size)
