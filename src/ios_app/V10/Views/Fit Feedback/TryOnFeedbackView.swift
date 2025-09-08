@@ -167,27 +167,31 @@ struct FeedbackCollectionView: View {
                 .font(.headline)
             
             ForEach(measurements, id: \.self) { measurement in
-                if measurement != "overall" {
-                    VStack(alignment: .leading, spacing: 10) {
+                VStack(alignment: .leading, spacing: 10) {
+                    if measurement == "overall" {
+                        Text("How does it fit overall?")
+                            .font(.subheadline)
+                            .fontWeight(.medium)
+                    } else {
                         Text("How does it fit in the \(measurement)?")
                             .font(.subheadline)
                             .fontWeight(.medium)
-
-                        ForEach(fitOptions, id: \.0) { option in
-                            Button(action: {
-                                fitFeedback[measurement] = option.0
-                            }) {
-                                Text(option.1)
-                                    .frame(maxWidth: .infinity)
-                                    .padding()
-                                    .background(fitFeedback[measurement] == option.0 ? Color.blue.opacity(0.8) : Color.gray.opacity(0.2))
-                                    .foregroundColor(fitFeedback[measurement] == option.0 ? .white : .black)
-                                    .cornerRadius(10)
-                            }
+                    }
+                    
+                    ForEach(fitOptions, id: \.0) { option in
+                        Button(action: {
+                            fitFeedback[measurement] = option.0
+                        }) {
+                            Text(option.1)
+                                .frame(maxWidth: .infinity)
+                                .padding()
+                                .background(fitFeedback[measurement] == option.0 ? Color.blue.opacity(0.8) : Color.gray.opacity(0.2))
+                                .foregroundColor(fitFeedback[measurement] == option.0 ? .white : .black)
+                                .cornerRadius(10)
                         }
                     }
-                    .padding(.vertical, 8)
                 }
+                .padding(.vertical, 8)
             }
         }
     }

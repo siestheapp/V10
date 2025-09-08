@@ -9,24 +9,43 @@ struct ProductConfirmationView: View {
         ScrollView {
             VStack(spacing: 24) {
                 // Product Image
-                AsyncImage(url: URL(string: session.productImage)) { image in
-                    image
-                        .resizable()
-                        .aspectRatio(contentMode: .fit)
-                } placeholder: {
-                    Rectangle()
-                        .fill(Color(.systemGray5))
-                        .aspectRatio(3/4, contentMode: .fit)
-                        .overlay(
-                            VStack {
-                                Image(systemName: "photo")
-                                    .font(.largeTitle)
-                                    .foregroundColor(.gray)
-                                Text("Loading...")
-                                    .font(.caption)
-                                    .foregroundColor(.gray)
-                            }
-                        )
+                Group {
+                    if session.productImage.hasPrefix("https://via.placeholder.com") {
+                        // Use local placeholder for external placeholder URLs
+                        Rectangle()
+                            .fill(Color(.systemGray5))
+                            .aspectRatio(3/4, contentMode: .fit)
+                            .overlay(
+                                VStack {
+                                    Image(systemName: "tshirt")
+                                        .font(.largeTitle)
+                                        .foregroundColor(.gray)
+                                    Text(session.brand)
+                                        .font(.caption)
+                                        .foregroundColor(.gray)
+                                }
+                            )
+                    } else {
+                        AsyncImage(url: URL(string: session.productImage)) { image in
+                            image
+                                .resizable()
+                                .aspectRatio(contentMode: .fit)
+                        } placeholder: {
+                            Rectangle()
+                                .fill(Color(.systemGray5))
+                                .aspectRatio(3/4, contentMode: .fit)
+                                .overlay(
+                                    VStack {
+                                        Image(systemName: "photo")
+                                            .font(.largeTitle)
+                                            .foregroundColor(.gray)
+                                        Text("Loading...")
+                                            .font(.caption)
+                                            .foregroundColor(.gray)
+                                    }
+                                )
+                        }
+                    }
                 }
                 .frame(maxHeight: 400)
                 .cornerRadius(12)
@@ -127,8 +146,10 @@ struct ProductConfirmationView: View {
         }
         .navigationTitle("Confirm Product")
         .navigationBarTitleDisplayMode(.inline)
-        .navigationDestination(isPresented: $navigateToFeedback) {
-            TryOnFeedbackView(session: session)
+        .fullScreenCover(isPresented: $navigateToFeedback) {
+            NavigationView {
+                TryOnFeedbackView(session: session)
+            }
         }
     }
 }
