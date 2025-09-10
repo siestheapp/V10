@@ -29,9 +29,9 @@ class JCrewProductFetcher:
         Fetch product data from J.Crew URL
         Returns product info or None if failed
         """
-        # Check if it's a supported product type (men's tops or outerwear)
+        # Check if it's a supported product type (all men's tops including outerwear)
         if not self._is_supported_product(product_url):
-            print(f"❌ Unsupported product type. Only J.Crew men's tops and outerwear are supported.")
+            print(f"❌ Unsupported product type. Only J.Crew men's tops (shirts, sweaters, jackets) are supported.")
             return None
         
         # First check cache
@@ -59,7 +59,7 @@ class JCrewProductFetcher:
         if "/mens/" not in url_lower and "/men/" not in url_lower:
             return False
         
-        # Supported categories for men's tops and outerwear
+        # Supported categories - ALL men's tops (J.Crew uses ONE guide for all)
         supported_categories = [
             "/shirts/",
             "/t-shirts/",
@@ -68,10 +68,10 @@ class JCrewProductFetcher:
             "/sweaters/",
             "/sweatshirts/",
             "/hoodies/",
-            "/jacket",  # Matches /jackets/ and /jacket/
-            "/coat",    # Matches /coats/ and /coat/ and /coats-and-jackets/
-            "/outerwear/",
-            "/blazer"   # Matches /blazers/ and /blazer/
+            "/jacket",   # ✅ Now supported - same size guide
+            "/coat",     # ✅ Now supported - same size guide  
+            "/outerwear/",  # ✅ Now supported - same size guide
+            "/blazer"    # ✅ Now supported - same size guide
         ]
         
         # Check if URL contains any supported category
@@ -162,12 +162,8 @@ class JCrewProductFetcher:
         """Detect product category and subcategory from URL"""
         url_lower = url.lower()
         
-        # Outerwear categories
-        if any(x in url_lower for x in ['/jacket', '/coat', '/outerwear/', '/blazer']):
-            return {'category': 'Outerwear', 'subcategory': 'Jackets'}
-        
-        # Sweaters & Sweatshirts
-        elif '/sweaters/' in url_lower:
+        # Sweaters & Sweatshirts (we have t-shirt guide which works for these)
+        if '/sweaters/' in url_lower:
             return {'category': 'Sweaters', 'subcategory': 'Pullover'}
         elif any(x in url_lower for x in ['/sweatshirts/', '/hoodies/']):
             return {'category': 'Sweaters', 'subcategory': 'Sweatshirts'}
