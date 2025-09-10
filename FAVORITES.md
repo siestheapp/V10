@@ -6,9 +6,9 @@
 
 ## 📊 **Database & Logs**
 
-- **[How to Ingest Size Guides](daily-notes/2025-01-20/howto_ingest_sizeguide.md)** - ⭐ **NEW!** Complete AI agent guide with tested examples
-- **[Database Query Cookbook](dev/docs/database/DATABASE_QUERY_COOKBOOK.md)** - ⭐ **NEW!** Tested, working SQL queries for AI assistants
-- **[DB Queries](db_queries.md)** - ⭐ **QUICK!** Same as above, shorter link
+- **[Database State & Roadmap](DATABASE_STATE_2025_09_10.md)** - ⭐ **CURRENT!** Database overview and roadmap (Sept 10, 2025)
+- **[Database Queries V2](DATABASE_QUERIES_V2.md)** - ⭐ **UPDATED!** Working queries for current schema
+- **[How to Ingest Size Guides](howto_ingest_sizeguide.md)** - ⭐ Complete AI agent guide with tested examples
 - **[Database Changes Log](dev/logs/database_changes.log)** - ⭐ **ACTIVE LOG!** Live log of all database modifications - gets updated automatically
 - **[Session Log](daily-notes/2025-08-08/SESSION_LOG.md)** - Complete record of all sessions and work
 - **[Database Backup Overview](daily-notes/2025-08-08/database_backup_overview.md)** - Complete backup & logging guide
