@@ -18,6 +18,10 @@ from contextlib import asynccontextmanager
 import os
 from dotenv import load_dotenv
 from sqlalchemy import text
+
+# Simple in-memory cache for user fit zones data
+user_fit_zones_cache = {}
+CACHE_EXPIRY_MINUTES = 5
 import subprocess
 import sys
 from body_measurement_estimator import BodyMeasurementEstimator
@@ -371,6 +375,18 @@ async def get_user_measurements(user_id: str):
     try:
         print(f"🔍 API CALLED: /user/{user_id}/measurements")
         
+        # Check cache first
+        cache_key = f"fit_zones_{user_id}"
+        current_time = datetime.now()
+        
+        if cache_key in user_fit_zones_cache:
+            cached_data, cache_time = user_fit_zones_cache[cache_key]
+            if current_time - cache_time < timedelta(minutes=CACHE_EXPIRY_MINUTES):
+                print(f"📦 CACHE HIT: Returning cached fit zones for user {user_id}")
+                return cached_data
+        
+        print(f"📦 CACHE MISS: Loading fresh fit zones for user {user_id}")
+        
         # Get database connection for methodology confidence
         conn = get_db()
         
@@ -385,6 +401,11 @@ async def get_user_measurements(user_id: str):
         # Format and return comprehensive response
         response = format_comprehensive_measurements_response(garments, established_fit_zones['chest'], established_fit_zones['neck'], established_fit_zones['sleeve'])
         print(f"Final response: {response}")  # Debug log
+        
+        # Cache the response
+        user_fit_zones_cache[cache_key] = (response, current_time)
+        print(f"📦 CACHED: Stored fit zones for user {user_id}")
+        
         return response
     except Exception as e:
         print(f"Error in get_user_measurements: {str(e)}")  # Error log
@@ -520,33 +541,21 @@ def get_user_garments_with_all_dimensions(user_id: str) -> list:
                 END as sleeve_range,
                 ug.size_label as size,
                 ug.owns_garment,
-                -- Get detailed feedback for all dimensions
-                (SELECT fc.feedback_text 
-                 FROM user_garment_feedback ugf 
-                 JOIN feedback_codes fc ON ugf.feedback_code_id = fc.id
-                 WHERE ugf.user_garment_id = ug.id AND ugf.dimension = 'overall' 
-                 ORDER BY ugf.created_at DESC LIMIT 1) as fit_feedback,
-                (SELECT fc.feedback_text 
-                 FROM user_garment_feedback ugf 
-                 JOIN feedback_codes fc ON ugf.feedback_code_id = fc.id
-                 WHERE ugf.user_garment_id = ug.id AND ugf.dimension = 'chest' 
-                 ORDER BY ugf.created_at DESC LIMIT 1) as chest_feedback,
-                (SELECT fc.feedback_text 
-                 FROM user_garment_feedback ugf 
-                 JOIN feedback_codes fc ON ugf.feedback_code_id = fc.id
-                 WHERE ugf.user_garment_id = ug.id AND ugf.dimension = 'neck' 
-                 ORDER BY ugf.created_at DESC LIMIT 1) as neck_feedback,
-                (SELECT fc.feedback_text 
-                 FROM user_garment_feedback ugf 
-                 JOIN feedback_codes fc ON ugf.feedback_code_id = fc.id
-                 WHERE ugf.user_garment_id = ug.id AND ugf.dimension = 'sleeve' 
-                 ORDER BY ugf.created_at DESC LIMIT 1) as sleeve_feedback
+                -- Optimized feedback retrieval using window functions instead of subqueries
+                MAX(CASE WHEN ugf.dimension = 'overall' THEN fc.feedback_text END) as fit_feedback,
+                MAX(CASE WHEN ugf.dimension = 'chest' THEN fc.feedback_text END) as chest_feedback,
+                MAX(CASE WHEN ugf.dimension = 'neck' THEN fc.feedback_text END) as neck_feedback,
+                MAX(CASE WHEN ugf.dimension = 'sleeve' THEN fc.feedback_text END) as sleeve_feedback
             FROM user_garments ug
             LEFT JOIN garments g ON ug.garment_id = g.id
             LEFT JOIN brands b ON g.brand_id = b.id
             LEFT JOIN categories c ON g.category_id = c.id
             LEFT JOIN size_guide_entries sge ON ug.size_guide_entry_id = sge.id
+            LEFT JOIN user_garment_feedback ugf ON ug.id = ugf.user_garment_id
+            LEFT JOIN feedback_codes fc ON ugf.feedback_code_id = fc.id
             WHERE ug.user_id = %s AND ug.owns_garment = true
+            GROUP BY ug.id, b.name, c.name, sge.chest_min, sge.chest_max, sge.neck_min, sge.neck_max, 
+                     sge.sleeve_min, sge.sleeve_max, ug.size_label, ug.owns_garment, ug.created_at
             ORDER BY ug.created_at DESC
         """, (user_id,))
         
@@ -1518,17 +1527,26 @@ async def submit_tryon_feedback(request: dict):
         product_name = extract_product_name_from_url(product_url)
         
         async with pool.acquire() as conn:
-            # Create try-on garment entry (NOT owned)
+            # First, create or find the garments entry
+            garment_entry_id = await conn.fetchval("""
+                INSERT INTO garments (
+                    brand_id, category_id, product_name, product_url, 
+                    created_at
+                ) VALUES ($1, $2, $3, $4, NOW())
+                ON CONFLICT (brand_id, product_name, category_id, subcategory_id) 
+                DO UPDATE SET updated_at = NOW()
+                RETURNING id
+            """, brand_id, 1, product_name, product_url)
+            
+            # Create try-on garment entry (NOT owned) - using correct schema
             garment_id = await conn.fetchval("""
                 INSERT INTO user_garments (
-                    user_id, brand_id, category_id, size_label,
-                    product_name, product_url, image_url, owns_garment,
-                    try_on_date, try_on_location, try_on_notes, created_at
-                ) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, NOW(), $9, $10, NOW())
+                    user_id, garment_id, size_label, owns_garment,
+                    input_method, link_provided, created_at
+                ) VALUES ($1, $2, $3, $4, $5, $6, NOW())
                 RETURNING id
-            """, int(user_id), brand_id, 1, size_tried, 
-                product_name, product_url, None, False, 
-                try_on_location, notes)
+            """, int(user_id), garment_entry_id, size_tried, False, 
+                'link', product_url)
             
             # Get size measurements for this brand/size
             measurements = await conn.fetchrow("""
@@ -1540,8 +1558,22 @@ async def submit_tryon_feedback(request: dict):
             
             # Store feedback for each dimension
             feedback_stored = []
+            overall_feedback = None
+            
             for dimension, rating in feedback.items():
-                if dimension != 'overall' and rating is not None:
+                # Convert dimension name to lowercase for database constraint
+                dimension_lower = dimension.lower()
+                
+                if dimension_lower == 'overall' and rating is not None:
+                    # Store overall feedback in user_garments table
+                    overall_feedback = {
+                        1: "Too Tight",
+                        2: "Tight but I Like It", 
+                        3: "Good Fit",
+                        4: "Loose but I Like It",
+                        5: "Too Loose"
+                    }.get(rating, "Good Fit")
+                elif dimension_lower != 'overall' and rating is not None:
                     # Map rating to feedback text
                     feedback_text = {
                         1: "Too Tight",
@@ -1562,13 +1594,21 @@ async def submit_tryon_feedback(request: dict):
                             INSERT INTO user_garment_feedback 
                             (user_garment_id, dimension, feedback_code_id, created_at)
                             VALUES ($1, $2, $3, NOW())
-                        """, garment_id, dimension, feedback_code_id)
+                        """, garment_id, dimension_lower, feedback_code_id)
                         
                         feedback_stored.append({
                             "dimension": dimension,
                             "rating": rating,
                             "feedback_text": feedback_text
                         })
+            
+            # Update user_garments with overall feedback
+            if overall_feedback:
+                await conn.execute("""
+                    UPDATE user_garments 
+                    SET fit_feedback = $1, feedback_timestamp = NOW()
+                    WHERE id = $2
+                """, overall_feedback, garment_id)
             
             # Generate immediate insights
             insights = await generate_tryon_insights(
@@ -1580,7 +1620,7 @@ async def submit_tryon_feedback(request: dict):
                 INSERT INTO user_actions (
                     user_id, action_type, target_table, target_id, metadata, created_at
                 ) VALUES ($1, $2, $3, $4, $5, NOW())
-            """, int(user_id), 'try_on_feedback', 'user_garments', garment_id, json.dumps({
+            """, int(user_id), 'submit_feedback', 'user_garments', garment_id, json.dumps({
                 'session_id': session_id,
                 'brand_id': brand_id,
                 'size_tried': size_tried,

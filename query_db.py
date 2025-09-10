@@ -60,3 +60,4 @@ if __name__ == "__main__":
     results = run_query(query)
     if results is not None:
         print_results(results)
+

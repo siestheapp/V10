@@ -62,7 +62,7 @@ struct FitFeedbackView: View {
                 VStack(alignment: .leading, spacing: 20) {
                     ForEach(getMeasurementsForFeedbackType(), id: \.self) { measurement in
                         VStack(alignment: .leading, spacing: 10) {
-                            Text("How does it fit in the \(measurement)?")
+                            Text(measurement == "Overall" ? "How does it fit overall?" : "How does it fit in the \(measurement)?")
                                 .font(.headline)
 
                             ForEach(fitOptions, id: \.0) { option in
@@ -124,23 +124,104 @@ struct FitFeedbackView: View {
     private func getMeasurementsForFeedbackType() -> [String] {
         switch feedbackType {
         case .manualEntry:
-            return ["Chest", "Waist", "Sleeve"]
+            return ["Overall", "Chest", "Waist", "Sleeve"]
         case .scannedGarment:
-            return ["Chest", "Waist", "Sleeve", "Neck"]
+            return ["Overall", "Chest", "Waist", "Sleeve", "Neck"]
         case .newBrand:
-            return ["Chest", "Waist", "Sleeve", "Shoulders"]
+            return ["Overall", "Chest", "Waist", "Sleeve", "Shoulders"]
         case .specialFit:
-            return ["Chest", "Waist", "Hip", "Stretch Comfort"]
+            return ["Overall", "Chest", "Waist", "Hip", "Stretch Comfort"]
         }
     }
     
     /// Handles feedback submission
     private func submitFeedback() {
         isSubmitting = true
-        DispatchQueue.main.asyncAfter(deadline: .now() + 1.5) {
+        
+        // Prepare feedback data for tryon/submit endpoint
+        let feedbackData: [String: Any] = [
+            "user_id": "1", // Using default user for now
+            "session_id": "tryon_\(Int(Date().timeIntervalSince1970))", // Generate session ID
+            "product_url": productUrl ?? "",
+            "brand_id": getBrandIdFromUrl(productUrl ?? ""), // Dynamic brand_id based on URL
+            "size_tried": selectedSize,
+            "feedback": fitFeedback
+        ]
+        
+        guard let url = URL(string: "\(Config.baseURL)/tryon/submit") else {
+            print("❌ Invalid API URL")
             isSubmitting = false
-            showConfirmation = true
+            return
         }
+        
+        guard let jsonData = try? JSONSerialization.data(withJSONObject: feedbackData) else {
+            print("❌ Failed to encode feedback data")
+            isSubmitting = false
+            return
+        }
+        
+        var request = URLRequest(url: url)
+        request.httpMethod = "POST"
+        request.setValue("application/json", forHTTPHeaderField: "Content-Type")
+        request.httpBody = jsonData
+        
+        print("📤 Submitting feedback: \(feedbackData)")
+        
+        URLSession.shared.dataTask(with: request) { data, response, error in
+            DispatchQueue.main.async {
+                isSubmitting = false
+                
+                if let error = error {
+                    print("❌ Network error: \(error.localizedDescription)")
+                    return
+                }
+                
+                guard let data = data else {
+                    print("❌ No data received")
+                    return
+                }
+                
+                do {
+                    let response = try JSONSerialization.jsonObject(with: data) as? [String: Any]
+                    print("✅ Feedback submitted successfully: \(response ?? [:])")
+                    showConfirmation = true
+                } catch {
+                    print("❌ Failed to parse response: \(error.localizedDescription)")
+                }
+            }
+        }.resume()
+    }
+    
+    /// Extract brand_id from product URL
+    private func getBrandIdFromUrl(_ url: String) -> Int {
+        let lowercaseUrl = url.lowercased()
+        
+        if lowercaseUrl.contains("jcrew.com") {
+            return 4 // J.Crew
+        } else if lowercaseUrl.contains("lululemon.com") {
+            return 1 // Lululemon
+        } else if lowercaseUrl.contains("bananarepublic.com") || lowercaseUrl.contains("bananarepublic.gap.com") {
+            return 5 // Banana Republic
+        } else if lowercaseUrl.contains("patagonia.com") {
+            return 2 // Patagonia
+        } else if lowercaseUrl.contains("theory.com") {
+            return 9 // Theory
+        } else if lowercaseUrl.contains("uniqlo.com") {
+            return 21 // Uniqlo
+        } else if lowercaseUrl.contains("nn07.com") {
+            return 12 // NN.07
+        } else if lowercaseUrl.contains("vuori.com") {
+            return 18 // Vuori
+        } else if lowercaseUrl.contains("lacoste.com") {
+            return 11 // Lacoste
+        } else if lowercaseUrl.contains("reiss.com") {
+            return 10 // Reiss
+        } else if lowercaseUrl.contains("faherty.com") {
+            return 8 // Faherty
+        }
+        
+        // Default fallback to J.Crew if unknown
+        return 4
     }
 }
 

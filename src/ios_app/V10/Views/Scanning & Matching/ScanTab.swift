@@ -361,7 +361,7 @@ struct ScanTab: View {
                     
                     // Try-On Session Display
                     if let session = tryOnSession {
-                        NavigationLink(destination: ProductConfirmationView(session: session)) {
+                        NavigationLink(destination: TryOnConfirmationView(session: session)) {
                             TryOnPreviewCard(session: session)
                         }
                         .buttonStyle(PlainButtonStyle())
@@ -432,7 +432,8 @@ struct ScanTab: View {
         }
         .onAppear {
             print("📷 SCAN TAB: ScanTab appeared")
-            loadUserFitZones()
+            // Removed loadUserFitZones() from onAppear to prevent lag on text field tap
+            // Fit zones will be loaded lazily when actually needed for analysis
         }
     }
     
@@ -458,6 +459,11 @@ struct ScanTab: View {
         isAnalyzing = true
         analysisError = nil
         sizeRecommendation = nil
+        
+        // Load fit zones only when needed for analysis (lazy loading)
+        if userFitZones == nil && !isLoadingFitZones {
+            loadUserFitZones()
+        }
         
         guard let url = URL(string: "\(Config.baseURL)/garment/size-recommendation") else {
             analysisError = "Invalid API URL"
@@ -512,6 +518,11 @@ struct ScanTab: View {
         isAnalyzing = true
         analysisError = nil
         tryOnSession = nil
+        
+        // Load fit zones only when needed for try-on session (lazy loading)
+        if userFitZones == nil && !isLoadingFitZones {
+            loadUserFitZones()
+        }
         
         guard let url = URL(string: "\(Config.baseURL)/tryon/start") else {
             analysisError = "Invalid API URL"

@@ -78,3 +78,4 @@ struct FeedbackStored: Codable {
         case feedbackText = "feedback_text"
     }
 }
+

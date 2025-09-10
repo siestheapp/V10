@@ -13,8 +13,8 @@ struct ChatView: View {
     @State private var isLoading = false
     @EnvironmentObject var userSettings: UserSettings
     
-    // Updated to use localhost address
-    private let baseURL = "http://192.168.18.26:8006"
+    // Use shared Config base URL
+    private let baseURL = Config.baseURL
     
     var body: some View {
         NavigationView {
