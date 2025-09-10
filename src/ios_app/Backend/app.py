@@ -7,7 +7,7 @@ from psycopg2.extras import RealDictCursor
 import asyncpg
 from typing import Optional, List, Dict
 from enum import Enum
-from datetime import datetime
+from datetime import datetime, timedelta
 from fastapi.middleware.cors import CORSMiddleware
 from fit_zone_calculator import FitZoneCalculator
 import json
@@ -3765,6 +3765,30 @@ def extract_product_image_from_url(product_url: str) -> str:
     Extract the main product image from a product webpage
     Returns the image URL or a fallback if extraction fails
     """
+    # First check if we have this product cached (for J.Crew)
+    if 'jcrew.com' in product_url.lower():
+        try:
+            async def get_cached_image():
+                async with pool.acquire() as conn:
+                    result = await conn.fetchrow("""
+                        SELECT product_image, product_name 
+                        FROM jcrew_product_cache 
+                        WHERE product_url = $1
+                    """, product_url)
+                    return result
+            
+            import asyncio
+            loop = asyncio.new_event_loop()
+            cached = loop.run_until_complete(get_cached_image())
+            loop.close()
+            
+            if cached and cached['product_image']:
+                print(f"✅ Using cached J.Crew image for: {cached['product_name']}")
+                return cached['product_image']
+        except Exception as e:
+            print(f"Cache lookup failed: {e}")
+    
+    # If not cached or not J.Crew, try real-time extraction
     try:
         headers = {
             'User-Agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36',

@@ -12,6 +12,12 @@ struct TryOnSessionView: View {
     @State private var showingSummary = false
     @State private var sessionId: Int?
     
+    init(garment: Garment, productUrl: String) {
+        self.garment = garment
+        self.productUrl = productUrl
+        print("🎯 TryOnSessionView initialized with garment: \(garment.brand) - \(garment.productName)")
+    }
+    
     enum TryOnStep {
         case sizeSelection
         case dimensionFeedback
@@ -19,107 +25,143 @@ struct TryOnSessionView: View {
     }
     
     var body: some View {
-        NavigationView {
-            ZStack {
-                // Background gradient
-                LinearGradient(
-                    colors: [Color(.systemBackground), Color(.systemGray6)],
-                    startPoint: .top,
-                    endPoint: .bottom
-                )
-                .ignoresSafeArea()
-                
-                VStack {
-                    // Progress indicator
-                    if currentStep == .dimensionFeedback {
-                        ProgressView(value: sessionState.progress)
-                            .tint(.blue)
-                            .padding(.horizontal)
+        VStack(spacing: 0) {
+            // Header
+            HStack {
+                Button("Cancel") {
+                    dismiss()
+                }
+                Spacer()
+                Text("Try-On Session")
+                    .font(.headline)
+                Spacer()
+                Button("Save") {
+                    saveAndExit()
+                }
+            }
+            .padding()
+            .background(Color(.systemGray6))
+            
+            // Progress bar for dimension feedback
+            if currentStep == .dimensionFeedback {
+                ProgressView(value: sessionState.progress)
+                    .tint(.blue)
+                    .padding(.horizontal)
+                    .padding(.vertical, 8)
+            }
+            
+            // Main content
+            ScrollView {
+                VStack(spacing: 20) {
+                    // Product info
+                    VStack(spacing: 8) {
+                        Text(garment.brand)
+                            .font(.headline)
+                        Text(garment.productName)
+                            .font(.subheadline)
+                            .foregroundColor(.secondary)
                     }
+                    .padding(.top)
                     
-                    // Main content
-                    Group {
-                        switch currentStep {
-                        case .sizeSelection:
-                            SizeSelectionView(
-                                garment: garment,
-                                selectedSize: $sessionState.selectedSize,
-                                onContinue: {
-                                    startSession()
+                    switch currentStep {
+                    case .sizeSelection:
+                        VStack(spacing: 20) {
+                            Text("Select Size")
+                                .font(.title2)
+                                .fontWeight(.bold)
+                            
+                            HStack(spacing: 10) {
+                                ForEach(["S", "M", "L", "XL"], id: \.self) { size in
+                                    Button(action: {
+                                        sessionState.selectedSize = size
+                                        print("Selected size: \(size)")
+                                    }) {
+                                        Text(size)
+                                            .frame(width: 60, height: 60)
+                                            .background(sessionState.selectedSize == size ? Color.blue : Color.gray.opacity(0.3))
+                                            .foregroundColor(sessionState.selectedSize == size ? .white : .primary)
+                                            .cornerRadius(8)
+                                    }
                                 }
-                            )
-                        
-                        case .dimensionFeedback:
-                            if let dimension = sessionState.currentDimension {
-                                DimensionFeedbackView(
-                                    dimension: dimension,
-                                    feedbackValue: Binding(
-                                        get: { sessionState.feedbackValues[dimension] },
-                                        set: { sessionState.feedbackValues[dimension] = $0 }
-                                    ),
-                                    onNext: handleNextDimension,
-                                    onSkip: {
-                                        sessionState.skipCurrentDimension()
-                                        handleNextDimension()
-                                    },
-                                    onPrevious: sessionState.currentDimensionIndex > 0 ? {
-                                        sessionState.previousDimension()
-                                    } : nil
-                                )
                             }
-                        
-                        case .summary:
-                            TryOnSummaryView(
-                                garment: garment,
-                                sizeTried: sessionState.selectedSize,
-                                feedbackSummary: sessionState.getFeedbackSummary(),
-                                onTryDifferentSize: {
-                                    // Reset for new size
-                                    sessionState.reset()
-                                    currentStep = .sizeSelection
-                                },
-                                onBuyThis: {
-                                    submitFeedback(finalDecision: "bought", purchaseSize: sessionState.selectedSize)
-                                },
-                                onTryDifferentItem: {
-                                    submitFeedback(finalDecision: "passed")
-                                    dismiss()
-                                }
-                            )
+                            
+                            Button(action: {
+                                startSession()
+                            }) {
+                                Text("Start Try-On")
+                                    .frame(maxWidth: .infinity)
+                                    .padding()
+                                    .background(sessionState.selectedSize.isEmpty ? Color.gray : Color.blue)
+                                    .foregroundColor(.white)
+                                    .cornerRadius(10)
+                            }
+                            .disabled(sessionState.selectedSize.isEmpty)
+                            .padding(.horizontal)
                         }
+                        
+                    case .dimensionFeedback:
+                        if let dimension = sessionState.currentDimension {
+                            DimensionFeedbackView(
+                                dimension: dimension,
+                                sizeTried: sessionState.selectedSize,
+                                feedbackValue: Binding(
+                                    get: { sessionState.feedbackValues[dimension] },
+                                    set: { sessionState.feedbackValues[dimension] = $0 }
+                                ),
+                                onNext: handleNextDimension,
+                                onSkip: {
+                                    sessionState.skipCurrentDimension()
+                                    handleNextDimension()
+                                },
+                                onPrevious: sessionState.currentDimensionIndex > 0 ? {
+                                    sessionState.previousDimension()
+                                } : nil
+                            )
+                            .padding()
+                        }
+                        
+                    case .summary:
+                        TryOnSummaryView(
+                            garment: garment,
+                            sizeTried: sessionState.selectedSize,
+                            feedbackSummary: sessionState.getFeedbackSummary(),
+                            onTryDifferentSize: {
+                                sessionState.reset()
+                                currentStep = .sizeSelection
+                            },
+                            onBuyThis: {
+                                submitFeedback(finalDecision: "bought", purchaseSize: sessionState.selectedSize)
+                            },
+                            onTryDifferentItem: {
+                                submitFeedback(finalDecision: "passed")
+                                dismiss()
+                            }
+                        )
+                        .padding()
                     }
-                    .padding()
-                    
-                    Spacer()
                 }
             }
-            .navigationTitle("Try-On Session")
-            .navigationBarTitleDisplayMode(.inline)
-            .toolbar {
-                ToolbarItem(placement: .navigationBarLeading) {
-                    Button("Save & Exit") {
-                        saveAndExit()
-                    }
-                    .foregroundColor(.blue)
-                }
-            }
+            
+            Spacer()
         }
-        .interactiveDismissDisabled(false)
-        .onDisappear {
-            // Auto-save session if dismissed without explicit save
-            if currentStep != .sizeSelection && sessionId != nil {
-                saveSessionInBackground()
-            }
+        .onAppear {
+            print("🎯 TryOnSessionView appeared")
+            print("🎯 Garment: \(garment.brand) - \(garment.productName)")
+            print("🎯 Current step: \(currentStep)")
         }
     }
     
     private func startSession() {
+        print("Starting session with size: \(sessionState.selectedSize)")
         guard !sessionState.selectedSize.isEmpty else { return }
         
         // Create session in database
         createTryOnSession { success in
             if success {
-                currentStep = .dimensionFeedback
+                print("✅ Session created, starting dimension feedback")
+                self.sessionState.startFeedback()
+                self.currentStep = .dimensionFeedback
+                print("Current dimension: \(self.sessionState.currentDimension?.displayName ?? "none")")
             }
         }
     }
@@ -241,6 +283,7 @@ struct SizeSelectionView: View {
 
 struct DimensionFeedbackView: View {
     let dimension: FitDimension
+    let sizeTried: String
     @Binding var feedbackValue: Int?
     let onNext: () -> Void
     let onSkip: () -> Void
@@ -248,12 +291,17 @@ struct DimensionFeedbackView: View {
     
     var body: some View {
         VStack(spacing: 32) {
+            // Size being tried
+            Text("Size \(sizeTried)")
+                .font(.headline)
+                .foregroundColor(.secondary)
+                .padding(.top, 20)
+            
             // Question
             Text(dimension.questionText)
                 .font(.title)
                 .fontWeight(.bold)
                 .multilineTextAlignment(.center)
-                .padding(.top, 40)
             
             // Feedback options
             VStack(spacing: 16) {

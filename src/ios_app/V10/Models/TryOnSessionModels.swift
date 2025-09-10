@@ -142,18 +142,18 @@ class TryOnSessionState: ObservableObject {
     @Published var error: String?
     
     var currentDimension: FitDimension? {
-        let dimensions = FitDimension.allCases.filter { $0 != .overall }
+        let dimensions = FitDimension.allCases
         guard currentDimensionIndex < dimensions.count else { return nil }
         return dimensions[currentDimensionIndex]
     }
     
     var isLastDimension: Bool {
-        let dimensions = FitDimension.allCases.filter { $0 != .overall }
+        let dimensions = FitDimension.allCases
         return currentDimensionIndex >= dimensions.count - 1
     }
     
     var progress: Double {
-        let dimensions = FitDimension.allCases.filter { $0 != .overall }
+        let dimensions = FitDimension.allCases
         return Double(currentDimensionIndex + 1) / Double(dimensions.count)
     }
     
@@ -172,6 +172,12 @@ class TryOnSessionState: ObservableObject {
             skippedDimensions.insert(dimension)
         }
         nextDimension()
+    }
+    
+    func startFeedback() {
+        currentDimensionIndex = 0
+        feedbackValues = [:]
+        skippedDimensions = []
     }
     
     func reset() {

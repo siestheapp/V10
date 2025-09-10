@@ -1,5 +1,19 @@
 import Foundation
 
+// Simple Garment model for general use
+struct Garment: Identifiable, Codable {
+    let id: Int
+    let brand: String
+    let productName: String
+    let productUrl: String?
+    let imageUrl: String?
+    let category: String
+    let sizeLabel: String
+    let ownsGarment: Bool
+    let fitFeedback: String?
+    let feedbackTimestamp: Date?
+}
+
 struct UniqloGarment: Codable {
     let id: String
     let name: String

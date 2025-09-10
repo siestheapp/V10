@@ -446,11 +446,26 @@ struct ScanTab: View {
             }
         }
         .sheet(isPresented: $showingTryOnSession) {
-            if let garment = scannedGarment {
-                TryOnSessionView(
-                    garment: garment,
-                    productUrl: productLink
-                )
+            // Create the garment directly in the sheet closure
+            let garment = Garment(
+                id: 0,
+                brand: extractBrandFromUrl(productLink),
+                productName: "Product",
+                productUrl: productLink,
+                imageUrl: nil,
+                category: "Tops",
+                sizeLabel: "",
+                ownsGarment: false,
+                fitFeedback: nil,
+                feedbackTimestamp: nil
+            )
+            
+            TryOnSessionView(
+                garment: garment,
+                productUrl: productLink
+            )
+            .onAppear {
+                print("📱 Sheet appeared with garment: \(garment.brand)")
             }
         }
         .onAppear {
@@ -595,23 +610,10 @@ struct ScanTab: View {
     }
     
     private func startTryOnSessionModal() {
-        // Extract brand from URL
-        let brandName = extractBrandFromUrl(productLink)
+        print("🚀 Starting try-on session modal")
+        print("🚀 Product link: \(productLink)")
         
-        // Create a temporary garment object for the try-on session
-        scannedGarment = Garment(
-            id: 0,  // Temporary ID
-            brand: brandName,
-            productName: "Product",  // Will be fetched from URL
-            productUrl: productLink,
-            imageUrl: nil,
-            category: "Tops",
-            sizeLabel: "",
-            ownsGarment: false,
-            fitFeedback: nil,
-            feedbackTimestamp: nil
-        )
-        
+        // Simply show the sheet - the garment will be created in the sheet closure
         showingTryOnSession = true
     }
     
