@@ -175,6 +175,8 @@ struct ScanTab: View {
     @State private var analysisError: String?
     @State private var navigateToFitFeedback = false
     @State private var navigateToTryOn = false
+    @State private var showingTryOnSession = false  // New state for modal
+    @State private var scannedGarment: Garment?     // Store scanned garment for try-on
     
     // Add mode selection
     @State private var selectedMode: ScanMode = .tryOn
@@ -359,8 +361,21 @@ struct ScanTab: View {
                         .buttonStyle(PlainButtonStyle())
                     }
                     
-                    // Try-On Session Display
-                    if let session = tryOnSession {
+                    // Try-On Session Display or Start Button
+                    if selectedMode == .tryOn && !productLink.isEmpty && !isAnalyzing {
+                        Button(action: {
+                            startTryOnSessionModal()
+                        }) {
+                            Label("Start Try-On Session", systemImage: "tshirt.fill")
+                                .font(.headline)
+                                .foregroundColor(.white)
+                                .frame(maxWidth: .infinity)
+                                .padding()
+                                .background(Color.blue)
+                                .cornerRadius(12)
+                        }
+                        .padding(.horizontal, 20)
+                    } else if let session = tryOnSession {
                         NavigationLink(destination: TryOnConfirmationView(session: session)) {
                             TryOnPreviewCard(session: session)
                         }
@@ -428,6 +443,14 @@ struct ScanTab: View {
                 Button("Choose from Photos") {
                     showingImagePicker = true
                 }
+            }
+        }
+        .sheet(isPresented: $showingTryOnSession) {
+            if let garment = scannedGarment {
+                TryOnSessionView(
+                    garment: garment,
+                    productUrl: productLink
+                )
             }
         }
         .onAppear {
@@ -569,6 +592,57 @@ struct ScanTab: View {
                 }
             }
         }.resume()
+    }
+    
+    private func startTryOnSessionModal() {
+        // Extract brand from URL
+        let brandName = extractBrandFromUrl(productLink)
+        
+        // Create a temporary garment object for the try-on session
+        scannedGarment = Garment(
+            id: 0,  // Temporary ID
+            brand: brandName,
+            productName: "Product",  // Will be fetched from URL
+            productUrl: productLink,
+            imageUrl: nil,
+            category: "Tops",
+            sizeLabel: "",
+            ownsGarment: false,
+            fitFeedback: nil,
+            feedbackTimestamp: nil
+        )
+        
+        showingTryOnSession = true
+    }
+    
+    private func extractBrandFromUrl(_ url: String) -> String {
+        let lowercaseUrl = url.lowercased()
+        
+        if lowercaseUrl.contains("jcrew.com") {
+            return "J.Crew"
+        } else if lowercaseUrl.contains("lululemon.com") {
+            return "Lululemon"
+        } else if lowercaseUrl.contains("bananarepublic.com") || lowercaseUrl.contains("bananarepublic.gap.com") {
+            return "Banana Republic"
+        } else if lowercaseUrl.contains("patagonia.com") {
+            return "Patagonia"
+        } else if lowercaseUrl.contains("theory.com") {
+            return "Theory"
+        } else if lowercaseUrl.contains("uniqlo.com") {
+            return "Uniqlo"
+        } else if lowercaseUrl.contains("nn07.com") {
+            return "NN.07"
+        } else if lowercaseUrl.contains("vuori.com") {
+            return "Vuori"
+        } else if lowercaseUrl.contains("lacoste.com") {
+            return "Lacoste"
+        } else if lowercaseUrl.contains("reiss.com") {
+            return "Reiss"
+        } else if lowercaseUrl.contains("faherty.com") {
+            return "Faherty"
+        }
+        
+        return "Unknown Brand"
     }
     
     private func loadUserFitZones() {
