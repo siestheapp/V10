@@ -4,6 +4,12 @@
 
 ---
 
+## 🚀 **Production Readiness** 
+
+- **[NEXT STEPS](NEXT_STEPS.md)** - ⭐⭐⭐ **START HERE!** What to do today and this week
+- **[J.Crew Integration Plan](JCREW_INTEGRATION_PLAN.md)** - ⭐⭐ **DETAILED!** 3-week plan with code examples
+- **[Production Gap Analysis](PRODUCTION_READINESS_GAP_ANALYSIS.md)** - ⭐ **COMPREHENSIVE!** FAANG-level requirements
+
 ## 📊 **Database & Logs**
 
 - **[Database State & Roadmap](DATABASE_STATE_2025_09_10.md)** - ⭐ **CURRENT!** Database overview and roadmap (Sept 10, 2025)
