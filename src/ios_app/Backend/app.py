@@ -1476,15 +1476,31 @@ async def start_tryon_session(request: dict):
         if not brand_info:
             raise HTTPException(status_code=400, detail="Could not identify brand from URL")
         
-        # Extract product name and image
-        product_name = extract_product_name_from_url(product_url)
-        product_image = extract_product_image_from_url(product_url)
+        # For J.Crew, use the specialized fetcher
+        if brand_info["brand_name"] == "J.Crew" and "jcrew.com" in product_url.lower():
+            # Import here to avoid circular imports
+            from jcrew_fetcher import JCrewProductFetcher
+            
+            fetcher = JCrewProductFetcher()
+            product_data = fetcher.fetch_product(product_url)
+            
+            if product_data:
+                product_name = product_data['product_name']
+                product_image = product_data.get('product_image', '')
+                size_options = product_data.get('sizes_available', ['XS', 'S', 'M', 'L', 'XL', 'XXL'])
+                print(f"✅ J.Crew product fetched: {product_name}")
+            else:
+                # Product not supported or fetch failed
+                raise HTTPException(status_code=400, 
+                    detail="This J.Crew product is not supported. Only men's tops and outerwear are currently available.")
+        else:
+            # Use existing logic for other brands
+            product_name = extract_product_name_from_url(product_url)
+            product_image = extract_product_image_from_url(product_url)
+            size_options = await get_brand_size_options(brand_info["brand_id"])
         
         # Get available measurements for this brand
         brand_measurements = await get_brand_measurements_for_feedback(brand_info["brand_id"])
-        
-        # Get size options for this brand
-        size_options = await get_brand_size_options(brand_info["brand_id"])
         
         return {
             "session_id": f"tryon_{user_id}_{int(time.time())}",
@@ -1499,6 +1515,8 @@ async def start_tryon_session(request: dict):
             "next_step": "size_selection_and_feedback"
         }
         
+    except HTTPException:
+        raise  # Re-raise HTTP exceptions as-is
     except Exception as e:
         print(f"Error starting try-on session: {str(e)}")
         raise HTTPException(status_code=500, detail=str(e))
