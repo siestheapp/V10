@@ -59,23 +59,78 @@ class JCrewProductFetcher:
         if "/mens/" not in url_lower and "/men/" not in url_lower:
             return False
         
-        # Supported categories - ALL men's tops (J.Crew uses ONE guide for all)
-        supported_categories = [
-            "/shirts/",
-            "/t-shirts/",
-            "/tshirts/",
-            "/polos/",
-            "/sweaters/",
-            "/sweatshirts/",
-            "/hoodies/",
-            "/jacket",   # ✅ Now supported - same size guide
-            "/coat",     # ✅ Now supported - same size guide  
-            "/outerwear/",  # ✅ Now supported - same size guide
-            "/blazer"    # ✅ Now supported - same size guide
-        ]
+        # Check against database rules for smarter detection
+        conn = psycopg2.connect(**DB_CONFIG)
+        cur = conn.cursor()
         
-        # Check if URL contains any supported category
-        return any(category in url_lower for category in supported_categories)
+        try:
+            # Check if URL matches any guide selection rules
+            cur.execute("""
+                SELECT COUNT(*) 
+                FROM guide_selection_rules gsr
+                JOIN brands b ON gsr.brand_id = b.id
+                WHERE b.name = 'J.Crew' 
+                AND gsr.rule_type = 'url_pattern'
+                AND %s LIKE '%%' || gsr.pattern || '%%'
+                AND gsr.is_active = true
+            """, (url_lower,))
+            
+            count = cur.fetchone()[0]
+            if count > 0:
+                return True
+                
+            # Fallback to hardcoded categories for backward compatibility
+            supported_categories = [
+                "/shirts/",
+                "/dress-shirts/",
+                "/business-casual-shirts/",
+                "/t-shirts/",
+                "/tshirts/",
+                "/polos/",
+                "/sweaters/",
+                "/sweatshirts/",
+                "/hoodies/",
+                "/henleys/",
+                "/crewneck/"
+            ]
+            
+            return any(category in url_lower for category in supported_categories)
+            
+        finally:
+            cur.close()
+            conn.close()
+    
+    def get_measurement_set_for_product(self, product_url: str) -> Optional[int]:
+        """Get the appropriate measurement_set_id for this product"""
+        url_lower = product_url.lower()
+        
+        conn = psycopg2.connect(**DB_CONFIG)
+        cur = conn.cursor()
+        
+        try:
+            # Find best matching rule
+            cur.execute("""
+                SELECT gsr.measurement_set_id, gsr.priority
+                FROM guide_selection_rules gsr
+                JOIN brands b ON gsr.brand_id = b.id
+                WHERE b.name = 'J.Crew' 
+                AND gsr.rule_type = 'url_pattern'
+                AND %s LIKE '%%' || gsr.pattern || '%%'
+                AND gsr.is_active = true
+                ORDER BY gsr.priority DESC
+                LIMIT 1
+            """, (url_lower,))
+            
+            result = cur.fetchone()
+            if result:
+                return result[0]
+            
+            # Default to regular tops (ID 26)
+            return 26
+            
+        finally:
+            cur.close()
+            conn.close()
     
     def _check_cache(self, product_url: str) -> Optional[Dict]:
         """Check if product exists in cache"""

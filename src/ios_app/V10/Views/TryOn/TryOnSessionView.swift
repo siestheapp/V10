@@ -6,15 +6,17 @@ import SwiftUI
 struct TryOnSessionView: View {
     let garment: Garment
     let productUrl: String
+    let tryOnSession: TryOnSession?
     @Environment(\.dismiss) private var dismiss
     @StateObject private var sessionState = TryOnSessionState()
     @State private var currentStep: TryOnStep = .sizeSelection
     @State private var showingSummary = false
     @State private var sessionId: Int?
     
-    init(garment: Garment, productUrl: String) {
+    init(garment: Garment, productUrl: String, tryOnSession: TryOnSession? = nil) {
         self.garment = garment
         self.productUrl = productUrl
+        self.tryOnSession = tryOnSession
         print("🎯 TryOnSessionView initialized with garment: \(garment.brand) - \(garment.productName)")
     }
     
@@ -22,6 +24,10 @@ struct TryOnSessionView: View {
         case sizeSelection
         case dimensionFeedback
         case summary
+    }
+    
+    var availableSizes: [String] {
+        return tryOnSession?.sizeOptions ?? ["S", "M", "L", "XL"]
     }
     
     var body: some View {
@@ -71,7 +77,7 @@ struct TryOnSessionView: View {
                                 .fontWeight(.bold)
                             
                             HStack(spacing: 10) {
-                                ForEach(["S", "M", "L", "XL"], id: \.self) { size in
+                                ForEach(availableSizes, id: \.self) { size in
                                     Button(action: {
                                         sessionState.selectedSize = size
                                         print("Selected size: \(size)")

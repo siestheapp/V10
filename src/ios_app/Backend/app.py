@@ -69,7 +69,8 @@ def get_db_connection():
 async def lifespan(app: FastAPI):
     # Setup - initialize database connection pool
     global pool
-    pool = await asyncpg.create_pool(**DB_CONFIG)
+    # Disable prepared statements to work with pgbouncer
+    pool = await asyncpg.create_pool(**DB_CONFIG, statement_cache_size=0)
     print("✅ Starting FastAPI application")
     yield
     # Cleanup
@@ -2504,27 +2505,52 @@ def extract_brand_from_url(url: str) -> dict:
 async def get_brand_measurements_for_feedback(brand_id: int) -> dict:
     """Get available measurements for feedback collection"""
     async with pool.acquire() as conn:
-        size_guide = await conn.fetchrow("""
-            SELECT 
-                chest_min, chest_max,
-                neck_min, neck_max,
-                sleeve_min, sleeve_max,
-                waist_min, waist_max
-            FROM size_guides_v2 
-            WHERE brand_id = $1 
-            LIMIT 1
+        # Try new measurement system first
+        measurement_types = await conn.fetch("""
+            SELECT DISTINCT m.measurement_type
+            FROM measurements m
+            JOIN measurement_sets ms ON m.set_id = ms.id
+            WHERE ms.brand_id = $1 
+            AND ms.scope = 'size_guide'
+            AND m.measurement_category = 'body'
         """, brand_id)
         
         measurements = ['overall']  # Always include overall
-        if size_guide:
-            if size_guide.get('chest_min') is not None and size_guide.get('chest_max') is not None:
-                measurements.append('chest')
-            if size_guide.get('neck_min') is not None and size_guide.get('neck_max') is not None:
-                measurements.append('neck')
-            if size_guide.get('sleeve_min') is not None and size_guide.get('sleeve_max') is not None:
-                measurements.append('sleeve')
-            if size_guide.get('waist_min') is not None and size_guide.get('waist_max') is not None:
-                measurements.append('waist')
+        
+        if measurement_types:
+            # Convert measurement types to feedback categories
+            for row in measurement_types:
+                measurement_type = row['measurement_type']
+                if 'chest' in measurement_type:
+                    measurements.append('chest')
+                elif 'neck' in measurement_type:
+                    measurements.append('neck')
+                elif 'sleeve' in measurement_type or 'arm' in measurement_type:
+                    measurements.append('sleeve')
+                elif 'waist' in measurement_type:
+                    measurements.append('waist')
+        else:
+            # Fallback to old system for backward compatibility
+            size_guide = await conn.fetchrow("""
+                SELECT 
+                    chest_min, chest_max,
+                    neck_min, neck_max,
+                    sleeve_min, sleeve_max,
+                    waist_min, waist_max
+                FROM size_guides_v2 
+                WHERE brand_id = $1 
+                LIMIT 1
+            """, brand_id)
+            
+            if size_guide:
+                if size_guide.get('chest_min') is not None and size_guide.get('chest_max') is not None:
+                    measurements.append('chest')
+                if size_guide.get('neck_min') is not None and size_guide.get('neck_max') is not None:
+                    measurements.append('neck')
+                if size_guide.get('sleeve_min') is not None and size_guide.get('sleeve_max') is not None:
+                    measurements.append('sleeve')
+                if size_guide.get('waist_min') is not None and size_guide.get('waist_max') is not None:
+                    measurements.append('waist')
         
         return {
             "measurements": measurements,

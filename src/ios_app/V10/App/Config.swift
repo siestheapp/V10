@@ -4,7 +4,7 @@ struct Config {
     #if targetEnvironment(simulator)
     static let baseURL = "http://127.0.0.1:8006"  // Simulator → host Mac
     #else
-    static let baseURL = "http://192.168.18.22:8006"  // Physical device → Mac LAN IP
+    static let baseURL = "http://10.17.13.215:8006"  // Physical device → Mac LAN IP
     #endif
     
     static let uniqloURLTemplate = "https://www.uniqlo.com/us/en/products/E{product_code}-000"

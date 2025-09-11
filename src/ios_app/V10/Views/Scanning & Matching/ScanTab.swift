@@ -265,17 +265,6 @@ struct ScanTab: View {
                         TextField("Paste product link here", text: $productLink)
                             .textFieldStyle(RoundedBorderTextFieldStyle())
                             .disabled(isAnalyzing)
-                        
-                        if !productLink.isEmpty && !isAnalyzing {
-                            Button(selectedMode == .tryOn ? "Start Try-On" : "Analyze") {
-                                if selectedMode == .tryOn {
-                                    startTryOnSession()
-                                } else {
-                                    analyzeProduct()
-                                }
-                            }
-                            .buttonStyle(.borderedProminent)
-                        }
                     }
                     .padding(.horizontal, 20)
                     
@@ -362,11 +351,34 @@ struct ScanTab: View {
                     }
                     
                     // Try-On Session Display or Start Button
-                    if selectedMode == .tryOn && !productLink.isEmpty && !isAnalyzing {
+                    if let session = tryOnSession {
+                        NavigationLink(destination: TryOnConfirmationView(session: session)) {
+                            TryOnPreviewCard(session: session)
+                        }
+                        .buttonStyle(PlainButtonStyle())
+                    } else if selectedMode == .tryOn {
                         Button(action: {
-                            startTryOnSessionModal()
+                            if productLink.isEmpty {
+                                analysisError = "Please paste a product link first"
+                            } else {
+                                startTryOnSession()
+                            }
                         }) {
                             Label("Start Try-On Session", systemImage: "tshirt.fill")
+                                .font(.headline)
+                                .foregroundColor(.white)
+                                .frame(maxWidth: .infinity)
+                                .padding()
+                                .background(productLink.isEmpty ? Color.gray : Color.blue)
+                                .cornerRadius(12)
+                        }
+                        .disabled(isAnalyzing)
+                        .padding(.horizontal, 20)
+                    } else if selectedMode == .recommendation && !productLink.isEmpty && !isAnalyzing {
+                        Button(action: {
+                            analyzeProduct()
+                        }) {
+                            Label("Get Size Recommendation", systemImage: "ruler")
                                 .font(.headline)
                                 .foregroundColor(.white)
                                 .frame(maxWidth: .infinity)
@@ -375,11 +387,6 @@ struct ScanTab: View {
                                 .cornerRadius(12)
                         }
                         .padding(.horizontal, 20)
-                    } else if let session = tryOnSession {
-                        NavigationLink(destination: TryOnConfirmationView(session: session)) {
-                            TryOnPreviewCard(session: session)
-                        }
-                        .buttonStyle(PlainButtonStyle())
                     }
                 }
                 .padding(.horizontal, 40)
