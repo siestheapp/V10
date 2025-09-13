@@ -37,7 +37,6 @@ struct ScanHistoryView: View {
     var body: some View {
         NavigationStack {
             mainContent
-                .navigationTitle("Finds")
                 .onAppear(perform: handleViewAppear)
                 .navigationDestination(isPresented: navigationBinding) {
                     destinationView

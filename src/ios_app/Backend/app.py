@@ -36,7 +36,7 @@ load_dotenv()
 api_key = os.getenv("OPENAI_API_KEY")
 openai_client = None
 
-if api_key and api_key != "your-api-key-here":
+if api_key and api_key not in ["your-api-key-here", "your-new-api-key-here"]:
     # Initialize OpenAI client only if valid key is provided
     openai_client = openai.OpenAI(
         api_key=api_key,
@@ -1489,7 +1489,10 @@ async def start_tryon_session(request: dict):
                 product_name = product_data['product_name']
                 product_image = product_data.get('product_image', '')
                 size_options = product_data.get('sizes_available', ['XS', 'S', 'M', 'L', 'XL', 'XXL'])
+                fit_options = product_data.get('fit_options', [])
                 print(f"✅ J.Crew product fetched: {product_name}")
+                if fit_options:
+                    print(f"🎯 Available fit options: {fit_options}")
             else:
                 # Product not supported or fetch failed
                 raise HTTPException(status_code=400, 
@@ -1499,6 +1502,7 @@ async def start_tryon_session(request: dict):
             product_name = extract_product_name_from_url(product_url)
             product_image = extract_product_image_from_url(product_url)
             size_options = await get_brand_size_options(brand_info["brand_id"])
+            fit_options = []  # Other brands don't have fit options yet
         
         # Get available measurements for this brand
         brand_measurements = await get_brand_measurements_for_feedback(brand_info["brand_id"])
@@ -1513,6 +1517,7 @@ async def start_tryon_session(request: dict):
             "available_measurements": brand_measurements["measurements"],
             "feedback_options": brand_measurements["feedbackOptions"],
             "size_options": size_options,
+            "fit_options": fit_options,
             "next_step": "size_selection_and_feedback"
         }
         
@@ -1534,13 +1539,25 @@ async def submit_tryon_feedback(request: dict):
         brand_id = request.get("brand_id")
         size_tried = request.get("size_tried")
         feedback = request.get("feedback")  # {chest: 3, neck: 2, sleeve: 4, overall: 3}
+        fit_type = request.get("fit_type")  # For J.Crew: Classic, Slim, Tall, etc.
         notes = request.get("notes", "")
         try_on_location = request.get("try_on_location", "Store")
         
         if not all([session_id, product_url, brand_id, size_tried, feedback]):
             raise HTTPException(status_code=400, detail="Missing required fields")
         
-        print(f"📝 Submitting try-on feedback: {size_tried} - {feedback}")
+        # Map fit_type to database-allowed values
+        fit_type_mapping = {
+            "Classic": "Regular",
+            "Regular": "Regular", 
+            "Slim": "Slim",
+            "Tall": "Tall",
+            "Unknown": "Unknown"
+        }
+        db_fit_type = fit_type_mapping.get(fit_type, "Unknown") if fit_type else "Unknown"
+        
+        fit_info = f" ({fit_type})" if fit_type else ""
+        print(f"📝 Submitting try-on feedback: {size_tried}{fit_info} - {feedback}")
         
         # Extract product name
         product_name = extract_product_name_from_url(product_url)
@@ -1549,13 +1566,13 @@ async def submit_tryon_feedback(request: dict):
             # First, create or find the garments entry
             garment_entry_id = await conn.fetchval("""
                 INSERT INTO garments (
-                    brand_id, category_id, product_name, product_url, 
+                    brand_id, category_id, product_name, product_url, fit_type,
                     created_at
-                ) VALUES ($1, $2, $3, $4, NOW())
+                ) VALUES ($1, $2, $3, $4, $5, NOW())
                 ON CONFLICT (brand_id, product_name, category_id, subcategory_id) 
-                DO UPDATE SET updated_at = NOW()
+                DO UPDATE SET updated_at = NOW(), fit_type = COALESCE($5, garments.fit_type)
                 RETURNING id
-            """, brand_id, 1, product_name, product_url)
+            """, brand_id, 1, product_name, product_url, db_fit_type)
             
             # Create try-on garment entry (NOT owned) - using correct schema
             garment_id = await conn.fetchval("""
@@ -2433,6 +2450,98 @@ async def submit_garment_with_feedback(request: dict):
         
     except Exception as e:
         print(f"Error submitting garment with feedback: {str(e)}")
+        raise HTTPException(status_code=500, detail=str(e))
+
+@app.get("/user/{user_id}/tryons")
+async def get_user_tryons(user_id: str):
+    """Get user's try-on history"""
+    try:
+        async with pool.acquire() as conn:
+            tryons = await conn.fetch("""
+                SELECT 
+                    ug.id,
+                    b.name as brand,
+                    b.id as brand_id,
+                    g.product_name,
+                    g.product_url,
+                    g.image_url,
+                    g.fit_type,
+                    ug.size_label as size_tried,
+                    ug.fit_feedback as overall_feedback,
+                    ug.created_at as try_on_date,
+                    -- Get dimensional feedback
+                    (SELECT fc.feedback_text FROM user_garment_feedback ugf 
+                     JOIN feedback_codes fc ON ugf.feedback_code_id = fc.id 
+                     WHERE ugf.user_garment_id = ug.id AND ugf.dimension = 'chest' 
+                     LIMIT 1) as chest_feedback,
+                    (SELECT fc.feedback_text FROM user_garment_feedback ugf 
+                     JOIN feedback_codes fc ON ugf.feedback_code_id = fc.id 
+                     WHERE ugf.user_garment_id = ug.id AND ugf.dimension = 'waist' 
+                     LIMIT 1) as waist_feedback,
+                    (SELECT fc.feedback_text FROM user_garment_feedback ugf 
+                     JOIN feedback_codes fc ON ugf.feedback_code_id = fc.id 
+                     WHERE ugf.user_garment_id = ug.id AND ugf.dimension = 'sleeve' 
+                     LIMIT 1) as sleeve_feedback,
+                    (SELECT fc.feedback_text FROM user_garment_feedback ugf 
+                     JOIN feedback_codes fc ON ugf.feedback_code_id = fc.id 
+                     WHERE ugf.user_garment_id = ug.id AND ugf.dimension = 'neck' 
+                     LIMIT 1) as neck_feedback
+                FROM user_garments ug
+                JOIN garments g ON ug.garment_id = g.id
+                JOIN brands b ON g.brand_id = b.id
+                WHERE ug.user_id = $1 
+                AND ug.owns_garment = false  -- Only try-on sessions, not owned garments
+                AND ug.fit_feedback IS NOT NULL  -- Only completed try-ons with feedback
+                ORDER BY ug.created_at DESC
+            """, int(user_id))
+            
+            # Format the response
+            result = []
+            for tryon in tryons:
+                # Get size guide measurements for this brand/size
+                measurements = {}
+                try:
+                    size_measurements = await conn.fetch("""
+                        SELECT m.measurement_type, m.min_value, m.max_value, m.unit
+                        FROM measurements m
+                        JOIN measurement_sets ms ON m.set_id = ms.id
+                        WHERE ms.brand_id = $1 
+                        AND m.size_label = $2
+                        AND ms.scope = 'size_guide'
+                        AND m.measurement_category = 'body'
+                    """, tryon['brand_id'], tryon['size_tried'])
+                    
+                    for measurement in size_measurements:
+                        measurement_name = measurement['measurement_type'].replace('body_', '').title()
+                        if measurement['min_value'] == measurement['max_value']:
+                            measurements[measurement_name] = f"{measurement['min_value']} {measurement['unit']}"
+                        else:
+                            measurements[measurement_name] = f"{measurement['min_value']}-{measurement['max_value']} {measurement['unit']}"
+                except:
+                    # If measurement lookup fails, continue without measurements
+                    pass
+                
+                result.append({
+                    "id": tryon['id'],
+                    "brand": tryon['brand'],
+                    "product_name": tryon['product_name'],
+                    "product_url": tryon['product_url'],
+                    "image_url": tryon['image_url'],
+                    "fit_type": tryon['fit_type'],
+                    "size_tried": tryon['size_tried'],
+                    "overall_feedback": tryon['overall_feedback'] or "No feedback",
+                    "chest_feedback": tryon['chest_feedback'],
+                    "waist_feedback": tryon['waist_feedback'],
+                    "sleeve_feedback": tryon['sleeve_feedback'],
+                    "neck_feedback": tryon['neck_feedback'],
+                    "try_on_date": tryon['try_on_date'].isoformat(),
+                    "measurements": measurements
+                })
+            
+            return result
+            
+    except Exception as e:
+        print(f"Error fetching user try-ons: {str(e)}")
         raise HTTPException(status_code=500, detail=str(e))
 
 @app.get("/user/{user_id}/size-recommendation")
@@ -3974,13 +4083,163 @@ async def get_brand_size_options(brand_id: int) -> list:
         return [size['size_label'] for size in sizes]
 
 async def generate_tryon_insights(user_id, brand_id, size_tried, feedback, measurements, feedback_stored):
-    """Generate immediate insights after try-on"""
+    """
+    AI-powered try-on insights generator
+    Analyzes user feedback and gives immediate insights about their preferences
+    """
+    if not openai_client:
+        # Fallback to basic insights if OpenAI not available
+        return await generate_basic_tryon_insights(user_id, brand_id, size_tried, feedback, measurements, feedback_stored)
+    
+    try:
+        # Get user's try-on history for context
+        async with pool.acquire() as conn:
+            # Get brand name
+            brand_name = await conn.fetchval("SELECT name FROM brands WHERE id = $1", brand_id)
+            
+            # Get user's previous try-ons at this brand
+            previous_tryons = await conn.fetch("""
+                SELECT ug.size_label, ug.fit_feedback, g.product_name,
+                       array_agg(ugf.dimension || ':' || fc.feedback_text) as dimension_feedback
+                FROM user_garments ug
+                JOIN garments g ON ug.garment_id = g.id
+                LEFT JOIN user_garment_feedback ugf ON ug.id = ugf.user_garment_id
+                LEFT JOIN feedback_codes fc ON ugf.feedback_code_id = fc.id
+                WHERE ug.user_id = $1 AND g.brand_id = $2 AND ug.owns_garment = false
+                GROUP BY ug.id, ug.size_label, ug.fit_feedback, g.product_name
+                ORDER BY ug.created_at DESC
+                LIMIT 5
+            """, int(user_id), brand_id)
+            
+            # Get user's owned garments for broader context
+            owned_garments = await conn.fetch("""
+                SELECT ug.size_label, ug.fit_feedback, g.product_name, b.name as brand_name
+                FROM user_garments ug
+                JOIN garments g ON ug.garment_id = g.id
+                JOIN brands b ON g.brand_id = b.id
+                WHERE ug.user_id = $1 AND ug.owns_garment = true
+                ORDER BY ug.created_at DESC
+                LIMIT 10
+            """, int(user_id))
+            
+            # Get product details from cache if available
+            product_details = await conn.fetchrow("""
+                SELECT product_description, fit_details, product_name
+                FROM jcrew_product_cache 
+                WHERE product_name ILIKE $1 OR product_name ILIKE '%t-shirt%' OR product_name ILIKE '%tee%'
+                ORDER BY created_at DESC
+                LIMIT 1
+            """, f"%{brand_name}%")
+
+        # Convert feedback numbers to text for AI
+        feedback_text = {}
+        for dimension, rating in feedback.items():
+            if rating is not None:
+                feedback_text[dimension] = {
+                    1: "Too Tight",
+                    2: "Tight but I Like It", 
+                    3: "Good Fit",
+                    4: "Loose but I Like It",
+                    5: "Too Loose"
+                }.get(rating, "Good Fit")
+
+        # Create AI prompt
+        system_prompt = """You are a clothing fit analyst helping users understand their size and style preferences. 
+        Analyze their try-on feedback and give them immediate, actionable insights about what they learned.
+        
+        Focus on:
+        1. What this try-on tells them about their measurements/preferences
+        2. Patterns with this brand specifically  
+        3. How this compares to their other garments
+        4. Practical insights for future shopping
+        5. IMPORTANT: If the product has specific features (like "rib trim at neck", "heavyweight cotton", 
+           "relaxed fit", "7.4-ounce fabric", etc.), ask the user about those features to learn their 
+           style preferences beyond just size. This helps filter future recommendations.
+        
+        Be conversational, encouraging, and specific. Use emojis sparingly but effectively.
+        Keep responses under 250 words and focus on the most valuable insights.
+        
+        When asking about specific features, phrase it naturally like:
+        - "How did you feel about the rib trim at the neck?"
+        - "Did you like the heavyweight cotton feel?"
+        - "What did you think of the relaxed fit through the shoulders?"
+        
+        This helps us learn what design elements you prefer, not just sizing."""
+
+        # Build context for the prompt
+        context_info = ""
+        if previous_tryons:
+            context_info += f"\nPrevious {brand_name} try-ons: "
+            for tryon in previous_tryons:
+                context_info += f"Size {tryon['size_label']} ({tryon['fit_feedback']}), "
+        
+        if owned_garments:
+            context_info += f"\nOwned garments: "
+            for garment in owned_garments[:3]:  # Limit to avoid token overflow
+                context_info += f"{garment['brand_name']} {garment['size_label']} ({garment['fit_feedback']}), "
+
+        # Include product details if available
+        product_info = ""
+        if product_details and product_details['product_description']:
+            product_info = f"\nProduct Details: {product_details['product_description'][:300]}..."
+            print(f"🔍 Found product details: {product_details['product_name']}")
+            print(f"📝 Description: {product_details['product_description'][:100]}...")
+        else:
+            print("❌ No product details found")
+        
+        user_prompt = f"""
+        I just tried on a {brand_name} size {size_tried} and here's my feedback:
+        {json.dumps(feedback_text, indent=2)}
+        {product_info}
+        {context_info}
+        
+        What insights can you give me about my fit preferences based on this try-on?
+        If this product has specific design features, please ask me about them to help learn my style preferences.
+        """
+
+        # Call OpenAI
+        response = openai_client.chat.completions.create(
+            model="gpt-3.5-turbo",
+            messages=[
+                {"role": "system", "content": system_prompt},
+                {"role": "user", "content": user_prompt}
+            ],
+            temperature=0.7,
+            max_tokens=300
+        )
+
+        ai_insights = response.choices[0].message.content
+
+        # Structure the response
+        insights = {
+            "summary": ai_insights,
+            "ai_generated": True,
+            "context_used": {
+                "previous_tryons_count": len(previous_tryons),
+                "owned_garments_count": len(owned_garments),
+                "brand_history": len([t for t in previous_tryons if t]) > 0
+            },
+            "raw_feedback": feedback_text,
+            "confidence": "high" if len(owned_garments) > 3 else "medium"
+        }
+
+        print(f"🤖 AI Insights generated for {brand_name} {size_tried}: {ai_insights[:100]}...")
+        return insights
+
+    except Exception as e:
+        print(f"Error generating AI insights: {str(e)}")
+        # Fallback to basic insights
+        return await generate_basic_tryon_insights(user_id, brand_id, size_tried, feedback, measurements, feedback_stored)
+
+async def generate_basic_tryon_insights(user_id, brand_id, size_tried, feedback, measurements, feedback_stored):
+    """Fallback function for when AI is not available"""
     insights = {
         "summary": "",
         "key_findings": [],
         "measurement_analysis": {},
         "recommendations": [],
-        "confidence": "low"  # Will increase with more data
+        "confidence": "low",
+        "ai_generated": False
     }
     
     # Analyze feedback patterns
@@ -3994,34 +4253,17 @@ async def generate_tryon_insights(user_id, brand_id, size_tried, feedback, measu
     
     # Generate summary
     if not tight_areas and not loose_areas:
-        insights["summary"] = f"✅ {brand_name} size {size_tried} fits you well!"
+        insights["summary"] = f"✅ {brand_name} size {size_tried} fits you well! This suggests you're consistently a {size_tried} at {brand_name}."
         insights["confidence"] = "high"
     elif len(tight_areas) == 1 and not loose_areas:
-        insights["summary"] = f"🔶 {brand_name} {size_tried} is close - just tight in {tight_areas[0]}"
+        insights["summary"] = f"🔶 {brand_name} {size_tried} is close - just tight in {tight_areas[0]}. You might prefer {get_next_size_up(size_tried)} at {brand_name} for comfort."
         insights["confidence"] = "medium"
     elif len(loose_areas) == 1 and not tight_areas:
-        insights["summary"] = f"🔶 {brand_name} {size_tried} is close - just loose in {loose_areas[0]}"
+        insights["summary"] = f"🔶 {brand_name} {size_tried} is close - just loose in {loose_areas[0]}. You might prefer {get_next_size_down(size_tried)} at {brand_name} for a fitted look."
         insights["confidence"] = "medium"
     else:
-        insights["summary"] = f"⚠️ {brand_name} {size_tried} has multiple fit issues"
+        insights["summary"] = f"⚠️ {brand_name} {size_tried} has mixed fit - this helps us learn your preferences for future recommendations."
         insights["confidence"] = "low"
-    
-    # Add specific findings
-    for area in tight_areas:
-        insights["key_findings"].append(f"Size {size_tried} is tight in {area}")
-        insights["recommendations"].append(f"Consider size {get_next_size_up(size_tried)} for better {area} fit")
-    
-    for area in loose_areas:
-        insights["key_findings"].append(f"Size {size_tried} is loose in {area}")
-        insights["recommendations"].append(f"Consider size {get_next_size_down(size_tried)} for better {area} fit")
-    
-    # Add measurement analysis if available
-    if measurements:
-        for dimension in ['chest', 'neck', 'sleeve', 'waist']:
-            if hasattr(measurements, f'{dimension}_min') and getattr(measurements, f'{dimension}_min'):
-                min_val = getattr(measurements, f'{dimension}_min')
-                max_val = getattr(measurements, f'{dimension}_max')
-                insights["measurement_analysis"][dimension] = f"{min_val}-{max_val}\""
     
     return insights
 
@@ -4032,3 +4274,38 @@ def get_next_size_up(size):
 def get_next_size_down(size):
     size_map = {'S': 'XS', 'M': 'S', 'L': 'M', 'XL': 'L', 'XXL': 'XL'}
     return size_map.get(size, size)
+
+@app.post("/tryon/test-insights")
+async def test_ai_insights(request: dict):
+    """
+    Test endpoint to see AI insights in action
+    """
+    try:
+        user_id = request.get("user_id", "1")
+        brand_id = request.get("brand_id", 4)  # J.Crew
+        size_tried = request.get("size_tried", "M")
+        feedback = request.get("feedback", {
+            "chest": 3,
+            "neck": 2,
+            "sleeve": 4,
+            "overall": 3
+        })
+        
+        insights = await generate_tryon_insights(
+            user_id, brand_id, size_tried, feedback, None, []
+        )
+        
+        return {
+            "status": "success",
+            "insights": insights,
+            "test_data": {
+                "user_id": user_id,
+                "brand_id": brand_id,
+                "size_tried": size_tried,
+                "feedback": feedback
+            }
+        }
+        
+    except Exception as e:
+        print(f"Error in test insights: {str(e)}")
+        raise HTTPException(status_code=500, detail=str(e))

@@ -36,7 +36,9 @@ struct SiesApp: App {
                             }
                             .tag(0)
                         
-                        ScanHistoryView()
+                        NavigationView {
+                            FindsView()
+                        }
                             .environmentObject(userSettings)
                             .tabItem {
                                 Label("Finds", systemImage: "list.bullet")
