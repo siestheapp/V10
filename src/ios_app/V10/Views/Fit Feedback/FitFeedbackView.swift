@@ -17,6 +17,8 @@ struct FitFeedbackView: View {
     let selectedSize: String
     let productUrl: String?
     let brand: String?
+    let fitType: String?
+    let selectedColor: String?
     
     @State private var fitFeedback: [String: Int] = [:]
     @State private var isSubmitting = false
@@ -28,6 +30,8 @@ struct FitFeedbackView: View {
         self.selectedSize = selectedSize
         self.productUrl = nil
         self.brand = nil
+        self.fitType = nil
+        self.selectedColor = nil
     }
     
     init(feedbackType: FeedbackType, selectedSize: String, productUrl: String?, brand: String?) {
@@ -35,6 +39,26 @@ struct FitFeedbackView: View {
         self.selectedSize = selectedSize
         self.productUrl = productUrl
         self.brand = brand
+        self.fitType = nil
+        self.selectedColor = nil
+    }
+    
+    init(feedbackType: FeedbackType, selectedSize: String, productUrl: String?, brand: String?, fitType: String?) {
+        self.feedbackType = feedbackType
+        self.selectedSize = selectedSize
+        self.productUrl = productUrl
+        self.brand = brand
+        self.fitType = fitType
+        self.selectedColor = nil
+    }
+    
+    init(feedbackType: FeedbackType, selectedSize: String, productUrl: String?, brand: String?, fitType: String?, selectedColor: String?) {
+        self.feedbackType = feedbackType
+        self.selectedSize = selectedSize
+        self.productUrl = productUrl
+        self.brand = brand
+        self.fitType = fitType
+        self.selectedColor = selectedColor
     }
 
     let fitOptions = [
@@ -110,7 +134,8 @@ struct FitFeedbackView: View {
     private var feedbackDescription: String {
         switch feedbackType {
         case .manualEntry:
-            return "Based on your selected size (\(selectedSize)), tell us how this garment fits."
+            let sizeAndFit = fitType != nil ? "\(selectedSize) \(fitType!)" : selectedSize
+            return "Based on your selected size (\(sizeAndFit)), tell us how this garment fits."
         case .scannedGarment:
             return "We scanned your tag! Let us know how this garment fits to improve recommendations."
         case .newBrand:
@@ -139,7 +164,7 @@ struct FitFeedbackView: View {
         isSubmitting = true
         
         // Prepare feedback data for tryon/submit endpoint
-        let feedbackData: [String: Any] = [
+        var feedbackData: [String: Any] = [
             "user_id": "1", // Using default user for now
             "session_id": "tryon_\(Int(Date().timeIntervalSince1970))", // Generate session ID
             "product_url": productUrl ?? "",
@@ -147,6 +172,16 @@ struct FitFeedbackView: View {
             "size_tried": selectedSize,
             "feedback": fitFeedback
         ]
+        
+        // Add fit type if available (for J.Crew products)
+        if let fitType = fitType {
+            feedbackData["fit_type"] = fitType
+        }
+        
+        // Add selected color if available
+        if let selectedColor = selectedColor {
+            feedbackData["selected_color"] = selectedColor
+        }
         
         guard let url = URL(string: "\(Config.baseURL)/tryon/submit") else {
             print("❌ Invalid API URL")

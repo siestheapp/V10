@@ -24,6 +24,77 @@ class JCrewProductFetcher:
             'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8',
         }
     
+    def _extract_product_code(self, product_url: str) -> Optional[str]:
+        """
+        Extract product code from J.Crew URL for consistent caching
+        Examples:
+        - /p/mens/.../CL752?color=white -> CL752
+        - /p/mens/.../BE996 -> BE996
+        """
+        import re
+        
+        # Pattern to match J.Crew product codes (usually 5-6 alphanumeric characters)
+        # They appear at the end of the path before query parameters
+        pattern = r'/([A-Z0-9]{4,6})(?:\?|$)'
+        match = re.search(pattern, product_url)
+        
+        if match:
+            return match.group(1)
+        
+        # Fallback: try to extract from the last segment of the path
+        try:
+            from urllib.parse import urlparse
+            parsed = urlparse(product_url)
+            path_segments = [seg for seg in parsed.path.split('/') if seg]
+            
+            # Look for product code pattern in last few segments
+            for segment in reversed(path_segments[-3:]):
+                if re.match(r'^[A-Z0-9]{4,6}$', segment):
+                    return segment
+        except:
+            pass
+        
+        return None
+    
+    def _normalize_url_for_caching(self, product_url: str) -> str:
+        """
+        Create a normalized cache key based on product code and color
+        This ensures different color variants have separate cache entries
+        """
+        product_code = self._extract_product_code(product_url)
+        
+        # Extract color information from URL
+        from urllib.parse import urlparse, parse_qs
+        parsed = urlparse(product_url)
+        query_params = parse_qs(parsed.query)
+        
+        color_info = ""
+        if 'color_name' in query_params:
+            color_info = f"_{query_params['color_name'][0]}"
+        elif 'colorProductCode' in query_params:
+            color_info = f"_{query_params['colorProductCode'][0]}"
+        
+        if product_code:
+            return f"jcrew_product_{product_code}{color_info}"
+        
+        # Fallback to URL-based key (keep color and fit parameters)
+        base_path = parsed.path
+        filtered_params = {}
+        
+        # Keep essential parameters including color and fit
+        keep_params = ['fit', 'color_name', 'colorProductCode']
+        for param in keep_params:
+            if param in query_params:
+                filtered_params[param] = query_params[param]
+        
+        # Create normalized cache key
+        cache_key = base_path
+        if filtered_params:
+            param_str = '&'.join(f"{k}={v[0]}" for k, v in filtered_params.items())
+            cache_key += f"?{param_str}"
+        
+        return f"jcrew_url_{hash(cache_key)}"
+    
     def fetch_product(self, product_url: str) -> Optional[Dict]:
         """
         Fetch product data from J.Crew URL
@@ -34,10 +105,14 @@ class JCrewProductFetcher:
             print(f"❌ Unsupported product type. Only J.Crew men's tops (shirts, sweaters, jackets) are supported.")
             return None
         
-        # First check cache
-        cached = self._check_cache(product_url)
+        # Get normalized cache key for consistent caching across color variants
+        cache_key = self._normalize_url_for_caching(product_url)
+        product_code = self._extract_product_code(product_url)
+        
+        # First check cache using normalized key
+        cached = self._check_cache_by_key(cache_key)
         if cached:
-            print(f"✅ Found in cache: {cached['product_name']}")
+            print(f"✅ Found in cache (product {product_code}): {cached['product_name']}")
             return cached
         
         # Fetch from website
@@ -45,9 +120,14 @@ class JCrewProductFetcher:
         product_data = self._scrape_product(product_url)
         
         if product_data:
-            # Save to cache
-            self._save_to_cache(product_data)
-            print(f"✅ Cached new product: {product_data['product_name']}")
+            # Add cache metadata
+            product_data['cache_key'] = cache_key
+            product_data['product_code'] = product_code
+            product_data['original_url'] = product_url
+            
+            # Save to cache using normalized key
+            self._save_to_cache_by_key(cache_key, product_data)
+            print(f"✅ Cached new product (code {product_code}): {product_data['product_name']}")
         
         return product_data
     
@@ -59,78 +139,26 @@ class JCrewProductFetcher:
         if "/mens/" not in url_lower and "/men/" not in url_lower:
             return False
         
-        # Check against database rules for smarter detection
-        conn = psycopg2.connect(**DB_CONFIG)
-        cur = conn.cursor()
+        # Supported categories - ALL men's tops (J.Crew uses ONE guide for all)
+        supported_categories = [
+            "/shirts/",
+            "/dress-shirts/",  # ✅ Added for dress shirt URLs
+            "/denim-shirts/",  # ✅ Added for denim shirt URLs
+            "/t-shirts/",
+            "/tshirts/",
+            "/tshirts-and-polos/",  # ✅ Added for URLs like /tshirts-and-polos/t-shirt/
+            "/polos/",
+            "/sweaters/",
+            "/sweatshirts/",
+            "/hoodies/",
+            "/jacket",   # ✅ Now supported - same size guide
+            "/coat",     # ✅ Now supported - same size guide  
+            "/outerwear/",  # ✅ Now supported - same size guide
+            "/blazer"    # ✅ Now supported - same size guide
+        ]
         
-        try:
-            # Check if URL matches any guide selection rules
-            cur.execute("""
-                SELECT COUNT(*) 
-                FROM guide_selection_rules gsr
-                JOIN brands b ON gsr.brand_id = b.id
-                WHERE b.name = 'J.Crew' 
-                AND gsr.rule_type = 'url_pattern'
-                AND %s LIKE '%%' || gsr.pattern || '%%'
-                AND gsr.is_active = true
-            """, (url_lower,))
-            
-            count = cur.fetchone()[0]
-            if count > 0:
-                return True
-                
-            # Fallback to hardcoded categories for backward compatibility
-            supported_categories = [
-                "/shirts/",
-                "/dress-shirts/",
-                "/business-casual-shirts/",
-                "/t-shirts/",
-                "/tshirts/",
-                "/polos/",
-                "/sweaters/",
-                "/sweatshirts/",
-                "/hoodies/",
-                "/henleys/",
-                "/crewneck/"
-            ]
-            
-            return any(category in url_lower for category in supported_categories)
-            
-        finally:
-            cur.close()
-            conn.close()
-    
-    def get_measurement_set_for_product(self, product_url: str) -> Optional[int]:
-        """Get the appropriate measurement_set_id for this product"""
-        url_lower = product_url.lower()
-        
-        conn = psycopg2.connect(**DB_CONFIG)
-        cur = conn.cursor()
-        
-        try:
-            # Find best matching rule
-            cur.execute("""
-                SELECT gsr.measurement_set_id, gsr.priority
-                FROM guide_selection_rules gsr
-                JOIN brands b ON gsr.brand_id = b.id
-                WHERE b.name = 'J.Crew' 
-                AND gsr.rule_type = 'url_pattern'
-                AND %s LIKE '%%' || gsr.pattern || '%%'
-                AND gsr.is_active = true
-                ORDER BY gsr.priority DESC
-                LIMIT 1
-            """, (url_lower,))
-            
-            result = cur.fetchone()
-            if result:
-                return result[0]
-            
-            # Default to regular tops (ID 26)
-            return 26
-            
-        finally:
-            cur.close()
-            conn.close()
+        # Check if URL contains any supported category
+        return any(category in url_lower for category in supported_categories)
     
     def _check_cache(self, product_url: str) -> Optional[Dict]:
         """Check if product exists in cache"""
@@ -141,7 +169,8 @@ class JCrewProductFetcher:
             cur.execute("""
                 SELECT product_name, product_code, product_image,
                        category, subcategory, sizes_available,
-                       colors_available, material, fit_type, price
+                       colors_available, material, fit_type, fit_options, price,
+                       product_description, fit_details
                 FROM jcrew_product_cache
                 WHERE product_url = %s
             """, (product_url,))
@@ -159,8 +188,56 @@ class JCrewProductFetcher:
                     'colors_available': row[6],
                     'material': row[7],
                     'fit_type': row[8],
-                    'price': float(row[9]) if row[9] else None
+                    'fit_options': row[9],
+                    'price': float(row[10]) if row[10] else None,
+                    'product_description': row[11] if len(row) > 11 else '',
+                    'fit_details': row[12] if len(row) > 12 else {}
                 }
+        finally:
+            cur.close()
+            conn.close()
+        
+        return None
+    
+    def _check_cache_by_key(self, cache_key: str) -> Optional[Dict]:
+        """Check if product exists in cache using normalized cache key"""
+        conn = psycopg2.connect(**DB_CONFIG)
+        cur = conn.cursor()
+        
+        try:
+            # First try to find by cache_key (new method)
+            cur.execute("""
+                SELECT product_name, product_code, product_image,
+                       category, subcategory, sizes_available,
+                       colors_available, material, fit_type, fit_options, price,
+                       product_description, fit_details, product_url
+                FROM jcrew_product_cache
+                WHERE cache_key = %s
+                ORDER BY created_at DESC
+                LIMIT 1
+            """, (cache_key,))
+            
+            row = cur.fetchone()
+            if row:
+                return {
+                    'product_url': row[13],  # Original URL from cache
+                    'product_name': row[0],
+                    'product_code': row[1],
+                    'product_image': row[2],
+                    'category': row[3],
+                    'subcategory': row[4],
+                    'sizes_available': row[5],
+                    'colors_available': row[6],
+                    'material': row[7],
+                    'fit_type': row[8],
+                    'fit_options': row[9],
+                    'price': float(row[10]) if row[10] else None,
+                    'product_description': row[11] if len(row) > 11 else '',
+                    'fit_details': row[12] if len(row) > 12 else {},
+                    'cache_key': cache_key
+                }
+        except Exception as e:
+            print(f"Cache lookup error: {e}")
         finally:
             cur.close()
             conn.close()
@@ -170,25 +247,50 @@ class JCrewProductFetcher:
     def _scrape_product(self, product_url: str) -> Optional[Dict]:
         """Scrape product data from J.Crew website"""
         try:
-            response = requests.get(product_url, headers=self.headers, timeout=10)
-            response.raise_for_status()
+            # First, get the original URL with color parameters for accurate image/price extraction
+            print(f"🔍 Fetching product data from original URL: {product_url}")
+            response_original = requests.get(product_url, headers=self.headers, timeout=10)
+            response_original.raise_for_status()
+            soup_original = BeautifulSoup(response_original.text, 'html.parser')
             
-            soup = BeautifulSoup(response.text, 'html.parser')
+            # For fit options extraction, use the base URL without any parameters
+            # to get all available fits, not just the selected one
+            base_url = product_url
+            soup_base = soup_original  # Default to original if no parameters
+            
+            if '?' in product_url:
+                import urllib.parse
+                parsed = urllib.parse.urlparse(product_url)
+                # Use just the base URL without any query parameters
+                base_url = urllib.parse.urlunparse((
+                    parsed.scheme, parsed.netloc, parsed.path,
+                    '', '', ''
+                ))
+                print(f"🔍 Using clean base URL for fit extraction: {base_url}")
+                
+                # Only fetch base URL if it's different from original
+                if base_url != product_url:
+                    response_base = requests.get(base_url, headers=self.headers, timeout=10)
+                    response_base.raise_for_status()
+                    soup_base = BeautifulSoup(response_base.text, 'html.parser')
             
             # Detect category from URL
             category_info = self._detect_category(product_url)
             
-            # Extract product data
+            # Extract product data - use original soup for color-specific data, base soup for fit options
             product_data = {
                 'product_url': product_url,
-                'product_name': self._extract_name(soup),
-                'product_code': self._extract_code(product_url, soup),
-                'product_image': self._extract_image(soup),
-                'price': self._extract_price(soup),
-                'sizes_available': self._extract_sizes(soup),
-                'colors_available': self._extract_colors(soup),
-                'material': self._extract_material(soup),
-                'fit_type': self._extract_fit(soup),
+                'product_name': self._extract_name(soup_original),
+                'product_code': self._extract_code(product_url, soup_original),
+                'product_image': self._extract_image(soup_original),  # Use original for correct color image
+                'price': self._extract_price(soup_original),  # Use original for correct color price
+                'sizes_available': self._extract_sizes(soup_original),
+                'colors_available': self._extract_colors(soup_original),  # Use original to get all colors
+                'material': self._extract_material(soup_original),
+                'fit_type': self._extract_fit(soup_original),
+                'fit_options': self._extract_fit_options(soup_base, base_url),  # Use base for all fit options
+                'product_description': self._extract_description(soup_original),
+                'fit_details': self._extract_fit_details(soup_original),
                 'category': category_info['category'],
                 'subcategory': category_info['subcategory']
             }
@@ -230,8 +332,8 @@ class JCrewProductFetcher:
             return {'category': 'T-Shirts', 'subcategory': 'Polos'}
         
         # Shirts (default for other tops)
-        elif '/shirts/' in url_lower:
-            if 'casual' in url_lower:
+        elif '/shirts/' in url_lower or '/denim-shirts/' in url_lower:
+            if 'casual' in url_lower or 'denim' in url_lower:
                 return {'category': 'Shirts', 'subcategory': 'Casual'}
             elif 'dress' in url_lower:
                 return {'category': 'Shirts', 'subcategory': 'Dress'}
@@ -361,17 +463,99 @@ class JCrewProductFetcher:
         return sizes
     
     def _extract_colors(self, soup: BeautifulSoup) -> list:
-        """Extract available colors"""
+        """Extract available colors with visual information from J.Crew"""
         colors = []
         
-        # Try to find color options
-        color_elements = soup.select('[data-qaid*="color"], .color-selector__button, button[aria-label*="Color"]')
-        for element in color_elements:
-            color_text = element.get('aria-label', '') or element.text.strip()
-            if color_text and color_text not in colors:
-                colors.append(color_text)
+        # Target multiple possible DOM patterns used by J.Crew
+        selector_list = [
+            '.js-product__color.colors-list__item',
+            '.js-product__color',
+            '.ProductPriceColors__color',
+            '[data-qaid^="pdpProductPriceColorsGroupListItem"]'
+        ]
+        jcrew_color_elements = soup.select(', '.join(selector_list))
         
-        return colors if colors else ['Default']
+        for element in jcrew_color_elements:
+            # Extract color information from J.Crew's data attributes
+            color_name = (element.get('data-name') or '').strip()
+            if not color_name:
+                # Fallback to aria-label like "NAVY $39.50"
+                aria = (element.get('aria-label') or '').strip()
+                if aria:
+                    color_name = aria.split('$')[0].strip()
+            color_code = (element.get('data-code') or '').strip()  # e.g., WT0002
+            product_code = (element.get('data-product') or '').strip()  # e.g., BW379
+            
+            if not color_name:
+                continue
+            
+            # Clean up name casing
+            color_name = color_name.replace(' undefined', '').strip().title()
+            
+            # Skip duplicates
+            existing_names = [c.get('name', '') if isinstance(c, dict) else str(c) for c in colors]
+            if color_name in existing_names:
+                continue
+            
+            color_info = {
+                'name': color_name,
+                'code': color_code if color_code else None,
+                'productCode': product_code if product_code else None
+            }
+            
+            # Try to extract image URL for this color (img src or data-src/srcset)
+            img_element = element.find('img')
+            img_src = ''
+            if img_element:
+                img_src = img_element.get('src') or img_element.get('data-src') or ''
+                if not img_src:
+                    srcset = img_element.get('srcset') or ''
+                    if srcset:
+                        # Take the first URL from srcset
+                        img_src = srcset.split(',')[0].strip().split(' ')[0]
+            if img_src:
+                if img_src.startswith('/'):
+                    img_src = f"https://www.jcrew.com{img_src}"
+                color_info['imageUrl'] = img_src
+            
+            # Also attempt to read a background color if present
+            style = element.get('style', '')
+            if 'background-color:' in style:
+                import re
+                hex_match = re.search(r'background-color:\s*#([0-9a-fA-F]{6})', style)
+                if hex_match:
+                    color_info['hex'] = f"#{hex_match.group(1)}"
+                else:
+                    rgb_match = re.search(r'background-color:\s*rgb\((\d+),\s*(\d+),\s*(\d+)\)', style)
+                    if rgb_match:
+                        r, g, b = rgb_match.groups()
+                        color_info['hex'] = f"#{int(r):02x}{int(g):02x}{int(b):02x}"
+            
+            # Add J.Crew-specific color hex mappings based on common color names
+            if not color_info.get('hex'):
+                color_info['hex'] = self._get_jcrew_color_hex(color_name)
+            
+            colors.append(color_info)
+            print(f"🎨 Found color: {color_name} (code: {color_code})")
+        
+        print(f"🎨 Total colors extracted: {len(colors)}")
+        
+        # Fallback: try older selectors if J.Crew specific didn't work
+        if not colors:
+            color_elements = soup.select('[data-qaid*="color"], .color-selector__button, button[aria-label*="Color"]')
+            for element in color_elements:
+                color_text = element.get('aria-label', '') or element.text.strip()
+                if color_text and len(color_text) < 50:
+                    # Check if this color name already exists
+                    existing_names = [c['name'] if isinstance(c, dict) else c for c in colors]
+                    if color_text not in existing_names:
+                        colors.append({'name': color_text.title()})
+        
+        # Return default if no colors found
+        if not colors:
+            colors = [{'name': 'Default'}]
+        
+        return colors
     
     def _extract_material(self, soup: BeautifulSoup) -> str:
         """Extract material/fabric information"""
@@ -402,6 +586,210 @@ class JCrewProductFetcher:
         
         return 'Regular'
     
+    def _extract_fit_options(self, soup: BeautifulSoup, product_url: str) -> list:
+        """Extract available fit options for this specific product"""
+        fit_options = []
+        
+        # Determine if this is a men's or women's product
+        is_mens_product = '/mens/' in product_url.lower() or '/men/' in product_url.lower()
+        
+        # Method 1: Look for ProductVariations section (most accurate for J.Crew)
+        product_variations = soup.find('div', {'id': 'c-product__variations'})
+        if product_variations:
+            # Look for fit variation buttons within the ProductVariations section
+            fit_buttons = product_variations.find_all('button', {'class': lambda x: x and 'js-product_variation' in x})
+            for button in fit_buttons:
+                # Check if this is a fit variation (not size or color)
+                data_label = button.get('data-label', '').strip()
+                if data_label and any(fit_word in data_label.lower() for fit_word in ['classic', 'slim', 'tall', 'relaxed', 'untucked']):
+                    if data_label not in fit_options:
+                        fit_options.append(data_label)
+                        print(f"🎯 Found fit option in ProductVariations: {data_label}")
+        
+        # Method 1.5: Look for fit variation lists or groups (alternative J.Crew structure)
+        if not fit_options:
+            # Look for fit variation lists
+            fit_lists = soup.find_all('ul', {'class': lambda x: x and 'variations-list' in x})
+            for fit_list in fit_lists:
+                fit_items = fit_list.find_all('li', {'class': lambda x: x and 'js-product_variation' in x})
+                for item in fit_items:
+                    data_label = item.get('data-label', '').strip()
+                    if data_label and any(fit_word in data_label.lower() for fit_word in ['classic', 'slim', 'tall', 'relaxed', 'untucked']):
+                        if data_label not in fit_options:
+                            fit_options.append(data_label)
+                            print(f"🎯 Found fit option in variations list: {data_label}")
+            
+            # Also check for any elements with fit-related data attributes
+            fit_elements = soup.find_all(attrs={'data-fit': True})
+            for element in fit_elements:
+                fit_value = element.get('data-fit', '').strip()
+                if fit_value and fit_value not in fit_options:
+                    fit_options.append(fit_value.title())
+                    print(f"🎯 Found fit option in data-fit attribute: {fit_value}")
+        
+        # Method 2: Look for actual fit selector buttons on the page (fallback)
+        if not fit_options:
+            fit_selectors = [
+                'button[data-testid*="fit"]',
+                'button[aria-label*="fit"]',
+                '.fit-selector button',
+                '[data-fit-type]'
+            ]
+            
+            for selector in fit_selectors:
+                elements = soup.select(selector)
+                for element in elements:
+                    fit_text = element.get_text().strip()
+                    aria_label = element.get('aria-label', '').strip()
+                    
+                    for text_source in [fit_text, aria_label]:
+                        if text_source and text_source not in fit_options:
+                            # Common J.Crew fit types
+                            if any(fit in text_source.lower() for fit in ['classic', 'slim', 'tall', 'relaxed', 'untucked']):
+                                fit_options.append(text_source)
+        
+        # Method 2: Extract from JSON-LD structured data (fallback, but filter carefully)
+        if not fit_options:
+            scripts = soup.find_all('script')
+            for script in scripts:
+                if script.string and 'fit=' in script.string:
+                    script_content = script.string
+                    # Look for all URLs with fit parameters
+                    fit_urls = re.findall(r'fit=([^&"]*)', script_content)
+                    if fit_urls:
+                        for fit in fit_urls:
+                            if fit and fit not in fit_options:
+                                # Filter out inappropriate fit options based on gender and product type
+                                if is_mens_product and fit.lower() == 'petite':
+                                    print(f"⚠️ Skipping 'Petite' fit option for men's product")
+                                    continue  # Skip "Petite" for men's products
+                                
+                                # Allow all valid fit options for all products including T-shirts
+                                # J.Crew T-shirts do have Classic and Tall fit variations
+                                
+                                fit_options.append(fit)
+                        
+                        if fit_options:
+                            print(f"🎯 Found fit options in JSON data (filtered for {'mens' if is_mens_product else 'womens'}): {fit_options}")
+                        else:
+                            print(f"🎯 No valid fit options found in JSON data for this product")
+                        break
+        
+        # Method 2: Look for fit selector buttons on the page (fallback)
+        if not fit_options:
+            fit_selectors = [
+                'button[data-testid*="fit"]',
+                'button[aria-label*="fit"]',
+                'button[data-testid*="Fit"]',
+                'button[aria-label*="Fit"]',
+                '.fit-selector button',
+                'button[class*="fit"]',
+                'button[class*="Fit"]',
+                # More generic selectors for J.Crew's current structure
+                'button[aria-label*="Classic"]',
+                'button[aria-label*="Tall"]',
+                'button[aria-label*="Slim"]',
+                'button[aria-label*="Relaxed"]',
+                'button[data-testid*="Classic"]',
+                'button[data-testid*="Tall"]',
+                'button[data-testid*="Slim"]',
+                'button[data-testid*="Relaxed"]'
+            ]
+            
+            for selector in fit_selectors:
+                elements = soup.select(selector)
+                for element in elements:
+                    # Check both text content and aria-label
+                    fit_text = element.get_text().strip()
+                    aria_label = element.get('aria-label', '').strip()
+                    
+                    for text_source in [fit_text, aria_label]:
+                        if text_source and text_source not in fit_options:
+                            # Common J.Crew fit types
+                            if any(fit in text_source.lower() for fit in ['classic', 'slim', 'tall', 'relaxed', 'untucked']):
+                                fit_options.append(text_source)
+        
+        # Method 3: Look for buttons that might contain fit information (broader search)
+        if not fit_options:
+            all_buttons = soup.select('button')
+            for button in all_buttons:
+                button_text = button.get_text().strip().lower()
+                aria_label = button.get('aria-label', '').strip().lower()
+                
+                # Check if button contains fit-related text
+                for text_source in [button_text, aria_label]:
+                    if any(fit_word in text_source for fit_word in ['classic', 'tall', 'slim', 'relaxed']):
+                        # Extract the fit name
+                        if 'classic' in text_source:
+                            if 'Classic' not in fit_options:
+                                fit_options.append('Classic')
+                        if 'tall' in text_source:
+                            if 'Tall' not in fit_options:
+                                fit_options.append('Tall')
+                        if 'slim' in text_source and 'untucked' not in text_source:
+                            if 'Slim' not in fit_options:
+                                fit_options.append('Slim')
+                        if 'relaxed' in text_source:
+                            if 'Relaxed' not in fit_options:
+                                fit_options.append('Relaxed')
+        
+        # Method 4: Check URL parameters for fit options (if user is on a specific fit page)
+        # BUT ONLY if we haven't found any other fit options - URL params alone don't indicate multiple options
+        if not fit_options and 'fit=' in product_url:
+            import urllib.parse
+            parsed = urllib.parse.urlparse(product_url)
+            params = urllib.parse.parse_qs(parsed.query)
+            if 'fit' in params:
+                current_fit = params['fit'][0]
+                # Only add if it's a meaningful fit type, not just a default
+                if current_fit.lower() in ['classic', 'slim', 'tall', 'relaxed', 'untucked']:
+                    print(f"⚠️ Found fit parameter in URL: {current_fit} - but this doesn't guarantee multiple options exist")
+                    # Don't add it to fit_options yet - we need to verify multiple options exist
+        
+        # Method 5: Look for fit information in product details or descriptions
+        if not fit_options:
+            fit_text_indicators = soup.find_all(text=re.compile(r'(classic|slim|tall|relaxed|untucked)', re.I))
+            for text in fit_text_indicators:
+                parent = text.parent
+                if parent and any(cls in parent.get('class', []) for cls in ['fit', 'size', 'product']):
+                    # Extract fit types from the text
+                    fits = re.findall(r'\b(Classic|Slim|Tall|Relaxed|Untucked)\b', text, re.I)
+                    for fit in fits:
+                        if fit.title() not in fit_options:
+                            fit_options.append(fit.title())
+        
+        # Method 6: Check for common J.Crew fit patterns in the page
+        if not fit_options:
+            page_text = soup.get_text().lower()
+            common_fits = ['classic', 'slim', 'slim untucked', 'tall', 'relaxed']
+            
+            # Look for fit selection context (e.g., "Available in Classic and Slim fits")
+            if any(indicator in page_text for indicator in ['available in', 'choose your fit', 'fit options']):
+                for fit in common_fits:
+                    if fit in page_text and fit.title() not in fit_options:
+                        fit_options.append(fit.title())
+        
+        # Clean up and standardize fit names
+        standardized_fits = []
+        for fit in fit_options:
+            fit_clean = fit.strip().title()
+            if fit_clean == 'Slim Untucked':
+                fit_clean = 'Slim Untucked'
+            elif 'untucked' in fit_clean.lower():
+                fit_clean = 'Slim Untucked'
+            
+            if fit_clean not in standardized_fits:
+                standardized_fits.append(fit_clean)
+        
+        # Final validation: Only return fit options if we found multiple options
+        # A single fit option likely means it's just the default fit, not a choice
+        if len(standardized_fits) <= 1:
+            print(f"🚫 Only found {len(standardized_fits)} fit option(s): {standardized_fits}. This likely means no fit variations exist.")
+            return []
+        
+        print(f"✅ Found {len(standardized_fits)} fit options: {standardized_fits}")
+        return standardized_fits
+    
     def _save_to_cache(self, product_data: Dict):
         """Save product data to cache"""
         conn = psycopg2.connect(**DB_CONFIG)
@@ -412,13 +800,17 @@ class JCrewProductFetcher:
                 INSERT INTO jcrew_product_cache (
                     product_url, product_code, product_name, product_image,
                     category, subcategory, price, sizes_available,
-                    colors_available, material, fit_type, created_at
-                ) VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, NOW())
+                    colors_available, material, fit_type, fit_options, 
+                    product_description, fit_details, created_at
+                ) VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, NOW())
                 ON CONFLICT (product_url) DO UPDATE SET
                     product_name = EXCLUDED.product_name,
                     product_image = EXCLUDED.product_image,
                     price = EXCLUDED.price,
                     sizes_available = EXCLUDED.sizes_available,
+                    fit_options = EXCLUDED.fit_options,
+                    product_description = EXCLUDED.product_description,
+                    fit_details = EXCLUDED.fit_details,
                     updated_at = NOW()
             """, (
                 product_data['product_url'],
@@ -431,7 +823,10 @@ class JCrewProductFetcher:
                 product_data.get('sizes_available', []),
                 product_data.get('colors_available', []),
                 product_data.get('material', ''),
-                product_data.get('fit_type', 'Regular')
+                product_data.get('fit_type', 'Regular'),
+                product_data.get('fit_options', []),
+                product_data.get('product_description', ''),
+                json.dumps(product_data.get('fit_details', {}))
             ))
             
             conn.commit()
@@ -440,6 +835,305 @@ class JCrewProductFetcher:
         finally:
             cur.close()
             conn.close()
+    
+    def _save_to_cache_by_key(self, cache_key: str, product_data: Dict):
+        """Save product data to cache using normalized cache key"""
+        conn = psycopg2.connect(**DB_CONFIG)
+        cur = conn.cursor()
+        
+        try:
+            # First, check if cache_key column exists, if not add it
+            cur.execute("""
+                SELECT column_name 
+                FROM information_schema.columns 
+                WHERE table_name = 'jcrew_product_cache' AND column_name = 'cache_key'
+            """)
+            
+            if not cur.fetchone():
+                print("🔧 Adding cache_key column to jcrew_product_cache table...")
+                cur.execute("""
+                    ALTER TABLE jcrew_product_cache 
+                    ADD COLUMN IF NOT EXISTS cache_key VARCHAR(255)
+                """)
+                cur.execute("""
+                    CREATE UNIQUE INDEX IF NOT EXISTS idx_jcrew_cache_key_unique 
+                    ON jcrew_product_cache(cache_key)
+                """)
+                conn.commit()
+            
+            # Convert colors_available list of dicts to list of JSON strings for ARRAY column
+            colors_for_db = []
+            colors_data = product_data.get('colors_available', [])
+            if isinstance(colors_data, list):
+                for color in colors_data:
+                    if isinstance(color, dict):
+                        # Store as JSON string in the ARRAY
+                        colors_for_db.append(json.dumps(color))
+                    else:
+                        # If it's already a string, keep it
+                        colors_for_db.append(str(color))
+            
+            # Insert or update with cache_key
+            cur.execute("""
+                INSERT INTO jcrew_product_cache (
+                    product_url, product_code, product_name, product_image,
+                    category, subcategory, price, sizes_available,
+                    colors_available, material, fit_type, fit_options, 
+                    product_description, fit_details, cache_key, created_at
+                ) VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, NOW())
+                ON CONFLICT (cache_key) DO UPDATE SET
+                    product_url = EXCLUDED.product_url,
+                    product_name = EXCLUDED.product_name,
+                    product_image = EXCLUDED.product_image,
+                    price = EXCLUDED.price,
+                    sizes_available = EXCLUDED.sizes_available,
+                    colors_available = EXCLUDED.colors_available,
+                    fit_options = EXCLUDED.fit_options,
+                    product_description = EXCLUDED.product_description,
+                    fit_details = EXCLUDED.fit_details,
+                    updated_at = NOW()
+            """, (
+                product_data.get('original_url', product_data.get('product_url', '')),
+                product_data.get('product_code', ''),
+                product_data['product_name'],
+                product_data.get('product_image', ''),
+                product_data.get('category', 'Shirts'),
+                product_data.get('subcategory', 'Casual'),
+                product_data.get('price'),
+                product_data.get('sizes_available', []),
+                colors_for_db,  # Use the converted colors list
+                product_data.get('material', ''),
+                product_data.get('fit_type', 'Regular'),
+                product_data.get('fit_options', []),
+                product_data.get('product_description', ''),
+                json.dumps(product_data.get('fit_details', {})),
+                cache_key
+            ))
+            
+            conn.commit()
+            print(f"💾 Cached product with key: {cache_key}")
+            
+        except Exception as e:
+            print(f"❌ Error saving to cache with key: {e}")
+            conn.rollback()
+        finally:
+            cur.close()
+            conn.close()
+    
+    def _get_jcrew_color_hex(self, color_name: str) -> Optional[str]:
+        """Get hex color code for common J.Crew color names"""
+        jcrew_colors = {
+            # Blues
+            'Navy': '#1A2A44',
+            'Navy Blue': '#1A2A44',
+            'Classic Blue': '#4682B4',
+            'Light Blue': '#ADD8E6',
+            'Sky Blue': '#87CEEB',
+            'Deep Spearmint': '#3EB489',
+            'Estate Blue': '#365C7D',
+            'Ink': '#2C3E50',
+            'Sunfaded Indigo': '#6B7DAB',
+            'Amalfi Blue Linen Yd': '#5E9BD1',
+            'Amalfi Blue': '#5E9BD1',
+            
+            # Whites & Creams
+            'White': '#FFFFFF',
+            'Natural': '#EBE1D2',
+            'Cream': '#F5F5DC',
+            'Ivory': '#FFFFF0',
+            'Off-White': '#FAF9F6',
+            'Flax Linen Yd': '#E6DCC3',
+            'Flax': '#E6DCC3',
+            
+            # Blacks & Grays
+            'Black': '#212121',
+            'Charcoal': '#36454F',
+            'Gray': '#969696',
+            'Heather Gray': '#9E9E9E',
+            'Light Gray': '#D3D3D3',
+            'Pebbel Grey': '#A8A8A8',
+            'Pebble Grey': '#A8A8A8',
+            'Pebble Gray': '#A8A8A8',
+            
+            # Greens
+            'Jcrew Green': '#284132',
+            'J.Crew Green': '#284132',
+            'Forest Green': '#228B22',
+            'Misty Sage': '#9BAA96',
+            'Sage': '#9BAA96',
+            'Alhambra Green': '#508C78',
+            'Olive': '#6B7245',
+            'Olive Green': '#6B7245',
+            'Olive Linen': '#7A6F5C',
+            
+            # Browns
+            'Inky Mocha': '#3C2D28',
+            'Mocha': '#3C2D28',
+            'Brown': '#654321',
+            'Chocolate': '#7B3F00',
+            'Tan': '#C3B091',
+            'Camel': '#C19A6B',
+            'Khaki': '#C3B091',
+            'Burnt Mushroom': '#8B7355',
+            'Dusty Khaki': '#C4A572',
+            'Light Cedar': '#D4A76A',
+            
+            # Reds & Pinks
+            'Red': '#C81E1E',
+            'Burgundy': '#800020',
+            'Wine': '#722F37',
+            'Pink': '#FFC0CB',
+            'Rose': '#FF007F',
+            'Dusty Pink': '#B784A7',
+            'Blush': '#DE5D83',
+            'Fuchsia Berry': '#CC397B',
+            'Fuchsia': '#CC397B',
+            
+            # Purples
+            'Purple': '#800080',
+            'Plum': '#8E4585',
+            'Lavender': '#E6E6FA',
+            
+            # Yellows & Oranges
+            'Yellow': '#FFD700',
+            'Gold': '#FFD700',
+            'Orange': '#FF8C00',
+            'Rust': '#B7410E',
+            
+            # Special Colors & Patterns
+            'Heather': '#9C9CA6',
+            'Stripe': '#C8C8C8',
+            'Striped': '#C8C8C8',
+            'Navy Grey Fine Stripe': '#485870',
+            'Bengal Stripe Flax': '#E8DCC6',
+            'Paisley Medallion Natur': '#F5E6D3',
+            'Batik Paisley Black Can': '#2C2C2C',
+            'Geo Batik Blue Multi': '#4A6FA5',
+            'Geometric Menagerie Nav': '#2C3E50',
+            'Smudge Paisley Brown Bl': '#5D4E37',
+            'Kelley Multi Stripe Red': '#B85450',
+        }
+        
+        # Try exact match first
+        if color_name in jcrew_colors:
+            return jcrew_colors[color_name]
+        
+        # Try case-insensitive match
+        for key, value in jcrew_colors.items():
+            if key.lower() == color_name.lower():
+                return value
+        
+        return None
+    
+    def _extract_description(self, soup: BeautifulSoup) -> str:
+        """Extract product description with fit and fabric details"""
+        description_parts = []
+        
+        # Method 1: Look for specific product description text patterns
+        # J.Crew often has description text in specific areas
+        text_content = soup.get_text()
+        
+        # Look for common description patterns
+        description_patterns = [
+            r'Inspired by[^.]*\.[^.]*\.[^.]*\.',  # "Inspired by..." sentences
+            r'[Tt]his [^.]*(?:cotton|fabric|fit|cut|made|designed)[^.]*\.[^.]*\.',  # "This tee is made from..."
+            r'[Mm]ade from[^.]*\.[^.]*\.',  # "Made from..." sentences
+            r'\d+(?:\.\d+)?[- ]ounce[^.]*\.[^.]*\.',  # Weight descriptions
+            r'[Ww]ith [^.]*(?:room|fit|cut)[^.]*\.[^.]*\.',  # Fit descriptions
+        ]
+        
+        for pattern in description_patterns:
+            matches = re.findall(pattern, text_content, re.IGNORECASE | re.DOTALL)
+            for match in matches:
+                # Clean up the match
+                clean_match = re.sub(r'\s+', ' ', match.strip())
+                if len(clean_match) > 30 and clean_match not in description_parts:
+                    description_parts.append(clean_match)
+        
+        # Method 2: Look for material and construction details
+        material_patterns = [
+            r'100% [^.]*\.',  # "100% cotton."
+            r'[Rr]ib trim[^.]*\.',  # "Rib trim at neck."
+            r'[Ss]hort sleeves\.',  # "Short sleeves."
+            r'[Mm]achine wash\.',  # "Machine wash."
+            r'[Ii]mported\.',  # "Imported."
+        ]
+        
+        for pattern in material_patterns:
+            matches = re.findall(pattern, text_content)
+            for match in matches:
+                clean_match = match.strip()
+                if clean_match not in description_parts:
+                    description_parts.append(clean_match)
+        
+        # Method 3: Look for fit-specific information
+        fit_patterns = [
+            r'[Ff]its? true to size[^.]*\.',  # "Fits true to size..."
+            r'[Ss]leeves? (?:are )?[^.]*(?:longer|shorter)[^.]*\.',  # Sleeve length info
+            r'[Mm]ore room (?:across|in)[^.]*\.',  # Room descriptions
+        ]
+        
+        for pattern in fit_patterns:
+            matches = re.findall(pattern, text_content)
+            for match in matches:
+                clean_match = match.strip()
+                if clean_match not in description_parts:
+                    description_parts.append(clean_match)
+        
+        # Combine and clean up
+        if description_parts:
+            # Join with spaces and limit length
+            full_description = ' '.join(description_parts)
+            # Remove excessive whitespace
+            full_description = re.sub(r'\s+', ' ', full_description)
+            # Limit to reasonable length (500 chars)
+            if len(full_description) > 500:
+                full_description = full_description[:500] + '...'
+            return full_description
+        
+        return ""
+    
+    def _extract_fit_details(self, soup: BeautifulSoup) -> dict:
+        """Extract specific fit details like model info, sizing notes, etc."""
+        fit_details = {}
+        
+        # Look for model information
+        model_info = soup.find(text=re.compile(r'Model is.*wearing', re.I))
+        if model_info:
+            fit_details['model_info'] = model_info.strip()
+        
+        # Look for fit information
+        fit_info_selectors = [
+            '[data-testid="size-fit"]',
+            '.size-fit-info',
+            '.fit-information'
+        ]
+        
+        for selector in fit_info_selectors:
+            elements = soup.select(selector)
+            for element in elements:
+                text = element.get_text().strip()
+                if 'fit' in text.lower():
+                    fit_details['fit_notes'] = text
+        
+        # Look for customer review summary
+        review_text = soup.find(text=re.compile(r'based on.*customer reviews', re.I))
+        if review_text:
+            fit_details['customer_feedback'] = review_text.strip()
+        
+        # Look for specific fit notes (like sleeve length differences)
+        fit_notes = soup.find_all(text=re.compile(r'(longer|shorter|different|due to|because of)', re.I))
+        for note in fit_notes:
+            if any(keyword in note.lower() for keyword in ['sleeve', 'fit', 'length', 'size']):
+                if 'fit_notes' not in fit_details:
+                    fit_details['fit_notes'] = []
+                elif isinstance(fit_details['fit_notes'], str):
+                    fit_details['fit_notes'] = [fit_details['fit_notes']]
+                
+                if isinstance(fit_details['fit_notes'], list):
+                    fit_details['fit_notes'].append(note.strip())
+        
+        return fit_details
 
 
 # Test function

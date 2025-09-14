@@ -54,20 +54,48 @@ struct AllFindsView: View {
     }
     
     private var emptyStateView: some View {
-        VStack(spacing: 16) {
-            Image(systemName: "magnifyingglass")
-                .font(.system(size: 60))
-                .foregroundColor(.gray)
-            Text("No Finds Yet")
-                .font(.title2)
-                .fontWeight(.semibold)
-            Text("Scan tags or paste product links to start building your garment collection!")
-                .font(.subheadline)
-                .foregroundColor(.secondary)
-                .multilineTextAlignment(.center)
-                .padding(.horizontal)
+        VStack(spacing: 24) {
+            ZStack {
+                Circle()
+                    .fill(LinearGradient(colors: [.blue.opacity(0.1), .blue.opacity(0.05)], startPoint: .topLeading, endPoint: .bottomTrailing))
+                    .frame(width: 120, height: 120)
+                
+                Image(systemName: "magnifyingglass")
+                    .font(.system(size: 40))
+                    .foregroundColor(.blue)
+            }
+            
+            VStack(spacing: 12) {
+                Text("No Finds Yet")
+                    .font(.title2)
+                    .fontWeight(.bold)
+                
+                Text("Scan garment tags or paste product links to start building your personalized fit collection!")
+                    .font(.subheadline)
+                    .foregroundColor(.secondary)
+                    .multilineTextAlignment(.center)
+                    .padding(.horizontal, 20)
+            }
+            
+            VStack(spacing: 12) {
+                HStack(spacing: 8) {
+                    Image(systemName: "camera.fill")
+                        .foregroundColor(.blue)
+                    Text("Scan tags for instant analysis")
+                        .font(.subheadline)
+                        .foregroundColor(.secondary)
+                }
+                
+                HStack(spacing: 8) {
+                    Image(systemName: "link")
+                        .foregroundColor(.blue)
+                    Text("Paste links for size recommendations")
+                        .font(.subheadline)
+                        .foregroundColor(.secondary)
+                }
+            }
         }
-        .padding()
+        .padding(40)
     }
     
     private var allFindsList: some View {

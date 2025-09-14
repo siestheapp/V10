@@ -60,24 +60,34 @@ struct TabPill: View {
     
     var body: some View {
         Button(action: action) {
-            HStack(spacing: 6) {
+            HStack(spacing: 8) {
                 Image(systemName: icon)
-                    .font(.caption)
-                Text(title)
                     .font(.subheadline)
                     .fontWeight(.medium)
+                Text(title)
+                    .font(.subheadline)
+                    .fontWeight(.semibold)
             }
-            .padding(.horizontal, 16)
-            .padding(.vertical, 8)
+            .padding(.horizontal, 20)
+            .padding(.vertical, 12)
             .background(
-                isSelected ? Color.blue : Color(.systemGray5)
+                Group {
+                    if isSelected {
+                        LinearGradient(colors: [.blue, .blue.opacity(0.8)], startPoint: .topLeading, endPoint: .bottomTrailing)
+                    } else {
+                        LinearGradient(colors: [Color(.systemGray6)], startPoint: .topLeading, endPoint: .bottomTrailing)
+                    }
+                }
             )
             .foregroundColor(
                 isSelected ? .white : .primary
             )
             .clipShape(Capsule())
+            .shadow(color: isSelected ? .blue.opacity(0.3) : .clear, radius: 8, x: 0, y: 2)
         }
         .buttonStyle(PlainButtonStyle())
+        .scaleEffect(isSelected ? 1.02 : 1.0)
+        .animation(.easeInOut(duration: 0.2), value: isSelected)
     }
 }
 

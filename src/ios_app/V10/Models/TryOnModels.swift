@@ -12,6 +12,9 @@ struct TryOnSession: Codable {
     let availableMeasurements: [String]
     let feedbackOptions: [FeedbackOption]
     let sizeOptions: [String]
+    let fitOptions: [String]
+    let colorOptions: [JCrewColor]
+    let currentColor: String
     let nextStep: String
     
     enum CodingKeys: String, CodingKey {
@@ -24,6 +27,9 @@ struct TryOnSession: Codable {
         case availableMeasurements = "available_measurements"
         case feedbackOptions = "feedback_options"
         case sizeOptions = "size_options"
+        case fitOptions = "fit_options"
+        case colorOptions = "color_options"
+        case currentColor = "current_color"
         case nextStep = "next_step"
     }
 }
@@ -31,6 +37,51 @@ struct TryOnSession: Codable {
 struct FeedbackOption: Codable {
     let value: Int
     let label: String
+}
+
+// MARK: - Color Models
+
+struct JCrewColor: Codable, Hashable {
+    let name: String
+    let code: String?
+    let productCode: String?
+    let imageUrl: String?
+    let hex: String?
+    
+    init(name: String, code: String? = nil, productCode: String? = nil, imageUrl: String? = nil, hex: String? = nil) {
+        self.name = name
+        self.code = code
+        self.productCode = productCode
+        self.imageUrl = imageUrl
+        self.hex = hex
+    }
+    
+    enum CodingKeys: String, CodingKey {
+        case name
+        case code
+        case productCode
+        case imageUrl
+        case hex
+    }
+    
+    init(from decoder: Decoder) throws {
+        // Support decoding from either a string (legacy) or an object (rich)
+        let container = try? decoder.singleValueContainer()
+        if let name = try? container?.decode(String.self) {
+            self.name = name
+            self.code = nil
+            self.productCode = nil
+            self.imageUrl = nil
+            self.hex = nil
+            return
+        }
+        let keyed = try decoder.container(keyedBy: CodingKeys.self)
+        self.name = (try? keyed.decode(String.self, forKey: .name)) ?? ""
+        self.code = try? keyed.decodeIfPresent(String.self, forKey: .code)
+        self.productCode = try? keyed.decodeIfPresent(String.self, forKey: .productCode)
+        self.imageUrl = try? keyed.decodeIfPresent(String.self, forKey: .imageUrl)
+        self.hex = try? keyed.decodeIfPresent(String.self, forKey: .hex)
+    }
 }
 
 // MARK: - Try-On Response Models

@@ -192,34 +192,96 @@ struct ScanTab: View {
 
     var body: some View {
         NavigationView {
-            VStack(spacing: 30) {
-                // Mode selector
-                Picker("Mode", selection: $selectedMode) {
-                    ForEach(ScanMode.allCases, id: \.self) { mode in
-                        Text(mode.rawValue).tag(mode)
+            ScrollView {
+                VStack(spacing: 24) {
+                    // Header Section
+                    VStack(spacing: 12) {
+                        Text("Discover Your Perfect Fit")
+                            .font(.title2)
+                            .fontWeight(.bold)
+                            .multilineTextAlignment(.center)
+                        
+                        Text("Scan garment tags or paste product links to get personalized size recommendations")
+                            .font(.subheadline)
+                            .foregroundColor(.secondary)
+                            .multilineTextAlignment(.center)
+                            .padding(.horizontal, 20)
                     }
-                }
-                .pickerStyle(SegmentedPickerStyle())
-                .padding(.horizontal, 40)
-                
-                // Scan Tag Section
-                VStack(spacing: 15) {
-                    Text("Scan")
-                        .font(.largeTitle)
-                        .bold()
+                    .padding(.top, 20)
                     
-                    Button(action: {
-                        showingOptions = true
-                    }) {
-                        Text("Scan a Tag")
-                            .font(.headline)
-                            .foregroundColor(.white)
-                            .frame(maxWidth: .infinity)
-                            .padding()
-                            .background(Color.blue)
-                            .cornerRadius(10)
+                    // Mode selector with modern design
+                    VStack(spacing: 16) {
+                        HStack(spacing: 12) {
+                            ForEach(ScanMode.allCases, id: \.self) { mode in
+                                Button(action: {
+                                    withAnimation(.easeInOut(duration: 0.2)) {
+                                        selectedMode = mode
+                                    }
+                                }) {
+                                    VStack(spacing: 8) {
+                                        Image(systemName: mode == .tryOn ? "tshirt.fill" : "magnifyingglass")
+                                            .font(.title2)
+                                        Text(mode.rawValue)
+                                            .font(.caption)
+                                            .fontWeight(.medium)
+                                    }
+                                    .foregroundColor(selectedMode == mode ? .white : .primary)
+                                    .frame(maxWidth: .infinity)
+                                    .padding(.vertical, 12)
+                                    .background(
+                                        RoundedRectangle(cornerRadius: 12)
+                                            .fill(selectedMode == mode ? 
+                                                LinearGradient(colors: [.blue, .blue.opacity(0.8)], startPoint: .topLeading, endPoint: .bottomTrailing) :
+                                                LinearGradient(colors: [Color(.systemGray6)], startPoint: .topLeading, endPoint: .bottomTrailing)
+                                            )
+                                    )
+                                }
+                                .buttonStyle(PlainButtonStyle())
+                            }
+                        }
+                        .padding(.horizontal, 20)
                     }
-                    .padding(.horizontal, 40)
+                    
+                    // Scan Tag Section with modern card design
+                    VStack(spacing: 20) {
+                        Button(action: {
+                            showingOptions = true
+                        }) {
+                            HStack(spacing: 16) {
+                                ZStack {
+                                    Circle()
+                                        .fill(LinearGradient(colors: [.blue, .blue.opacity(0.7)], startPoint: .topLeading, endPoint: .bottomTrailing))
+                                        .frame(width: 50, height: 50)
+                                    
+                                    Image(systemName: "camera.fill")
+                                        .font(.title2)
+                                        .foregroundColor(.white)
+                                }
+                                
+                                VStack(alignment: .leading, spacing: 4) {
+                                    Text("Scan a Tag")
+                                        .font(.headline)
+                                        .fontWeight(.semibold)
+                                    Text("Use your camera to scan garment tags")
+                                        .font(.subheadline)
+                                        .foregroundColor(.secondary)
+                                }
+                                
+                                Spacer()
+                                
+                                Image(systemName: "chevron.right")
+                                    .font(.subheadline)
+                                    .foregroundColor(.secondary)
+                            }
+                            .padding(20)
+                            .background(
+                                RoundedRectangle(cornerRadius: 16)
+                                    .fill(Color(.systemBackground))
+                                    .shadow(color: .black.opacity(0.05), radius: 8, x: 0, y: 2)
+                            )
+                        }
+                        .buttonStyle(PlainButtonStyle())
+                        .padding(.horizontal, 20)
                     .sheet(isPresented: $showingImagePicker) {
                         ImagePicker(image: $selectedImage)
                     }
@@ -240,33 +302,66 @@ struct ScanTab: View {
                     }
                 }
                 
-                // Divider
-                HStack {
-                    Rectangle()
-                        .frame(height: 1)
-                        .foregroundColor(.gray)
-                    Text("OR")
-                        .foregroundColor(.gray)
-                        .padding(.horizontal)
-                    Rectangle()
-                        .frame(height: 1)
-                        .foregroundColor(.gray)
-                }
-                .padding(.horizontal, 40)
+                        // Divider with modern styling
+                        HStack(spacing: 16) {
+                            Rectangle()
+                                .frame(height: 1)
+                                .foregroundColor(.gray.opacity(0.2))
+                            
+                            Text("OR")
+                                .font(.caption)
+                                .fontWeight(.medium)
+                                .foregroundColor(.secondary)
+                                .padding(.horizontal, 12)
+                                .padding(.vertical, 6)
+                                .background(
+                                    Capsule()
+                                        .fill(Color(.systemGray6))
+                                )
+                            
+                            Rectangle()
+                                .frame(height: 1)
+                                .foregroundColor(.gray.opacity(0.2))
+                        }
+                        .padding(.horizontal, 20)
                 
-                // URL Input Section
-                VStack(alignment: .leading, spacing: 15) {
-                    Text(selectedMode == .tryOn ? "Log a Try-On" : "Get Size Recommendation")
-                        .font(.headline)
-                        .frame(maxWidth: .infinity, alignment: .leading)
-                    
-                    // URL Input
+                // URL Input Section with modern card design
+                VStack(spacing: 20) {
                     HStack {
-                        TextField("Paste product link here", text: $productLink)
-                            .textFieldStyle(RoundedBorderTextFieldStyle())
-                            .disabled(isAnalyzing)
+                        Text(selectedMode == .tryOn ? "Log a Try-On" : "Get Size Recommendation")
+                            .font(.title3)
+                            .fontWeight(.semibold)
+                        Spacer()
                     }
                     .padding(.horizontal, 20)
+                    
+                    // URL Input with modern styling
+                    VStack(spacing: 12) {
+                        HStack(spacing: 12) {
+                            Image(systemName: "link")
+                                .foregroundColor(.secondary)
+                                .frame(width: 20)
+                            
+                            TextField("Paste product link here", text: $productLink)
+                                .textFieldStyle(PlainTextFieldStyle())
+                                .disabled(isAnalyzing)
+                                .onTapGesture {
+                                    // Load fit zones when user starts interacting with the text field
+                                    if userFitZones == nil && !isLoadingFitZones {
+                                        loadUserFitZones()
+                                    }
+                                }
+                        }
+                        .padding(16)
+                        .background(
+                            RoundedRectangle(cornerRadius: 12)
+                                .fill(Color(.systemGray6))
+                                .overlay(
+                                    RoundedRectangle(cornerRadius: 12)
+                                        .stroke(productLink.isEmpty ? Color.clear : Color.blue.opacity(0.3), lineWidth: 1)
+                                )
+                        )
+                        .padding(.horizontal, 20)
                     
                     // Analysis Status
                     if isAnalyzing {
@@ -421,8 +516,8 @@ struct ScanTab: View {
                         )
                     }
                 }
+                }
             }
-            .padding(.top, 30)
             .navigationTitle("Scan")
             .navigationBarTitleDisplayMode(.inline)
             .toolbar {
@@ -481,22 +576,7 @@ struct ScanTab: View {
             // Fit zones will be loaded lazily when actually needed for analysis
         }
     }
-    
-    // Helper function to convert string color to SwiftUI Color (for button)
-    private func colorFromString(_ colorString: String) -> Color {
-        switch colorString.lowercased() {
-        case "green":
-            return .green
-        case "orange":
-            return .orange
-        case "red":
-            return .red
-        case "blue":
-            return .blue
-        default:
-            return .green
-        }
-    }
+}
     
     private func analyzeProduct() {
         guard !productLink.isEmpty else { return }
@@ -593,24 +673,47 @@ struct ScanTab: View {
         
         URLSession.shared.dataTask(with: request) { data, response, error in
             DispatchQueue.main.async {
-                isAnalyzing = false
+                self.isAnalyzing = false
                 
                 if let error = error {
-                    analysisError = "Network error: \(error.localizedDescription)"
+                    print("❌ Network error: \(error)")
+                    self.analysisError = "Network error: \(error.localizedDescription)"
                     return
                 }
                 
                 guard let data = data else {
-                    analysisError = "No data received"
+                    print("❌ No data received")
+                    self.analysisError = "No data received"
                     return
+                }
+                
+                // Debug: Print raw response
+                if let responseString = String(data: data, encoding: .utf8) {
+                    print("📦 Raw response: \(responseString)")
+                }
+                
+                // Check HTTP response status
+                if let httpResponse = response as? HTTPURLResponse {
+                    print("📡 HTTP Status: \(httpResponse.statusCode)")
+                    if httpResponse.statusCode != 200 {
+                        // Try to parse error message from response
+                        if let errorDict = try? JSONSerialization.jsonObject(with: data) as? [String: Any],
+                           let detail = errorDict["detail"] as? String {
+                            self.analysisError = detail
+                        } else {
+                            self.analysisError = "Server error (status: \(httpResponse.statusCode))"
+                        }
+                        return
+                    }
                 }
                 
                 do {
                     let session = try JSONDecoder().decode(TryOnSession.self, from: data)
+                    print("✅ Successfully decoded try-on session: \(session.sessionId)")
                     self.tryOnSession = session
                 } catch {
-                    analysisError = "Failed to parse try-on session: \(error.localizedDescription)"
-                    print("Decode error: \(error)")
+                    print("❌ Decode error: \(error)")
+                    self.analysisError = "Failed to parse try-on session: \(error.localizedDescription)"
                 }
             }
         }.resume()
@@ -663,27 +766,62 @@ struct ScanTab: View {
         isLoadingFitZones = true
         
         URLSession.shared.dataTask(with: url) { data, response, error in
-            DispatchQueue.main.async {
-                isLoadingFitZones = false
-                
-                if let error = error {
+            // Decode JSON on background thread first
+            var decodedData: ComprehensiveMeasurementData?
+            var decodeError: Error?
+            
+            if let error = error {
+                DispatchQueue.main.async {
+                    self.isLoadingFitZones = false
                     print("Error loading fit zones: \(error.localizedDescription)")
-                    return
                 }
-                
-                guard let data = data else {
+                return
+            }
+            
+            guard let data = data else {
+                DispatchQueue.main.async {
+                    self.isLoadingFitZones = false
                     print("No fit zones data received")
-                    return
                 }
+                return
+            }
+            
+            // Heavy JSON decoding on background thread
+            do {
+                let response = try JSONDecoder().decode(ComprehensiveMeasurementResponse.self, from: data)
+                decodedData = response.tops
+            } catch {
+                decodeError = error
+            }
+            
+            // Only update UI on main thread
+            DispatchQueue.main.async {
+                self.isLoadingFitZones = false
                 
-                do {
-                    let response = try JSONDecoder().decode(ComprehensiveMeasurementResponse.self, from: data)
-                    self.userFitZones = response.tops
-                } catch {
+                if let error = decodeError {
                     print("Failed to parse fit zones: \(error)")
+                } else {
+                    self.userFitZones = decodedData
                 }
             }
         }.resume()
+    }
+}
+
+// MARK: - Helper Functions
+// Helper function to convert string color to SwiftUI Color
+private func colorFromString(_ colorString: String) -> Color {
+    switch colorString.lowercased() {
+    case "green":
+        return .green
+    case "orange":
+        return .orange
+    case "red":
+        return .red
+    case "blue":
+        return .blue
+    default:
+        return .green
     }
 }
 
@@ -705,71 +843,6 @@ struct SizeRecommendationView: View {
         )
     }
     
-    // Get enhanced explanation that never truncates (fixes todoAug.md issue)
-    private var explanation: String {
-        let analyzedDimensions = getAnalyzedDimensions()
-        let referenceGarment = getBestReferenceGarment()
-        
-        // Priority 1: Show measurement count (always fits on screen)
-        if analyzedDimensions.count > 1 {
-            return "Perfect match across \(analyzedDimensions.count) measurements"
-        } else if analyzedDimensions.count == 1 {
-            return "Perfect \(analyzedDimensions.first!) fit"
-        }
-        
-        // Priority 2: Show reference garment if available
-        if !referenceGarment.isEmpty {
-            return referenceGarment.replacingOccurrences(of: "matches your ", with: "Matches ")
-        }
-        
-        // Priority 3: Fallback with sophistication language
-        return recommendation.humanExplanation ?? "Smart fit analysis complete ✨"
-    }
-    
-    // Helper to get analyzed dimensions from the recommendation
-    private func getAnalyzedDimensions() -> [String] {
-        var dimensions: [String] = []
-        
-        // Check if we have dimension analysis data
-        if let recommended = recommendation.allSizes.first(where: { $0.size == recommendation.recommendedSize }) {
-            // Parse available dimensions from the recommendation
-            if recommended.measurementSummary.contains("chest") || recommended.measurementSummary.contains("Chest") {
-                dimensions.append("chest")
-            }
-            if recommended.measurementSummary.contains("neck") || recommended.measurementSummary.contains("Neck") {
-                dimensions.append("neck")  
-            }
-            if recommended.measurementSummary.contains("sleeve") || recommended.measurementSummary.contains("Sleeve") {
-                dimensions.append("sleeve")
-            }
-        }
-        
-        return dimensions
-    }
-    
-    // Helper to get the best reference garment description
-    private func getBestReferenceGarment() -> String {
-        guard !recommendation.referenceGarments.isEmpty else {
-            return "matches your measurements"
-        }
-        
-        // Find same-brand reference first (highest confidence)
-        let sameBrandRef = recommendation.referenceGarments.values.first { ref in
-            ref.brand.lowercased() == recommendation.brand.lowercased()
-        }
-        
-        if let sameBrandRef = sameBrandRef {
-            return "matches your \(sameBrandRef.brand) \(sameBrandRef.size)"
-        }
-        
-        // Otherwise use highest confidence reference
-        let bestRef = recommendation.referenceGarments.values.max { $0.confidence < $1.confidence }
-        if let bestRef = bestRef {
-            return "similar to your \(bestRef.brand) \(bestRef.size)"
-        }
-        
-        return "based on your closet"
-    }
     
     // Helper to parse measurement summary for comparison display
     private func parseMeasurementSummary(_ summary: String) -> [MeasurementComparison] {
@@ -810,7 +883,7 @@ struct SizeRecommendationView: View {
                     Spacer()
                     
                     // Measurement count indicator (demonstrates sophistication)
-                    let dimensionCount = getAnalyzedDimensions().count
+                    let dimensionCount = recommendation.dimensionsAnalyzed.count
                     if dimensionCount > 0 {
                         VStack(alignment: .trailing, spacing: 1) {
                             Text("\(dimensionCount)")
@@ -825,7 +898,7 @@ struct SizeRecommendationView: View {
                 }
                 
                 // Human-readable explanation (anxiety-reducing language per todoAug.md)
-                Text(explanation)
+                Text(recommendation.humanExplanation ?? recommendation.reasoning)
                     .font(.subheadline)
                     .foregroundColor(.secondary)
                     .lineLimit(2)
@@ -847,7 +920,7 @@ struct SizeRecommendationView: View {
                 DisclosureGroup("Why this size?", isExpanded: $showDetailedAnalysis) {
                     VStack(alignment: .leading, spacing: 8) {
                         // Show analyzed dimensions with clear indicators
-                        let analyzedDimensions = getAnalyzedDimensions()
+                        let analyzedDimensions = recommendation.dimensionsAnalyzed
                         if !analyzedDimensions.isEmpty {
                             Text("Measurements analyzed:")
                                 .font(.caption)
@@ -953,24 +1026,6 @@ struct SizeRecommendationView: View {
         )
         .padding(.horizontal)
     }
-    
-    // Helper function to convert string color to SwiftUI Color
-    private func colorFromString(_ colorString: String) -> Color {
-        switch colorString.lowercased() {
-        case "green":
-            return .green
-        case "orange":
-            return .orange
-        case "red":
-            return .red
-        case "blue":
-            return .blue
-        default:
-            return .primary
-        }
-    }
-    
-
 }
 
 // MARK: - Try-On Preview Card

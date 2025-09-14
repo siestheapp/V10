@@ -888,7 +888,7 @@ async def get_scan_history(user_id: int):
             created_at,
             brand,
             name,
-            COALESCE(metadata->>'product_image', 'https://via.placeholder.com/300x400?text=No+Image') as image_url
+            COALESCE(metadata->>'product_image', '') as image_url
         FROM ranked_scans
         WHERE rn = 1  -- Only the most recent scan for each unique product+size combination
         ORDER BY created_at DESC
@@ -1507,6 +1507,21 @@ async def start_tryon_session(request: dict):
         # Get available measurements for this brand
         brand_measurements = await get_brand_measurements_for_feedback(brand_info["brand_id"])
         
+        # Get available colors for this product
+        available_colors = []
+        if brand_info["brand_name"] == "J.Crew" and "jcrew.com" in product_url.lower():
+            if product_data and 'colors_available' in product_data:
+                available_colors = product_data['colors_available']
+        
+        # Extract current color from URL if specified
+        current_color = ""
+        if 'color_name=' in product_url:
+            import urllib.parse
+            parsed = urllib.parse.urlparse(product_url)
+            params = urllib.parse.parse_qs(parsed.query)
+            if 'color_name' in params:
+                current_color = params['color_name'][0].replace('+', ' ').replace('%20', ' ').title()
+        
         return {
             "session_id": f"tryon_{user_id}_{int(time.time())}",
             "brand": brand_info["brand_name"],
@@ -1518,6 +1533,8 @@ async def start_tryon_session(request: dict):
             "feedback_options": brand_measurements["feedbackOptions"],
             "size_options": size_options,
             "fit_options": fit_options,
+            "color_options": available_colors,
+            "current_color": current_color,
             "next_step": "size_selection_and_feedback"
         }
         
@@ -1540,6 +1557,7 @@ async def submit_tryon_feedback(request: dict):
         size_tried = request.get("size_tried")
         feedback = request.get("feedback")  # {chest: 3, neck: 2, sleeve: 4, overall: 3}
         fit_type = request.get("fit_type")  # For J.Crew: Classic, Slim, Tall, etc.
+        selected_color = request.get("selected_color")  # Color user tried on
         notes = request.get("notes", "")
         try_on_location = request.get("try_on_location", "Store")
         
@@ -1578,11 +1596,11 @@ async def submit_tryon_feedback(request: dict):
             garment_id = await conn.fetchval("""
                 INSERT INTO user_garments (
                     user_id, garment_id, size_label, owns_garment,
-                    input_method, link_provided, created_at
-                ) VALUES ($1, $2, $3, $4, $5, $6, NOW())
+                    input_method, link_provided, color, created_at
+                ) VALUES ($1, $2, $3, $4, $5, $6, $7, NOW())
                 RETURNING id
             """, int(user_id), garment_entry_id, size_tried, False, 
-                'link', product_url)
+                'link', product_url, selected_color)
             
             # Get size measurements for this brand/size
             measurements = await conn.fetchrow("""
@@ -2467,6 +2485,7 @@ async def get_user_tryons(user_id: str):
                     g.image_url,
                     g.fit_type,
                     ug.size_label as size_tried,
+                    ug.color as color_tried,
                     ug.fit_feedback as overall_feedback,
                     ug.created_at as try_on_date,
                     -- Get dimensional feedback
@@ -2529,6 +2548,7 @@ async def get_user_tryons(user_id: str):
                     "image_url": tryon['image_url'],
                     "fit_type": tryon['fit_type'],
                     "size_tried": tryon['size_tried'],
+                    "color_tried": tryon['color_tried'],
                     "overall_feedback": tryon['overall_feedback'] or "No feedback",
                     "chest_feedback": tryon['chest_feedback'],
                     "waist_feedback": tryon['waist_feedback'],
@@ -3565,7 +3585,7 @@ async def get_shop_recommendations(request: dict):
                                 "name": product['name'],
                                 "brand": product['brand_name'],
                                 "price": float(product['price']) if product['price'] else 0.0,
-                                "image_url": product['image_url'] or f"https://via.placeholder.com/300x400/4A90E2/FFFFFF?text={product['brand_name']}",
+                                "image_url": product['image_url'] or "",
                                 "product_url": product['product_url'] or "#",
                                 "category": product['category'],
                                 "fit_confidence": round(best_rec.overall_fit_score, 2),
@@ -3591,7 +3611,7 @@ async def get_shop_recommendations(request: dict):
                          "name": product['name'],
                          "brand": product['brand_name'],
                          "price": float(product['price']) if product['price'] else 0.0,
-                         "image_url": product['image_url'] or f"https://via.placeholder.com/300x400/4A90E2/FFFFFF?text={product['brand_name']}",
+                         "image_url": product['image_url'] or "",
                          "product_url": product['product_url'] or "#",
                          "category": product['category'],
                          "fit_confidence": 0.5,
@@ -3897,21 +3917,8 @@ def extract_product_name_from_url_path(product_url: str) -> str:
 
 def get_brand_placeholder_image(brand_name: str) -> str:
     """Generate a brand-specific placeholder image URL"""
-    brand_lower = brand_name.lower()
-    if 'banana republic' in brand_lower:
-        return "https://via.placeholder.com/300x400/1a1a1a/ffffff?text=Banana+Republic"
-    elif 'j.crew' in brand_lower or 'jcrew' in brand_lower:
-        return "https://via.placeholder.com/300x400/000000/ffffff?text=J.Crew"
-    elif 'uniqlo' in brand_lower:
-        return "https://via.placeholder.com/300x400/000000/ffffff?text=Uniqlo"
-    elif 'theory' in brand_lower:
-        return "https://via.placeholder.com/300x400/000000/ffffff?text=Theory"
-    elif 'patagonia' in brand_lower:
-        return "https://via.placeholder.com/300x400/000000/ffffff?text=Patagonia"
-    elif 'lululemon' in brand_lower:
-        return "https://via.placeholder.com/300x400/000000/ffffff?text=Lululemon"
-    else:
-        return "https://via.placeholder.com/300x400?text=Product+Image"
+    # Return empty string to let iOS handle placeholder with SF Symbols
+    return ""
 
 def extract_product_image_from_url(product_url: str) -> str:
     """
@@ -4028,23 +4035,13 @@ def extract_product_image_from_url(product_url: str) -> str:
                 if any(ext in src.lower() for ext in ['.jpg', '.jpeg', '.png', '.webp', '.gif']):
                     return src
         
-        # Last resort: return a brand-specific placeholder
-        if 'bananarepublic' in product_url.lower():
-            return "https://via.placeholder.com/300x400/1a1a1a/ffffff?text=Banana+Republic"
-        elif 'jcrew' in product_url.lower():
-            return "https://via.placeholder.com/300x400/000000/ffffff?text=J.Crew"
-        else:
-            return "https://via.placeholder.com/300x400?text=Product+Image"
+        # Return empty string to let iOS handle placeholder
+        return ""
         
     except Exception as e:
         print(f"⚠️ Failed to extract product image from {product_url}: {str(e)}")
-        # Return brand-specific placeholder on error
-        if 'bananarepublic' in product_url.lower():
-            return "https://via.placeholder.com/300x400/1a1a1a/ffffff?text=Banana+Republic"
-        elif 'jcrew' in product_url.lower():
-            return "https://via.placeholder.com/300x400/000000/ffffff?text=J.Crew"
-        else:
-            return "https://via.placeholder.com/300x400?text=Image+Unavailable"
+        # Return empty string to let iOS handle placeholder
+        return ""
 
 if __name__ == "__main__":
     import uvicorn

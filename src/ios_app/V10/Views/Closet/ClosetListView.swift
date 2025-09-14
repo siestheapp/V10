@@ -107,8 +107,7 @@ struct ClosetListView: View {
             }
             .sheet(isPresented: $showingFinds) {
                 NavigationView {
-                    ScanHistoryView()
-                        .navigationTitle("Recent Finds")
+                    FindsView()
                         .toolbar {
                             ToolbarItem(placement: .navigationBarTrailing) {
                                 Button("Done") {
