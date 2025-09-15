@@ -531,10 +531,6 @@ class JCrewProductFetcher:
                         r, g, b = rgb_match.groups()
                         color_info['hex'] = f"#{int(r):02x}{int(g):02x}{int(b):02x}"
             
-            # Add J.Crew-specific color hex mappings based on common color names
-            if not color_info.get('hex'):
-                color_info['hex'] = self._get_jcrew_color_hex(color_name)
-            
             colors.append(color_info)
             print(f"🎨 Found color: {color_name} (code: {color_code})")
         
@@ -649,31 +645,32 @@ class JCrewProductFetcher:
                                 fit_options.append(text_source)
         
         # Method 2: Extract from JSON-LD structured data (fallback, but filter carefully)
-        if not fit_options:
-            scripts = soup.find_all('script')
-            for script in scripts:
-                if script.string and 'fit=' in script.string:
-                    script_content = script.string
-                    # Look for all URLs with fit parameters
-                    fit_urls = re.findall(r'fit=([^&"]*)', script_content)
-                    if fit_urls:
-                        for fit in fit_urls:
-                            if fit and fit not in fit_options:
-                                # Filter out inappropriate fit options based on gender and product type
-                                if is_mens_product and fit.lower() == 'petite':
-                                    print(f"⚠️ Skipping 'Petite' fit option for men's product")
-                                    continue  # Skip "Petite" for men's products
-                                
-                                # Allow all valid fit options for all products including T-shirts
-                                # J.Crew T-shirts do have Classic and Tall fit variations
-                                
-                                fit_options.append(fit)
-                        
-                        if fit_options:
-                            print(f"🎯 Found fit options in JSON data (filtered for {'mens' if is_mens_product else 'womens'}): {fit_options}")
-                        else:
-                            print(f"🎯 No valid fit options found in JSON data for this product")
-                        break
+        # DISABLED: This method is too unreliable - it finds fits in metadata that aren't actually available
+        # if not fit_options:
+        #     scripts = soup.find_all('script')
+        #     for script in scripts:
+        #         if script.string and 'fit=' in script.string:
+        #             script_content = script.string
+        #             # Look for all URLs with fit parameters
+        #             fit_urls = re.findall(r'fit=([^&"]*)', script_content)
+        #             if fit_urls:
+        #                 for fit in fit_urls:
+        #                     if fit and fit not in fit_options:
+        #                         # Filter out inappropriate fit options based on gender and product type
+        #                         if is_mens_product and fit.lower() == 'petite':
+        #                             print(f"⚠️ Skipping 'Petite' fit option for men's product")
+        #                             continue  # Skip "Petite" for men's products
+        #                         
+        #                         # Allow all valid fit options for all products including T-shirts
+        #                         # J.Crew T-shirts do have Classic and Tall fit variations
+        #                         
+        #                         fit_options.append(fit)
+        #                 
+        #                 if fit_options:
+        #                     print(f"🎯 Found fit options in JSON data (filtered for {'mens' if is_mens_product else 'womens'}): {fit_options}")
+        #                 else:
+        #                     print(f"🎯 No valid fit options found in JSON data for this product")
+        #                 break
         
         # Method 2: Look for fit selector buttons on the page (fallback)
         if not fit_options:
@@ -781,11 +778,60 @@ class JCrewProductFetcher:
             if fit_clean not in standardized_fits:
                 standardized_fits.append(fit_clean)
         
-        # Final validation: Only return fit options if we found multiple options
-        # A single fit option likely means it's just the default fit, not a choice
-        if len(standardized_fits) <= 1:
-            print(f"🚫 Only found {len(standardized_fits)} fit option(s): {standardized_fits}. This likely means no fit variations exist.")
+        # Final validation: Be smarter about returning fit options
+        
+        # Check for actual fit selection UI elements (broader search)
+        actual_fit_selectors = soup.select(
+            'button[data-testid*="fit"], '
+            'button[aria-label*="fit"], '
+            '.fit-selector button, '
+            '[data-fit-type], '
+            '.product__fit-option, '
+            '[data-qaid*="fitOption"], '
+            'a[href*="fit="], '  # Links with fit parameter
+            'input[name*="fit"], '  # Form inputs for fit
+            'select[name*="fit"], '  # Dropdown for fit
+            '[class*="fit-option"], '  # Any element with fit-option class
+            '[id*="fit-option"]'  # Any element with fit-option id
+        )
+        
+        # Also check if we're on a product that typically has fit options (dress shirts, suits, etc)
+        is_dress_shirt = 'dress-shirt' in product_url.lower() or 'bowery' in product_url.lower() or 'ludlow' in product_url.lower()
+        is_formal_wear = 'suit' in product_url.lower() or 'tuxedo' in product_url.lower() or 'blazer' in product_url.lower()
+        
+        # Check if the page explicitly mentions multiple fits in text
+        page_text = soup.get_text().lower()
+        has_fit_mentions = any(phrase in page_text for phrase in [
+            'available in classic, slim',
+            'classic and slim fit',
+            'classic, slim, and tall',
+            'choose your fit',
+            'select fit'
+        ])
+        
+        # If we're on a dress shirt or formal wear page, these ALWAYS have fit options at J.Crew
+        if is_dress_shirt or is_formal_wear:
+            # Look for the common J.Crew dress shirt fits
+            common_dress_shirt_fits = ['Classic', 'Slim', 'Tall']
+            if not standardized_fits or len(standardized_fits) <= 1:
+                # Dress shirts and formal wear always have these fits at J.Crew
+                print(f"📋 Detected dress shirt/formal wear, using standard J.Crew fits")
+                standardized_fits = common_dress_shirt_fits
+            
+        # If no actual fit selection UI elements exist and we're not on a known fit product, don't return
+        if not actual_fit_selectors and not (is_dress_shirt or is_formal_wear or has_fit_mentions):
+            print(f"🚫 No fit selection UI found and not a known fit product. Not returning: {standardized_fits}")
             return []
+        
+        # Require multiple fit options - a single fit means no choice
+        if len(standardized_fits) <= 1:
+            # For dress shirts, if we only found one but URL has fit parameter, add common options
+            if (is_dress_shirt or is_formal_wear) and 'fit=' in product_url:
+                print(f"📋 Dress shirt with single fit, adding standard options")
+                standardized_fits = ['Classic', 'Slim', 'Tall']
+            else:
+                print(f"🚫 Only found {len(standardized_fits)} fit option(s): {standardized_fits}. No variations exist.")
+                return []
         
         print(f"✅ Found {len(standardized_fits)} fit options: {standardized_fits}")
         return standardized_fits
@@ -861,18 +907,6 @@ class JCrewProductFetcher:
                 """)
                 conn.commit()
             
-            # Convert colors_available list of dicts to list of JSON strings for ARRAY column
-            colors_for_db = []
-            colors_data = product_data.get('colors_available', [])
-            if isinstance(colors_data, list):
-                for color in colors_data:
-                    if isinstance(color, dict):
-                        # Store as JSON string in the ARRAY
-                        colors_for_db.append(json.dumps(color))
-                    else:
-                        # If it's already a string, keep it
-                        colors_for_db.append(str(color))
-            
             # Insert or update with cache_key
             cur.execute("""
                 INSERT INTO jcrew_product_cache (
@@ -887,7 +921,6 @@ class JCrewProductFetcher:
                     product_image = EXCLUDED.product_image,
                     price = EXCLUDED.price,
                     sizes_available = EXCLUDED.sizes_available,
-                    colors_available = EXCLUDED.colors_available,
                     fit_options = EXCLUDED.fit_options,
                     product_description = EXCLUDED.product_description,
                     fit_details = EXCLUDED.fit_details,
@@ -901,7 +934,7 @@ class JCrewProductFetcher:
                 product_data.get('subcategory', 'Casual'),
                 product_data.get('price'),
                 product_data.get('sizes_available', []),
-                colors_for_db,  # Use the converted colors list
+                product_data.get('colors_available', []),
                 product_data.get('material', ''),
                 product_data.get('fit_type', 'Regular'),
                 product_data.get('fit_options', []),
@@ -919,111 +952,6 @@ class JCrewProductFetcher:
         finally:
             cur.close()
             conn.close()
-    
-    def _get_jcrew_color_hex(self, color_name: str) -> Optional[str]:
-        """Get hex color code for common J.Crew color names"""
-        jcrew_colors = {
-            # Blues
-            'Navy': '#1A2A44',
-            'Navy Blue': '#1A2A44',
-            'Classic Blue': '#4682B4',
-            'Light Blue': '#ADD8E6',
-            'Sky Blue': '#87CEEB',
-            'Deep Spearmint': '#3EB489',
-            'Estate Blue': '#365C7D',
-            'Ink': '#2C3E50',
-            'Sunfaded Indigo': '#6B7DAB',
-            'Amalfi Blue Linen Yd': '#5E9BD1',
-            'Amalfi Blue': '#5E9BD1',
-            
-            # Whites & Creams
-            'White': '#FFFFFF',
-            'Natural': '#EBE1D2',
-            'Cream': '#F5F5DC',
-            'Ivory': '#FFFFF0',
-            'Off-White': '#FAF9F6',
-            'Flax Linen Yd': '#E6DCC3',
-            'Flax': '#E6DCC3',
-            
-            # Blacks & Grays
-            'Black': '#212121',
-            'Charcoal': '#36454F',
-            'Gray': '#969696',
-            'Heather Gray': '#9E9E9E',
-            'Light Gray': '#D3D3D3',
-            'Pebbel Grey': '#A8A8A8',
-            'Pebble Grey': '#A8A8A8',
-            'Pebble Gray': '#A8A8A8',
-            
-            # Greens
-            'Jcrew Green': '#284132',
-            'J.Crew Green': '#284132',
-            'Forest Green': '#228B22',
-            'Misty Sage': '#9BAA96',
-            'Sage': '#9BAA96',
-            'Alhambra Green': '#508C78',
-            'Olive': '#6B7245',
-            'Olive Green': '#6B7245',
-            'Olive Linen': '#7A6F5C',
-            
-            # Browns
-            'Inky Mocha': '#3C2D28',
-            'Mocha': '#3C2D28',
-            'Brown': '#654321',
-            'Chocolate': '#7B3F00',
-            'Tan': '#C3B091',
-            'Camel': '#C19A6B',
-            'Khaki': '#C3B091',
-            'Burnt Mushroom': '#8B7355',
-            'Dusty Khaki': '#C4A572',
-            'Light Cedar': '#D4A76A',
-            
-            # Reds & Pinks
-            'Red': '#C81E1E',
-            'Burgundy': '#800020',
-            'Wine': '#722F37',
-            'Pink': '#FFC0CB',
-            'Rose': '#FF007F',
-            'Dusty Pink': '#B784A7',
-            'Blush': '#DE5D83',
-            'Fuchsia Berry': '#CC397B',
-            'Fuchsia': '#CC397B',
-            
-            # Purples
-            'Purple': '#800080',
-            'Plum': '#8E4585',
-            'Lavender': '#E6E6FA',
-            
-            # Yellows & Oranges
-            'Yellow': '#FFD700',
-            'Gold': '#FFD700',
-            'Orange': '#FF8C00',
-            'Rust': '#B7410E',
-            
-            # Special Colors & Patterns
-            'Heather': '#9C9CA6',
-            'Stripe': '#C8C8C8',
-            'Striped': '#C8C8C8',
-            'Navy Grey Fine Stripe': '#485870',
-            'Bengal Stripe Flax': '#E8DCC6',
-            'Paisley Medallion Natur': '#F5E6D3',
-            'Batik Paisley Black Can': '#2C2C2C',
-            'Geo Batik Blue Multi': '#4A6FA5',
-            'Geometric Menagerie Nav': '#2C3E50',
-            'Smudge Paisley Brown Bl': '#5D4E37',
-            'Kelley Multi Stripe Red': '#B85450',
-        }
-        
-        # Try exact match first
-        if color_name in jcrew_colors:
-            return jcrew_colors[color_name]
-        
-        # Try case-insensitive match
-        for key, value in jcrew_colors.items():
-            if key.lower() == color_name.lower():
-                return value
-        
-        return None
     
     def _extract_description(self, soup: BeautifulSoup) -> str:
         """Extract product description with fit and fabric details"""

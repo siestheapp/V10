@@ -20,6 +20,7 @@ struct FitFeedbackView: View {
     let fitType: String?
     let selectedColor: String?
     
+    @Environment(\.dismiss) private var dismiss
     @State private var fitFeedback: [String: Int] = [:]
     @State private var isSubmitting = false
     @State private var showConfirmation = false
@@ -124,7 +125,11 @@ struct FitFeedbackView: View {
             .padding(.horizontal, 40)
             .disabled(isSubmitting)
             .alert("Feedback Submitted", isPresented: $showConfirmation) {
-                Button("OK", role: .cancel) { }
+                Button("OK", role: .cancel) { 
+                    dismiss()
+                }
+            } message: {
+                Text("Thank you! Your feedback helps improve fit recommendations.")
             }
         }
         .padding(.top, 20)
@@ -220,6 +225,9 @@ struct FitFeedbackView: View {
                     let response = try JSONSerialization.jsonObject(with: data) as? [String: Any]
                     print("✅ Feedback submitted successfully: \(response ?? [:])")
                     showConfirmation = true
+                    
+                    // Don't auto-dismiss - user will tap OK to dismiss
+                    // This gives users time to read the confirmation message
                 } catch {
                     print("❌ Failed to parse response: \(error.localizedDescription)")
                 }

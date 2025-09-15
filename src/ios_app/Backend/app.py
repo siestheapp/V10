@@ -1581,16 +1581,34 @@ async def submit_tryon_feedback(request: dict):
         product_name = extract_product_name_from_url(product_url)
         
         async with pool.acquire() as conn:
+            # Extract product image
+            product_image = ""
+            if 'jcrew.com' in product_url.lower():
+                # For J.Crew, fetch the product image
+                from jcrew_fetcher import JCrewProductFetcher
+                fetcher = JCrewProductFetcher()
+                product_data = fetcher.fetch_product(product_url)
+                if product_data:
+                    product_image = product_data.get('product_image', '')
+                    print(f"📸 Retrieved J.Crew product image: {product_image}")
+            else:
+                # For other brands, try to extract from URL
+                product_image = extract_product_image_from_url(product_url)
+            
             # First, create or find the garments entry
             garment_entry_id = await conn.fetchval("""
                 INSERT INTO garments (
-                    brand_id, category_id, product_name, product_url, fit_type,
+                    brand_id, category_id, product_name, product_url, image_url, fit_type,
                     created_at
-                ) VALUES ($1, $2, $3, $4, $5, NOW())
+                ) VALUES ($1, $2, $3, $4, $5, $6, NOW())
                 ON CONFLICT (brand_id, product_name, category_id, subcategory_id) 
-                DO UPDATE SET updated_at = NOW(), fit_type = COALESCE($5, garments.fit_type)
+                DO UPDATE SET 
+                    updated_at = NOW(), 
+                    fit_type = COALESCE($6, garments.fit_type),
+                    image_url = COALESCE($5, garments.image_url),
+                    product_url = COALESCE($4, garments.product_url)
                 RETURNING id
-            """, brand_id, 1, product_name, product_url, db_fit_type)
+            """, brand_id, 1, product_name, product_url, product_image, db_fit_type)
             
             # Create try-on garment entry (NOT owned) - using correct schema
             garment_id = await conn.fetchval("""
@@ -2540,12 +2558,50 @@ async def get_user_tryons(user_id: str):
                     # If measurement lookup fails, continue without measurements
                     pass
                 
+                # Get image URL - check J.Crew cache first, then garments table, then fetch on-demand
+                image_url = tryon['image_url']
+                if not image_url and tryon['product_url'] and 'jcrew.com' in tryon['product_url'].lower():
+                    # Check J.Crew cache first - try exact match, then base URL match
+                    try:
+                        # First try exact URL match
+                        cached_result = await conn.fetchrow("""
+                            SELECT product_image 
+                            FROM jcrew_product_cache 
+                            WHERE product_url = $1 AND product_image IS NOT NULL AND product_image != ''
+                        """, tryon['product_url'])
+                        
+                        if not cached_result:
+                            # Try base URL match (without query parameters)
+                            from urllib.parse import urlparse, urlunparse
+                            parsed_url = urlparse(tryon['product_url'])
+                            base_url = urlunparse((parsed_url.scheme, parsed_url.netloc, parsed_url.path, '', '', ''))
+                            
+                            cached_result = await conn.fetchrow("""
+                                SELECT product_image 
+                                FROM jcrew_product_cache 
+                                WHERE product_url = $1 AND product_image IS NOT NULL AND product_image != ''
+                            """, base_url)
+                        
+                        if cached_result and cached_result['product_image']:
+                            image_url = cached_result['product_image']
+                            print(f"🖼️ Using cached J.Crew image for {tryon['product_name']}: {image_url}")
+                    except Exception as e:
+                        print(f"Cache lookup failed: {e}")
+                    
+                    # If still no image, try to fetch on-demand
+                    if not image_url:
+                        try:
+                            image_url = extract_product_image_from_url(tryon['product_url'])
+                            print(f"🖼️ Fetched image for {tryon['product_name']}: {image_url}")
+                        except Exception as e:
+                            print(f"Image fetch failed: {e}")
+                
                 result.append({
                     "id": tryon['id'],
                     "brand": tryon['brand'],
                     "product_name": tryon['product_name'],
                     "product_url": tryon['product_url'],
-                    "image_url": tryon['image_url'],
+                    "image_url": image_url,
                     "fit_type": tryon['fit_type'],
                     "size_tried": tryon['size_tried'],
                     "color_tried": tryon['color_tried'],

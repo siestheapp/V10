@@ -185,6 +185,11 @@ struct ScanTab: View {
     @State private var userFitZones: ComprehensiveMeasurementData?
     @State private var isLoadingFitZones = false
     
+    // Text field focus management (performance fix)
+    @FocusState private var isTextFieldFocused: Bool
+    @State private var textFieldId = UUID() // Simulator workaround
+    @State private var isTextFieldReady = false // Delay text field to avoid iOS 18 gesture timeout
+    
     enum ScanMode: String, CaseIterable {
         case tryOn = "Try-On"
         case recommendation = "Size Recommendation"
@@ -342,15 +347,28 @@ struct ScanTab: View {
                                 .foregroundColor(.secondary)
                                 .frame(width: 20)
                             
-                            TextField("Paste product link here", text: $productLink)
-                                .textFieldStyle(PlainTextFieldStyle())
-                                .disabled(isAnalyzing)
-                                .onTapGesture {
-                                    // Load fit zones when user starts interacting with the text field
-                                    if userFitZones == nil && !isLoadingFitZones {
-                                        loadUserFitZones()
+                            if isTextFieldReady {
+                                TextField("Paste product link here", text: $productLink)
+                                    .textFieldStyle(PlainTextFieldStyle())
+                                    .disabled(isAnalyzing)
+                                    .focused($isTextFieldFocused)
+                                    .autocorrectionDisabled()
+                                    .textInputAutocapitalization(.never)
+                                    .keyboardType(.URL)
+                                    .submitLabel(.go)
+                                    .id(textFieldId) // Simulator focus workaround
+                                    .onSubmit {
+                                        if !productLink.isEmpty {
+                                            analyzeProduct()
+                                        }
                                     }
-                                }
+                                    // PERFORMANCE FIX: Added focus management and keyboard optimizations
+                            } else {
+                                // Show placeholder while text field initializes
+                                Text("Paste product link here")
+                                    .foregroundColor(.gray.opacity(0.3))
+                                    .frame(maxWidth: .infinity, alignment: .leading)
+                            }
                         }
                         .padding(16)
                         .background(
@@ -520,6 +538,14 @@ struct ScanTab: View {
             }
             .navigationTitle("Scan")
             .navigationBarTitleDisplayMode(.inline)
+            .onAppear {
+                print("📷 SCAN TAB: ScanTab appeared")
+                // Reset and delay text field initialization to avoid iOS 18 gesture timeout
+                isTextFieldReady = false
+                DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
+                    isTextFieldReady = true
+                }
+            }
             .toolbar {
                 ToolbarItem(placement: .navigationBarTrailing) {
                     Button(action: {

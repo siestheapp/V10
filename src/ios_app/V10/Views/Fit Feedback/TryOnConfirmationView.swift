@@ -69,6 +69,7 @@ struct TryOnConfirmationView: View {
             requirements.append(!selectedFit.isEmpty)
         }
         
+        // For single color, it's auto-selected, but for multiple colors user must select
         if availableColorOptions.count > 1 {
             requirements.append(!selectedColor.isEmpty)
         }
@@ -78,40 +79,42 @@ struct TryOnConfirmationView: View {
     
     var body: some View {
         ScrollView {
-            VStack(spacing: 24) {
-                // Product Header
-                VStack(spacing: 16) {
-                    if !session.productImage.isEmpty {
-                        AsyncImage(url: URL(string: session.productImage)) { image in
-                            image
-                                .resizable()
-                                .aspectRatio(contentMode: .fit)
-                        } placeholder: {
-                            Rectangle()
-                                .fill(Color.gray.opacity(0.3))
-                                .aspectRatio(1, contentMode: .fit)
-                        }
-                        .frame(maxHeight: 200)
-                        .cornerRadius(12)
+            VStack(spacing: 20) {
+                // Product Image - LARGE like real ecommerce apps
+                if !session.productImage.isEmpty {
+                    AsyncImage(url: URL(string: session.productImage)) { image in
+                        image
+                            .resizable()
+                            .aspectRatio(contentMode: .fit)
+                    } placeholder: {
+                        Rectangle()
+                            .fill(Color.gray.opacity(0.1))
+                            .aspectRatio(1, contentMode: .fit) // Square placeholder
+                            .overlay(
+                                ProgressView()
+                            )
                     }
-                    
-                    VStack(spacing: 8) {
+                    // Full width, let image determine its own height
+                    .frame(maxWidth: .infinity)
+                    // No fixed height - image maintains its natural aspect ratio
+                    // No background color - removes grey padding
+                }
+                
+                VStack(spacing: 20) {
+                    // Product Info (compact, below image)
+                    VStack(spacing: 6) {
                         Text(session.brand)
-                            .font(.headline)
+                            .font(.caption)
                             .foregroundColor(.secondary)
                             .textCase(.uppercase)
+                            .tracking(1.2)
                         
                         Text(session.productName)
-                            .font(.title2)
-                            .fontWeight(.bold)
+                            .font(.title3)
+                            .fontWeight(.semibold)
                             .multilineTextAlignment(.center)
                     }
-                }
-                .padding()
-                .background(
-                    RoundedRectangle(cornerRadius: 12)
-                        .fill(Color(.systemGray6))
-                )
+                    .padding(.horizontal)
                 
                 // Fit Selection (for products with fit options)
                 if !availableFitOptions.isEmpty {
@@ -174,14 +177,14 @@ struct TryOnConfirmationView: View {
                     )
                 }
                 
-                // Color Selection (for products with multiple colors)
-                if availableColorOptions.count > 1 {
+                // Color Selection (show even for single color for clarity)
+                if !availableColorOptions.isEmpty {
                     VStack(alignment: .leading, spacing: 16) {
-                        Text("Select Color")
+                        Text(availableColorOptions.count > 1 ? "Select Color" : "Color")
                             .font(.headline)
                             .fontWeight(.bold)
                         
-                        Text("Which color are you trying on?")
+                        Text(availableColorOptions.count > 1 ? "Which color are you trying on?" : "You're trying on:")
                             .font(.subheadline)
                             .foregroundColor(.secondary)
                         
@@ -202,8 +205,11 @@ struct TryOnConfirmationView: View {
                         LazyVGrid(columns: [GridItem(.adaptive(minimum: 44), spacing: 12)], spacing: 12) {
                             ForEach(availableColorOptions, id: \.self) { color in
                                 Button(action: {
-                                    print("🎨 Color swatch tapped: '\(color.name)'")
-                                    selectedColor = color.name
+                                    // Only allow selection if there are multiple colors
+                                    if availableColorOptions.count > 1 {
+                                        print("🎨 Color swatch tapped: '\(color.name)'")
+                                        selectedColor = color.name
+                                    }
                                 }) {
                                     swatchView(for: color)
                                         .frame(width: 44, height: 44)
@@ -213,6 +219,7 @@ struct TryOnConfirmationView: View {
                                         )
                                 }
                                 .buttonStyle(PlainButtonStyle())
+                                .disabled(availableColorOptions.count == 1) // Disable if only one color
                             }
                         }
                     }
@@ -224,11 +231,15 @@ struct TryOnConfirmationView: View {
                     )
                 }
                 
-                // Size Selection
+                // Size Selection - Dressing Room Experience
                 VStack(alignment: .leading, spacing: 16) {
-                    Text("Select Your Size")
+                    Text("What Size Are You Trying On?")
                         .font(.headline)
                         .fontWeight(.bold)
+                    
+                    Text("Select the size on the tag you're about to try on")
+                        .font(.subheadline)
+                        .foregroundColor(.secondary)
                     
                     LazyVGrid(columns: Array(repeating: GridItem(.flexible()), count: 3), spacing: 12) {
                         ForEach(session.sizeOptions, id: \.self) { size in
@@ -257,64 +268,38 @@ struct TryOnConfirmationView: View {
                         .shadow(color: .black.opacity(0.1), radius: 2, x: 0, y: 1)
                 )
                 
-                // Available Measurements Info
-                if !session.availableMeasurements.isEmpty {
-                    VStack(alignment: .leading, spacing: 12) {
-                        Text("Available Measurements")
-                            .font(.headline)
-                            .fontWeight(.bold)
-                        
-                        Text("We can analyze: \(session.availableMeasurements.joined(separator: ", "))")
-                            .font(.subheadline)
-                            .foregroundColor(.secondary)
-                    }
-                    .padding()
-                    .background(
-                        RoundedRectangle(cornerRadius: 12)
-                            .fill(Color(.systemGray6))
-                    )
-                }
-                
-                // Next Step Info
-                if !session.nextStep.isEmpty {
-                    VStack(alignment: .leading, spacing: 12) {
-                        Text("Next Steps")
-                            .font(.headline)
-                            .fontWeight(.bold)
-                        
-                        Text(session.nextStep)
-                            .font(.subheadline)
-                            .foregroundColor(.secondary)
-                    }
-                    .padding()
-                    .background(
-                        RoundedRectangle(cornerRadius: 12)
-                            .fill(Color(.systemGray6))
-                    )
-                }
-                
-                Spacer(minLength: 20)
-            }
-            .padding()
-        }
-        .navigationTitle("Confirm Try-On")
-        .navigationBarTitleDisplayMode(.inline)
-        .toolbar {
-            ToolbarItem(placement: .navigationBarTrailing) {
-                Button("Continue") {
+                // Continue Button - At bottom for better UX flow
+                Button(action: {
                     print("🔍 Continue button tapped")
                     print("🔍 Selected size: '\(selectedSize)'")
                     print("🔍 Selected fit: '\(selectedFit)'")
                     print("🔍 Is J.Crew: \(session.brand.lowercased() == "j.crew")")
                     navigateToFeedback = true
+                }) {
+                    Text("Continue")
+                        .font(.headline)
+                        .fontWeight(.semibold)
+                        .foregroundColor(.white)
+                        .frame(maxWidth: .infinity)
+                        .padding(.vertical, 16)
+                        .background(
+                            RoundedRectangle(cornerRadius: 12)
+                                .fill(isDisabled ? Color.gray : Color.blue)
+                        )
                 }
                 .disabled(isDisabled)
-                .fontWeight(.semibold)
+                .padding(.horizontal)
+                .padding(.bottom, 20)
                 .onAppear {
                     print("🔍 Continue button appeared - selectedSize: '\(selectedSize)', selectedFit: '\(selectedFit)', disabled: \(isDisabled)")
                 }
+                
+                }  // End of inner VStack
             }
+            .padding()
         }
+        .navigationTitle("Confirm Try-On")
+        .navigationBarTitleDisplayMode(.inline)
         .sheet(isPresented: $navigateToFeedback) {
             NavigationView {
                 FitFeedbackView(
