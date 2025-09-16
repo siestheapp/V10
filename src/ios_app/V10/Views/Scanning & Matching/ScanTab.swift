@@ -600,6 +600,11 @@ struct ScanTab: View {
             print("📷 SCAN TAB: ScanTab appeared")
             // Removed loadUserFitZones() from onAppear to prevent lag on text field tap
             // Fit zones will be loaded lazily when actually needed for analysis
+            
+            // Delay text field initialization to avoid iOS 18 gesture issues
+            DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
+                isTextFieldReady = true
+            }
         }
     }
 }

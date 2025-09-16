@@ -14,13 +14,11 @@ struct SiesApp: App {
                     HomeView()
                         .environmentObject(userSettings)
                         .onAppear {
-                            // For development, auto-complete onboarding
+                            // For development, auto-complete onboarding faster
                             #if DEBUG
-                            print("🚀 DEBUG: Setting hasCompletedOnboarding to true")
-                            DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
-                                hasCompletedOnboarding = true
-                                forceMainApp = true
-                            }
+                            print("🚀 DEBUG: Skipping onboarding")
+                            hasCompletedOnboarding = true
+                            forceMainApp = true
                             #endif
                         }
                 }

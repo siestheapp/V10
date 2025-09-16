@@ -4,11 +4,19 @@
 
 ---
 
+## 🎯 **J.Crew Data Management** (NEW!)
+
+- **[J.Crew Data Management Reference](JCREW_DATA_MANAGEMENT_REFERENCE.md)** - ⭐⭐⭐ **COMPLETE REFERENCE!** Everything about J.Crew data handling
+- **[J.Crew Product Variant Strategy](JCREW_PRODUCT_VARIANT_STRATEGY.md)** - ⭐⭐ How we handle product variants and compound codes
+- **[J.Crew Complete Status](JCREW_COMPLETE.md)** - ⭐ Integration status and size guide info
+- **[Data Protection Framework](daily-notes/2025-09-16/jcrew-data-protection-framework-complete.md)** - Complete protection implementation
+
 ## 🚀 **Production Readiness** 
 
 - **[NEXT STEPS](NEXT_STEPS.md)** - ⭐⭐⭐ **START HERE!** What to do today and this week
 - **[J.Crew Integration Plan](JCREW_INTEGRATION_PLAN.md)** - ⭐⭐ **DETAILED!** 3-week plan with code examples
 - **[Production Gap Analysis](PRODUCTION_READINESS_GAP_ANALYSIS.md)** - ⭐ **COMPREHENSIVE!** FAANG-level requirements
+- **[Contractor Setup Guide](CONTRACTOR_SETUP_GUIDE.md)** - ⭐ For external developers
 
 ## 📊 **Database & Logs**
 
@@ -20,6 +28,13 @@
 - **[Database Backup Overview](daily-notes/2025-08-08/database_backup_overview.md)** - Complete backup & logging guide
 - **[Size Guide Ingestion Process V2](daily-notes/2025-08-08/SIZE_GUIDE_INGESTION_COMPLETE_PROCESS_V2.md)** - Complete ingestion guide
 - **[Database Change Log Guide](daily-notes/2025-08-08/DATABASE_CHANGE_LOG_GUIDE.md)** - How to use the logging system
+
+## 🛡️ **Data Protection & Validation**
+
+- **[Run Validation Tests](scripts/run_validation_tests.py)** - ⭐ Test data integrity
+- **[Backup J.Crew Data](scripts/backup_jcrew_data.py)** - ⭐ Create backups
+- **[Safe Import Process](scripts/create_staging_process.py)** - ⭐ Staging imports
+- **[Validation Framework SQL](scripts/jcrew_validation_framework.sql)** - All validation functions
 
 ## 🚀 **Quick Start & Setup**
 
@@ -43,6 +58,8 @@
 - **[Database Logger](dev/scripts/database/database_change_logger.py)** - Database change logging utility
 - **[Port Checker](dev/scripts/ports/check_ports.py)** - Check running services
 - **[Kill Ports](dev/scripts/ports/kill_ports.py)** - Stop services
+- **[J.Crew Fit Crawler](scripts/jcrew_fit_crawler.py)** - Extract fit options
+- **[J.Crew Variant Crawler](scripts/jcrew_variant_crawler.py)** - Handle product variants
 
 ## 📝 **Documentation Archive**
 
@@ -54,6 +71,7 @@
 
 - **[Current TODOs](https://github.com/your-repo/issues)** - Track progress (or use todo_write tool)
 - **[Recent Changes](dev/logs/database_changes.log)** - What changed today
+- **[J.Crew Linen Test Results](daily-notes/2025-09-16/jcrew-linen-test-results.md)** - Latest validation test
 
 ---
 
@@ -66,5 +84,28 @@
 
 ---
 
-**Last Updated**: August 8, 2025  
+## 📋 **Quick Commands**
+
+```bash
+# J.Crew Data Management
+python scripts/run_validation_tests.py      # Run all tests
+python scripts/backup_jcrew_data.py        # Create backup
+python scripts/jcrew_variant_crawler.py    # Scrape products
+
+# Database
+psql $DATABASE_URL                         # Connect to database
+SELECT * FROM run_jcrew_data_tests();     # Run SQL tests
+SELECT * FROM review_jcrew_changes(24);   # Review recent changes
+
+# Development
+./start_backend.sh                         # Start backend
+be                                        # Backend alias
+ws                                        # Web server alias
+stopservers                               # Stop all servers
+```
+
+---
+
+**Last Updated**: September 16, 2025  
+**System Status**: ✅ Fully Protected & Validated  
 **Tip**: Press `Cmd+P` in Cursor and type "FAVORITES" to open this quickly!

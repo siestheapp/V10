@@ -189,3 +189,5 @@ When adding shirts to the database:
 - [ ] Identify primary fabric
 - [ ] Create comparison_key for cross-brand matching
 
+
+

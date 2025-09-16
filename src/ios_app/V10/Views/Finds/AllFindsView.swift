@@ -3,11 +3,18 @@ import SwiftUI
 struct AllFindsView: View {
     @State private var scanHistory: [ScanHistoryItem] = []
     @State private var tryOnHistory: [TryOnHistoryItem] = []
-    @State private var isLoading = true
+    @State private var isLoading = false  // Start as false, will be set to true when loading
+    @State private var hasLoadedInitialData = false
     @State private var errorMessage: String?
     @State private var selectedTryOn: TryOnHistoryItem?
     
+    init() {
+        print("🎯 AllFindsView INIT - View created")
+    }
+    
     var body: some View {
+        let _ = print("📊 AllFindsView body - isLoading: \(isLoading), scans: \(scanHistory.count), tryOns: \(tryOnHistory.count)")
+        
         Group {
             if isLoading {
                 loadingView
@@ -20,6 +27,17 @@ struct AllFindsView: View {
             }
         }
         .onAppear {
+            // Load data when view appears (lazy loading)
+            if !hasLoadedInitialData {
+                print("🚀 AllFindsView appeared for first time, loading data...")
+                hasLoadedInitialData = true
+                loadAllFinds()
+            } else {
+                print("📊 AllFindsView re-appeared, data already loaded")
+            }
+        }
+        .refreshable {
+            // Pull to refresh
             loadAllFinds()
         }
         .sheet(item: $selectedTryOn) { tryOn in
@@ -148,91 +166,91 @@ struct AllFindsView: View {
     }
     
     private func loadAllFinds() {
+        // Prevent duplicate loads
+        guard !isLoading else {
+            print("🔄 Already loading finds, skipping...")
+            return
+        }
+        
         isLoading = true
         errorMessage = nil
+        print("🎯 Starting to load all finds...")
         
-        let group = DispatchGroup()
-        
-        // Load scan history
-        group.enter()
-        loadScanHistory { result in
-            switch result {
-            case .success(let items):
-                self.scanHistory = items
-            case .failure(let error):
-                print("❌ Failed to load scan history: \(error)")
+        Task {
+            // Load both in parallel using async/await
+            async let scanTask = loadScanHistoryAsync()
+            async let tryOnTask = loadTryOnHistoryAsync()
+            
+            do {
+                let (scans, tryOns) = try await (scanTask, tryOnTask)
+                
+                // Update UI on main thread
+                await MainActor.run {
+                    self.scanHistory = scans
+                    self.tryOnHistory = tryOns
+                    self.isLoading = false
+                    print("✅ ALL FINDS: Loaded \(scans.count) scans, \(tryOns.count) try-ons")
+                    
+                    if scans.isEmpty && tryOns.isEmpty {
+                        print("ℹ️ No finds data to display (both lists empty)")
+                    }
+                }
+            } catch {
+                await MainActor.run {
+                    print("❌ Error loading finds: \(error)")
+                    self.errorMessage = error.localizedDescription
+                    self.isLoading = false
+                }
             }
-            group.leave()
-        }
-        
-        // Load try-on history
-        group.enter()
-        loadTryOnHistory { result in
-            switch result {
-            case .success(let items):
-                self.tryOnHistory = items
-            case .failure(let error):
-                print("❌ Failed to load try-on history: \(error)")
-            }
-            group.leave()
-        }
-        
-        group.notify(queue: .main) {
-            self.isLoading = false
-            print("✅ ALL FINDS: Loaded \(self.scanHistory.count) scanned items and \(self.tryOnHistory.count) try-ons")
         }
     }
     
-    private func loadScanHistory(completion: @escaping (Result<[ScanHistoryItem], Error>) -> Void) {
+    private func loadScanHistoryAsync() async throws -> [ScanHistoryItem] {
         guard let url = URL(string: "\(Config.baseURL)/scan_history?user_id=\(Config.defaultUserId)") else {
-            completion(.failure(URLError(.badURL)))
-            return
+            throw URLError(.badURL)
         }
         
-        URLSession.shared.dataTask(with: url) { data, response, error in
-            if let error = error {
-                completion(.failure(error))
-                return
+        print("🔗 Fetching scan history from: \(url)")
+        let (data, _) = try await URLSession.shared.data(from: url)
+        
+        print("📦 Received \(data.count) bytes for scan history")
+        
+        // Try to decode
+        do {
+            let items = try JSONDecoder().decode([ScanHistoryItem].self, from: data)
+            print("✅ Decoded \(items.count) scan items")
+            return items
+        } catch {
+            // If it's an empty array, that's ok
+            if data.count < 10 {
+                return []
             }
-            
-            guard let data = data else {
-                completion(.failure(URLError(.badServerResponse)))
-                return
-            }
-            
-            do {
-                let items = try JSONDecoder().decode([ScanHistoryItem].self, from: data)
-                completion(.success(items))
-            } catch {
-                completion(.failure(error))
-            }
-        }.resume()
+            throw error
+        }
     }
     
-    private func loadTryOnHistory(completion: @escaping (Result<[TryOnHistoryItem], Error>) -> Void) {
+    private func loadTryOnHistoryAsync() async throws -> [TryOnHistoryItem] {
         guard let url = URL(string: "\(Config.baseURL)/user/\(Config.defaultUserId)/tryons") else {
-            completion(.failure(URLError(.badURL)))
-            return
+            throw URLError(.badURL)
         }
         
-        URLSession.shared.dataTask(with: url) { data, response, error in
-            if let error = error {
-                completion(.failure(error))
-                return
+        print("🔗 Fetching try-on history from: \(url)")
+        let (data, _) = try await URLSession.shared.data(from: url)
+        
+        print("📦 Received \(data.count) bytes for try-ons")
+        
+        // Try to decode
+        do {
+            let items = try JSONDecoder().decode([TryOnHistoryItem].self, from: data)
+            print("✅ Decoded \(items.count) try-on items")
+            return items
+        } catch {
+            // If it's an empty array, that's ok
+            if data.count < 10 {
+                return []
             }
-            
-            guard let data = data else {
-                completion(.failure(URLError(.badServerResponse)))
-                return
-            }
-            
-            do {
-                let items = try JSONDecoder().decode([TryOnHistoryItem].self, from: data)
-                completion(.success(items))
-            } catch {
-                completion(.failure(error))
-            }
-        }.resume()
+            throw error
+        }
     }
 }
 

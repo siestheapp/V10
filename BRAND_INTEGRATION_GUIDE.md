@@ -251,3 +251,5 @@ WHERE garment_type IS NULL
    - Validate garment type detection
    - Check for edge cases
 
+
+

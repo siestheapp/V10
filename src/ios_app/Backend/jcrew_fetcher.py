@@ -10,6 +10,7 @@ from typing import Dict, Optional
 import psycopg2
 import sys
 import os
+from datetime import datetime
 
 # Add parent directory to path to import db_config
 sys.path.append(os.path.dirname(os.path.dirname(os.path.dirname(os.path.dirname(__file__)))))
@@ -58,42 +59,24 @@ class JCrewProductFetcher:
     
     def _normalize_url_for_caching(self, product_url: str) -> str:
         """
-        Create a normalized cache key based on product code and color
-        This ensures different color variants have separate cache entries
+        Create a normalized cache key based on product code ONLY
+        Fit options are the same across all colors, so we don't need color-specific caching
         """
         product_code = self._extract_product_code(product_url)
         
-        # Extract color information from URL
-        from urllib.parse import urlparse, parse_qs
-        parsed = urlparse(product_url)
-        query_params = parse_qs(parsed.query)
-        
-        color_info = ""
-        if 'color_name' in query_params:
-            color_info = f"_{query_params['color_name'][0]}"
-        elif 'colorProductCode' in query_params:
-            color_info = f"_{query_params['colorProductCode'][0]}"
-        
+        # Don't include color in cache key - fit options are the same for all colors
+        # This ensures we find products in the database regardless of color
         if product_code:
-            return f"jcrew_product_{product_code}{color_info}"
+            return f"jcrew_product_{product_code}"
         
-        # Fallback to URL-based key (keep color and fit parameters)
+        # Fallback to URL-based key (without color/fit params for consistency)
+        from urllib.parse import urlparse
+        parsed = urlparse(product_url)
         base_path = parsed.path
-        filtered_params = {}
         
-        # Keep essential parameters including color and fit
-        keep_params = ['fit', 'color_name', 'colorProductCode']
-        for param in keep_params:
-            if param in query_params:
-                filtered_params[param] = query_params[param]
-        
-        # Create normalized cache key
-        cache_key = base_path
-        if filtered_params:
-            param_str = '&'.join(f"{k}={v[0]}" for k, v in filtered_params.items())
-            cache_key += f"?{param_str}"
-        
-        return f"jcrew_url_{hash(cache_key)}"
+        # Create normalized cache key from path only
+        cache_key = base_path.replace('/', '_')
+        return f"jcrew_url_{cache_key}"
     
     def fetch_product(self, product_url: str) -> Optional[Dict]:
         """
@@ -161,7 +144,7 @@ class JCrewProductFetcher:
         return any(category in url_lower for category in supported_categories)
     
     def _check_cache(self, product_url: str) -> Optional[Dict]:
-        """Check if product exists in cache"""
+        """Check if product exists in cache (pre-scraped products never expire)"""
         conn = psycopg2.connect(**DB_CONFIG)
         cur = conn.cursor()
         
@@ -170,13 +153,14 @@ class JCrewProductFetcher:
                 SELECT product_name, product_code, product_image,
                        category, subcategory, sizes_available,
                        colors_available, material, fit_type, fit_options, price,
-                       product_description, fit_details
+                       product_description, fit_details, created_at
                 FROM jcrew_product_cache
                 WHERE product_url = %s
             """, (product_url,))
             
             row = cur.fetchone()
             if row:
+                print(f"📦 Cache hit for product: {row[1]}")
                 return {
                     'product_url': product_url,
                     'product_name': row[0],
@@ -193,6 +177,8 @@ class JCrewProductFetcher:
                     'product_description': row[11] if len(row) > 11 else '',
                     'fit_details': row[12] if len(row) > 12 else {}
                 }
+            else:
+                print(f"📭 No cache found for URL: {product_url[:50]}...")
         finally:
             cur.close()
             conn.close()
@@ -200,42 +186,56 @@ class JCrewProductFetcher:
         return None
     
     def _check_cache_by_key(self, cache_key: str) -> Optional[Dict]:
-        """Check if product exists in cache using normalized cache key"""
+        """Check if product exists in cache using normalized cache key
+        
+        Pre-scraped products (ingested from JSON) never expire.
+        Only products scraped on-demand expire after 7 days.
+        """
         conn = psycopg2.connect(**DB_CONFIG)
         cur = conn.cursor()
         
         try:
-            # First try to find by cache_key (new method)
+            # First try to find by cache_key - NO EXPIRATION for pre-scraped data
+            # We trust our pre-scraped data and only expire on-demand scrapes
             cur.execute("""
                 SELECT product_name, product_code, product_image,
                        category, subcategory, sizes_available,
                        colors_available, material, fit_type, fit_options, price,
-                       product_description, fit_details, product_url
+                       product_description, fit_details, product_url, created_at
                 FROM jcrew_product_cache
                 WHERE cache_key = %s
+                -- Only expire if it was scraped on-demand (has full URL in product_url)
+                AND (
+                    product_url NOT LIKE 'http%'  -- Pre-scraped products don't have full URLs
+                    OR created_at > NOW() - INTERVAL '7 days'  -- On-demand scrapes expire after 7 days
+                )
                 ORDER BY created_at DESC
                 LIMIT 1
             """, (cache_key,))
             
             row = cur.fetchone()
-            if row:
+            if row and len(row) >= 14:  # Ensure we have enough columns
+                print(f"📦 CACHE HIT: Product {row[1]} found in cache")
+                # Map columns correctly (0-indexed)
                 return {
-                    'product_url': row[13],  # Original URL from cache
-                    'product_name': row[0],
-                    'product_code': row[1],
-                    'product_image': row[2],
-                    'category': row[3],
-                    'subcategory': row[4],
-                    'sizes_available': row[5],
-                    'colors_available': row[6],
-                    'material': row[7],
-                    'fit_type': row[8],
-                    'fit_options': row[9],
-                    'price': float(row[10]) if row[10] else None,
-                    'product_description': row[11] if len(row) > 11 else '',
-                    'fit_details': row[12] if len(row) > 12 else {},
+                    'product_url': row[13] if len(row) > 13 else '',  # product_url is column 14
+                    'product_name': row[0],      # column 1
+                    'product_code': row[1],       # column 2
+                    'product_image': row[2],      # column 3
+                    'category': row[3],           # column 4
+                    'subcategory': row[4],        # column 5
+                    'sizes_available': row[5],    # column 6
+                    'colors_available': row[6],   # column 7
+                    'material': row[7],           # column 8
+                    'fit_type': row[8],           # column 9
+                    'fit_options': row[9] if row[9] is not None else [],  # column 10 - IMPORTANT: use DB value!
+                    'price': float(row[10]) if row[10] else None,  # column 11
+                    'product_description': row[11] if len(row) > 11 else '',  # column 12
+                    'fit_details': row[12] if len(row) > 12 else {},  # column 13
                     'cache_key': cache_key
                 }
+            else:
+                print(f"📭 No cache found for key: {cache_key}")
         except Exception as e:
             print(f"Cache lookup error: {e}")
         finally:
@@ -589,20 +589,56 @@ class JCrewProductFetcher:
         # Determine if this is a men's or women's product
         is_mens_product = '/mens/' in product_url.lower() or '/men/' in product_url.lower()
         
-        # Method 1: Look for ProductVariations section (most accurate for J.Crew)
-        product_variations = soup.find('div', {'id': 'c-product__variations'})
-        if product_variations:
-            # Look for fit variation buttons within the ProductVariations section
-            fit_buttons = product_variations.find_all('button', {'class': lambda x: x and 'js-product_variation' in x})
-            for button in fit_buttons:
-                # Check if this is a fit variation (not size or color)
-                data_label = button.get('data-label', '').strip()
-                if data_label and any(fit_word in data_label.lower() for fit_word in ['classic', 'slim', 'tall', 'relaxed', 'untucked']):
-                    if data_label not in fit_options:
-                        fit_options.append(data_label)
-                        print(f"🎯 Found fit option in ProductVariations: {data_label}")
+        # Method 1: Extract from JavaScript/JSON data in the page (MOST RELIABLE)
+        # This inspects the actual data structures that power the page, not just visible elements
+        scripts = soup.find_all('script')
+        for script in scripts:
+            if script.string:
+                script_content = script.string
+                
+                # Look for Next.js __NEXT_DATA__ which contains all product variations
+                if '__NEXT_DATA__' in script_content or 'productData' in script_content:
+                    # Find all fit parameter values in URLs or product data
+                    import re
+                    
+                    # Pattern 1: URLs with fit parameters
+                    fit_urls = re.findall(r'["\']fit["\']:\s*["\']([\w\s]+)["\']', script_content)
+                    fit_urls += re.findall(r'fit=([^&"\'\s]+)', script_content)
+                    
+                    # Pattern 2: Fit options in arrays or objects
+                    fit_arrays = re.findall(r'["\'](Classic|Slim|Tall|Relaxed|Untucked|Regular|Petite)["\']', script_content)
+                    
+                    # Combine and deduplicate
+                    all_fits = set()
+                    for fit in fit_urls + fit_arrays:
+                        fit_clean = fit.replace('%20', ' ').replace('+', ' ').strip()
+                        if fit_clean and len(fit_clean) < 20:  # Sanity check
+                            # Filter based on product gender
+                            if is_mens_product and fit_clean.lower() == 'petite':
+                                continue  # Skip Petite for men's products
+                            all_fits.add(fit_clean)
+                    
+                    # Only add fits if we found a reasonable number (1-5 typically)
+                    if 1 <= len(all_fits) <= 5:
+                        fit_options = sorted(list(all_fits))
+                        print(f"🎯 Found fit options in JavaScript data: {fit_options}")
+                        break
         
-        # Method 1.5: Look for fit variation lists or groups (alternative J.Crew structure)
+        # Method 2: Look for ProductVariations section (fallback for older pages)
+        if not fit_options:
+            product_variations = soup.find('div', {'id': 'c-product__variations'})
+            if product_variations:
+                # Look for fit variation buttons within the ProductVariations section
+                fit_buttons = product_variations.find_all('button', {'class': lambda x: x and 'js-product_variation' in x})
+                for button in fit_buttons:
+                    # Check if this is a fit variation (not size or color)
+                    data_label = button.get('data-label', '').strip()
+                    if data_label and any(fit_word in data_label.lower() for fit_word in ['classic', 'slim', 'tall', 'relaxed', 'untucked']):
+                        if data_label not in fit_options:
+                            fit_options.append(data_label)
+                            print(f"🎯 Found fit option in ProductVariations: {data_label}")
+        
+        # Method 3: Look for fit variation lists or groups (alternative J.Crew structure)
         if not fit_options:
             # Look for fit variation lists
             fit_lists = soup.find_all('ul', {'class': lambda x: x and 'variations-list' in x})
@@ -623,30 +659,9 @@ class JCrewProductFetcher:
                     fit_options.append(fit_value.title())
                     print(f"🎯 Found fit option in data-fit attribute: {fit_value}")
         
-        # Method 2: Look for actual fit selector buttons on the page (fallback)
+        # Method 4: Look for actual fit selector buttons on the page (last resort)
         if not fit_options:
-            fit_selectors = [
-                'button[data-testid*="fit"]',
-                'button[aria-label*="fit"]',
-                '.fit-selector button',
-                '[data-fit-type]'
-            ]
-            
-            for selector in fit_selectors:
-                elements = soup.select(selector)
-                for element in elements:
-                    fit_text = element.get_text().strip()
-                    aria_label = element.get('aria-label', '').strip()
-                    
-                    for text_source in [fit_text, aria_label]:
-                        if text_source and text_source not in fit_options:
-                            # Common J.Crew fit types
-                            if any(fit in text_source.lower() for fit in ['classic', 'slim', 'tall', 'relaxed', 'untucked']):
-                                fit_options.append(text_source)
-        
-        # Method 2: Extract from JSON-LD structured data (fallback, but filter carefully)
-        # DISABLED: This method is too unreliable - it finds fits in metadata that aren't actually available
-        # if not fit_options:
+            pass  # Code is commented out below
         #     scripts = soup.find_all('script')
         #     for script in scripts:
         #         if script.string and 'fit=' in script.string:
@@ -867,7 +882,8 @@ class JCrewProductFetcher:
                 product_data.get('subcategory', 'Casual'),
                 product_data.get('price'),
                 product_data.get('sizes_available', []),
-                product_data.get('colors_available', []),
+                # Convert color dicts to strings
+                [c['name'] if isinstance(c, dict) else c for c in product_data.get('colors_available', [])],
                 product_data.get('material', ''),
                 product_data.get('fit_type', 'Regular'),
                 product_data.get('fit_options', []),
@@ -878,6 +894,7 @@ class JCrewProductFetcher:
             conn.commit()
         except Exception as e:
             print(f"❌ Error saving to cache: {e}")
+            conn.rollback()
         finally:
             cur.close()
             conn.close()
@@ -934,7 +951,8 @@ class JCrewProductFetcher:
                 product_data.get('subcategory', 'Casual'),
                 product_data.get('price'),
                 product_data.get('sizes_available', []),
-                product_data.get('colors_available', []),
+                # Convert color dicts to strings
+                [c['name'] if isinstance(c, dict) else c for c in product_data.get('colors_available', [])],
                 product_data.get('material', ''),
                 product_data.get('fit_type', 'Regular'),
                 product_data.get('fit_options', []),

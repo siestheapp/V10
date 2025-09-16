@@ -1,0 +1,2221 @@
+[
+  {
+    "url": "https://www.jcrew.com/p/mens/categories/clothing/shirts/broken-in-oxford/broken-in-organic-cotton-oxford-shirt/MP235",
+    "code": "MP235",
+    "name": "men's broken-in oxford | J.Crew",
+    "category": "Shirts",
+    "subcategory": "Oxford",
+    "colors": [
+      {
+        "name": "Default"
+      }
+    ],
+    "material": "",
+    "fit_options": [
+      "Tall",
+      "Classic",
+      "Giant",
+      "Relaxed"
+    ],
+    "sizes": [
+      "XS",
+      "S",
+      "M",
+      "L",
+      "XL",
+      "XXL"
+    ],
+    "price": null,
+    "image_url": "https://www.jcrew.com/next-static/images/jcrew/jc-default.jpg",
+    "description": "",
+    "scraped_at": "2025-09-15T12:09:09.684268"
+  },
+  {
+    "url": "https://www.jcrew.com/p/mens/categories/clothing/shirts/broken-in-oxford/broken-in-organic-cotton-oxford-shirt/BE996",
+    "code": "BE996",
+    "name": "Broken-in organic cotton oxford shirt",
+    "category": "Shirts",
+    "subcategory": "Oxford",
+    "colors": [
+      "Default"
+    ],
+    "material": "",
+    "fit_options": [
+      "Classic",
+      "Slim",
+      "Slim Untucked",
+      "Tall",
+      "Relaxed"
+    ],
+    "sizes": [
+      "XS",
+      "S",
+      "M",
+      "L",
+      "XL",
+      "XXL"
+    ],
+    "price": null,
+    "image_url": "https://www.jcrew.com/s7-img-facade/BE996_YD7734?$crop1254$",
+    "description": "",
+    "scraped_at": "2025-09-15T12:09:11.743339"
+  },
+  {
+    "url": "https://www.jcrew.com/p/mens/categories/clothing/shirts/broken-in-oxford/broken-in-organic-cotton-oxford-shirt/BE996?display=standard&fit=Classic&color_name=jarvis-white-black&colorProductCode=BE996",
+    "code": "BE996",
+    "name": "Broken-in organic cotton oxford shirt",
+    "category": "Shirts",
+    "subcategory": "Oxford",
+    "colors": [
+      {
+        "name": "Vintage Lilac Oxford",
+        "code": "YD9346",
+        "productCode": "BE996",
+        "imageUrl": "https://www.jcrew.com/s7-img-facade/BE996_YD9346_sw?$pdp_sw20$"
+      },
+      {
+        "name": "Ryan White Peri",
+        "code": "YD8609",
+        "productCode": "BE996",
+        "imageUrl": "https://www.jcrew.com/s7-img-facade/BE996_YD8609_sw?$pdp_sw20$"
+      },
+      {
+        "name": "Jason Blue Multi",
+        "code": "YD8607",
+        "productCode": "BE996",
+        "imageUrl": "https://www.jcrew.com/s7-img-facade/BE996_YD8607_sw?$pdp_sw20$"
+      },
+      {
+        "name": "Jarvis White Brown",
+        "code": "YD8593",
+        "productCode": "BE996",
+        "imageUrl": "https://www.jcrew.com/s7-img-facade/BE996_YD8593_sw?$pdp_sw20$"
+      },
+      {
+        "name": "Jarvis White Black",
+        "code": "YD8591",
+        "productCode": "BE996",
+        "imageUrl": "https://www.jcrew.com/s7-img-facade/BE996_YD8591_sw?$pdp_sw20$"
+      },
+      {
+        "name": "Lawrence Navy Red Green",
+        "code": "YD8179",
+        "productCode": "BE996",
+        "imageUrl": "https://www.jcrew.com/s7-img-facade/BE996_YD8179_sw?$pdp_sw20$"
+      },
+      {
+        "name": "Dominic White Yellow",
+        "code": "YD7822",
+        "productCode": "BE996",
+        "imageUrl": "https://www.jcrew.com/s7-img-facade/BE996_YD7822_sw?$pdp_sw20$"
+      },
+      {
+        "name": "Dominic White Lavender",
+        "code": "YD7821",
+        "productCode": "BE996",
+        "imageUrl": "https://www.jcrew.com/s7-img-facade/BE996_YD7821_sw?$pdp_sw20$"
+      },
+      {
+        "name": "Ray White Multi",
+        "code": "YD7734",
+        "productCode": "BE996",
+        "imageUrl": "https://www.jcrew.com/s7-img-facade/BE996_YD7734_sw?$pdp_sw20$"
+      },
+      {
+        "name": "Pale Rose Oxford",
+        "code": "YD7382",
+        "productCode": "BE996",
+        "imageUrl": "https://www.jcrew.com/s7-img-facade/BE996_YD7382_sw?$pdp_sw20$"
+      },
+      {
+        "name": "Dominic White Green",
+        "code": "YD7306",
+        "productCode": "BE996",
+        "imageUrl": "https://www.jcrew.com/s7-img-facade/BE996_YD7306_sw?$pdp_sw20$"
+      },
+      {
+        "name": "Championship Green Wt",
+        "code": "YD4460",
+        "productCode": "BE996",
+        "imageUrl": "https://www.jcrew.com/s7-img-facade/BE996_YD4460_sw?$pdp_sw20$"
+      },
+      {
+        "name": "University Stripe Rain",
+        "code": "WX0651",
+        "productCode": "BE996",
+        "imageUrl": "https://www.jcrew.com/s7-img-facade/BE996_WX0651_sw?$pdp_sw20$"
+      },
+      {
+        "name": "Raincoat Blue",
+        "code": "WX0596",
+        "productCode": "BE996",
+        "imageUrl": "https://www.jcrew.com/s7-img-facade/BE996_WX0596_sw?$pdp_sw20$"
+      },
+      {
+        "name": "White",
+        "code": "WT0002",
+        "productCode": "BE996",
+        "imageUrl": "https://www.jcrew.com/s7-img-facade/BE996_WT0002_sw?$pdp_sw20$"
+      }
+    ],
+    "material": "",
+    "fit_options": [
+      "Classic",
+      "Slim",
+      "Slim Untucked",
+      "Tall",
+      "Relaxed"
+    ],
+    "sizes": [
+      "XS",
+      "S",
+      "M",
+      "L",
+      "XL",
+      "XXL"
+    ],
+    "price": null,
+    "image_url": "https://www.jcrew.com/s7-img-facade/BE996_YD8591?$crop1254$",
+    "description": "",
+    "scraped_at": "2025-09-15T12:09:23.796429"
+  },
+  {
+    "url": "https://www.jcrew.com/p/mens/categories/clothing/shirts/broken-in-oxford/relaxed-broken-in-organic-cotton-oxford-shirt/BE996?display=standard&fit=Relaxed&color_name=sherrod-light-blue-yell&colorProductCode=BE996",
+    "code": "BE996",
+    "name": "Relaxed Broken-in organic cotton oxford shirt",
+    "category": "Shirts",
+    "subcategory": "Oxford",
+    "colors": [
+      {
+        "name": "Vintage Lilac Oxford",
+        "code": "YD9346",
+        "productCode": "BE996",
+        "imageUrl": "https://www.jcrew.com/s7-img-facade/BE996_YD9346_sw?$pdp_sw20$"
+      },
+      {
+        "name": "Ryan White Peri",
+        "code": "YD8609",
+        "productCode": "BE996",
+        "imageUrl": "https://www.jcrew.com/s7-img-facade/BE996_YD8609_sw?$pdp_sw20$"
+      },
+      {
+        "name": "Jason Blue Multi",
+        "code": "YD8607",
+        "productCode": "BE996",
+        "imageUrl": "https://www.jcrew.com/s7-img-facade/BE996_YD8607_sw?$pdp_sw20$"
+      },
+      {
+        "name": "Jarvis White Brown",
+        "code": "YD8593",
+        "productCode": "BE996",
+        "imageUrl": "https://www.jcrew.com/s7-img-facade/BE996_YD8593_sw?$pdp_sw20$"
+      },
+      {
+        "name": "Jarvis White Black",
+        "code": "YD8591",
+        "productCode": "BE996",
+        "imageUrl": "https://www.jcrew.com/s7-img-facade/BE996_YD8591_sw?$pdp_sw20$"
+      },
+      {
+        "name": "Lawrence Navy Red Green",
+        "code": "YD8179",
+        "productCode": "BE996",
+        "imageUrl": "https://www.jcrew.com/s7-img-facade/BE996_YD8179_sw?$pdp_sw20$"
+      },
+      {
+        "name": "Bevan Green Blue",
+        "code": "YD7966",
+        "productCode": "BE996",
+        "imageUrl": "https://www.jcrew.com/s7-img-facade/BE996_YD7966_sw?$pdp_sw20$"
+      },
+      {
+        "name": "Sherrod Light Blue Yell",
+        "code": "YD7837",
+        "productCode": "BE996",
+        "imageUrl": "https://www.jcrew.com/s7-img-facade/BE996_YD7837_sw?$pdp_sw20$"
+      },
+      {
+        "name": "Ray White Multi",
+        "code": "YD7734",
+        "productCode": "BE996",
+        "imageUrl": "https://www.jcrew.com/s7-img-facade/BE996_YD7734_sw?$pdp_sw20$"
+      },
+      {
+        "name": "Pale Rose Oxford",
+        "code": "YD7382",
+        "productCode": "BE996",
+        "imageUrl": "https://www.jcrew.com/s7-img-facade/BE996_YD7382_sw?$pdp_sw20$"
+      },
+      {
+        "name": "Dominic White Green",
+        "code": "YD7306",
+        "productCode": "BE996",
+        "imageUrl": "https://www.jcrew.com/s7-img-facade/BE996_YD7306_sw?$pdp_sw20$"
+      },
+      {
+        "name": "Championship Green Wt",
+        "code": "YD4460",
+        "productCode": "BE996",
+        "imageUrl": "https://www.jcrew.com/s7-img-facade/BE996_YD4460_sw?$pdp_sw20$"
+      },
+      {
+        "name": "University Stripe Rain",
+        "code": "WX0651",
+        "productCode": "BE996",
+        "imageUrl": "https://www.jcrew.com/s7-img-facade/BE996_WX0651_sw?$pdp_sw20$"
+      },
+      {
+        "name": "Raincoat Blue",
+        "code": "WX0596",
+        "productCode": "BE996",
+        "imageUrl": "https://www.jcrew.com/s7-img-facade/BE996_WX0596_sw?$pdp_sw20$"
+      },
+      {
+        "name": "White",
+        "code": "WT0002",
+        "productCode": "BE996",
+        "imageUrl": "https://www.jcrew.com/s7-img-facade/BE996_WT0002_sw?$pdp_sw20$"
+      }
+    ],
+    "material": "",
+    "fit_options": [
+      "Classic",
+      "Slim",
+      "Slim Untucked",
+      "Tall",
+      "Relaxed"
+    ],
+    "sizes": [
+      "XS",
+      "S",
+      "M",
+      "L",
+      "XL",
+      "XXL"
+    ],
+    "price": null,
+    "image_url": "https://www.jcrew.com/s7-img-facade/BE996_YD7837?$crop1254$",
+    "description": "",
+    "scraped_at": "2025-09-15T12:09:31.859073"
+  },
+  {
+    "url": "https://www.jcrew.com/m/mens/categories/clothing/shirts/broken-in-oxford/broken-in-organic-cotton-oxford-shirt/CM226",
+    "code": "CM226",
+    "name": "J.Crew Product",
+    "category": "Shirts",
+    "subcategory": "Oxford",
+    "colors": [
+      {
+        "name": "Default"
+      }
+    ],
+    "material": "",
+    "fit_options": [
+      "Tall",
+      "Classic"
+    ],
+    "sizes": [
+      "XS",
+      "S",
+      "M",
+      "L",
+      "XL",
+      "XXL"
+    ],
+    "price": null,
+    "image_url": "",
+    "description": "",
+    "scraped_at": "2025-09-15T12:09:34.475517"
+  },
+  {
+    "url": "https://www.jcrew.com/p/mens/categories/clothing/shirts/casual/broken-in-oxford-shirt/CH326",
+    "code": "CH326",
+    "name": "Limited-edition The New Yorker X J.Crew Broken-in organic cotton oxford shirt",
+    "category": "Shirts",
+    "subcategory": "Casual",
+    "colors": [
+      {
+        "name": "Van Light Blue White",
+        "code": "YD7833",
+        "productCode": "CH326",
+        "imageUrl": "https://www.jcrew.com/s7-img-facade/CH326_YD7833_sw?$pdp_sw20$"
+      }
+    ],
+    "material": "",
+    "fit_options": [
+      "Tall",
+      "Classic"
+    ],
+    "sizes": [
+      "XS",
+      "S",
+      "M",
+      "L",
+      "XL",
+      "XXL"
+    ],
+    "price": null,
+    "image_url": "https://www.jcrew.com/s7-img-facade/CH326_YD7833?$crop1254$",
+    "description": "",
+    "scraped_at": "2025-09-15T12:09:40.218908"
+  },
+  {
+    "url": "https://www.jcrew.com/p/mens/categories/clothing/shirts/casual/broken-in-oxford-shirt/BE996",
+    "code": "BE996",
+    "name": "Broken-in organic cotton oxford shirt",
+    "category": "Shirts",
+    "subcategory": "Oxford",
+    "colors": [
+      "Default"
+    ],
+    "material": "",
+    "fit_options": [
+      "Classic",
+      "Slim",
+      "Slim Untucked",
+      "Tall",
+      "Relaxed"
+    ],
+    "sizes": [
+      "XS",
+      "S",
+      "M",
+      "L",
+      "XL",
+      "XXL"
+    ],
+    "price": null,
+    "image_url": "https://www.jcrew.com/s7-img-facade/BE996_YD7734?$crop1254$",
+    "description": "",
+    "scraped_at": "2025-09-15T12:09:42.334680"
+  },
+  {
+    "url": "https://www.jcrew.com/p/mens/categories/clothing/shirts/broken-in-oxford/broken-in-organic-cotton-oxford-shirt/CH326",
+    "code": "CH326",
+    "name": "Limited-edition The New Yorker X J.Crew Broken-in organic cotton oxford shirt",
+    "category": "Shirts",
+    "subcategory": "Oxford",
+    "colors": [
+      {
+        "name": "Van Light Blue White",
+        "code": "YD7833",
+        "productCode": "CH326",
+        "imageUrl": "https://www.jcrew.com/s7-img-facade/CH326_YD7833_sw?$pdp_sw20$"
+      }
+    ],
+    "material": "",
+    "fit_options": [
+      "Tall",
+      "Classic"
+    ],
+    "sizes": [
+      "XS",
+      "S",
+      "M",
+      "L",
+      "XL",
+      "XXL"
+    ],
+    "price": null,
+    "image_url": "https://www.jcrew.com/s7-img-facade/CH326_YD7833?$crop1254$",
+    "description": "",
+    "scraped_at": "2025-09-15T12:09:49.221105"
+  },
+  {
+    "url": "https://www.jcrew.com/p/mens/categories/clothing/shirts/broken-in-oxford/classic-oxford-two-pocket-workshirt/CM226?display=standard&fit=Classic&color_name=miro-navy-red&colorProductCode=CM226",
+    "code": "CM226",
+    "name": "Classic oxford two-pocket workshirt",
+    "category": "Shirts",
+    "subcategory": "Oxford",
+    "colors": [
+      {
+        "name": "Van Walnut White",
+        "code": "YD9386",
+        "productCode": "CM226",
+        "imageUrl": "https://www.jcrew.com/s7-img-facade/CM226_YD9386_sw?$pdp_sw20$"
+      },
+      {
+        "name": "Miro Navy Red",
+        "code": "YD8637",
+        "productCode": "CM226",
+        "imageUrl": "https://www.jcrew.com/s7-img-facade/CM226_YD8637_sw?$pdp_sw20$"
+      },
+      {
+        "name": "Eric Stripe White Blue",
+        "code": "YD8636",
+        "productCode": "CM226",
+        "imageUrl": "https://www.jcrew.com/s7-img-facade/CM226_YD8636_sw?$pdp_sw20$"
+      }
+    ],
+    "material": "",
+    "fit_options": [
+      "Tall",
+      "Classic"
+    ],
+    "sizes": [
+      "XS",
+      "S",
+      "M",
+      "L",
+      "XL",
+      "XXL"
+    ],
+    "price": null,
+    "image_url": "https://www.jcrew.com/s7-img-facade/CM226_YD8637?$crop1254$",
+    "description": "",
+    "scraped_at": "2025-09-15T12:09:53.816534"
+  },
+  {
+    "url": "https://www.jcrew.com/p/mens/categories/clothing/shirts/broken-in-oxford/broken-in-organic-cotton-oxford-shirt/BE996?display=standard&fit=Classic&color_name=championship-green-wt-&colorProductCode=BE996",
+    "code": "BE996",
+    "name": "Broken-in organic cotton oxford shirt",
+    "category": "Shirts",
+    "subcategory": "Oxford",
+    "colors": [
+      {
+        "name": "Vintage Lilac Oxford",
+        "code": "YD9346",
+        "productCode": "BE996",
+        "imageUrl": "https://www.jcrew.com/s7-img-facade/BE996_YD9346_sw?$pdp_sw20$"
+      },
+      {
+        "name": "Ryan White Peri",
+        "code": "YD8609",
+        "productCode": "BE996",
+        "imageUrl": "https://www.jcrew.com/s7-img-facade/BE996_YD8609_sw?$pdp_sw20$"
+      },
+      {
+        "name": "Jason Blue Multi",
+        "code": "YD8607",
+        "productCode": "BE996",
+        "imageUrl": "https://www.jcrew.com/s7-img-facade/BE996_YD8607_sw?$pdp_sw20$"
+      },
+      {
+        "name": "Jarvis White Brown",
+        "code": "YD8593",
+        "productCode": "BE996",
+        "imageUrl": "https://www.jcrew.com/s7-img-facade/BE996_YD8593_sw?$pdp_sw20$"
+      },
+      {
+        "name": "Jarvis White Black",
+        "code": "YD8591",
+        "productCode": "BE996",
+        "imageUrl": "https://www.jcrew.com/s7-img-facade/BE996_YD8591_sw?$pdp_sw20$"
+      },
+      {
+        "name": "Lawrence Navy Red Green",
+        "code": "YD8179",
+        "productCode": "BE996",
+        "imageUrl": "https://www.jcrew.com/s7-img-facade/BE996_YD8179_sw?$pdp_sw20$"
+      },
+      {
+        "name": "Dominic White Yellow",
+        "code": "YD7822",
+        "productCode": "BE996",
+        "imageUrl": "https://www.jcrew.com/s7-img-facade/BE996_YD7822_sw?$pdp_sw20$"
+      },
+      {
+        "name": "Dominic White Lavender",
+        "code": "YD7821",
+        "productCode": "BE996",
+        "imageUrl": "https://www.jcrew.com/s7-img-facade/BE996_YD7821_sw?$pdp_sw20$"
+      },
+      {
+        "name": "Ray White Multi",
+        "code": "YD7734",
+        "productCode": "BE996",
+        "imageUrl": "https://www.jcrew.com/s7-img-facade/BE996_YD7734_sw?$pdp_sw20$"
+      },
+      {
+        "name": "Pale Rose Oxford",
+        "code": "YD7382",
+        "productCode": "BE996",
+        "imageUrl": "https://www.jcrew.com/s7-img-facade/BE996_YD7382_sw?$pdp_sw20$"
+      },
+      {
+        "name": "Dominic White Green",
+        "code": "YD7306",
+        "productCode": "BE996",
+        "imageUrl": "https://www.jcrew.com/s7-img-facade/BE996_YD7306_sw?$pdp_sw20$"
+      },
+      {
+        "name": "Championship Green Wt",
+        "code": "YD4460",
+        "productCode": "BE996",
+        "imageUrl": "https://www.jcrew.com/s7-img-facade/BE996_YD4460_sw?$pdp_sw20$"
+      },
+      {
+        "name": "University Stripe Rain",
+        "code": "WX0651",
+        "productCode": "BE996",
+        "imageUrl": "https://www.jcrew.com/s7-img-facade/BE996_WX0651_sw?$pdp_sw20$"
+      },
+      {
+        "name": "Raincoat Blue",
+        "code": "WX0596",
+        "productCode": "BE996",
+        "imageUrl": "https://www.jcrew.com/s7-img-facade/BE996_WX0596_sw?$pdp_sw20$"
+      },
+      {
+        "name": "White",
+        "code": "WT0002",
+        "productCode": "BE996",
+        "imageUrl": "https://www.jcrew.com/s7-img-facade/BE996_WT0002_sw?$pdp_sw20$"
+      }
+    ],
+    "material": "",
+    "fit_options": [
+      "Classic",
+      "Slim",
+      "Slim Untucked",
+      "Tall",
+      "Relaxed"
+    ],
+    "sizes": [
+      "XS",
+      "S",
+      "M",
+      "L",
+      "XL",
+      "XXL"
+    ],
+    "price": null,
+    "image_url": "https://www.jcrew.com/s7-img-facade/BE996_YD4460?$crop1254$",
+    "description": "",
+    "scraped_at": "2025-09-15T12:09:59.576795"
+  },
+  {
+    "url": "https://www.jcrew.com/p/mens/categories/clothing/shirts/broken-in-oxford/broken-in-organic-cotton-oxford-shirt/BE996?display=standard&fit=Classic&color_name=raincoat-blue&colorProductCode=BE996",
+    "code": "BE996",
+    "name": "Broken-in organic cotton oxford shirt",
+    "category": "Shirts",
+    "subcategory": "Oxford",
+    "colors": [
+      {
+        "name": "Vintage Lilac Oxford",
+        "code": "YD9346",
+        "productCode": "BE996",
+        "imageUrl": "https://www.jcrew.com/s7-img-facade/BE996_YD9346_sw?$pdp_sw20$"
+      },
+      {
+        "name": "Ryan White Peri",
+        "code": "YD8609",
+        "productCode": "BE996",
+        "imageUrl": "https://www.jcrew.com/s7-img-facade/BE996_YD8609_sw?$pdp_sw20$"
+      },
+      {
+        "name": "Jason Blue Multi",
+        "code": "YD8607",
+        "productCode": "BE996",
+        "imageUrl": "https://www.jcrew.com/s7-img-facade/BE996_YD8607_sw?$pdp_sw20$"
+      },
+      {
+        "name": "Jarvis White Brown",
+        "code": "YD8593",
+        "productCode": "BE996",
+        "imageUrl": "https://www.jcrew.com/s7-img-facade/BE996_YD8593_sw?$pdp_sw20$"
+      },
+      {
+        "name": "Jarvis White Black",
+        "code": "YD8591",
+        "productCode": "BE996",
+        "imageUrl": "https://www.jcrew.com/s7-img-facade/BE996_YD8591_sw?$pdp_sw20$"
+      },
+      {
+        "name": "Lawrence Navy Red Green",
+        "code": "YD8179",
+        "productCode": "BE996",
+        "imageUrl": "https://www.jcrew.com/s7-img-facade/BE996_YD8179_sw?$pdp_sw20$"
+      },
+      {
+        "name": "Dominic White Yellow",
+        "code": "YD7822",
+        "productCode": "BE996",
+        "imageUrl": "https://www.jcrew.com/s7-img-facade/BE996_YD7822_sw?$pdp_sw20$"
+      },
+      {
+        "name": "Dominic White Lavender",
+        "code": "YD7821",
+        "productCode": "BE996",
+        "imageUrl": "https://www.jcrew.com/s7-img-facade/BE996_YD7821_sw?$pdp_sw20$"
+      },
+      {
+        "name": "Ray White Multi",
+        "code": "YD7734",
+        "productCode": "BE996",
+        "imageUrl": "https://www.jcrew.com/s7-img-facade/BE996_YD7734_sw?$pdp_sw20$"
+      },
+      {
+        "name": "Pale Rose Oxford",
+        "code": "YD7382",
+        "productCode": "BE996",
+        "imageUrl": "https://www.jcrew.com/s7-img-facade/BE996_YD7382_sw?$pdp_sw20$"
+      },
+      {
+        "name": "Dominic White Green",
+        "code": "YD7306",
+        "productCode": "BE996",
+        "imageUrl": "https://www.jcrew.com/s7-img-facade/BE996_YD7306_sw?$pdp_sw20$"
+      },
+      {
+        "name": "Championship Green Wt",
+        "code": "YD4460",
+        "productCode": "BE996",
+        "imageUrl": "https://www.jcrew.com/s7-img-facade/BE996_YD4460_sw?$pdp_sw20$"
+      },
+      {
+        "name": "University Stripe Rain",
+        "code": "WX0651",
+        "productCode": "BE996",
+        "imageUrl": "https://www.jcrew.com/s7-img-facade/BE996_WX0651_sw?$pdp_sw20$"
+      },
+      {
+        "name": "Raincoat Blue",
+        "code": "WX0596",
+        "productCode": "BE996",
+        "imageUrl": "https://www.jcrew.com/s7-img-facade/BE996_WX0596_sw?$pdp_sw20$"
+      },
+      {
+        "name": "White",
+        "code": "WT0002",
+        "productCode": "BE996",
+        "imageUrl": "https://www.jcrew.com/s7-img-facade/BE996_WT0002_sw?$pdp_sw20$"
+      }
+    ],
+    "material": "",
+    "fit_options": [
+      "Classic",
+      "Slim",
+      "Slim Untucked",
+      "Tall",
+      "Relaxed"
+    ],
+    "sizes": [
+      "XS",
+      "S",
+      "M",
+      "L",
+      "XL",
+      "XXL"
+    ],
+    "price": null,
+    "image_url": "https://www.jcrew.com/s7-img-facade/BE996_WX0596?$crop1254$",
+    "description": "",
+    "scraped_at": "2025-09-15T12:10:05.497144"
+  },
+  {
+    "url": "https://www.jcrew.com/p/mens/categories/clothing/shirts/casual/broken-in-oxford-shirt/CM226",
+    "code": "CM226",
+    "name": "Classic oxford two-pocket workshirt",
+    "category": "Shirts",
+    "subcategory": "Casual",
+    "colors": [
+      {
+        "name": "Van Walnut White",
+        "code": "YD9386",
+        "productCode": "CM226",
+        "imageUrl": "https://www.jcrew.com/s7-img-facade/CM226_YD9386_sw?$pdp_sw20$"
+      },
+      {
+        "name": "Miro Navy Red",
+        "code": "YD8637",
+        "productCode": "CM226",
+        "imageUrl": "https://www.jcrew.com/s7-img-facade/CM226_YD8637_sw?$pdp_sw20$"
+      },
+      {
+        "name": "Eric Stripe White Blue",
+        "code": "YD8636",
+        "productCode": "CM226",
+        "imageUrl": "https://www.jcrew.com/s7-img-facade/CM226_YD8636_sw?$pdp_sw20$"
+      }
+    ],
+    "material": "",
+    "fit_options": [
+      "Tall",
+      "Classic"
+    ],
+    "sizes": [
+      "XS",
+      "S",
+      "M",
+      "L",
+      "XL",
+      "XXL"
+    ],
+    "price": null,
+    "image_url": "https://www.jcrew.com/s7-img-facade/CM226_YD9386?$crop1254$",
+    "description": "",
+    "scraped_at": "2025-09-15T12:10:08.371540"
+  },
+  {
+    "url": "https://www.jcrew.com/p/mens/categories/clothing/shirts/broken-in-oxford/relaxed-broken-in-organic-cotton-oxford-shirt/BE996?display=standard&fit=Relaxed&color_name=bevan-green-blue&colorProductCode=BE996",
+    "code": "BE996",
+    "name": "Relaxed Broken-in organic cotton oxford shirt",
+    "category": "Shirts",
+    "subcategory": "Oxford",
+    "colors": [
+      {
+        "name": "Vintage Lilac Oxford",
+        "code": "YD9346",
+        "productCode": "BE996",
+        "imageUrl": "https://www.jcrew.com/s7-img-facade/BE996_YD9346_sw?$pdp_sw20$"
+      },
+      {
+        "name": "Ryan White Peri",
+        "code": "YD8609",
+        "productCode": "BE996",
+        "imageUrl": "https://www.jcrew.com/s7-img-facade/BE996_YD8609_sw?$pdp_sw20$"
+      },
+      {
+        "name": "Jason Blue Multi",
+        "code": "YD8607",
+        "productCode": "BE996",
+        "imageUrl": "https://www.jcrew.com/s7-img-facade/BE996_YD8607_sw?$pdp_sw20$"
+      },
+      {
+        "name": "Jarvis White Brown",
+        "code": "YD8593",
+        "productCode": "BE996",
+        "imageUrl": "https://www.jcrew.com/s7-img-facade/BE996_YD8593_sw?$pdp_sw20$"
+      },
+      {
+        "name": "Jarvis White Black",
+        "code": "YD8591",
+        "productCode": "BE996",
+        "imageUrl": "https://www.jcrew.com/s7-img-facade/BE996_YD8591_sw?$pdp_sw20$"
+      },
+      {
+        "name": "Lawrence Navy Red Green",
+        "code": "YD8179",
+        "productCode": "BE996",
+        "imageUrl": "https://www.jcrew.com/s7-img-facade/BE996_YD8179_sw?$pdp_sw20$"
+      },
+      {
+        "name": "Bevan Green Blue",
+        "code": "YD7966",
+        "productCode": "BE996",
+        "imageUrl": "https://www.jcrew.com/s7-img-facade/BE996_YD7966_sw?$pdp_sw20$"
+      },
+      {
+        "name": "Sherrod Light Blue Yell",
+        "code": "YD7837",
+        "productCode": "BE996",
+        "imageUrl": "https://www.jcrew.com/s7-img-facade/BE996_YD7837_sw?$pdp_sw20$"
+      },
+      {
+        "name": "Ray White Multi",
+        "code": "YD7734",
+        "productCode": "BE996",
+        "imageUrl": "https://www.jcrew.com/s7-img-facade/BE996_YD7734_sw?$pdp_sw20$"
+      },
+      {
+        "name": "Pale Rose Oxford",
+        "code": "YD7382",
+        "productCode": "BE996",
+        "imageUrl": "https://www.jcrew.com/s7-img-facade/BE996_YD7382_sw?$pdp_sw20$"
+      },
+      {
+        "name": "Dominic White Green",
+        "code": "YD7306",
+        "productCode": "BE996",
+        "imageUrl": "https://www.jcrew.com/s7-img-facade/BE996_YD7306_sw?$pdp_sw20$"
+      },
+      {
+        "name": "Championship Green Wt",
+        "code": "YD4460",
+        "productCode": "BE996",
+        "imageUrl": "https://www.jcrew.com/s7-img-facade/BE996_YD4460_sw?$pdp_sw20$"
+      },
+      {
+        "name": "University Stripe Rain",
+        "code": "WX0651",
+        "productCode": "BE996",
+        "imageUrl": "https://www.jcrew.com/s7-img-facade/BE996_WX0651_sw?$pdp_sw20$"
+      },
+      {
+        "name": "Raincoat Blue",
+        "code": "WX0596",
+        "productCode": "BE996",
+        "imageUrl": "https://www.jcrew.com/s7-img-facade/BE996_WX0596_sw?$pdp_sw20$"
+      },
+      {
+        "name": "White",
+        "code": "WT0002",
+        "productCode": "BE996",
+        "imageUrl": "https://www.jcrew.com/s7-img-facade/BE996_WT0002_sw?$pdp_sw20$"
+      }
+    ],
+    "material": "",
+    "fit_options": [
+      "Classic",
+      "Slim",
+      "Slim Untucked",
+      "Tall",
+      "Relaxed"
+    ],
+    "sizes": [
+      "XS",
+      "S",
+      "M",
+      "L",
+      "XL",
+      "XXL"
+    ],
+    "price": null,
+    "image_url": "https://www.jcrew.com/s7-img-facade/BE996_YD7966?$crop1254$",
+    "description": "",
+    "scraped_at": "2025-09-15T12:10:18.840831"
+  },
+  {
+    "url": "https://www.jcrew.com/p/mens/categories/clothing/shirts/broken-in-oxford/limited-edition-the-new-yorker-x-jcrew-broken-in-organic-cotton-oxford-shirt/CH326?display=standard&fit=Classic&color_name=van-light-blue-white&colorProductCode=CH326",
+    "code": "CH326",
+    "name": "Limited-edition The New Yorker X J.Crew Broken-in organic cotton oxford shirt",
+    "category": "Shirts",
+    "subcategory": "Oxford",
+    "colors": [
+      {
+        "name": "Van Light Blue White",
+        "code": "YD7833",
+        "productCode": "CH326",
+        "imageUrl": "https://www.jcrew.com/s7-img-facade/CH326_YD7833_sw?$pdp_sw20$"
+      }
+    ],
+    "material": "",
+    "fit_options": [
+      "Tall",
+      "Classic"
+    ],
+    "sizes": [
+      "XS",
+      "S",
+      "M",
+      "L",
+      "XL",
+      "XXL"
+    ],
+    "price": null,
+    "image_url": "https://www.jcrew.com/s7-img-facade/CH326_YD7833?$crop1254$",
+    "description": "",
+    "scraped_at": "2025-09-15T12:10:22.382797"
+  },
+  {
+    "url": "https://www.jcrew.com/p/mens/categories/clothing/shirts/broken-in-oxford/broken-in-organic-cotton-oxford-shirt/BE996?display=standard&fit=Classic&color_name=jarvis-white-brown&colorProductCode=BE996",
+    "code": "BE996",
+    "name": "Broken-in organic cotton oxford shirt",
+    "category": "Shirts",
+    "subcategory": "Oxford",
+    "colors": [
+      {
+        "name": "Vintage Lilac Oxford",
+        "code": "YD9346",
+        "productCode": "BE996",
+        "imageUrl": "https://www.jcrew.com/s7-img-facade/BE996_YD9346_sw?$pdp_sw20$"
+      },
+      {
+        "name": "Ryan White Peri",
+        "code": "YD8609",
+        "productCode": "BE996",
+        "imageUrl": "https://www.jcrew.com/s7-img-facade/BE996_YD8609_sw?$pdp_sw20$"
+      },
+      {
+        "name": "Jason Blue Multi",
+        "code": "YD8607",
+        "productCode": "BE996",
+        "imageUrl": "https://www.jcrew.com/s7-img-facade/BE996_YD8607_sw?$pdp_sw20$"
+      },
+      {
+        "name": "Jarvis White Brown",
+        "code": "YD8593",
+        "productCode": "BE996",
+        "imageUrl": "https://www.jcrew.com/s7-img-facade/BE996_YD8593_sw?$pdp_sw20$"
+      },
+      {
+        "name": "Jarvis White Black",
+        "code": "YD8591",
+        "productCode": "BE996",
+        "imageUrl": "https://www.jcrew.com/s7-img-facade/BE996_YD8591_sw?$pdp_sw20$"
+      },
+      {
+        "name": "Lawrence Navy Red Green",
+        "code": "YD8179",
+        "productCode": "BE996",
+        "imageUrl": "https://www.jcrew.com/s7-img-facade/BE996_YD8179_sw?$pdp_sw20$"
+      },
+      {
+        "name": "Dominic White Yellow",
+        "code": "YD7822",
+        "productCode": "BE996",
+        "imageUrl": "https://www.jcrew.com/s7-img-facade/BE996_YD7822_sw?$pdp_sw20$"
+      },
+      {
+        "name": "Dominic White Lavender",
+        "code": "YD7821",
+        "productCode": "BE996",
+        "imageUrl": "https://www.jcrew.com/s7-img-facade/BE996_YD7821_sw?$pdp_sw20$"
+      },
+      {
+        "name": "Ray White Multi",
+        "code": "YD7734",
+        "productCode": "BE996",
+        "imageUrl": "https://www.jcrew.com/s7-img-facade/BE996_YD7734_sw?$pdp_sw20$"
+      },
+      {
+        "name": "Pale Rose Oxford",
+        "code": "YD7382",
+        "productCode": "BE996",
+        "imageUrl": "https://www.jcrew.com/s7-img-facade/BE996_YD7382_sw?$pdp_sw20$"
+      },
+      {
+        "name": "Dominic White Green",
+        "code": "YD7306",
+        "productCode": "BE996",
+        "imageUrl": "https://www.jcrew.com/s7-img-facade/BE996_YD7306_sw?$pdp_sw20$"
+      },
+      {
+        "name": "Championship Green Wt",
+        "code": "YD4460",
+        "productCode": "BE996",
+        "imageUrl": "https://www.jcrew.com/s7-img-facade/BE996_YD4460_sw?$pdp_sw20$"
+      },
+      {
+        "name": "University Stripe Rain",
+        "code": "WX0651",
+        "productCode": "BE996",
+        "imageUrl": "https://www.jcrew.com/s7-img-facade/BE996_WX0651_sw?$pdp_sw20$"
+      },
+      {
+        "name": "Raincoat Blue",
+        "code": "WX0596",
+        "productCode": "BE996",
+        "imageUrl": "https://www.jcrew.com/s7-img-facade/BE996_WX0596_sw?$pdp_sw20$"
+      },
+      {
+        "name": "White",
+        "code": "WT0002",
+        "productCode": "BE996",
+        "imageUrl": "https://www.jcrew.com/s7-img-facade/BE996_WT0002_sw?$pdp_sw20$"
+      }
+    ],
+    "material": "",
+    "fit_options": [
+      "Classic",
+      "Slim",
+      "Slim Untucked",
+      "Tall",
+      "Relaxed"
+    ],
+    "sizes": [
+      "XS",
+      "S",
+      "M",
+      "L",
+      "XL",
+      "XXL"
+    ],
+    "price": null,
+    "image_url": "https://www.jcrew.com/s7-img-facade/BE996_YD8593?$crop1254$",
+    "description": "",
+    "scraped_at": "2025-09-15T12:10:27.753898"
+  },
+  {
+    "url": "https://www.jcrew.com/p/mens/categories/clothing/shirts/broken-in-oxford/broken-in-organic-cotton-oxford-shirt/BE996?display=standard&fit=Classic&color_name=dominic-white-yellow&colorProductCode=BE996",
+    "code": "BE996",
+    "name": "Broken-in organic cotton oxford shirt",
+    "category": "Shirts",
+    "subcategory": "Oxford",
+    "colors": [
+      {
+        "name": "Vintage Lilac Oxford",
+        "code": "YD9346",
+        "productCode": "BE996",
+        "imageUrl": "https://www.jcrew.com/s7-img-facade/BE996_YD9346_sw?$pdp_sw20$"
+      },
+      {
+        "name": "Ryan White Peri",
+        "code": "YD8609",
+        "productCode": "BE996",
+        "imageUrl": "https://www.jcrew.com/s7-img-facade/BE996_YD8609_sw?$pdp_sw20$"
+      },
+      {
+        "name": "Jason Blue Multi",
+        "code": "YD8607",
+        "productCode": "BE996",
+        "imageUrl": "https://www.jcrew.com/s7-img-facade/BE996_YD8607_sw?$pdp_sw20$"
+      },
+      {
+        "name": "Jarvis White Brown",
+        "code": "YD8593",
+        "productCode": "BE996",
+        "imageUrl": "https://www.jcrew.com/s7-img-facade/BE996_YD8593_sw?$pdp_sw20$"
+      },
+      {
+        "name": "Jarvis White Black",
+        "code": "YD8591",
+        "productCode": "BE996",
+        "imageUrl": "https://www.jcrew.com/s7-img-facade/BE996_YD8591_sw?$pdp_sw20$"
+      },
+      {
+        "name": "Lawrence Navy Red Green",
+        "code": "YD8179",
+        "productCode": "BE996",
+        "imageUrl": "https://www.jcrew.com/s7-img-facade/BE996_YD8179_sw?$pdp_sw20$"
+      },
+      {
+        "name": "Dominic White Yellow",
+        "code": "YD7822",
+        "productCode": "BE996",
+        "imageUrl": "https://www.jcrew.com/s7-img-facade/BE996_YD7822_sw?$pdp_sw20$"
+      },
+      {
+        "name": "Dominic White Lavender",
+        "code": "YD7821",
+        "productCode": "BE996",
+        "imageUrl": "https://www.jcrew.com/s7-img-facade/BE996_YD7821_sw?$pdp_sw20$"
+      },
+      {
+        "name": "Ray White Multi",
+        "code": "YD7734",
+        "productCode": "BE996",
+        "imageUrl": "https://www.jcrew.com/s7-img-facade/BE996_YD7734_sw?$pdp_sw20$"
+      },
+      {
+        "name": "Pale Rose Oxford",
+        "code": "YD7382",
+        "productCode": "BE996",
+        "imageUrl": "https://www.jcrew.com/s7-img-facade/BE996_YD7382_sw?$pdp_sw20$"
+      },
+      {
+        "name": "Dominic White Green",
+        "code": "YD7306",
+        "productCode": "BE996",
+        "imageUrl": "https://www.jcrew.com/s7-img-facade/BE996_YD7306_sw?$pdp_sw20$"
+      },
+      {
+        "name": "Championship Green Wt",
+        "code": "YD4460",
+        "productCode": "BE996",
+        "imageUrl": "https://www.jcrew.com/s7-img-facade/BE996_YD4460_sw?$pdp_sw20$"
+      },
+      {
+        "name": "University Stripe Rain",
+        "code": "WX0651",
+        "productCode": "BE996",
+        "imageUrl": "https://www.jcrew.com/s7-img-facade/BE996_WX0651_sw?$pdp_sw20$"
+      },
+      {
+        "name": "Raincoat Blue",
+        "code": "WX0596",
+        "productCode": "BE996",
+        "imageUrl": "https://www.jcrew.com/s7-img-facade/BE996_WX0596_sw?$pdp_sw20$"
+      },
+      {
+        "name": "White",
+        "code": "WT0002",
+        "productCode": "BE996",
+        "imageUrl": "https://www.jcrew.com/s7-img-facade/BE996_WT0002_sw?$pdp_sw20$"
+      }
+    ],
+    "material": "",
+    "fit_options": [
+      "Classic",
+      "Slim",
+      "Slim Untucked",
+      "Tall",
+      "Relaxed"
+    ],
+    "sizes": [
+      "XS",
+      "S",
+      "M",
+      "L",
+      "XL",
+      "XXL"
+    ],
+    "price": null,
+    "image_url": "https://www.jcrew.com/s7-img-facade/BE996_YD7822?$crop1254$",
+    "description": "",
+    "scraped_at": "2025-09-15T12:10:33.191473"
+  },
+  {
+    "url": "https://www.jcrew.com/p/mens/categories/clothing/shirts/broken-in-oxford/broken-in-organic-cotton-oxford-shirt/BE996?display=standard&fit=Classic&color_name=pale-rose-oxford&colorProductCode=BE996",
+    "code": "BE996",
+    "name": "Broken-in organic cotton oxford shirt",
+    "category": "Shirts",
+    "subcategory": "Oxford",
+    "colors": [
+      {
+        "name": "Vintage Lilac Oxford",
+        "code": "YD9346",
+        "productCode": "BE996",
+        "imageUrl": "https://www.jcrew.com/s7-img-facade/BE996_YD9346_sw?$pdp_sw20$"
+      },
+      {
+        "name": "Ryan White Peri",
+        "code": "YD8609",
+        "productCode": "BE996",
+        "imageUrl": "https://www.jcrew.com/s7-img-facade/BE996_YD8609_sw?$pdp_sw20$"
+      },
+      {
+        "name": "Jason Blue Multi",
+        "code": "YD8607",
+        "productCode": "BE996",
+        "imageUrl": "https://www.jcrew.com/s7-img-facade/BE996_YD8607_sw?$pdp_sw20$"
+      },
+      {
+        "name": "Jarvis White Brown",
+        "code": "YD8593",
+        "productCode": "BE996",
+        "imageUrl": "https://www.jcrew.com/s7-img-facade/BE996_YD8593_sw?$pdp_sw20$"
+      },
+      {
+        "name": "Jarvis White Black",
+        "code": "YD8591",
+        "productCode": "BE996",
+        "imageUrl": "https://www.jcrew.com/s7-img-facade/BE996_YD8591_sw?$pdp_sw20$"
+      },
+      {
+        "name": "Lawrence Navy Red Green",
+        "code": "YD8179",
+        "productCode": "BE996",
+        "imageUrl": "https://www.jcrew.com/s7-img-facade/BE996_YD8179_sw?$pdp_sw20$"
+      },
+      {
+        "name": "Dominic White Yellow",
+        "code": "YD7822",
+        "productCode": "BE996",
+        "imageUrl": "https://www.jcrew.com/s7-img-facade/BE996_YD7822_sw?$pdp_sw20$"
+      },
+      {
+        "name": "Dominic White Lavender",
+        "code": "YD7821",
+        "productCode": "BE996",
+        "imageUrl": "https://www.jcrew.com/s7-img-facade/BE996_YD7821_sw?$pdp_sw20$"
+      },
+      {
+        "name": "Ray White Multi",
+        "code": "YD7734",
+        "productCode": "BE996",
+        "imageUrl": "https://www.jcrew.com/s7-img-facade/BE996_YD7734_sw?$pdp_sw20$"
+      },
+      {
+        "name": "Pale Rose Oxford",
+        "code": "YD7382",
+        "productCode": "BE996",
+        "imageUrl": "https://www.jcrew.com/s7-img-facade/BE996_YD7382_sw?$pdp_sw20$"
+      },
+      {
+        "name": "Dominic White Green",
+        "code": "YD7306",
+        "productCode": "BE996",
+        "imageUrl": "https://www.jcrew.com/s7-img-facade/BE996_YD7306_sw?$pdp_sw20$"
+      },
+      {
+        "name": "Championship Green Wt",
+        "code": "YD4460",
+        "productCode": "BE996",
+        "imageUrl": "https://www.jcrew.com/s7-img-facade/BE996_YD4460_sw?$pdp_sw20$"
+      },
+      {
+        "name": "University Stripe Rain",
+        "code": "WX0651",
+        "productCode": "BE996",
+        "imageUrl": "https://www.jcrew.com/s7-img-facade/BE996_WX0651_sw?$pdp_sw20$"
+      },
+      {
+        "name": "Raincoat Blue",
+        "code": "WX0596",
+        "productCode": "BE996",
+        "imageUrl": "https://www.jcrew.com/s7-img-facade/BE996_WX0596_sw?$pdp_sw20$"
+      },
+      {
+        "name": "White",
+        "code": "WT0002",
+        "productCode": "BE996",
+        "imageUrl": "https://www.jcrew.com/s7-img-facade/BE996_WT0002_sw?$pdp_sw20$"
+      }
+    ],
+    "material": "",
+    "fit_options": [
+      "Classic",
+      "Slim",
+      "Slim Untucked",
+      "Tall",
+      "Relaxed"
+    ],
+    "sizes": [
+      "XS",
+      "S",
+      "M",
+      "L",
+      "XL",
+      "XXL"
+    ],
+    "price": null,
+    "image_url": "https://www.jcrew.com/s7-img-facade/BE996_YD7382?$crop1254$",
+    "description": "",
+    "scraped_at": "2025-09-15T12:10:42.014619"
+  },
+  {
+    "url": "https://www.jcrew.com/m/mens/categories/clothing/shirts/broken-in-oxford/broken-in-organic-cotton-oxford-shirt/MP235",
+    "code": "MP235",
+    "name": "Short-sleeve Broken-in organic cotton oxford shirt",
+    "category": "Shirts",
+    "subcategory": "Oxford",
+    "colors": [
+      {
+        "name": "White",
+        "code": "WT0002",
+        "productCode": "BE986",
+        "imageUrl": "https://www.jcrew.com/s7-img-facade/BE986_WT0002_sw?$pdp_sw20$"
+      }
+    ],
+    "material": "",
+    "fit_options": [
+      "Classic",
+      "Slim",
+      "Tall"
+    ],
+    "sizes": [
+      "XS",
+      "S",
+      "M",
+      "L",
+      "XL",
+      "XXL"
+    ],
+    "price": null,
+    "image_url": "https://www.jcrew.com/s7-img-facade/BE986_WT0002?$crop1254$",
+    "description": "",
+    "scraped_at": "2025-09-15T12:10:45.968712"
+  },
+  {
+    "url": "https://www.jcrew.com/p/mens/categories/clothing/shirts/casual/broken-in-oxford-shirt/MP235",
+    "code": "MP235",
+    "name": "men's casual shirts | J.Crew",
+    "category": "Shirts",
+    "subcategory": "Casual",
+    "colors": [
+      {
+        "name": "Default"
+      }
+    ],
+    "material": "",
+    "fit_options": [
+      "Tall",
+      "Giant",
+      "Classic"
+    ],
+    "sizes": [
+      "XS",
+      "S",
+      "M",
+      "L",
+      "XL",
+      "XXL"
+    ],
+    "price": null,
+    "image_url": "https://www.jcrew.com/next-static/images/jcrew/jc-default.jpg",
+    "description": "",
+    "scraped_at": "2025-09-15T12:10:58.713002"
+  },
+  {
+    "url": "https://www.jcrew.com/p/mens/categories/clothing/shirts/broken-in-oxford/broken-in-organic-cotton-oxford-shirt/BE996?display=standard&fit=Classic&color_name=dominic-white-green&colorProductCode=BE996",
+    "code": "BE996",
+    "name": "Broken-in organic cotton oxford shirt",
+    "category": "Shirts",
+    "subcategory": "Oxford",
+    "colors": [
+      {
+        "name": "Vintage Lilac Oxford",
+        "code": "YD9346",
+        "productCode": "BE996",
+        "imageUrl": "https://www.jcrew.com/s7-img-facade/BE996_YD9346_sw?$pdp_sw20$"
+      },
+      {
+        "name": "Ryan White Peri",
+        "code": "YD8609",
+        "productCode": "BE996",
+        "imageUrl": "https://www.jcrew.com/s7-img-facade/BE996_YD8609_sw?$pdp_sw20$"
+      },
+      {
+        "name": "Jason Blue Multi",
+        "code": "YD8607",
+        "productCode": "BE996",
+        "imageUrl": "https://www.jcrew.com/s7-img-facade/BE996_YD8607_sw?$pdp_sw20$"
+      },
+      {
+        "name": "Jarvis White Brown",
+        "code": "YD8593",
+        "productCode": "BE996",
+        "imageUrl": "https://www.jcrew.com/s7-img-facade/BE996_YD8593_sw?$pdp_sw20$"
+      },
+      {
+        "name": "Jarvis White Black",
+        "code": "YD8591",
+        "productCode": "BE996",
+        "imageUrl": "https://www.jcrew.com/s7-img-facade/BE996_YD8591_sw?$pdp_sw20$"
+      },
+      {
+        "name": "Lawrence Navy Red Green",
+        "code": "YD8179",
+        "productCode": "BE996",
+        "imageUrl": "https://www.jcrew.com/s7-img-facade/BE996_YD8179_sw?$pdp_sw20$"
+      },
+      {
+        "name": "Dominic White Yellow",
+        "code": "YD7822",
+        "productCode": "BE996",
+        "imageUrl": "https://www.jcrew.com/s7-img-facade/BE996_YD7822_sw?$pdp_sw20$"
+      },
+      {
+        "name": "Dominic White Lavender",
+        "code": "YD7821",
+        "productCode": "BE996",
+        "imageUrl": "https://www.jcrew.com/s7-img-facade/BE996_YD7821_sw?$pdp_sw20$"
+      },
+      {
+        "name": "Ray White Multi",
+        "code": "YD7734",
+        "productCode": "BE996",
+        "imageUrl": "https://www.jcrew.com/s7-img-facade/BE996_YD7734_sw?$pdp_sw20$"
+      },
+      {
+        "name": "Pale Rose Oxford",
+        "code": "YD7382",
+        "productCode": "BE996",
+        "imageUrl": "https://www.jcrew.com/s7-img-facade/BE996_YD7382_sw?$pdp_sw20$"
+      },
+      {
+        "name": "Dominic White Green",
+        "code": "YD7306",
+        "productCode": "BE996",
+        "imageUrl": "https://www.jcrew.com/s7-img-facade/BE996_YD7306_sw?$pdp_sw20$"
+      },
+      {
+        "name": "Championship Green Wt",
+        "code": "YD4460",
+        "productCode": "BE996",
+        "imageUrl": "https://www.jcrew.com/s7-img-facade/BE996_YD4460_sw?$pdp_sw20$"
+      },
+      {
+        "name": "University Stripe Rain",
+        "code": "WX0651",
+        "productCode": "BE996",
+        "imageUrl": "https://www.jcrew.com/s7-img-facade/BE996_WX0651_sw?$pdp_sw20$"
+      },
+      {
+        "name": "Raincoat Blue",
+        "code": "WX0596",
+        "productCode": "BE996",
+        "imageUrl": "https://www.jcrew.com/s7-img-facade/BE996_WX0596_sw?$pdp_sw20$"
+      },
+      {
+        "name": "White",
+        "code": "WT0002",
+        "productCode": "BE996",
+        "imageUrl": "https://www.jcrew.com/s7-img-facade/BE996_WT0002_sw?$pdp_sw20$"
+      }
+    ],
+    "material": "",
+    "fit_options": [
+      "Classic",
+      "Slim",
+      "Slim Untucked",
+      "Tall",
+      "Relaxed"
+    ],
+    "sizes": [
+      "XS",
+      "S",
+      "M",
+      "L",
+      "XL",
+      "XXL"
+    ],
+    "price": null,
+    "image_url": "https://www.jcrew.com/s7-img-facade/BE996_YD7306?$crop1254$",
+    "description": "",
+    "scraped_at": "2025-09-15T12:11:04.200712"
+  },
+  {
+    "url": "https://www.jcrew.com/p/mens/categories/clothing/shirts/broken-in-oxford/broken-in-organic-cotton-oxford-shirt/CM226",
+    "code": "CM226",
+    "name": "Classic oxford two-pocket workshirt",
+    "category": "Shirts",
+    "subcategory": "Oxford",
+    "colors": [
+      {
+        "name": "Van Walnut White",
+        "code": "YD9386",
+        "productCode": "CM226",
+        "imageUrl": "https://www.jcrew.com/s7-img-facade/CM226_YD9386_sw?$pdp_sw20$"
+      },
+      {
+        "name": "Miro Navy Red",
+        "code": "YD8637",
+        "productCode": "CM226",
+        "imageUrl": "https://www.jcrew.com/s7-img-facade/CM226_YD8637_sw?$pdp_sw20$"
+      },
+      {
+        "name": "Eric Stripe White Blue",
+        "code": "YD8636",
+        "productCode": "CM226",
+        "imageUrl": "https://www.jcrew.com/s7-img-facade/CM226_YD8636_sw?$pdp_sw20$"
+      }
+    ],
+    "material": "",
+    "fit_options": [
+      "Tall",
+      "Classic"
+    ],
+    "sizes": [
+      "XS",
+      "S",
+      "M",
+      "L",
+      "XL",
+      "XXL"
+    ],
+    "price": null,
+    "image_url": "https://www.jcrew.com/s7-img-facade/CM226_YD9386?$crop1254$",
+    "description": "",
+    "scraped_at": "2025-09-15T12:11:08.205117"
+  },
+  {
+    "url": "https://www.jcrew.com/p/mens/categories/clothing/shirts/broken-in-oxford/broken-in-organic-cotton-oxford-shirt/BE996?display=standard&fit=Classic&color_name=lawrence-navy-red-green&colorProductCode=BE996",
+    "code": "BE996",
+    "name": "Broken-in organic cotton oxford shirt",
+    "category": "Shirts",
+    "subcategory": "Oxford",
+    "colors": [
+      {
+        "name": "Vintage Lilac Oxford",
+        "code": "YD9346",
+        "productCode": "BE996",
+        "imageUrl": "https://www.jcrew.com/s7-img-facade/BE996_YD9346_sw?$pdp_sw20$"
+      },
+      {
+        "name": "Ryan White Peri",
+        "code": "YD8609",
+        "productCode": "BE996",
+        "imageUrl": "https://www.jcrew.com/s7-img-facade/BE996_YD8609_sw?$pdp_sw20$"
+      },
+      {
+        "name": "Jason Blue Multi",
+        "code": "YD8607",
+        "productCode": "BE996",
+        "imageUrl": "https://www.jcrew.com/s7-img-facade/BE996_YD8607_sw?$pdp_sw20$"
+      },
+      {
+        "name": "Jarvis White Brown",
+        "code": "YD8593",
+        "productCode": "BE996",
+        "imageUrl": "https://www.jcrew.com/s7-img-facade/BE996_YD8593_sw?$pdp_sw20$"
+      },
+      {
+        "name": "Jarvis White Black",
+        "code": "YD8591",
+        "productCode": "BE996",
+        "imageUrl": "https://www.jcrew.com/s7-img-facade/BE996_YD8591_sw?$pdp_sw20$"
+      },
+      {
+        "name": "Lawrence Navy Red Green",
+        "code": "YD8179",
+        "productCode": "BE996",
+        "imageUrl": "https://www.jcrew.com/s7-img-facade/BE996_YD8179_sw?$pdp_sw20$"
+      },
+      {
+        "name": "Dominic White Yellow",
+        "code": "YD7822",
+        "productCode": "BE996",
+        "imageUrl": "https://www.jcrew.com/s7-img-facade/BE996_YD7822_sw?$pdp_sw20$"
+      },
+      {
+        "name": "Dominic White Lavender",
+        "code": "YD7821",
+        "productCode": "BE996",
+        "imageUrl": "https://www.jcrew.com/s7-img-facade/BE996_YD7821_sw?$pdp_sw20$"
+      },
+      {
+        "name": "Ray White Multi",
+        "code": "YD7734",
+        "productCode": "BE996",
+        "imageUrl": "https://www.jcrew.com/s7-img-facade/BE996_YD7734_sw?$pdp_sw20$"
+      },
+      {
+        "name": "Pale Rose Oxford",
+        "code": "YD7382",
+        "productCode": "BE996",
+        "imageUrl": "https://www.jcrew.com/s7-img-facade/BE996_YD7382_sw?$pdp_sw20$"
+      },
+      {
+        "name": "Dominic White Green",
+        "code": "YD7306",
+        "productCode": "BE996",
+        "imageUrl": "https://www.jcrew.com/s7-img-facade/BE996_YD7306_sw?$pdp_sw20$"
+      },
+      {
+        "name": "Championship Green Wt",
+        "code": "YD4460",
+        "productCode": "BE996",
+        "imageUrl": "https://www.jcrew.com/s7-img-facade/BE996_YD4460_sw?$pdp_sw20$"
+      },
+      {
+        "name": "University Stripe Rain",
+        "code": "WX0651",
+        "productCode": "BE996",
+        "imageUrl": "https://www.jcrew.com/s7-img-facade/BE996_WX0651_sw?$pdp_sw20$"
+      },
+      {
+        "name": "Raincoat Blue",
+        "code": "WX0596",
+        "productCode": "BE996",
+        "imageUrl": "https://www.jcrew.com/s7-img-facade/BE996_WX0596_sw?$pdp_sw20$"
+      },
+      {
+        "name": "White",
+        "code": "WT0002",
+        "productCode": "BE996",
+        "imageUrl": "https://www.jcrew.com/s7-img-facade/BE996_WT0002_sw?$pdp_sw20$"
+      }
+    ],
+    "material": "",
+    "fit_options": [
+      "Classic",
+      "Slim",
+      "Slim Untucked",
+      "Tall",
+      "Relaxed"
+    ],
+    "sizes": [
+      "XS",
+      "S",
+      "M",
+      "L",
+      "XL",
+      "XXL"
+    ],
+    "price": null,
+    "image_url": "https://www.jcrew.com/s7-img-facade/BE996_YD8179?$crop1254$",
+    "description": "",
+    "scraped_at": "2025-09-15T12:11:13.361134"
+  },
+  {
+    "url": "https://www.jcrew.com/p/mens/categories/clothing/shirts/broken-in-oxford/broken-in-organic-cotton-oxford-shirt/BE996?display=standard&fit=Classic&color_name=university-stripe-rain&colorProductCode=BE996",
+    "code": "BE996",
+    "name": "Broken-in organic cotton oxford shirt",
+    "category": "Shirts",
+    "subcategory": "Oxford",
+    "colors": [
+      {
+        "name": "Vintage Lilac Oxford",
+        "code": "YD9346",
+        "productCode": "BE996",
+        "imageUrl": "https://www.jcrew.com/s7-img-facade/BE996_YD9346_sw?$pdp_sw20$"
+      },
+      {
+        "name": "Ryan White Peri",
+        "code": "YD8609",
+        "productCode": "BE996",
+        "imageUrl": "https://www.jcrew.com/s7-img-facade/BE996_YD8609_sw?$pdp_sw20$"
+      },
+      {
+        "name": "Jason Blue Multi",
+        "code": "YD8607",
+        "productCode": "BE996",
+        "imageUrl": "https://www.jcrew.com/s7-img-facade/BE996_YD8607_sw?$pdp_sw20$"
+      },
+      {
+        "name": "Jarvis White Brown",
+        "code": "YD8593",
+        "productCode": "BE996",
+        "imageUrl": "https://www.jcrew.com/s7-img-facade/BE996_YD8593_sw?$pdp_sw20$"
+      },
+      {
+        "name": "Jarvis White Black",
+        "code": "YD8591",
+        "productCode": "BE996",
+        "imageUrl": "https://www.jcrew.com/s7-img-facade/BE996_YD8591_sw?$pdp_sw20$"
+      },
+      {
+        "name": "Lawrence Navy Red Green",
+        "code": "YD8179",
+        "productCode": "BE996",
+        "imageUrl": "https://www.jcrew.com/s7-img-facade/BE996_YD8179_sw?$pdp_sw20$"
+      },
+      {
+        "name": "Dominic White Yellow",
+        "code": "YD7822",
+        "productCode": "BE996",
+        "imageUrl": "https://www.jcrew.com/s7-img-facade/BE996_YD7822_sw?$pdp_sw20$"
+      },
+      {
+        "name": "Dominic White Lavender",
+        "code": "YD7821",
+        "productCode": "BE996",
+        "imageUrl": "https://www.jcrew.com/s7-img-facade/BE996_YD7821_sw?$pdp_sw20$"
+      },
+      {
+        "name": "Ray White Multi",
+        "code": "YD7734",
+        "productCode": "BE996",
+        "imageUrl": "https://www.jcrew.com/s7-img-facade/BE996_YD7734_sw?$pdp_sw20$"
+      },
+      {
+        "name": "Pale Rose Oxford",
+        "code": "YD7382",
+        "productCode": "BE996",
+        "imageUrl": "https://www.jcrew.com/s7-img-facade/BE996_YD7382_sw?$pdp_sw20$"
+      },
+      {
+        "name": "Dominic White Green",
+        "code": "YD7306",
+        "productCode": "BE996",
+        "imageUrl": "https://www.jcrew.com/s7-img-facade/BE996_YD7306_sw?$pdp_sw20$"
+      },
+      {
+        "name": "Championship Green Wt",
+        "code": "YD4460",
+        "productCode": "BE996",
+        "imageUrl": "https://www.jcrew.com/s7-img-facade/BE996_YD4460_sw?$pdp_sw20$"
+      },
+      {
+        "name": "University Stripe Rain",
+        "code": "WX0651",
+        "productCode": "BE996",
+        "imageUrl": "https://www.jcrew.com/s7-img-facade/BE996_WX0651_sw?$pdp_sw20$"
+      },
+      {
+        "name": "Raincoat Blue",
+        "code": "WX0596",
+        "productCode": "BE996",
+        "imageUrl": "https://www.jcrew.com/s7-img-facade/BE996_WX0596_sw?$pdp_sw20$"
+      },
+      {
+        "name": "White",
+        "code": "WT0002",
+        "productCode": "BE996",
+        "imageUrl": "https://www.jcrew.com/s7-img-facade/BE996_WT0002_sw?$pdp_sw20$"
+      }
+    ],
+    "material": "",
+    "fit_options": [
+      "Classic",
+      "Slim",
+      "Slim Untucked",
+      "Tall",
+      "Relaxed"
+    ],
+    "sizes": [
+      "XS",
+      "S",
+      "M",
+      "L",
+      "XL",
+      "XXL"
+    ],
+    "price": null,
+    "image_url": "https://www.jcrew.com/s7-img-facade/BE996_WX0651?$crop1254$",
+    "description": "",
+    "scraped_at": "2025-09-15T12:11:19.080952"
+  },
+  {
+    "url": "https://www.jcrew.com/p/mens/categories/clothing/shirts/broken-in-oxford/broken-in-organic-cotton-oxford-shirt/BE996?display=standard&fit=Classic&color_name=white&colorProductCode=BE996",
+    "code": "BE996",
+    "name": "Broken-in organic cotton oxford shirt",
+    "category": "Shirts",
+    "subcategory": "Oxford",
+    "colors": [
+      {
+        "name": "Vintage Lilac Oxford",
+        "code": "YD9346",
+        "productCode": "BE996",
+        "imageUrl": "https://www.jcrew.com/s7-img-facade/BE996_YD9346_sw?$pdp_sw20$"
+      },
+      {
+        "name": "Ryan White Peri",
+        "code": "YD8609",
+        "productCode": "BE996",
+        "imageUrl": "https://www.jcrew.com/s7-img-facade/BE996_YD8609_sw?$pdp_sw20$"
+      },
+      {
+        "name": "Jason Blue Multi",
+        "code": "YD8607",
+        "productCode": "BE996",
+        "imageUrl": "https://www.jcrew.com/s7-img-facade/BE996_YD8607_sw?$pdp_sw20$"
+      },
+      {
+        "name": "Jarvis White Brown",
+        "code": "YD8593",
+        "productCode": "BE996",
+        "imageUrl": "https://www.jcrew.com/s7-img-facade/BE996_YD8593_sw?$pdp_sw20$"
+      },
+      {
+        "name": "Jarvis White Black",
+        "code": "YD8591",
+        "productCode": "BE996",
+        "imageUrl": "https://www.jcrew.com/s7-img-facade/BE996_YD8591_sw?$pdp_sw20$"
+      },
+      {
+        "name": "Lawrence Navy Red Green",
+        "code": "YD8179",
+        "productCode": "BE996",
+        "imageUrl": "https://www.jcrew.com/s7-img-facade/BE996_YD8179_sw?$pdp_sw20$"
+      },
+      {
+        "name": "Dominic White Yellow",
+        "code": "YD7822",
+        "productCode": "BE996",
+        "imageUrl": "https://www.jcrew.com/s7-img-facade/BE996_YD7822_sw?$pdp_sw20$"
+      },
+      {
+        "name": "Dominic White Lavender",
+        "code": "YD7821",
+        "productCode": "BE996",
+        "imageUrl": "https://www.jcrew.com/s7-img-facade/BE996_YD7821_sw?$pdp_sw20$"
+      },
+      {
+        "name": "Ray White Multi",
+        "code": "YD7734",
+        "productCode": "BE996",
+        "imageUrl": "https://www.jcrew.com/s7-img-facade/BE996_YD7734_sw?$pdp_sw20$"
+      },
+      {
+        "name": "Pale Rose Oxford",
+        "code": "YD7382",
+        "productCode": "BE996",
+        "imageUrl": "https://www.jcrew.com/s7-img-facade/BE996_YD7382_sw?$pdp_sw20$"
+      },
+      {
+        "name": "Dominic White Green",
+        "code": "YD7306",
+        "productCode": "BE996",
+        "imageUrl": "https://www.jcrew.com/s7-img-facade/BE996_YD7306_sw?$pdp_sw20$"
+      },
+      {
+        "name": "Championship Green Wt",
+        "code": "YD4460",
+        "productCode": "BE996",
+        "imageUrl": "https://www.jcrew.com/s7-img-facade/BE996_YD4460_sw?$pdp_sw20$"
+      },
+      {
+        "name": "University Stripe Rain",
+        "code": "WX0651",
+        "productCode": "BE996",
+        "imageUrl": "https://www.jcrew.com/s7-img-facade/BE996_WX0651_sw?$pdp_sw20$"
+      },
+      {
+        "name": "Raincoat Blue",
+        "code": "WX0596",
+        "productCode": "BE996",
+        "imageUrl": "https://www.jcrew.com/s7-img-facade/BE996_WX0596_sw?$pdp_sw20$"
+      },
+      {
+        "name": "White",
+        "code": "WT0002",
+        "productCode": "BE996",
+        "imageUrl": "https://www.jcrew.com/s7-img-facade/BE996_WT0002_sw?$pdp_sw20$"
+      }
+    ],
+    "material": "",
+    "fit_options": [
+      "Classic",
+      "Slim",
+      "Slim Untucked",
+      "Tall",
+      "Relaxed"
+    ],
+    "sizes": [
+      "XS",
+      "S",
+      "M",
+      "L",
+      "XL",
+      "XXL"
+    ],
+    "price": null,
+    "image_url": "https://www.jcrew.com/s7-img-facade/BE996_WT0002?$crop1254$",
+    "description": "",
+    "scraped_at": "2025-09-15T12:11:22.617221"
+  },
+  {
+    "url": "https://www.jcrew.com/p/mens/categories/clothing/shirts/broken-in-oxford/classic-oxford-two-pocket-workshirt/CM226?display=standard&fit=Classic&color_name=van-walnut-white&colorProductCode=CM226",
+    "code": "CM226",
+    "name": "Classic oxford two-pocket workshirt",
+    "category": "Shirts",
+    "subcategory": "Oxford",
+    "colors": [
+      {
+        "name": "Van Walnut White",
+        "code": "YD9386",
+        "productCode": "CM226",
+        "imageUrl": "https://www.jcrew.com/s7-img-facade/CM226_YD9386_sw?$pdp_sw20$"
+      },
+      {
+        "name": "Miro Navy Red",
+        "code": "YD8637",
+        "productCode": "CM226",
+        "imageUrl": "https://www.jcrew.com/s7-img-facade/CM226_YD8637_sw?$pdp_sw20$"
+      },
+      {
+        "name": "Eric Stripe White Blue",
+        "code": "YD8636",
+        "productCode": "CM226",
+        "imageUrl": "https://www.jcrew.com/s7-img-facade/CM226_YD8636_sw?$pdp_sw20$"
+      }
+    ],
+    "material": "",
+    "fit_options": [
+      "Tall",
+      "Classic"
+    ],
+    "sizes": [
+      "XS",
+      "S",
+      "M",
+      "L",
+      "XL",
+      "XXL"
+    ],
+    "price": null,
+    "image_url": "https://www.jcrew.com/s7-img-facade/CM226_YD9386?$crop1254$",
+    "description": "",
+    "scraped_at": "2025-09-15T12:11:27.343638"
+  },
+  {
+    "url": "https://www.jcrew.com/m/mens/categories/clothing/shirts/broken-in-oxford/broken-in-organic-cotton-oxford-shirt/BE996",
+    "code": "BE996",
+    "name": "Broken-in organic cotton oxford shirt",
+    "category": "Shirts",
+    "subcategory": "Oxford",
+    "colors": [
+      "Default"
+    ],
+    "material": "",
+    "fit_options": [
+      "Classic",
+      "Slim",
+      "Slim Untucked",
+      "Tall",
+      "Relaxed"
+    ],
+    "sizes": [
+      "XS",
+      "S",
+      "M",
+      "L",
+      "XL",
+      "XXL"
+    ],
+    "price": null,
+    "image_url": "https://www.jcrew.com/s7-img-facade/BE996_YD7734?$crop1254$",
+    "description": "",
+    "scraped_at": "2025-09-15T12:11:29.485708"
+  },
+  {
+    "url": "https://www.jcrew.com/p/mens/categories/clothing/shirts/broken-in-oxford/broken-in-organic-cotton-oxford-shirt/BE996?display=standard&fit=Classic&color_name=ryan-white-peri&colorProductCode=BE996",
+    "code": "BE996",
+    "name": "Broken-in organic cotton oxford shirt",
+    "category": "Shirts",
+    "subcategory": "Oxford",
+    "colors": [
+      {
+        "name": "Vintage Lilac Oxford",
+        "code": "YD9346",
+        "productCode": "BE996",
+        "imageUrl": "https://www.jcrew.com/s7-img-facade/BE996_YD9346_sw?$pdp_sw20$"
+      },
+      {
+        "name": "Ryan White Peri",
+        "code": "YD8609",
+        "productCode": "BE996",
+        "imageUrl": "https://www.jcrew.com/s7-img-facade/BE996_YD8609_sw?$pdp_sw20$"
+      },
+      {
+        "name": "Jason Blue Multi",
+        "code": "YD8607",
+        "productCode": "BE996",
+        "imageUrl": "https://www.jcrew.com/s7-img-facade/BE996_YD8607_sw?$pdp_sw20$"
+      },
+      {
+        "name": "Jarvis White Brown",
+        "code": "YD8593",
+        "productCode": "BE996",
+        "imageUrl": "https://www.jcrew.com/s7-img-facade/BE996_YD8593_sw?$pdp_sw20$"
+      },
+      {
+        "name": "Jarvis White Black",
+        "code": "YD8591",
+        "productCode": "BE996",
+        "imageUrl": "https://www.jcrew.com/s7-img-facade/BE996_YD8591_sw?$pdp_sw20$"
+      },
+      {
+        "name": "Lawrence Navy Red Green",
+        "code": "YD8179",
+        "productCode": "BE996",
+        "imageUrl": "https://www.jcrew.com/s7-img-facade/BE996_YD8179_sw?$pdp_sw20$"
+      },
+      {
+        "name": "Dominic White Yellow",
+        "code": "YD7822",
+        "productCode": "BE996",
+        "imageUrl": "https://www.jcrew.com/s7-img-facade/BE996_YD7822_sw?$pdp_sw20$"
+      },
+      {
+        "name": "Dominic White Lavender",
+        "code": "YD7821",
+        "productCode": "BE996",
+        "imageUrl": "https://www.jcrew.com/s7-img-facade/BE996_YD7821_sw?$pdp_sw20$"
+      },
+      {
+        "name": "Ray White Multi",
+        "code": "YD7734",
+        "productCode": "BE996",
+        "imageUrl": "https://www.jcrew.com/s7-img-facade/BE996_YD7734_sw?$pdp_sw20$"
+      },
+      {
+        "name": "Pale Rose Oxford",
+        "code": "YD7382",
+        "productCode": "BE996",
+        "imageUrl": "https://www.jcrew.com/s7-img-facade/BE996_YD7382_sw?$pdp_sw20$"
+      },
+      {
+        "name": "Dominic White Green",
+        "code": "YD7306",
+        "productCode": "BE996",
+        "imageUrl": "https://www.jcrew.com/s7-img-facade/BE996_YD7306_sw?$pdp_sw20$"
+      },
+      {
+        "name": "Championship Green Wt",
+        "code": "YD4460",
+        "productCode": "BE996",
+        "imageUrl": "https://www.jcrew.com/s7-img-facade/BE996_YD4460_sw?$pdp_sw20$"
+      },
+      {
+        "name": "University Stripe Rain",
+        "code": "WX0651",
+        "productCode": "BE996",
+        "imageUrl": "https://www.jcrew.com/s7-img-facade/BE996_WX0651_sw?$pdp_sw20$"
+      },
+      {
+        "name": "Raincoat Blue",
+        "code": "WX0596",
+        "productCode": "BE996",
+        "imageUrl": "https://www.jcrew.com/s7-img-facade/BE996_WX0596_sw?$pdp_sw20$"
+      },
+      {
+        "name": "White",
+        "code": "WT0002",
+        "productCode": "BE996",
+        "imageUrl": "https://www.jcrew.com/s7-img-facade/BE996_WT0002_sw?$pdp_sw20$"
+      }
+    ],
+    "material": "",
+    "fit_options": [
+      "Classic",
+      "Slim",
+      "Slim Untucked",
+      "Tall",
+      "Relaxed"
+    ],
+    "sizes": [
+      "XS",
+      "S",
+      "M",
+      "L",
+      "XL",
+      "XXL"
+    ],
+    "price": null,
+    "image_url": "https://www.jcrew.com/s7-img-facade/BE996_YD8609?$crop1254$",
+    "description": "",
+    "scraped_at": "2025-09-15T12:11:34.727952"
+  },
+  {
+    "url": "https://www.jcrew.com/p/mens/categories/clothing/shirts/broken-in-oxford/broken-in-organic-cotton-oxford-shirt/BE996?display=standard&fit=Classic&color_name=jason-blue-multi&colorProductCode=BE996",
+    "code": "BE996",
+    "name": "Be996?Display=Standard&Fit=Classic&Color_Name=Jason Blue Multi&Colorproductcode=Be996",
+    "category": "Shirts",
+    "subcategory": "Oxford",
+    "colors": [
+      "Default"
+    ],
+    "material": "",
+    "fit_options": [],
+    "sizes": [
+      "XS",
+      "S",
+      "M",
+      "L",
+      "XL",
+      "XXL"
+    ],
+    "price": null,
+    "image_url": "",
+    "description": "",
+    "scraped_at": "2025-09-15T12:11:46.918096"
+  },
+  {
+    "url": "https://www.jcrew.com/p/mens/categories/clothing/shirts/broken-in-oxford/broken-in-organic-cotton-oxford-shirt/BE996?display=standard&fit=Classic&color_name=vintage-lilac-oxford&colorProductCode=BE996",
+    "code": "BE996",
+    "name": "Broken-in organic cotton oxford shirt",
+    "category": "Shirts",
+    "subcategory": "Oxford",
+    "colors": [
+      {
+        "name": "Vintage Lilac Oxford",
+        "code": "YD9346",
+        "productCode": "BE996",
+        "imageUrl": "https://www.jcrew.com/s7-img-facade/BE996_YD9346_sw?$pdp_sw20$"
+      },
+      {
+        "name": "Ryan White Peri",
+        "code": "YD8609",
+        "productCode": "BE996",
+        "imageUrl": "https://www.jcrew.com/s7-img-facade/BE996_YD8609_sw?$pdp_sw20$"
+      },
+      {
+        "name": "Jason Blue Multi",
+        "code": "YD8607",
+        "productCode": "BE996",
+        "imageUrl": "https://www.jcrew.com/s7-img-facade/BE996_YD8607_sw?$pdp_sw20$"
+      },
+      {
+        "name": "Jarvis White Brown",
+        "code": "YD8593",
+        "productCode": "BE996",
+        "imageUrl": "https://www.jcrew.com/s7-img-facade/BE996_YD8593_sw?$pdp_sw20$"
+      },
+      {
+        "name": "Jarvis White Black",
+        "code": "YD8591",
+        "productCode": "BE996",
+        "imageUrl": "https://www.jcrew.com/s7-img-facade/BE996_YD8591_sw?$pdp_sw20$"
+      },
+      {
+        "name": "Lawrence Navy Red Green",
+        "code": "YD8179",
+        "productCode": "BE996",
+        "imageUrl": "https://www.jcrew.com/s7-img-facade/BE996_YD8179_sw?$pdp_sw20$"
+      },
+      {
+        "name": "Dominic White Yellow",
+        "code": "YD7822",
+        "productCode": "BE996",
+        "imageUrl": "https://www.jcrew.com/s7-img-facade/BE996_YD7822_sw?$pdp_sw20$"
+      },
+      {
+        "name": "Dominic White Lavender",
+        "code": "YD7821",
+        "productCode": "BE996",
+        "imageUrl": "https://www.jcrew.com/s7-img-facade/BE996_YD7821_sw?$pdp_sw20$"
+      },
+      {
+        "name": "Ray White Multi",
+        "code": "YD7734",
+        "productCode": "BE996",
+        "imageUrl": "https://www.jcrew.com/s7-img-facade/BE996_YD7734_sw?$pdp_sw20$"
+      },
+      {
+        "name": "Pale Rose Oxford",
+        "code": "YD7382",
+        "productCode": "BE996",
+        "imageUrl": "https://www.jcrew.com/s7-img-facade/BE996_YD7382_sw?$pdp_sw20$"
+      },
+      {
+        "name": "Dominic White Green",
+        "code": "YD7306",
+        "productCode": "BE996",
+        "imageUrl": "https://www.jcrew.com/s7-img-facade/BE996_YD7306_sw?$pdp_sw20$"
+      },
+      {
+        "name": "Championship Green Wt",
+        "code": "YD4460",
+        "productCode": "BE996",
+        "imageUrl": "https://www.jcrew.com/s7-img-facade/BE996_YD4460_sw?$pdp_sw20$"
+      },
+      {
+        "name": "University Stripe Rain",
+        "code": "WX0651",
+        "productCode": "BE996",
+        "imageUrl": "https://www.jcrew.com/s7-img-facade/BE996_WX0651_sw?$pdp_sw20$"
+      },
+      {
+        "name": "Raincoat Blue",
+        "code": "WX0596",
+        "productCode": "BE996",
+        "imageUrl": "https://www.jcrew.com/s7-img-facade/BE996_WX0596_sw?$pdp_sw20$"
+      },
+      {
+        "name": "White",
+        "code": "WT0002",
+        "productCode": "BE996",
+        "imageUrl": "https://www.jcrew.com/s7-img-facade/BE996_WT0002_sw?$pdp_sw20$"
+      }
+    ],
+    "material": "",
+    "fit_options": [
+      "Classic",
+      "Slim",
+      "Slim Untucked",
+      "Tall",
+      "Relaxed"
+    ],
+    "sizes": [
+      "XS",
+      "S",
+      "M",
+      "L",
+      "XL",
+      "XXL"
+    ],
+    "price": null,
+    "image_url": "https://www.jcrew.com/s7-img-facade/BE996_YD9346?$crop1254$",
+    "description": "",
+    "scraped_at": "2025-09-15T12:11:55.562350"
+  },
+  {
+    "url": "https://www.jcrew.com/p/mens/categories/clothing/shirts/broken-in-oxford/classic-oxford-two-pocket-workshirt/CM226?display=standard&fit=Classic&color_name=eric-stripe-white-blue&colorProductCode=CM226",
+    "code": "CM226",
+    "name": "Classic oxford two-pocket workshirt",
+    "category": "Shirts",
+    "subcategory": "Oxford",
+    "colors": [
+      {
+        "name": "Van Walnut White",
+        "code": "YD9386",
+        "productCode": "CM226",
+        "imageUrl": "https://www.jcrew.com/s7-img-facade/CM226_YD9386_sw?$pdp_sw20$"
+      },
+      {
+        "name": "Miro Navy Red",
+        "code": "YD8637",
+        "productCode": "CM226",
+        "imageUrl": "https://www.jcrew.com/s7-img-facade/CM226_YD8637_sw?$pdp_sw20$"
+      },
+      {
+        "name": "Eric Stripe White Blue",
+        "code": "YD8636",
+        "productCode": "CM226",
+        "imageUrl": "https://www.jcrew.com/s7-img-facade/CM226_YD8636_sw?$pdp_sw20$"
+      }
+    ],
+    "material": "",
+    "fit_options": [
+      "Tall",
+      "Classic"
+    ],
+    "sizes": [
+      "XS",
+      "S",
+      "M",
+      "L",
+      "XL",
+      "XXL"
+    ],
+    "price": null,
+    "image_url": "https://www.jcrew.com/s7-img-facade/CM226_YD8636?$crop1254$",
+    "description": "",
+    "scraped_at": "2025-09-15T12:11:59.276727"
+  }
+]

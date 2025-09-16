@@ -118,7 +118,10 @@ struct ClosetListView: View {
                 }
             }
             .onAppear {
-                loadGarments()
+                // PERFORMANCE FIX: Only load when actually visible and not already loaded
+                if garments.isEmpty && !isLoading {
+                    loadGarments()
+                }
             }
         }
     }

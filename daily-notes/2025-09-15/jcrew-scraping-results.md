@@ -57,3 +57,4 @@ Both scripts:
 - `scripts/jcrew_products_clean.csv` - Filtered valid product codes
 - `scripts/jcrew_products_full.json` - Detailed JSON data
 - `jcrew_missing_shirts_*.json` - Missing products reports
+

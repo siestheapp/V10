@@ -1490,9 +1490,15 @@ async def start_tryon_session(request: dict):
                 product_image = product_data.get('product_image', '')
                 size_options = product_data.get('sizes_available', ['XS', 'S', 'M', 'L', 'XL', 'XXL'])
                 fit_options = product_data.get('fit_options', [])
+                
+                # NO FALLBACK! Trust the database/scraper
+                # If fit_options is empty, it means this is a single-fit product
+                
                 print(f"✅ J.Crew product fetched: {product_name}")
                 if fit_options:
                     print(f"🎯 Available fit options: {fit_options}")
+                else:
+                    print(f"📝 No fit options (single-fit product)")
             else:
                 # Product not supported or fetch failed
                 raise HTTPException(status_code=400, 

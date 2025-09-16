@@ -151,3 +151,5 @@ if __name__ == "__main__":
     
     normalize_database_products(args.brand)
 
+
+

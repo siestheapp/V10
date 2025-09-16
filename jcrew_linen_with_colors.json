@@ -1,0 +1,114 @@
+[
+  {
+    "url": "https://www.jcrew.com/p/mens/categories/clothing/shirts/cotton-linen-twill/linen-cotton-blend-twill-workshirt/CG345",
+    "code": "CG345",
+    "name": "Linen-cotton blend twill workshirt",
+    "colors": [
+      {
+        "name": "White",
+        "code": "WT0002",
+        "productCode": "CG345",
+        "imageUrl": "https://www.jcrew.com/s7-img-facade/CG345_WT0002_sw?$pdp_sw20$",
+        "hex": "#FFFFFF"
+      },
+      {
+        "name": "Dusty Khaki",
+        "code": "NA5810",
+        "productCode": "CG345",
+        "imageUrl": "https://www.jcrew.com/s7-img-facade/CG345_NA5810_sw?$pdp_sw20$",
+        "hex": null
+      },
+      {
+        "name": "Estate Blue",
+        "code": "BL6207",
+        "productCode": "CG345",
+        "imageUrl": "https://www.jcrew.com/s7-img-facade/CG345_BL6207_sw?$pdp_sw20$",
+        "hex": null
+      }
+    ]
+  },
+  {
+    "url": "https://www.jcrew.com/p/mens/categories/clothing/shirts/linen/short-sleeve-linen-point-collar-shirt/CG259",
+    "code": "CG259",
+    "name": "Short-sleeve linen point-collar shirt",
+    "colors": [
+      {
+        "name": "Navy Grey Fine Stripe",
+        "code": "WZ6237",
+        "productCode": "CG259",
+        "imageUrl": "https://www.jcrew.com/s7-img-facade/CG259_WZ6237_sw?$pdp_sw20$",
+        "hex": null
+      }
+    ]
+  },
+  {
+    "url": "https://www.jcrew.com/p/mens/categories/clothing/shirts/linen/baird-mcnutt-irish-linen-point-collar-shirt/CF667",
+    "code": "CF667",
+    "name": "Baird McNutt Irish linen point-collar shirt",
+    "colors": [
+      {
+        "name": "Bengal Stripe Flax",
+        "code": "YD7526",
+        "productCode": "CF667",
+        "imageUrl": "https://www.jcrew.com/s7-img-facade/CF667_YD7526_sw?$pdp_sw20$",
+        "hex": null
+      }
+    ]
+  },
+  {
+    "url": "https://www.jcrew.com/p/mens/categories/clothing/shirts/linen/short-sleeve-linen-point-collar-shirt/CG763",
+    "code": "CG763",
+    "name": "Short-sleeve linen point-collar shirt",
+    "colors": [
+      {
+        "name": "Light Cedar",
+        "code": "YD6338",
+        "productCode": "CG763",
+        "imageUrl": "https://www.jcrew.com/s7-img-facade/CG763_YD6338_sw?$pdp_sw20$",
+        "hex": null
+      }
+    ]
+  },
+  {
+    "url": "https://www.jcrew.com/p/mens/categories/clothing/shirts/cotton-linen-twill/short-sleeve-slub-cotton-linen-blend-camp-collar-shirt-in-print/BW968",
+    "code": "BW968",
+    "name": "Short-sleeve slub cotton-linen blend camp-collar shirt in print",
+    "colors": [
+      {
+        "name": "Paisley Medallion Natur",
+        "code": "PT7124",
+        "productCode": "BW968",
+        "imageUrl": "https://www.jcrew.com/s7-img-facade/BW968_PT7124_sw?$pdp_sw20$",
+        "hex": null
+      },
+      {
+        "name": "Batik Paisley Black Can",
+        "code": "PT7190",
+        "productCode": "BW968",
+        "imageUrl": "https://www.jcrew.com/s7-img-facade/BW968_PT7190_sw?$pdp_sw20$",
+        "hex": null
+      },
+      {
+        "name": "Geo Batik Blue Multi",
+        "code": "PT7515",
+        "productCode": "BW968",
+        "imageUrl": "https://www.jcrew.com/s7-img-facade/BW968_PT7515_sw?$pdp_sw20$",
+        "hex": null
+      },
+      {
+        "name": "Geometric Menagerie Nav",
+        "code": "PT7282",
+        "productCode": "BW968",
+        "imageUrl": "https://www.jcrew.com/s7-img-facade/BW968_PT7282_sw?$pdp_sw20$",
+        "hex": null
+      },
+      {
+        "name": "Smudge Paisley Brown Bl",
+        "code": "PT7489",
+        "productCode": "BW968",
+        "imageUrl": "https://www.jcrew.com/s7-img-facade/BW968_PT7489_sw?$pdp_sw20$",
+        "hex": null
+      }
+    ]
+  }
+]

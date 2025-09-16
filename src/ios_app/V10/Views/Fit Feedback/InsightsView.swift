@@ -235,3 +235,4 @@ struct InsightsView_Previews: PreviewProvider {
         )
     }
 }
+

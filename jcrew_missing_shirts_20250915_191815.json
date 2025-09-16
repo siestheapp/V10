@@ -1,0 +1,442 @@
+{
+  "total_scraped": 35,
+  "total_in_db": 7,
+  "total_missing": 28,
+  "missing_codes": [
+    "BE076",
+    "BE077",
+    "BE163",
+    "BE164",
+    "BE546",
+    "BE554",
+    "BE986",
+    "BE998",
+    "BE999",
+    "BJ705",
+    "BN126",
+    "BT549",
+    "BT743",
+    "BT744",
+    "BX291",
+    "BZ532",
+    "CC100",
+    "CC101",
+    "CJ508",
+    "CM237",
+    "CM390",
+    "CN406",
+    "ME053",
+    "ME183",
+    "MP235",
+    "MP600",
+    "MP653",
+    "MP712"
+  ],
+  "existing_codes": [
+    "BE996",
+    "CF783",
+    "CM389",
+    "ME625",
+    "MP123",
+    "MP251",
+    "MP694"
+  ],
+  "categories": {
+    "Other": [
+      {
+        "code": "CN406",
+        "name": "New",
+        "url": "https://www.jcrew.com/p/mens/categories/clothing/shirts/corduroy/fine-wale-corduroy-shirt-with-embroidered-dogs/CN406",
+        "price": "",
+        "colors": []
+      },
+      {
+        "code": "BX291",
+        "name": "Best Seller",
+        "url": "https://www.jcrew.com/p/mens/categories/clothing/dress-shirts/business-casual-shirts/bowery-performance-stretch-dress-shirt-with-spread-collar/BX291",
+        "price": "",
+        "colors": []
+      },
+      {
+        "code": "BZ532",
+        "name": "Top Rated",
+        "url": "https://www.jcrew.com/p/mens/categories/clothing/shirts/chambray-and-denim-shirts/organic-cotton-chambray-shirt/BZ532",
+        "price": "",
+        "colors": []
+      },
+      {
+        "code": "CJ508",
+        "name": "Top Rated",
+        "url": "https://www.jcrew.com/p/mens/categories/clothing/shirts/camp-collar/short-sleeve-cotton-dobby-camp-collar-shirt/CJ508",
+        "price": "",
+        "colors": []
+      },
+      {
+        "code": "ME183",
+        "name": "",
+        "url": "https://www.jcrew.com/p/mens/categories/clothing/shirts/ME183",
+        "price": "",
+        "colors": []
+      },
+      {
+        "code": "ME053",
+        "name": "",
+        "url": "https://www.jcrew.com/p/mens/categories/clothing/shirts/ME053",
+        "price": "",
+        "colors": []
+      },
+      {
+        "code": "MP600",
+        "name": "",
+        "url": "https://www.jcrew.com/p/mens/categories/clothing/shirts/MP600",
+        "price": "",
+        "colors": []
+      },
+      {
+        "code": "MP653",
+        "name": "",
+        "url": "https://www.jcrew.com/p/mens/categories/clothing/shirts/MP653",
+        "price": "",
+        "colors": []
+      },
+      {
+        "code": "MP712",
+        "name": "",
+        "url": "https://www.jcrew.com/p/mens/categories/clothing/shirts/MP712",
+        "price": "",
+        "colors": []
+      },
+      {
+        "code": "MP235",
+        "name": "",
+        "url": "https://www.jcrew.com/p/mens/categories/clothing/shirts/MP235",
+        "price": "",
+        "colors": []
+      },
+      {
+        "code": "BT549",
+        "name": "",
+        "url": "https://www.jcrew.com/p/mens/categories/clothing/shirts/BT549",
+        "price": "",
+        "colors": []
+      },
+      {
+        "code": "CC101",
+        "name": "",
+        "url": "https://www.jcrew.com/p/mens/categories/clothing/shirts/CC101",
+        "price": "",
+        "colors": []
+      },
+      {
+        "code": "CC100",
+        "name": "",
+        "url": "https://www.jcrew.com/p/mens/categories/clothing/shirts/CC100",
+        "price": "",
+        "colors": []
+      },
+      {
+        "code": "CM237",
+        "name": "",
+        "url": "https://www.jcrew.com/p/mens/categories/clothing/shirts/CM237",
+        "price": "",
+        "colors": []
+      },
+      {
+        "code": "CM390",
+        "name": "",
+        "url": "https://www.jcrew.com/p/mens/categories/clothing/shirts/CM390",
+        "price": "",
+        "colors": []
+      },
+      {
+        "code": "BE554",
+        "name": "",
+        "url": "https://www.jcrew.com/p/mens/categories/clothing/shirts/BE554",
+        "price": "",
+        "colors": []
+      },
+      {
+        "code": "BE999",
+        "name": "",
+        "url": "https://www.jcrew.com/p/mens/categories/clothing/shirts/BE999",
+        "price": "",
+        "colors": []
+      },
+      {
+        "code": "BE546",
+        "name": "",
+        "url": "https://www.jcrew.com/p/mens/categories/clothing/shirts/BE546",
+        "price": "",
+        "colors": []
+      },
+      {
+        "code": "BE998",
+        "name": "",
+        "url": "https://www.jcrew.com/p/mens/categories/clothing/shirts/BE998",
+        "price": "",
+        "colors": []
+      },
+      {
+        "code": "BE163",
+        "name": "",
+        "url": "https://www.jcrew.com/p/mens/categories/clothing/shirts/BE163",
+        "price": "",
+        "colors": []
+      },
+      {
+        "code": "BE164",
+        "name": "",
+        "url": "https://www.jcrew.com/p/mens/categories/clothing/shirts/BE164",
+        "price": "",
+        "colors": []
+      },
+      {
+        "code": "BE077",
+        "name": "",
+        "url": "https://www.jcrew.com/p/mens/categories/clothing/shirts/BE077",
+        "price": "",
+        "colors": []
+      },
+      {
+        "code": "BE076",
+        "name": "",
+        "url": "https://www.jcrew.com/p/mens/categories/clothing/shirts/BE076",
+        "price": "",
+        "colors": []
+      },
+      {
+        "code": "BT744",
+        "name": "",
+        "url": "https://www.jcrew.com/p/mens/categories/clothing/shirts/BT744",
+        "price": "",
+        "colors": []
+      },
+      {
+        "code": "BT743",
+        "name": "",
+        "url": "https://www.jcrew.com/p/mens/categories/clothing/shirts/BT743",
+        "price": "",
+        "colors": []
+      },
+      {
+        "code": "BJ705",
+        "name": "",
+        "url": "https://www.jcrew.com/p/mens/categories/clothing/shirts/BJ705",
+        "price": "",
+        "colors": []
+      },
+      {
+        "code": "BN126",
+        "name": "",
+        "url": "https://www.jcrew.com/p/mens/categories/clothing/shirts/BN126",
+        "price": "",
+        "colors": []
+      },
+      {
+        "code": "BE986",
+        "name": "",
+        "url": "https://www.jcrew.com/p/mens/categories/clothing/shirts/BE986",
+        "price": "",
+        "colors": []
+      }
+    ]
+  },
+  "missing_products_list": [
+    {
+      "code": "CN406",
+      "name": "New",
+      "url": "https://www.jcrew.com/p/mens/categories/clothing/shirts/corduroy/fine-wale-corduroy-shirt-with-embroidered-dogs/CN406",
+      "price": "",
+      "colors": []
+    },
+    {
+      "code": "BX291",
+      "name": "Best Seller",
+      "url": "https://www.jcrew.com/p/mens/categories/clothing/dress-shirts/business-casual-shirts/bowery-performance-stretch-dress-shirt-with-spread-collar/BX291",
+      "price": "",
+      "colors": []
+    },
+    {
+      "code": "BZ532",
+      "name": "Top Rated",
+      "url": "https://www.jcrew.com/p/mens/categories/clothing/shirts/chambray-and-denim-shirts/organic-cotton-chambray-shirt/BZ532",
+      "price": "",
+      "colors": []
+    },
+    {
+      "code": "CJ508",
+      "name": "Top Rated",
+      "url": "https://www.jcrew.com/p/mens/categories/clothing/shirts/camp-collar/short-sleeve-cotton-dobby-camp-collar-shirt/CJ508",
+      "price": "",
+      "colors": []
+    },
+    {
+      "code": "ME183",
+      "name": "",
+      "url": "https://www.jcrew.com/p/mens/categories/clothing/shirts/ME183",
+      "price": "",
+      "colors": []
+    },
+    {
+      "code": "ME053",
+      "name": "",
+      "url": "https://www.jcrew.com/p/mens/categories/clothing/shirts/ME053",
+      "price": "",
+      "colors": []
+    },
+    {
+      "code": "MP600",
+      "name": "",
+      "url": "https://www.jcrew.com/p/mens/categories/clothing/shirts/MP600",
+      "price": "",
+      "colors": []
+    },
+    {
+      "code": "MP653",
+      "name": "",
+      "url": "https://www.jcrew.com/p/mens/categories/clothing/shirts/MP653",
+      "price": "",
+      "colors": []
+    },
+    {
+      "code": "MP712",
+      "name": "",
+      "url": "https://www.jcrew.com/p/mens/categories/clothing/shirts/MP712",
+      "price": "",
+      "colors": []
+    },
+    {
+      "code": "MP235",
+      "name": "",
+      "url": "https://www.jcrew.com/p/mens/categories/clothing/shirts/MP235",
+      "price": "",
+      "colors": []
+    },
+    {
+      "code": "BT549",
+      "name": "",
+      "url": "https://www.jcrew.com/p/mens/categories/clothing/shirts/BT549",
+      "price": "",
+      "colors": []
+    },
+    {
+      "code": "CC101",
+      "name": "",
+      "url": "https://www.jcrew.com/p/mens/categories/clothing/shirts/CC101",
+      "price": "",
+      "colors": []
+    },
+    {
+      "code": "CC100",
+      "name": "",
+      "url": "https://www.jcrew.com/p/mens/categories/clothing/shirts/CC100",
+      "price": "",
+      "colors": []
+    },
+    {
+      "code": "CM237",
+      "name": "",
+      "url": "https://www.jcrew.com/p/mens/categories/clothing/shirts/CM237",
+      "price": "",
+      "colors": []
+    },
+    {
+      "code": "CM390",
+      "name": "",
+      "url": "https://www.jcrew.com/p/mens/categories/clothing/shirts/CM390",
+      "price": "",
+      "colors": []
+    },
+    {
+      "code": "BE554",
+      "name": "",
+      "url": "https://www.jcrew.com/p/mens/categories/clothing/shirts/BE554",
+      "price": "",
+      "colors": []
+    },
+    {
+      "code": "BE999",
+      "name": "",
+      "url": "https://www.jcrew.com/p/mens/categories/clothing/shirts/BE999",
+      "price": "",
+      "colors": []
+    },
+    {
+      "code": "BE546",
+      "name": "",
+      "url": "https://www.jcrew.com/p/mens/categories/clothing/shirts/BE546",
+      "price": "",
+      "colors": []
+    },
+    {
+      "code": "BE998",
+      "name": "",
+      "url": "https://www.jcrew.com/p/mens/categories/clothing/shirts/BE998",
+      "price": "",
+      "colors": []
+    },
+    {
+      "code": "BE163",
+      "name": "",
+      "url": "https://www.jcrew.com/p/mens/categories/clothing/shirts/BE163",
+      "price": "",
+      "colors": []
+    },
+    {
+      "code": "BE164",
+      "name": "",
+      "url": "https://www.jcrew.com/p/mens/categories/clothing/shirts/BE164",
+      "price": "",
+      "colors": []
+    },
+    {
+      "code": "BE077",
+      "name": "",
+      "url": "https://www.jcrew.com/p/mens/categories/clothing/shirts/BE077",
+      "price": "",
+      "colors": []
+    },
+    {
+      "code": "BE076",
+      "name": "",
+      "url": "https://www.jcrew.com/p/mens/categories/clothing/shirts/BE076",
+      "price": "",
+      "colors": []
+    },
+    {
+      "code": "BT744",
+      "name": "",
+      "url": "https://www.jcrew.com/p/mens/categories/clothing/shirts/BT744",
+      "price": "",
+      "colors": []
+    },
+    {
+      "code": "BT743",
+      "name": "",
+      "url": "https://www.jcrew.com/p/mens/categories/clothing/shirts/BT743",
+      "price": "",
+      "colors": []
+    },
+    {
+      "code": "BJ705",
+      "name": "",
+      "url": "https://www.jcrew.com/p/mens/categories/clothing/shirts/BJ705",
+      "price": "",
+      "colors": []
+    },
+    {
+      "code": "BN126",
+      "name": "",
+      "url": "https://www.jcrew.com/p/mens/categories/clothing/shirts/BN126",
+      "price": "",
+      "colors": []
+    },
+    {
+      "code": "BE986",
+      "name": "",
+      "url": "https://www.jcrew.com/p/mens/categories/clothing/shirts/BE986",
+      "price": "",
+      "colors": []
+    }
+  ]
+}
