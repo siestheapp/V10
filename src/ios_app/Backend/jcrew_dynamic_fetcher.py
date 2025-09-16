@@ -52,7 +52,7 @@ class JCrewDynamicFetcher:
         
         print(f"🔍 Fetching dynamic data for {product_code}")
         
-        # Get base product data from cache first
+        # Get base product data from database cache (primary) with memory cache optimization
         cached_base = self._get_base_from_cache(product_code)
         
         if cached_base:
@@ -90,8 +90,8 @@ class JCrewDynamicFetcher:
                 'material': cached_base.get('material')
             }
         
-        # If not in cache, scrape fresh
-        print(f"📦 CACHE MISS: Scraping fresh data for {product_code}")
+        # If not in database cache, scrape fresh (should be rare in production)
+        print(f"📦 DATABASE CACHE MISS: Scraping fresh data for {product_code}")
         scraped_data = self._scrape_dynamic_data(product_url)
         
         if scraped_data:
@@ -221,13 +221,14 @@ class JCrewDynamicFetcher:
         return 'Classic'  # Default to Classic
     
     def _get_base_from_cache(self, product_code: str) -> Optional[Dict]:
-        """Get base product data from in-memory cache first, then database"""
-        # Check in-memory cache first
+        """Get base product data from database cache (primary) with memory cache as optimization"""
+        # Check in-memory cache first for performance optimization
         if product_code in JCrewDynamicFetcher._product_cache:
             print(f"💾 Found {product_code} in memory cache")
             return JCrewDynamicFetcher._product_cache[product_code]
         
-        # Fall back to database cache if needed
+        # Primary source: database cache (persistent across restarts)
+        print(f"🔍 Checking database cache for {product_code}")
         conn = psycopg2.connect(**DB_CONFIG)
         cur = conn.cursor()
         
@@ -243,6 +244,7 @@ class JCrewDynamicFetcher:
             
             row = cur.fetchone()
             if row:
+                print(f"✅ Found {product_code} in database cache")
                 data = {
                     'product_name': row[0] or "J.Crew Product",
                     'product_code': row[1],
@@ -256,11 +258,15 @@ class JCrewDynamicFetcher:
                     'fit_options': row[9] or [],
                     'price': float(row[10]) if row[10] else None
                 }
-                # Save to memory cache for next time
+                # Save to memory cache for performance optimization (not primary storage)
                 JCrewDynamicFetcher._product_cache[product_code] = data
+                print(f"💾 Cached {product_code} in memory for performance")
                 return data
+            else:
+                print(f"❌ {product_code} not found in database cache")
         
         except Exception as e:
+            print(f"❌ Database error for {product_code}: {e}")
             # Database table might not exist, ignore
             pass
         finally:
