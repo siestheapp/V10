@@ -433,24 +433,22 @@ def test_urls(urls):
 if __name__ == "__main__":
     import sys
     
-    # Accept URLs from command line or use defaults for testing
-    if len(sys.argv) > 1:
-        # Use provided URLs
-        test_urls_list = sys.argv[1:]
-        print(f"Testing {len(test_urls_list)} user-provided URL(s)...")
-    else:
-        # Default test URLs - Successfully tested on September 16, 2025
-        print("No URLs provided. Using default test URLs...")
-        print("Usage: python scripts/precise_jcrew_html_scraper_v2.py <url1> <url2> ...")
-        print()
-        test_urls_list = [
-            # Multi-variant product: 18 colors, 5 fits (including "Slim Untucked")
-            "https://www.jcrew.com/p/mens/categories/clothing/shirts/broken-in-oxford/broken-in-organic-cotton-oxford-shirt/BE996",
-            
-            # Single-variant product: 1 color (DOG EMB BLUE BROWN), no fit options
-            # "https://www.jcrew.com/p/mens/categories/clothing/shirts/corduroy/fine-wale-corduroy-shirt-with-embroidered-dogs/CN406",
-        ]
+    # Require URLs from command line
+    if len(sys.argv) < 2:
+        print("❌ ERROR: Please provide at least one J.Crew product URL")
+        print("\nUsage:")
+        print("  python scripts/precise_jcrew_html_scraper_v2.py <url1> [url2] [url3] ...")
+        print("\nExamples:")
+        print("  python scripts/precise_jcrew_html_scraper_v2.py https://www.jcrew.com/p/BE996")
+        print("  python scripts/precise_jcrew_html_scraper_v2.py /p/CF667 /p/BW968")
+        print("\nTested product examples:")
+        print("  BE996 - Multi-variant: 18 colors, 5 fits (including 'Slim Untucked')")
+        print("  CN406 - Single-variant: 1 color, no fit options")
+        sys.exit(1)
     
+    # Use provided URLs
+    test_urls_list = sys.argv[1:]
+    print(f"Testing {len(test_urls_list)} user-provided URL(s)...")
     print("This scraper has NO FALLBACKS - it will fail if the HTML structure doesn't match")
     print()
     
@@ -458,5 +456,7 @@ if __name__ == "__main__":
     
     if all('error' not in r for r in results):
         print("\n✅ All tests completed successfully")
+        sys.exit(0)
     else:
         print("\n⚠️  Some tests failed - HTML structure may need adjustment")
+        sys.exit(1)
