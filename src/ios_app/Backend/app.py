@@ -1477,14 +1477,18 @@ async def start_tryon_session(request: dict):
         if not brand_info:
             raise HTTPException(status_code=400, detail="Could not identify brand from URL")
         
-            # For J.Crew, use the dynamic fetcher that returns fit variations
-            if brand_info["brand_name"] == "J.Crew" and "jcrew.com" in product_url.lower():
-                # Import here to avoid circular imports
-                # Using dynamic fetcher to get fit-specific variations
-                from jcrew_dynamic_fetcher import JCrewDynamicFetcher
-                
-                fetcher = JCrewDynamicFetcher()
-                product_data = fetcher.fetch_product(product_url)
+        # Initialize variables
+        product_data = None
+        fit_variations = {}
+        
+        # For J.Crew, use the dynamic fetcher that returns fit variations
+        if brand_info["brand_name"] == "J.Crew" and "jcrew.com" in product_url.lower():
+            # Import here to avoid circular imports
+            # Using dynamic fetcher to get fit-specific variations
+            from jcrew_dynamic_fetcher import JCrewDynamicFetcher
+            
+            fetcher = JCrewDynamicFetcher()
+            product_data = fetcher.fetch_product(product_url)
             
             if product_data:
                 # Use current product name (includes fit prefix if applicable)
