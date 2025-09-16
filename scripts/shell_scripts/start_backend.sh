@@ -11,7 +11,7 @@ if lsof -i :8006 > /dev/null 2>&1; then
     echo "⚠️  Server already running on port 8006. Stopping existing server..."
     pids=$(lsof -ti :8006)
     if [ ! -z "$pids" ]; then
-        kill $pids
+        kill -9 $pids
         echo "✅ Stopped existing server processes: $pids"
         sleep 2
     fi

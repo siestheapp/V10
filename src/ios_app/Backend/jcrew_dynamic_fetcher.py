@@ -22,7 +22,19 @@ import os
 sys.path.append(os.path.dirname(os.path.dirname(os.path.dirname(os.path.dirname(__file__)))))
 from db_config import DB_CONFIG
 
+# Try to import the precise scraper for fit extraction
+try:
+    sys.path.append(os.path.dirname(os.path.dirname(os.path.dirname(os.path.dirname(__file__)))))
+    from scripts.precise_jcrew_html_scraper_v2 import PreciseJCrewScraperV2
+    PRECISE_SCRAPER_AVAILABLE = True
+except ImportError:
+    PRECISE_SCRAPER_AVAILABLE = False
+    print("⚠️ Precise scraper not available, using fallback fit detection")
+
 class JCrewDynamicFetcher:
+    # Class-level cache shared across all instances
+    _product_cache = {}
+    
     def __init__(self):
         self.headers = {
             'User-Agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36'
@@ -209,7 +221,13 @@ class JCrewDynamicFetcher:
         return 'Classic'  # Default to Classic
     
     def _get_base_from_cache(self, product_code: str) -> Optional[Dict]:
-        """Get base product data from cache"""
+        """Get base product data from in-memory cache first, then database"""
+        # Check in-memory cache first
+        if product_code in JCrewDynamicFetcher._product_cache:
+            print(f"💾 Found {product_code} in memory cache")
+            return JCrewDynamicFetcher._product_cache[product_code]
+        
+        # Fall back to database cache if needed
         conn = psycopg2.connect(**DB_CONFIG)
         cur = conn.cursor()
         
@@ -225,7 +243,7 @@ class JCrewDynamicFetcher:
             
             row = cur.fetchone()
             if row:
-                return {
+                data = {
                     'product_name': row[0] or "J.Crew Product",
                     'product_code': row[1],
                     'product_image': row[2],
@@ -238,9 +256,13 @@ class JCrewDynamicFetcher:
                     'fit_options': row[9] or [],
                     'price': float(row[10]) if row[10] else None
                 }
+                # Save to memory cache for next time
+                JCrewDynamicFetcher._product_cache[product_code] = data
+                return data
         
         except Exception as e:
-            print(f"Cache lookup error: {e}")
+            # Database table might not exist, ignore
+            pass
         finally:
             cur.close()
             conn.close()
@@ -256,6 +278,22 @@ class JCrewDynamicFetcher:
             product_code = self._extract_product_code(product_url)
             current_fit = self._extract_current_fit(product_url)
             
+            # Use precise scraper for fit extraction if available
+            if PRECISE_SCRAPER_AVAILABLE:
+                print("🔧 Using precise scraper for fit extraction")
+                scraper = PreciseJCrewScraperV2(headless=False)  # Changed to False for better detection
+                try:
+                    precise_result = scraper.scrape_product(product_url)
+                    fit_options = precise_result.get('fits', [])
+                    print(f"✅ Precise scraper found {len(fit_options)} fit options: {fit_options}")
+                except Exception as e:
+                    print(f"⚠️ Precise scraper failed: {e}, falling back to regular extraction")
+                    fit_options = []
+                finally:
+                    scraper.close()
+            else:
+                fit_options = []
+            
             response = requests.get(product_url, headers=self.headers, timeout=10)
             response.raise_for_status()
             soup = BeautifulSoup(response.text, 'html.parser')
@@ -265,8 +303,9 @@ class JCrewDynamicFetcher:
             product_name = name_elem.get_text(strip=True) if name_elem else "J.Crew Product"
             base_name = self._get_base_product_name(product_name)
             
-            # Extract fit options from page
-            fit_options = self._extract_fit_options(soup)
+            # If precise scraper didn't find fits, try regular extraction
+            if not fit_options:
+                fit_options = self._extract_fit_options(soup)
             
             # Extract colors
             colors = self._extract_colors(soup)
@@ -316,17 +355,56 @@ class JCrewDynamicFetcher:
         """Extract available fit options from page"""
         fits = []
         
-        # Look for fit buttons
-        fit_buttons = soup.find_all('button', attrs={'data-qaid': re.compile(r'ProductVariationsItem', re.I)})
+        # Strategy 1: Look for variant selector elements (most reliable)
+        variant_selectors = soup.find_all('button', attrs={'class': re.compile(r'variant-selector', re.I)})
         
-        for button in fit_buttons:
+        for button in variant_selectors:
             text = button.get_text(strip=True)
-            if any(fit in text for fit in ['Classic', 'Slim', 'Tall', 'Relaxed', 'Untucked']):
-                if 'Slim' in text and 'Untucked' in text:
-                    fits.append('Slim Untucked')
-                elif text in ['Classic', 'Slim', 'Tall', 'Relaxed']:
+            if text and text not in fits:
+                # Check if it's a fit option (not size/color)
+                fit_keywords = ['Classic', 'Slim', 'Tall', 'Relaxed', 'Untucked', 'Regular', 'Athletic']
+                if any(keyword in text for keyword in fit_keywords):
                     fits.append(text)
+                    print(f"      Found fit (Strategy 1): {text}")
         
+        # Strategy 2: Look for button groups with fit-related aria-labels
+        if not fits:
+            button_groups = soup.find_all(attrs={'aria-label': re.compile(r'fit', re.I)})
+            for group in button_groups:
+                buttons = group.find_all('button')
+                for button in buttons:
+                    text = button.get_text(strip=True)
+                    if text and text not in fits:
+                        fits.append(text)
+                        print(f"      Found fit (Strategy 2): {text}")
+        
+        # Strategy 3: Look for any buttons with fit keywords
+        if not fits:
+            all_buttons = soup.find_all('button')
+            fit_keywords = ['Classic', 'Slim', 'Tall', 'Relaxed', 'Untucked', 'Regular', 'Athletic', 'Traditional']
+            
+            for button in all_buttons:
+                text = button.get_text(strip=True)
+                # Check if this looks like a fit option
+                if text and any(keyword in text for keyword in fit_keywords):
+                    # Avoid navigation buttons
+                    if not any(x in text.lower() for x in ['shop', 'add', 'cart', 'size', 'review']):
+                        if text not in fits:
+                            fits.append(text)
+                            print(f"      Found fit (Strategy 3): {text}")
+        
+        # Handle multi-word fits like "Slim Untucked"
+        if 'Slim' in fits and 'Untucked' in fits and 'Slim Untucked' not in fits:
+            # Check if there's actually a "Slim Untucked" button
+            slim_untucked_elem = soup.find('button', string=re.compile(r'Slim\s+Untucked', re.I))
+            if slim_untucked_elem:
+                fits.append('Slim Untucked')
+                # Remove individual parts if they exist
+                if 'Untucked' in fits and len([f for f in fits if 'Untucked' in f]) > 1:
+                    fits.remove('Untucked')
+                print(f"      Found compound fit: Slim Untucked")
+        
+        print(f"   ✅ Found {len(fits)} fit options: {fits}")
         return fits if fits else []
     
     def _extract_colors(self, soup: BeautifulSoup) -> List[Dict]:
@@ -450,9 +528,10 @@ class JCrewDynamicFetcher:
         return None
     
     def _save_to_cache(self, product_code: str, data: Dict):
-        """Save scraped data to cache"""
-        # Implementation would save to database
-        pass
+        """Save scraped data to in-memory cache"""
+        # Save to memory cache
+        JCrewDynamicFetcher._product_cache[product_code] = data
+        print(f"💾 Saved {product_code} to memory cache")
 
 if __name__ == "__main__":
     import sys
