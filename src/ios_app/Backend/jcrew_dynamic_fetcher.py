@@ -90,15 +90,10 @@ class JCrewDynamicFetcher:
                 'material': cached_base.get('material')
             }
         
-        # If not in database cache, scrape fresh (should be rare in production)
-        print(f"📦 DATABASE CACHE MISS: Scraping fresh data for {product_code}")
-        scraped_data = self._scrape_dynamic_data(product_url)
-        
-        if scraped_data:
-            # Save to cache
-            self._save_to_cache(product_code, scraped_data)
-        
-        return scraped_data
+        # If not in database cache, return None (no real-time scraping in production)
+        print(f"📦 DATABASE CACHE MISS: Product {product_code} not available in cache")
+        print(f"💡 To add this product, run the scraper script to populate the cache")
+        return None
     
     def _get_base_product_name(self, full_name: str) -> str:
         """Extract base product name without fit prefix"""

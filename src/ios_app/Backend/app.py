@@ -1508,9 +1508,9 @@ async def start_tryon_session(request: dict):
                 else:
                     print(f"📝 No fit options (single-fit product)")
             else:
-                # Product not supported or fetch failed
-                raise HTTPException(status_code=400, 
-                    detail="This J.Crew product is not supported. Only men's tops and outerwear are currently available.")
+                # Product not in cache
+                raise HTTPException(status_code=404, 
+                    detail="This J.Crew product is not available in our database. Please try a different product or contact support to add this item.")
         else:
             # Use existing logic for other brands
             product_name = extract_product_name_from_url(product_url)
