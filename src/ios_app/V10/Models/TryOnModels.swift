@@ -16,6 +16,9 @@ struct TryOnSession: Codable {
     let colorOptions: [JCrewColor]
     let currentColor: String
     let nextStep: String
+    let fitVariations: [String: FitVariation]?
+    let currentFit: String?
+    let baseProductName: String?
     
     enum CodingKeys: String, CodingKey {
         case sessionId = "session_id"
@@ -31,12 +34,29 @@ struct TryOnSession: Codable {
         case colorOptions = "color_options"
         case currentColor = "current_color"
         case nextStep = "next_step"
+        case fitVariations = "fit_variations"
+        case currentFit = "current_fit"
+        case baseProductName = "base_product_name"
     }
 }
 
 struct FeedbackOption: Codable {
     let value: Int
     let label: String
+}
+
+// MARK: - Fit Variation Model
+
+struct FitVariation: Codable {
+    let productName: String
+    let colorsAvailable: [String]
+    let productUrl: String
+    
+    enum CodingKeys: String, CodingKey {
+        case productName = "product_name"
+        case colorsAvailable = "colors_available"
+        case productUrl = "product_url"
+    }
 }
 
 // MARK: - Color Models

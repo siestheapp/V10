@@ -50,6 +50,8 @@ struct TryOnConfirmationView: View {
     @State private var selectedFit: String = ""
     @State private var selectedColor: String = ""
     @State private var navigateToFeedback = false
+    @State private var displayedProductName: String = ""
+    @State private var displayedColorOptions: [JCrewColor] = []
     
     // Get fit options from session data
     private var availableFitOptions: [String] {
@@ -58,7 +60,7 @@ struct TryOnConfirmationView: View {
     
     // Get color options from session data (rich objects)
     private var availableColorOptions: [JCrewColor] {
-        return session.colorOptions
+        return displayedColorOptions.isEmpty ? session.colorOptions : displayedColorOptions
     }
     
     // Computed property to determine if Continue button should be disabled
@@ -109,7 +111,7 @@ struct TryOnConfirmationView: View {
                             .textCase(.uppercase)
                             .tracking(1.2)
                         
-                        Text(session.productName)
+                        Text(displayedProductName.isEmpty ? session.productName : displayedProductName)
                             .font(.title3)
                             .fontWeight(.semibold)
                             .multilineTextAlignment(.center)
@@ -135,6 +137,33 @@ struct TryOnConfirmationView: View {
                                         print("🔍 Fit button tapped: '\(fit)'")
                                         selectedFit = fit
                                         print("🔍 Selected fit is now: '\(selectedFit)'")
+                                        
+                                        // Update product name and colors based on fit variation
+                                        if let fitVariations = session.fitVariations,
+                                           let fitData = fitVariations[fit] {
+                                            // Update product name
+                                            displayedProductName = fitData.productName
+                                            print("📝 Updated product name to: '\(displayedProductName)'")
+                                            
+                                            // Update available colors
+                                            let newColors = fitData.colorsAvailable.map { colorName in
+                                                // Try to find existing JCrewColor object with this name
+                                                if let existingColor = session.colorOptions.first(where: { $0.name == colorName }) {
+                                                    return existingColor
+                                                } else {
+                                                    // Create basic JCrewColor if not found
+                                                    return JCrewColor(name: colorName)
+                                                }
+                                            }
+                                            displayedColorOptions = newColors
+                                            print("🎨 Updated colors: \(newColors.count) colors available")
+                                            
+                                            // Reset color selection if current color is not in new options
+                                            if !selectedColor.isEmpty && !newColors.contains(where: { $0.name == selectedColor }) {
+                                                selectedColor = ""
+                                                print("⚠️ Reset color selection - not available in new fit")
+                                            }
+                                        }
                                     }) {
                                         Text(fit)
                                             .font(.subheadline)
@@ -318,6 +347,36 @@ struct TryOnConfirmationView: View {
             print("🔍 Session fit options: \(session.fitOptions)")
             print("🔍 Available fit options: \(availableFitOptions)")
             print("🔍 Fit options count: \(availableFitOptions.count)")
+            
+            // Initialize displayed values from session
+            displayedProductName = session.productName
+            displayedColorOptions = session.colorOptions
+            
+            // Set current fit from session if available
+            if let currentFit = session.currentFit, !currentFit.isEmpty {
+                selectedFit = currentFit
+                print("🔍 Initialized with current fit: '\(currentFit)'")
+                
+                // Update product name and colors based on current fit
+                if let fitVariations = session.fitVariations,
+                   let fitData = fitVariations[currentFit] {
+                    displayedProductName = fitData.productName
+                    print("📝 Initialized product name: '\(displayedProductName)'")
+                    
+                    // Update colors if different
+                    let fitColors = fitData.colorsAvailable.map { colorName in
+                        if let existingColor = session.colorOptions.first(where: { $0.name == colorName }) {
+                            return existingColor
+                        } else {
+                            return JCrewColor(name: colorName)
+                        }
+                    }
+                    if !fitColors.isEmpty {
+                        displayedColorOptions = fitColors
+                        print("🎨 Initialized with \(fitColors.count) colors for fit '\(currentFit)'")
+                    }
+                }
+            }
             print("🔍 Available measurements: \(session.availableMeasurements)")
             print("🔍 Selected size: '\(selectedSize)'")
             
