@@ -1477,12 +1477,13 @@ async def start_tryon_session(request: dict):
         if not brand_info:
             raise HTTPException(status_code=400, detail="Could not identify brand from URL")
         
-        # For J.Crew, use the specialized fetcher
+        # For J.Crew, use the comprehensive fetcher that returns ALL fit options
         if brand_info["brand_name"] == "J.Crew" and "jcrew.com" in product_url.lower():
             # Import here to avoid circular imports
-            from jcrew_fetcher import JCrewProductFetcher
+            # Using comprehensive fetcher to get ALL fit options for the product family
+            from jcrew_comprehensive_fetcher import JCrewComprehensiveFetcher
             
-            fetcher = JCrewProductFetcher()
+            fetcher = JCrewComprehensiveFetcher()
             product_data = fetcher.fetch_product(product_url)
             
             if product_data:

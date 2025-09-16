@@ -98,8 +98,15 @@ class JCrewProductFetcher:
             print(f"✅ Found in cache (product {product_code}): {cached['product_name']}")
             return cached
         
-        # Fetch from website
-        print(f"🔍 Fetching from J.Crew: {product_url}")
+        # Fallback: Check by product_code if cache_key doesn't match
+        if product_code:
+            cached = self._check_cache_by_product_code(product_code)
+            if cached:
+                print(f"✅ Found in cache by product code {product_code}: {cached['product_name']}")
+                return cached
+        
+        # Only scrape if not in database at all
+        print(f"🔍 Not in database, fetching from J.Crew: {product_url}")
         product_data = self._scrape_product(product_url)
         
         if product_data:
@@ -238,6 +245,51 @@ class JCrewProductFetcher:
                 print(f"📭 No cache found for key: {cache_key}")
         except Exception as e:
             print(f"Cache lookup error: {e}")
+        finally:
+            cur.close()
+            conn.close()
+        
+        return None
+    
+    def _check_cache_by_product_code(self, product_code: str) -> Optional[Dict]:
+        """Fallback: Check cache by product_code when cache_key doesn't match"""
+        conn = psycopg2.connect(**DB_CONFIG)
+        cur = conn.cursor()
+        
+        try:
+            cur.execute("""
+                SELECT product_name, product_code, product_image,
+                       category, subcategory, sizes_available,
+                       colors_available, material, fit_type, fit_options, price,
+                       product_description, fit_details, product_url, created_at
+                FROM jcrew_product_cache
+                WHERE product_code = %s
+                ORDER BY created_at DESC
+                LIMIT 1
+            """, (product_code,))
+            
+            row = cur.fetchone()
+            if row and len(row) >= 14:
+                print(f"📦 CACHE HIT (by product_code): Product {row[1]} found")
+                return {
+                    'product_url': row[13] if len(row) > 13 else '',
+                    'product_name': row[0],
+                    'product_code': row[1],
+                    'product_image': row[2],
+                    'category': row[3],
+                    'subcategory': row[4],
+                    'sizes_available': row[5],
+                    'colors_available': row[6],
+                    'material': row[7],
+                    'fit_type': row[8],
+                    'fit_options': row[9] if row[9] is not None else [],
+                    'price': float(row[10]) if row[10] else None,
+                    'product_description': row[11] if len(row) > 11 else '',
+                    'fit_details': row[12] if len(row) > 12 else {},
+                    'cache_key': f"jcrew_product_{product_code}"
+                }
+        except Exception as e:
+            print(f"Product code lookup error: {e}")
         finally:
             cur.close()
             conn.close()
