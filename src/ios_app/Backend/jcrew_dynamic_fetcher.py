@@ -18,14 +18,9 @@ from urllib.parse import urlparse, parse_qs, urlencode, urlunparse
 import sys
 import os
 
-# Add parent directory to path for imports
-try:
-    # When imported by app.py
-    from db_config import DB_CONFIG
-except ImportError:
-    # When run directly
-    sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__)))))
-    from db_config import DB_CONFIG
+# Add parent directory to path to import db_config (matching jcrew_fetcher.py pattern)
+sys.path.append(os.path.dirname(os.path.dirname(os.path.dirname(os.path.dirname(__file__)))))
+from db_config import DB_CONFIG
 
 class JCrewDynamicFetcher:
     def __init__(self):
