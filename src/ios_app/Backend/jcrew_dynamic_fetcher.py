@@ -329,19 +329,92 @@ class JCrewDynamicFetcher:
         
         return fits if fits else []
     
-    def _extract_colors(self, soup: BeautifulSoup) -> List[str]:
-        """Extract available colors"""
+    def _extract_colors(self, soup: BeautifulSoup) -> List[Dict]:
+        """Extract available colors with visual information from J.Crew"""
         colors = []
         
-        color_inputs = soup.find_all('input', attrs={'aria-label': re.compile(r'^[^$]+\$\d+', re.I)})
+        # Target multiple possible DOM patterns used by J.Crew (matching jcrew_fetcher.py)
+        selector_list = [
+            '.js-product__color.colors-list__item',
+            '.js-product__color',
+            '.ProductPriceColors__color',
+            '[data-qaid^="pdpProductPriceColorsGroupListItem"]',
+            'div[data-code][data-name]'  # Added to match the HTML user provided
+        ]
+        jcrew_color_elements = soup.select(', '.join(selector_list))
         
-        for inp in color_inputs:
-            aria_label = inp.get('aria-label', '')
-            color_match = re.match(r'^([^$]+)', aria_label.strip())
-            if color_match:
-                color = color_match.group(1).strip()
-                if color and color not in colors:
-                    colors.append(color)
+        for element in jcrew_color_elements:
+            # Extract color information from J.Crew's data attributes
+            color_name = (element.get('data-name') or '').strip()
+            if not color_name:
+                # Fallback to aria-label like "NAVY $39.50"
+                aria = (element.get('aria-label') or '').strip()
+                if aria:
+                    color_name = aria.split('$')[0].strip()
+            color_code = (element.get('data-code') or '').strip()  # e.g., YD8609
+            product_code = (element.get('data-product') or '').strip()  # e.g., BE996
+            
+            if not color_name:
+                continue
+            
+            # Clean up name casing
+            color_name = color_name.replace(' undefined', '').strip().title()
+            
+            # Skip duplicates
+            existing_names = [c.get('name', '') if isinstance(c, dict) else str(c) for c in colors]
+            if color_name in existing_names:
+                continue
+            
+            color_info = {
+                'name': color_name,
+                'code': color_code if color_code else None,
+                'productCode': product_code if product_code else None
+            }
+            
+            # Try to extract image URL for this color (img src or data-src/srcset)
+            img_element = element.find('img')
+            img_src = ''
+            if img_element:
+                img_src = img_element.get('src') or img_element.get('data-src') or ''
+                if not img_src:
+                    srcset = img_element.get('srcset') or ''
+                    if srcset:
+                        # Take the first URL from srcset
+                        img_src = srcset.split(',')[0].strip().split(' ')[0]
+            if img_src:
+                if img_src.startswith('/'):
+                    img_src = f"https://www.jcrew.com{img_src}"
+                color_info['imageUrl'] = img_src
+            
+            # Also attempt to read a background color if present
+            style = element.get('style', '')
+            if 'background-color:' in style:
+                import re as regex
+                hex_match = regex.search(r'background-color:\s*#([0-9a-fA-F]{6})', style)
+                if hex_match:
+                    color_info['hex'] = f"#{hex_match.group(1)}"
+                else:
+                    rgb_match = regex.search(r'background-color:\s*rgb\((\d+),\s*(\d+),\s*(\d+)\)', style)
+                    if rgb_match:
+                        r, g, b = rgb_match.groups()
+                        color_info['hex'] = f"#{int(r):02x}{int(g):02x}{int(b):02x}"
+            
+            colors.append(color_info)
+            print(f"🎨 Found color: {color_name} (code: {color_code}, image: {bool(img_src)})")
+        
+        print(f"🎨 Total colors extracted: {len(colors)}")
+        
+        # Fallback to simpler extraction if no colors found with above method
+        if not colors:
+            color_inputs = soup.find_all('input', attrs={'aria-label': re.compile(r'^[^$]+\$\d+', re.I)})
+            
+            for inp in color_inputs:
+                aria_label = inp.get('aria-label', '')
+                color_match = re.match(r'^([^$]+)', aria_label.strip())
+                if color_match:
+                    color_name = color_match.group(1).strip().title()
+                    if color_name and color_name not in [c.get('name', c) for c in colors]:
+                        colors.append({'name': color_name})
         
         return colors
     

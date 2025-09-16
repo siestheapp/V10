@@ -49,7 +49,7 @@ struct FeedbackOption: Codable {
 
 struct FitVariation: Codable {
     let productName: String
-    let colorsAvailable: [String]
+    let colorsAvailable: [JCrewColor]
     let productUrl: String
     
     enum CodingKeys: String, CodingKey {

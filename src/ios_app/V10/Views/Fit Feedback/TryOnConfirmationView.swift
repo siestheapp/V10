@@ -145,21 +145,12 @@ struct TryOnConfirmationView: View {
                                             displayedProductName = fitData.productName
                                             print("📝 Updated product name to: '\(displayedProductName)'")
                                             
-                                            // Update available colors
-                                            let newColors = fitData.colorsAvailable.map { colorName in
-                                                // Try to find existing JCrewColor object with this name
-                                                if let existingColor = session.colorOptions.first(where: { $0.name == colorName }) {
-                                                    return existingColor
-                                                } else {
-                                                    // Create basic JCrewColor if not found
-                                                    return JCrewColor(name: colorName)
-                                                }
-                                            }
-                                            displayedColorOptions = newColors
-                                            print("🎨 Updated colors: \(newColors.count) colors available")
+                            // Update available colors (fitData.colorsAvailable is already [JCrewColor])
+                            displayedColorOptions = fitData.colorsAvailable
+                                            print("🎨 Updated colors: \(displayedColorOptions.count) colors available")
                                             
                                             // Reset color selection if current color is not in new options
-                                            if !selectedColor.isEmpty && !newColors.contains(where: { $0.name == selectedColor }) {
+                                            if !selectedColor.isEmpty && !displayedColorOptions.contains(where: { $0.name == selectedColor }) {
                                                 selectedColor = ""
                                                 print("⚠️ Reset color selection - not available in new fit")
                                             }
@@ -363,17 +354,10 @@ struct TryOnConfirmationView: View {
                     displayedProductName = fitData.productName
                     print("📝 Initialized product name: '\(displayedProductName)'")
                     
-                    // Update colors if different
-                    let fitColors = fitData.colorsAvailable.map { colorName in
-                        if let existingColor = session.colorOptions.first(where: { $0.name == colorName }) {
-                            return existingColor
-                        } else {
-                            return JCrewColor(name: colorName)
-                        }
-                    }
-                    if !fitColors.isEmpty {
-                        displayedColorOptions = fitColors
-                        print("🎨 Initialized with \(fitColors.count) colors for fit '\(currentFit)'")
+                    // Update colors if different (fitData.colorsAvailable is already [JCrewColor])
+                    if !fitData.colorsAvailable.isEmpty {
+                        displayedColorOptions = fitData.colorsAvailable
+                        print("🎨 Initialized with \(fitData.colorsAvailable.count) colors for fit '\(currentFit)'")
                     }
                 }
             }
