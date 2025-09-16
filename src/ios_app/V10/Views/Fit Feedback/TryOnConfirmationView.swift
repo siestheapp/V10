@@ -302,7 +302,7 @@ struct TryOnConfirmationView: View {
         .navigationBarTitleDisplayMode(.inline)
         .sheet(isPresented: $navigateToFeedback) {
             NavigationView {
-                FitFeedbackView(
+                FitFeedbackViewWithPhoto(
                     feedbackType: .manualEntry,
                     selectedSize: selectedSize,
                     productUrl: session.productUrl,

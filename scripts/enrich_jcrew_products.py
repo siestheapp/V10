@@ -524,3 +524,4 @@ class JCrewProductEnricher:
 if __name__ == "__main__":
     enricher = JCrewProductEnricher()
     enricher.enrich_all_products()
+

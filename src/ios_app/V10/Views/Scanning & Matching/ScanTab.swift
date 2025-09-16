@@ -526,7 +526,7 @@ struct ScanTab: View {
                     }
                     .padding(.horizontal, 40)
                     .navigationDestination(isPresented: $navigateToFitFeedback) {
-                        FitFeedbackView(
+                        FitFeedbackViewWithPhoto(
                             feedbackType: .manualEntry, 
                             selectedSize: recommendation.recommendedSize,
                             productUrl: recommendation.productUrl,

@@ -143,7 +143,7 @@ class CanvasDataGenerator:
                     "size_label": row[4],
                     "dimension": row[5],
                     "feedback_text": row[6],
-                    "feedback_date": row[7].isoformat() if row[7] else "",
+                    "feedback_date": row[7].replace(tzinfo=timezone.utc).isoformat() if row[7] else "",
                     "confidence": float(row[8])
                 })
             

@@ -329,3 +329,4 @@ if __name__ == "__main__":
     else:
         print("\n❌ Migration failed")
         print("💾 Your backup is safe at: database_dumps/tailor3_dump_2025-09-14_01-59-30.sql")
+

@@ -24,6 +24,10 @@ struct FitFeedbackView: View {
     @State private var fitFeedback: [String: Int] = [:]
     @State private var isSubmitting = false
     @State private var showConfirmation = false
+    @State private var navigateToInsights = false
+    @State private var receivedInsights: TryOnInsights?
+    @State private var insightsBrandName = ""
+    @State private var insightsSize = ""
     
     // Initializers to support both old and new flows
     init(feedbackType: FeedbackType, selectedSize: String) {
@@ -133,6 +137,15 @@ struct FitFeedbackView: View {
             }
         }
         .padding(.top, 20)
+        .sheet(isPresented: $navigateToInsights) {
+            if let insights = receivedInsights {
+                InsightsView(
+                    insights: insights,
+                    brandName: insightsBrandName,
+                    sizeTried: insightsSize
+                )
+            }
+        }
     }
     
     /// Returns a description based on the `feedbackType`
@@ -224,10 +237,31 @@ struct FitFeedbackView: View {
                 do {
                     let response = try JSONSerialization.jsonObject(with: data) as? [String: Any]
                     print("✅ Feedback submitted successfully: \(response ?? [:])")
-                    showConfirmation = true
                     
-                    // Don't auto-dismiss - user will tap OK to dismiss
-                    // This gives users time to read the confirmation message
+                    // Check for AI insights
+                    if let insightsData = response?["insights"] as? [String: Any] {
+                        // Parse the insights
+                        if let summary = insightsData["summary"] as? String {
+                            let insights = TryOnInsights(
+                                summary: summary,
+                                keyFindings: insightsData["key_findings"] as? [String] ?? [],
+                                measurementAnalysis: insightsData["measurement_analysis"] as? [String: String] ?? [:],
+                                recommendations: insightsData["recommendations"] as? [String] ?? [],
+                                confidence: insightsData["confidence"] as? String ?? "medium"
+                            )
+                            
+                            self.receivedInsights = insights
+                            self.insightsBrandName = self.brand ?? "Brand"
+                            self.insightsSize = self.selectedSize
+                            self.navigateToInsights = true
+                        } else {
+                            // No summary in insights, show standard confirmation
+                            showConfirmation = true
+                        }
+                    } else {
+                        // No insights available, show standard confirmation
+                        showConfirmation = true
+                    }
                 } catch {
                     print("❌ Failed to parse response: \(error.localizedDescription)")
                 }

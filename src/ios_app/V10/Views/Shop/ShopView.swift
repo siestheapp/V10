@@ -10,8 +10,7 @@ struct ShopView: View {
     let fitZones = ["Tight", "Standard", "Relaxed"]
     
     var body: some View {
-        NavigationView {
-            VStack(spacing: 0) {
+        VStack(spacing: 0) {
                 // Category Filter
                 ScrollView(.horizontal, showsIndicators: false) {
                     HStack(spacing: 12) {
@@ -115,7 +114,6 @@ struct ShopView: View {
             .onAppear {
                 shopViewModel.loadRecommendations()
             }
-        }
     }
 }
 
@@ -225,7 +223,7 @@ struct ShopItemCard: View {
                     HStack(spacing: 4) {
                         Image(systemName: "checkmark.circle.fill")
                             .foregroundColor(.green)
-                        Text("\(Int(item.fitConfidence * 100))% fit")
+                        Text("\(item.fitConfidence.isFinite ? Int(item.fitConfidence * 100) : 0)% fit")
                             .font(.caption)
                             .fontWeight(.medium)
                     }
@@ -404,7 +402,7 @@ struct ShopItemDetailView: View {
                                     Text("Confidence")
                                         .font(.caption)
                                         .foregroundColor(.secondary)
-                                    Text("\(Int(item.fitConfidence * 100))%")
+                                    Text("\(item.fitConfidence.isFinite ? Int(item.fitConfidence * 100) : 0)%")
                                         .font(.title2)
                                         .fontWeight(.bold)
                                         .foregroundColor(.green)

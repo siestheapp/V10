@@ -522,3 +522,4 @@ if __name__ == "__main__":
         print("• Avoid dealbreakers")
     
     fetcher.__del__()
+

@@ -7,6 +7,9 @@ struct GarmentDetailView: View {
     var onGarmentUpdated: (() -> Void)? = nil  // Add callback
     @State private var showingFeedbackView = false
     @State private var showingSafari = false
+    @State private var showingPhotosView = false
+    @State private var photos: [GarmentPhoto] = []
+    @State private var primaryPhoto: GarmentPhoto?
     
     var body: some View {
         NavigationView {
@@ -59,6 +62,69 @@ struct GarmentDetailView: View {
                             }
                             .padding(.horizontal)
                         }
+                    }
+                    
+                    // Try-On Photos Section
+                    if !photos.isEmpty || primaryPhoto != nil {
+                        VStack(alignment: .leading, spacing: 12) {
+                            HStack {
+                                Image(systemName: "camera.fill")
+                                    .foregroundColor(.blue)
+                                Text("Try-On Photos")
+                                    .font(.headline)
+                                Spacer()
+                                if photos.count > 1 {
+                                    Button(action: { showingPhotosView = true }) {
+                                        Text("View All (\(photos.count))")
+                                            .font(.caption)
+                                            .foregroundColor(.blue)
+                                    }
+                                }
+                            }
+                            
+                            // Show primary photo or first photo
+                            if let photo = primaryPhoto ?? photos.first {
+                                AsyncImage(url: URL(string: photo.photoUrl)) { image in
+                                    image
+                                        .resizable()
+                                        .scaledToFill()
+                                        .frame(height: 200)
+                                        .clipped()
+                                        .cornerRadius(10)
+                                        .onTapGesture {
+                                            showingPhotosView = true
+                                        }
+                                } placeholder: {
+                                    RoundedRectangle(cornerRadius: 10)
+                                        .fill(Color.gray.opacity(0.2))
+                                        .frame(height: 200)
+                                        .overlay(ProgressView())
+                                }
+                                
+                                if !photo.caption.isEmpty {
+                                    Text(photo.caption)
+                                        .font(.caption)
+                                        .foregroundColor(.secondary)
+                                }
+                            }
+                        }
+                        .padding(.horizontal)
+                    } else {
+                        // Empty state for photos
+                        Button(action: { showingPhotosView = true }) {
+                            HStack {
+                                Image(systemName: "camera.badge.ellipsis")
+                                Text("No try-on photos yet")
+                                Spacer()
+                                Image(systemName: "chevron.right")
+                            }
+                            .font(.subheadline)
+                            .foregroundColor(.blue)
+                            .padding()
+                            .background(Color.blue.opacity(0.1))
+                            .cornerRadius(10)
+                        }
+                        .padding(.horizontal)
                     }
                     
                     // Brand and Product Name
@@ -169,7 +235,54 @@ struct GarmentDetailView: View {
                     SafariView(url: url)
                 }
             }
+            .sheet(isPresented: $showingPhotosView) {
+                NavigationView {
+                    GarmentPhotosView(garmentId: garment.id)
+                        .toolbar {
+                            ToolbarItem(placement: .navigationBarTrailing) {
+                                Button("Done") {
+                                    showingPhotosView = false
+                                    loadPhotos() // Reload photos after viewing
+                                }
+                            }
+                        }
+                }
+            }
+            .onAppear {
+                loadPhotos()
+            }
         }
+    }
+    
+    private func loadPhotos() {
+        guard let url = URL(string: "\(Config.baseURL)/garment/\(garment.id)/photos") else { return }
+        
+        URLSession.shared.dataTask(with: url) { data, response, error in
+            if let data = data,
+               let json = try? JSONSerialization.jsonObject(with: data) as? [String: Any],
+               let photosArray = json["photos"] as? [[String: Any]] {
+                
+                DispatchQueue.main.async {
+                    self.photos = photosArray.compactMap { dict in
+                        guard let id = dict["id"] as? Int,
+                              let photoUrl = dict["photo_url"] as? String else { return nil }
+                        
+                        return GarmentPhoto(
+                            id: id,
+                            photoUrl: photoUrl,
+                            photoType: dict["photo_type"] as? String ?? "camera",
+                            caption: dict["caption"] as? String ?? "",
+                            metadata: dict["metadata"] as? [String: Any],
+                            isPrimary: dict["is_primary"] as? Bool ?? false,
+                            createdAt: dict["created_at"] as? String ?? ""
+                        )
+                    }
+                    
+                    // Find primary photo
+                    self.primaryPhoto = self.photos.first(where: { $0.isPrimary })
+                }
+            }
+        }.resume()
     }
 }
 

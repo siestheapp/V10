@@ -867,7 +867,8 @@ class JCrewProductFetcher:
                 product_data.get('subcategory', 'Casual'),
                 product_data.get('price'),
                 product_data.get('sizes_available', []),
-                product_data.get('colors_available', []),
+                # Convert color dicts to strings
+                [c['name'] if isinstance(c, dict) else c for c in product_data.get('colors_available', [])],
                 product_data.get('material', ''),
                 product_data.get('fit_type', 'Regular'),
                 product_data.get('fit_options', []),
@@ -878,6 +879,7 @@ class JCrewProductFetcher:
             conn.commit()
         except Exception as e:
             print(f"❌ Error saving to cache: {e}")
+            conn.rollback()
         finally:
             cur.close()
             conn.close()
@@ -934,7 +936,8 @@ class JCrewProductFetcher:
                 product_data.get('subcategory', 'Casual'),
                 product_data.get('price'),
                 product_data.get('sizes_available', []),
-                product_data.get('colors_available', []),
+                # Convert color dicts to strings
+                [c['name'] if isinstance(c, dict) else c for c in product_data.get('colors_available', [])],
                 product_data.get('material', ''),
                 product_data.get('fit_type', 'Regular'),
                 product_data.get('fit_options', []),

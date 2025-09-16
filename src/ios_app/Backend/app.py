@@ -1712,6 +1712,172 @@ async def submit_tryon_feedback(request: dict):
         print(f"Error submitting try-on feedback: {str(e)}")
         raise HTTPException(status_code=500, detail=str(e))
 
+@app.post("/garment/{garment_id}/photos")
+async def upload_garment_photo(
+    garment_id: int,
+    photo_data: dict
+):
+    """
+    Upload a photo for a user garment.
+    Accepts base64 encoded image data or a URL.
+    """
+    try:
+        user_id = photo_data.get("user_id", "1")
+        photo_type = photo_data.get("photo_type", "camera")  # camera, gallery, or tag
+        caption = photo_data.get("caption", "")
+        metadata = photo_data.get("metadata", {})
+        is_primary = photo_data.get("is_primary", False)
+        
+        # Handle photo data - either base64 or URL
+        if "photo_base64" in photo_data:
+            # For base64 images, we'll store them locally and return a URL
+            # In production, you'd upload to S3 or similar
+            import base64
+            import uuid
+            
+            photo_base64 = photo_data["photo_base64"]
+            # Remove data:image prefix if present
+            if "," in photo_base64:
+                photo_base64 = photo_base64.split(",")[1]
+            
+            # Generate unique filename
+            photo_id = str(uuid.uuid4())
+            photo_filename = f"tryon_photos/{user_id}/{garment_id}/{photo_id}.jpg"
+            
+            # Create directory if it doesn't exist
+            photo_dir = f"tryon_photos/{user_id}/{garment_id}"
+            os.makedirs(photo_dir, exist_ok=True)
+            
+            # Save the image
+            with open(photo_filename, "wb") as f:
+                f.write(base64.b64decode(photo_base64))
+            
+            photo_url = f"/static/{photo_filename}"  # In production, this would be an S3 URL
+        elif "photo_url" in photo_data:
+            photo_url = photo_data["photo_url"]
+        else:
+            raise HTTPException(status_code=400, detail="Either photo_base64 or photo_url must be provided")
+        
+        async with pool.acquire() as conn:
+            # If setting as primary, unset other primary photos
+            if is_primary:
+                await conn.execute("""
+                    UPDATE user_garment_photos 
+                    SET is_primary = FALSE 
+                    WHERE user_garment_id = $1
+                """, garment_id)
+            
+            # Insert the new photo
+            photo_id = await conn.fetchval("""
+                INSERT INTO user_garment_photos (
+                    user_garment_id, photo_url, photo_type, caption, 
+                    metadata, is_primary, created_at
+                ) VALUES ($1, $2, $3, $4, $5, $6, NOW())
+                RETURNING id
+            """, garment_id, photo_url, photo_type, caption, 
+                json.dumps(metadata) if metadata else None, is_primary)
+            
+            # Log the action
+            await conn.execute("""
+                INSERT INTO user_actions (
+                    user_id, action_type, target_table, target_id, 
+                    new_values, metadata, created_at
+                ) VALUES ($1, 'add_photo', 'user_garment_photos', $2, $3, $4, NOW())
+            """, int(user_id), photo_id, json.dumps({
+                "photo_url": photo_url,
+                "photo_type": photo_type
+            }), json.dumps({
+                "garment_id": garment_id,
+                "caption": caption
+            }))
+        
+        return {
+            "photo_id": photo_id,
+            "photo_url": photo_url,
+            "status": "success",
+            "message": "Photo uploaded successfully"
+        }
+        
+    except Exception as e:
+        print(f"Error uploading photo: {str(e)}")
+        raise HTTPException(status_code=500, detail=str(e))
+
+@app.get("/garment/{garment_id}/photos")
+async def get_garment_photos(garment_id: int):
+    """
+    Get all photos for a user garment.
+    """
+    try:
+        async with pool.acquire() as conn:
+            photos = await conn.fetch("""
+                SELECT 
+                    id,
+                    photo_url,
+                    photo_type,
+                    caption,
+                    metadata,
+                    is_primary,
+                    created_at
+                FROM user_garment_photos
+                WHERE user_garment_id = $1
+                ORDER BY is_primary DESC, created_at DESC
+            """, garment_id)
+            
+            return {
+                "garment_id": garment_id,
+                "photos": [dict(photo) for photo in photos],
+                "total_photos": len(photos)
+            }
+            
+    except Exception as e:
+        print(f"Error getting photos: {str(e)}")
+        raise HTTPException(status_code=500, detail=str(e))
+
+@app.delete("/photo/{photo_id}")
+async def delete_garment_photo(photo_id: int, user_id: str = "1"):
+    """
+    Delete a garment photo.
+    """
+    try:
+        async with pool.acquire() as conn:
+            # Get photo info before deleting
+            photo_info = await conn.fetchrow("""
+                SELECT user_garment_id, photo_url 
+                FROM user_garment_photos 
+                WHERE id = $1
+            """, photo_id)
+            
+            if not photo_info:
+                raise HTTPException(status_code=404, detail="Photo not found")
+            
+            # Delete the photo record
+            await conn.execute("""
+                DELETE FROM user_garment_photos WHERE id = $1
+            """, photo_id)
+            
+            # Log the action
+            await conn.execute("""
+                INSERT INTO user_actions (
+                    user_id, action_type, target_table, target_id,
+                    previous_values, metadata, created_at
+                ) VALUES ($1, 'delete_photo', 'user_garment_photos', $2, $3, $4, NOW())
+            """, int(user_id), photo_id, json.dumps({
+                "photo_url": photo_info["photo_url"]
+            }), json.dumps({
+                "garment_id": photo_info["user_garment_id"]
+            }))
+            
+            # TODO: Delete actual file if stored locally
+            
+            return {
+                "status": "success",
+                "message": "Photo deleted successfully"
+            }
+            
+    except Exception as e:
+        print(f"Error deleting photo: {str(e)}")
+        raise HTTPException(status_code=500, detail=str(e))
+
 @app.post("/garment/size-recommendation")
 async def get_garment_size_recommendation(request: dict):
     """
