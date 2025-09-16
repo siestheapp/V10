@@ -2879,17 +2879,22 @@ def extract_brand_from_url(url: str) -> dict:
 
 async def get_brand_measurements_for_feedback(brand_id: int) -> dict:
     """Get available measurements for feedback collection"""
-    async with pool.acquire() as conn:
+    try:
+        # Use synchronous database connection since pool might not be available
+        conn = get_db_connection()
+        cur = conn.cursor(cursor_factory=RealDictCursor)
+        
         # Try new measurement system first
-        measurement_types = await conn.fetch("""
+        cur.execute("""
             SELECT DISTINCT m.measurement_type
             FROM measurements m
             JOIN measurement_sets ms ON m.set_id = ms.id
-            WHERE ms.brand_id = $1 
+            WHERE ms.brand_id = %s 
             AND ms.scope = 'size_guide'
             AND m.measurement_category = 'body'
-        """, brand_id)
+        """, (brand_id,))
         
+        measurement_types = cur.fetchall()
         measurements = ['overall']  # Always include overall
         
         if measurement_types:
@@ -2906,17 +2911,18 @@ async def get_brand_measurements_for_feedback(brand_id: int) -> dict:
                     measurements.append('waist')
         else:
             # Fallback to old system for backward compatibility
-            size_guide = await conn.fetchrow("""
+            cur.execute("""
                 SELECT 
                     chest_min, chest_max,
                     neck_min, neck_max,
                     sleeve_min, sleeve_max,
                     waist_min, waist_max
                 FROM size_guides_v2 
-                WHERE brand_id = $1 
+                WHERE brand_id = %s 
                 LIMIT 1
-            """, brand_id)
+            """, (brand_id,))
             
+            size_guide = cur.fetchone()
             if size_guide:
                 if size_guide.get('chest_min') is not None and size_guide.get('chest_max') is not None:
                     measurements.append('chest')
@@ -2937,6 +2943,24 @@ async def get_brand_measurements_for_feedback(brand_id: int) -> dict:
                 {"value": 5, "label": "Too loose"}
             ]
         }
+    except Exception as e:
+        print(f"Error getting brand measurements: {e}")
+        # Return default measurements if database query fails
+        return {
+            "measurements": ['overall', 'chest', 'neck', 'sleeve'],
+            "feedbackOptions": [
+                {"value": 1, "label": "Too tight"},
+                {"value": 2, "label": "Tight but I like it"},
+                {"value": 3, "label": "Good"},
+                {"value": 4, "label": "Loose but I like it"},
+                {"value": 5, "label": "Too loose"}
+            ]
+        }
+    finally:
+        if 'cur' in locals():
+            cur.close()
+        if 'conn' in locals():
+            conn.close()
 
 async def get_size_measurements(brand_id: int, size_label: str) -> dict:
     """Get measurements for a specific brand and size"""
