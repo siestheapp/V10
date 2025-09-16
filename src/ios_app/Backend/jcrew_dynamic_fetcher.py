@@ -196,9 +196,11 @@ class JCrewDynamicFetcher:
     def _extract_product_code(self, url: str) -> str:
         """Extract product code from URL"""
         patterns = [
-            r'/([A-Z]{2}\d{3,4})(?:\?|$|/)',
-            r'[?&]productCode=([A-Z]{2}\d{3,4})',
-            r'/p/([A-Z]{2}\d{3,4})',
+            r'/([A-Z]{2}\d{3,4})(?:\?|$|/)',  # /CM389? or /CM389/
+            r'[?&]productCode=([A-Z]{2}\d{3,4})',  # ?productCode=CM389
+            r'/p/([A-Z]{2}\d{3,4})',  # /p/CM389
+            r'/([A-Z]{2}\d{3,4})/',  # /ME625/ (for mobile URLs)
+            r'[?&]colorProductCode=([A-Z]{2}\d{3,4})',  # ?colorProductCode=CM390
         ]
         
         for pattern in patterns:
