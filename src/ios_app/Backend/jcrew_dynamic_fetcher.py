@@ -19,8 +19,13 @@ import sys
 import os
 
 # Add parent directory to path for imports
-sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__)))))
-from db_config import DB_CONFIG
+try:
+    # When imported by app.py
+    from db_config import DB_CONFIG
+except ImportError:
+    # When run directly
+    sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__)))))
+    from db_config import DB_CONFIG
 
 class JCrewDynamicFetcher:
     def __init__(self):
