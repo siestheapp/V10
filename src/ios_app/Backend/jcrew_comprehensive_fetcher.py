@@ -129,7 +129,7 @@ class JCrewComprehensiveFetcher:
             # Build comprehensive response
             return {
                 'product_code': product_code,
-                'product_name': product_name,
+                'product_name': product_name or "J.Crew Product",  # Ensure never null
                 'base_url': base_url,
                 'current_url': product_url,
                 'current_fit': current_fit,
@@ -139,7 +139,7 @@ class JCrewComprehensiveFetcher:
                 
                 # Current selection data (for backward compatibility)
                 'colors_available': fit_specific_data.get(current_fit, {}).get('colors', []),
-                'product_image': fit_specific_data.get(current_fit, {}).get('image', ''),
+                'product_image': fit_specific_data.get(current_fit, {}).get('image', '') or "",  # Never null
                 'sizes_available': fit_specific_data.get(current_fit, {}).get('sizes', ['XS', 'S', 'M', 'L', 'XL', 'XXL']),
                 
                 # This is the key field - ALL fit options available
@@ -386,13 +386,13 @@ class JCrewComprehensiveFetcher:
             row = cur.fetchone()
             if row:
                 return {
-                    'product_name': row[0],
+                    'product_name': row[0] or "J.Crew Product",
                     'product_code': row[1],
-                    'product_image': row[2],
+                    'product_image': row[2] or "",  # Never null
                     'category': row[3],
                     'subcategory': row[4],
-                    'sizes_available': row[5],
-                    'colors_available': row[6],
+                    'sizes_available': row[5] or ['XS', 'S', 'M', 'L', 'XL', 'XXL'],
+                    'colors_available': row[6] or [],
                     'material': row[7],
                     'fit_type': row[8],
                     'all_fit_options': row[9] or [],  # This is the key field

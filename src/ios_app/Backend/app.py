@@ -1477,27 +1477,30 @@ async def start_tryon_session(request: dict):
         if not brand_info:
             raise HTTPException(status_code=400, detail="Could not identify brand from URL")
         
-        # For J.Crew, use the comprehensive fetcher that returns ALL fit options
-        if brand_info["brand_name"] == "J.Crew" and "jcrew.com" in product_url.lower():
-            # Import here to avoid circular imports
-            # Using comprehensive fetcher to get ALL fit options for the product family
-            from jcrew_comprehensive_fetcher import JCrewComprehensiveFetcher
-            
-            fetcher = JCrewComprehensiveFetcher()
-            product_data = fetcher.fetch_product(product_url)
+            # For J.Crew, use the dynamic fetcher that returns fit variations
+            if brand_info["brand_name"] == "J.Crew" and "jcrew.com" in product_url.lower():
+                # Import here to avoid circular imports
+                # Using dynamic fetcher to get fit-specific variations
+                from jcrew_dynamic_fetcher import JCrewDynamicFetcher
+                
+                fetcher = JCrewDynamicFetcher()
+                product_data = fetcher.fetch_product(product_url)
             
             if product_data:
-                product_name = product_data['product_name']
+                # Use current product name (includes fit prefix if applicable)
+                product_name = product_data.get('current_product_name', product_data.get('product_name', ''))
                 product_image = product_data.get('product_image', '')
                 size_options = product_data.get('sizes_available', ['XS', 'S', 'M', 'L', 'XL', 'XXL'])
                 fit_options = product_data.get('fit_options', [])
                 
-                # NO FALLBACK! Trust the database/scraper
-                # If fit_options is empty, it means this is a single-fit product
+                # Get fit variations for dynamic UI updates
+                fit_variations = product_data.get('fit_variations', {})
                 
                 print(f"✅ J.Crew product fetched: {product_name}")
                 if fit_options:
                     print(f"🎯 Available fit options: {fit_options}")
+                    if fit_variations:
+                        print(f"📊 Fit variations available for dynamic updates")
                 else:
                     print(f"📝 No fit options (single-fit product)")
             else:
@@ -1510,6 +1513,7 @@ async def start_tryon_session(request: dict):
             product_image = extract_product_image_from_url(product_url)
             size_options = await get_brand_size_options(brand_info["brand_id"])
             fit_options = []  # Other brands don't have fit options yet
+            fit_variations = {}  # No fit variations for non-J.Crew brands
         
         # Get available measurements for this brand
         brand_measurements = await get_brand_measurements_for_feedback(brand_info["brand_id"])
@@ -1529,7 +1533,8 @@ async def start_tryon_session(request: dict):
             if 'color_name' in params:
                 current_color = params['color_name'][0].replace('+', ' ').replace('%20', ' ').title()
         
-        return {
+        # Build response
+        response = {
             "session_id": f"tryon_{user_id}_{int(time.time())}",
             "brand": brand_info["brand_name"],
             "brand_id": brand_info["brand_id"],
@@ -1544,6 +1549,14 @@ async def start_tryon_session(request: dict):
             "current_color": current_color,
             "next_step": "size_selection_and_feedback"
         }
+        
+        # Add fit variations for J.Crew to enable dynamic UI updates
+        if brand_info["brand_name"] == "J.Crew" and fit_variations:
+            response["fit_variations"] = fit_variations
+            response["current_fit"] = product_data.get('current_fit', 'Classic')
+            response["base_product_name"] = product_data.get('base_product_name', product_name)
+        
+        return response
         
     except HTTPException:
         raise  # Re-raise HTTP exceptions as-is
