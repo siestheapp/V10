@@ -583,81 +583,55 @@ class JCrewProductFetcher:
         return 'Regular'
     
     def _extract_fit_options(self, soup: BeautifulSoup, product_url: str) -> list:
-        """Extract available fit options for this specific product"""
+        """
+        Extract ONLY the fit options that are actually selectable buttons on the page.
+        DO NOT extract from JavaScript metadata which includes ALL possible fits.
+        """
         fit_options = []
         
-        # Determine if this is a men's or women's product
-        is_mens_product = '/mens/' in product_url.lower() or '/men/' in product_url.lower()
+        # IMPORTANT: Only look for actual clickable fit buttons, not JavaScript metadata
+        # JavaScript contains ALL possible fits, but we need only the ones actually available
         
-        # Method 1: Extract from JavaScript/JSON data in the page (MOST RELIABLE)
-        # This inspects the actual data structures that power the page, not just visible elements
-        scripts = soup.find_all('script')
-        for script in scripts:
-            if script.string:
-                script_content = script.string
-                
-                # Look for Next.js __NEXT_DATA__ which contains all product variations
-                if '__NEXT_DATA__' in script_content or 'productData' in script_content:
-                    # Find all fit parameter values in URLs or product data
-                    import re
-                    
-                    # Pattern 1: URLs with fit parameters
-                    fit_urls = re.findall(r'["\']fit["\']:\s*["\']([\w\s]+)["\']', script_content)
-                    fit_urls += re.findall(r'fit=([^&"\'\s]+)', script_content)
-                    
-                    # Pattern 2: Fit options in arrays or objects
-                    fit_arrays = re.findall(r'["\'](Classic|Slim|Tall|Relaxed|Untucked|Regular|Petite)["\']', script_content)
-                    
-                    # Combine and deduplicate
-                    all_fits = set()
-                    for fit in fit_urls + fit_arrays:
-                        fit_clean = fit.replace('%20', ' ').replace('+', ' ').strip()
-                        if fit_clean and len(fit_clean) < 20:  # Sanity check
-                            # Filter based on product gender
-                            if is_mens_product and fit_clean.lower() == 'petite':
-                                continue  # Skip Petite for men's products
-                            all_fits.add(fit_clean)
-                    
-                    # Only add fits if we found a reasonable number (1-5 typically)
-                    if 1 <= len(all_fits) <= 5:
-                        fit_options = sorted(list(all_fits))
-                        print(f"🎯 Found fit options in JavaScript data: {fit_options}")
-                        break
+        # Strategy 1: Look for buttons with data-qaid="pdpProductVariationsItem"
+        # This is what J.Crew uses for actual fit selection buttons
+        variation_buttons = soup.find_all('button', attrs={'data-qaid': lambda x: x and 'ProductVariationsItem' in x})
         
-        # Method 2: Look for ProductVariations section (fallback for older pages)
-        if not fit_options:
-            product_variations = soup.find('div', {'id': 'c-product__variations'})
-            if product_variations:
-                # Look for fit variation buttons within the ProductVariations section
-                fit_buttons = product_variations.find_all('button', {'class': lambda x: x and 'js-product_variation' in x})
-                for button in fit_buttons:
-                    # Check if this is a fit variation (not size or color)
-                    data_label = button.get('data-label', '').strip()
-                    if data_label and any(fit_word in data_label.lower() for fit_word in ['classic', 'slim', 'tall', 'relaxed', 'untucked']):
-                        if data_label not in fit_options:
-                            fit_options.append(data_label)
-                            print(f"🎯 Found fit option in ProductVariations: {data_label}")
-        
-        # Method 3: Look for fit variation lists or groups (alternative J.Crew structure)
-        if not fit_options:
-            # Look for fit variation lists
-            fit_lists = soup.find_all('ul', {'class': lambda x: x and 'variations-list' in x})
-            for fit_list in fit_lists:
-                fit_items = fit_list.find_all('li', {'class': lambda x: x and 'js-product_variation' in x})
-                for item in fit_items:
-                    data_label = item.get('data-label', '').strip()
-                    if data_label and any(fit_word in data_label.lower() for fit_word in ['classic', 'slim', 'tall', 'relaxed', 'untucked']):
-                        if data_label not in fit_options:
-                            fit_options.append(data_label)
-                            print(f"🎯 Found fit option in variations list: {data_label}")
+        if variation_buttons:
+            for button in variation_buttons:
+                button_text = button.get_text(strip=True)
+                # Check if this is a fit button (not size or color)
+                if button_text and any(fit in button_text for fit in ['Classic', 'Slim', 'Tall', 'Relaxed', 'Untucked']):
+                    # Handle multi-word fits like "Slim Untucked"
+                    if 'Slim' in button_text and 'Untucked' in button_text:
+                        fit_options.append('Slim Untucked')
+                    elif button_text not in fit_options:
+                        fit_options.append(button_text)
             
-            # Also check for any elements with fit-related data attributes
-            fit_elements = soup.find_all(attrs={'data-fit': True})
-            for element in fit_elements:
-                fit_value = element.get('data-fit', '').strip()
-                if fit_value and fit_value not in fit_options:
-                    fit_options.append(fit_value.title())
-                    print(f"🎯 Found fit option in data-fit attribute: {fit_value}")
+            if fit_options:
+                print(f"✅ Found {len(fit_options)} actual fit button(s): {fit_options}")
+                return fit_options
+        
+        # Strategy 2: Look for ProductVariations wrapper with actual buttons
+        if not fit_options:
+            # Find any element with class containing "ProductVariations"
+            variation_wrappers = soup.find_all(attrs={'class': lambda x: x and 'ProductVariations' in str(x)})
+            
+            for wrapper in variation_wrappers:
+                buttons = wrapper.find_all('button')
+                for button in buttons:
+                    button_text = button.get_text(strip=True)
+                    # Only get fit-related buttons
+                    if button_text and any(fit in button_text for fit in ['Classic', 'Slim', 'Tall', 'Relaxed', 'Untucked']):
+                        if 'Slim' in button_text and 'Untucked' in button_text:
+                            if 'Slim Untucked' not in fit_options:
+                                fit_options.append('Slim Untucked')
+                        elif button_text not in fit_options:
+                            fit_options.append(button_text)
+            
+            if fit_options:
+                print(f"✅ Found {len(fit_options)} fit button(s) in ProductVariations: {fit_options}")
+                return fit_options
+        
         
         # Method 4: Look for actual fit selector buttons on the page (last resort)
         if not fit_options:
