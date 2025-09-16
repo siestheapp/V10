@@ -431,18 +431,27 @@ def test_urls(urls):
 
 
 if __name__ == "__main__":
-    # Test URLs - Successfully tested on September 16, 2025
-    # These URLs were verified to work with this scraper and produced accurate results
-    test_urls_list = [
-        # Multi-variant product: 18 colors, 5 fits (including "Slim Untucked")
-        "https://www.jcrew.com/p/mens/categories/clothing/shirts/broken-in-oxford/broken-in-organic-cotton-oxford-shirt/BE996",
-        
-        # Single-variant product: 1 color (DOG EMB BLUE BROWN), no fit options
-        # "https://www.jcrew.com/p/mens/categories/clothing/shirts/corduroy/fine-wale-corduroy-shirt-with-embroidered-dogs/CN406",
-    ]
+    import sys
+    
+    # Accept URLs from command line or use defaults for testing
+    if len(sys.argv) > 1:
+        # Use provided URLs
+        test_urls_list = sys.argv[1:]
+        print(f"Testing {len(test_urls_list)} user-provided URL(s)...")
+    else:
+        # Default test URLs - Successfully tested on September 16, 2025
+        print("No URLs provided. Using default test URLs...")
+        print("Usage: python scripts/precise_jcrew_html_scraper_v2.py <url1> <url2> ...")
+        print()
+        test_urls_list = [
+            # Multi-variant product: 18 colors, 5 fits (including "Slim Untucked")
+            "https://www.jcrew.com/p/mens/categories/clothing/shirts/broken-in-oxford/broken-in-organic-cotton-oxford-shirt/BE996",
+            
+            # Single-variant product: 1 color (DOG EMB BLUE BROWN), no fit options
+            # "https://www.jcrew.com/p/mens/categories/clothing/shirts/corduroy/fine-wale-corduroy-shirt-with-embroidered-dogs/CN406",
+        ]
     
     print("This scraper has NO FALLBACKS - it will fail if the HTML structure doesn't match")
-    print("Testing with provided URLs...")
     print()
     
     results = test_urls(test_urls_list)
