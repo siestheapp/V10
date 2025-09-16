@@ -384,6 +384,9 @@ class JCrewDynamicFetcher:
             if img_src:
                 if img_src.startswith('/'):
                     img_src = f"https://www.jcrew.com{img_src}"
+                # Remove dollar sign parameters that might cause issues in Swift URL handling
+                if '$' in img_src:
+                    img_src = img_src.split('?')[0]  # Keep base URL without parameters
                 color_info['imageUrl'] = img_src
             
             # Also attempt to read a background color if present

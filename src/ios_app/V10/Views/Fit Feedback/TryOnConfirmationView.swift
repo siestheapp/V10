@@ -384,16 +384,33 @@ struct TryOnConfirmationView: View {
     private func swatchView(for color: JCrewColor) -> some View {
         Group {
             if let urlString = color.imageUrl, let url = URL(string: urlString) {
-                AsyncImage(url: url) { image in
-                    image
-                        .resizable()
-                        .scaledToFill()
-                } placeholder: {
-                    Circle().fill(colorFromHexOrName(color))
+                AsyncImage(url: url) { phase in
+                    switch phase {
+                    case .success(let image):
+                        image
+                            .resizable()
+                            .scaledToFill()
+                    case .failure(let error):
+                        // Log error and show fallback
+                        let _ = print("❌ Failed to load color swatch: \(error)")
+                        Circle().fill(colorFromHexOrName(color))
+                    case .empty:
+                        // Loading state
+                        Circle().fill(Color.gray.opacity(0.3))
+                    @unknown default:
+                        Circle().fill(colorFromHexOrName(color))
+                    }
                 }
                 .clipShape(Circle())
             } else {
                 Circle().fill(colorFromHexOrName(color))
+            }
+        }
+        .onAppear {
+            if let url = color.imageUrl {
+                print("🎨 Loading swatch for \(color.name): \(url)")
+            } else {
+                print("⚠️ No imageUrl for color: \(color.name)")
             }
         }
     }
