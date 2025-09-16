@@ -138,16 +138,12 @@ struct TryOnConfirmationView: View {
                                         selectedFit = fit
                                         print("🔍 Selected fit is now: '\(selectedFit)'")
                                         
-                                        // Update product name and colors based on fit variation
+                                        // Only update colors based on fit variation (not product name)
                                         if let fitVariations = session.fitVariations,
                                            let fitData = fitVariations[fit] {
-                                            // Update product name
-                                            displayedProductName = fitData.productName
-                                            print("📝 Updated product name to: '\(displayedProductName)'")
-                                            
-                            // Update available colors (fitData.colorsAvailable is already [JCrewColor])
-                            displayedColorOptions = fitData.colorsAvailable
-                                            print("🎨 Updated colors: \(displayedColorOptions.count) colors available")
+                                            // Update available colors (fitData.colorsAvailable is already [JCrewColor])
+                                            displayedColorOptions = fitData.colorsAvailable
+                                            print("🎨 Updated colors: \(displayedColorOptions.count) colors available for \(fit) fit")
                                             
                                             // Reset color selection if current color is not in new options
                                             if !selectedColor.isEmpty && !displayedColorOptions.contains(where: { $0.name == selectedColor }) {
@@ -340,26 +336,21 @@ struct TryOnConfirmationView: View {
             print("🔍 Fit options count: \(availableFitOptions.count)")
             
             // Initialize displayed values from session
-            displayedProductName = session.productName
-            displayedColorOptions = session.colorOptions
+            // Use base product name (without fit prefix) like J.Crew app
+            displayedProductName = session.baseProductName ?? session.productName
             
-            // Set current fit from session if available
-            if let currentFit = session.currentFit, !currentFit.isEmpty {
-                selectedFit = currentFit
-                print("🔍 Initialized with current fit: '\(currentFit)'")
-                
-                // Update product name and colors based on current fit
-                if let fitVariations = session.fitVariations,
-                   let fitData = fitVariations[currentFit] {
-                    displayedProductName = fitData.productName
-                    print("📝 Initialized product name: '\(displayedProductName)'")
-                    
-                    // Update colors if different (fitData.colorsAvailable is already [JCrewColor])
-                    if !fitData.colorsAvailable.isEmpty {
-                        displayedColorOptions = fitData.colorsAvailable
-                        print("🎨 Initialized with \(fitData.colorsAvailable.count) colors for fit '\(currentFit)'")
-                    }
-                }
+            // Always default to Classic fit like J.Crew app
+            selectedFit = "Classic"
+            print("🔍 Default to Classic fit (J.Crew standard behavior)")
+            
+            // Set colors for Classic fit
+            if let fitVariations = session.fitVariations,
+               let classicData = fitVariations["Classic"] {
+                displayedColorOptions = classicData.colorsAvailable
+                print("🎨 Initialized with \(classicData.colorsAvailable.count) colors for Classic fit")
+            } else {
+                // Fallback to session colors if no fit variations
+                displayedColorOptions = session.colorOptions
             }
             print("🔍 Available measurements: \(session.availableMeasurements)")
             print("🔍 Selected size: '\(selectedSize)'")

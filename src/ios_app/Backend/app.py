@@ -1491,8 +1491,8 @@ async def start_tryon_session(request: dict):
             product_data = fetcher.fetch_product(product_url)
             
             if product_data:
-                # Use current product name (includes fit prefix if applicable)
-                product_name = product_data.get('current_product_name', product_data.get('product_name', ''))
+                # Use base product name (without fit prefix) like J.Crew app
+                product_name = product_data.get('base_product_name', product_data.get('product_name', ''))
                 product_image = product_data.get('product_image', '')
                 size_options = product_data.get('sizes_available', ['XS', 'S', 'M', 'L', 'XL', 'XXL'])
                 fit_options = product_data.get('fit_options', [])
@@ -1557,7 +1557,7 @@ async def start_tryon_session(request: dict):
         # Add fit variations for J.Crew to enable dynamic UI updates
         if brand_info["brand_name"] == "J.Crew" and fit_variations:
             response["fit_variations"] = fit_variations
-            response["current_fit"] = product_data.get('current_fit', 'Classic')
+            response["current_fit"] = 'Classic'  # Always default to Classic like J.Crew app
             response["base_product_name"] = product_data.get('base_product_name', product_name)
         
         return response
