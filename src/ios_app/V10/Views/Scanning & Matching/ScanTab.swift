@@ -357,6 +357,14 @@ struct ScanTab: View {
                                     .keyboardType(.URL)
                                     .submitLabel(.go)
                                     .id(textFieldId) // Simulator focus workaround
+                                    .onChange(of: productLink) { oldValue, newValue in
+                                        // Clear old session when URL changes
+                                        if oldValue != newValue && !newValue.isEmpty {
+                                            tryOnSession = nil
+                                            sizeRecommendation = nil
+                                            analysisError = nil
+                                        }
+                                    }
                                     .onSubmit {
                                         if !productLink.isEmpty {
                                             analyzeProduct()
