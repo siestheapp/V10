@@ -1,0 +1,25 @@
+services:
+  - type: web
+    name: v10-contractor-test
+    runtime: python
+    region: ohio
+    plan: free
+    branch: contractor-performance-simple
+    rootDir: src/ios_app/Backend
+    buildCommand: pip install -r requirements.txt
+    startCommand: python app.py
+    envVars:
+      - key: DB_HOST
+        value: localhost
+      - key: DB_USER  
+        value: postgres
+      - key: DB_PASSWORD
+        value: test123
+      - key: DB_NAME
+        value: v10_test
+      - key: DB_PORT
+        value: 5432
+      - key: PORT
+        value: 8006
+      - key: OPENAI_API_KEY
+        value: skip
