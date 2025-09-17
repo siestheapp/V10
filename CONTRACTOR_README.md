@@ -1,49 +1,89 @@
-# V10 iOS Performance Optimization
+# V10 iOS Performance Optimization Project
 
-## Quick Start
+## 🎯 Your Mission
+Fix iOS app performance issues:
+- Tab switching: Currently ~450ms → Target <200ms
+- Scrolling: Currently ~20 FPS → Target 55+ FPS  
+- Button taps: Currently ~350ms → Target <100ms
 
-1. **Open iOS project**:
-   ```bash
-   cd src/ios_app
-   open V10.xcodeproj
-   ```
+## 🚀 Quick Setup
 
-2. **Build and run** - The app is already configured to use our test backend at:
-   ```
-   https://v10-2as4.onrender.com
-   ```
-   No need to run anything locally!
+### 1. iOS App
+```bash
+cd src/ios_app
+open V10.xcodeproj
+```
 
-3. **Test with user1 account**
-   - This account has random test data
-   - Data is intentionally inconsistent (3XL too small, S too big, etc.)
-   - This is fake data created by random button clicking
+### 2. Backend (Optional - for testing with real API)
+The iOS app can work with mock data, but if you want to test with the backend:
 
-## Performance Issues to Fix
+```bash
+cd src/ios_app/Backend
+python -m venv venv
+source venv/bin/activate
+pip install -r requirements.txt
 
-Current performance:
-- Tab switching: ~450ms (target: <200ms)
-- Scrolling: ~20 FPS (target: 55+ FPS)  
-- Button taps: ~350ms (target: <100ms)
+# You'll need to set up a local PostgreSQL database
+# The app uses test data for user1@example.com
+python app.py
+```
 
-## What You Have
+### 3. Update Config.swift
+Point to your local backend or use mock mode:
+```swift
+// For local backend testing:
+static let baseURL = "http://127.0.0.1:8006"
 
-- Full iOS source code
-- Backend API source
-- Test database with fake user1 data
-- All product/brand data
+// Or use mock mode (no backend needed)
+static let useMockData = true
+```
 
-## What's Missing
+## 📊 Test Data
+- The app has test data for user1@example.com
+- This data is intentionally inconsistent (for testing)
+- 3XL marked as "too small", S marked as "too big" - this is normal
+- Focus on performance, not data accuracy
 
-- Web scrapers (proprietary, not needed for performance)
-- Production credentials (not needed)
+## 🔍 Performance Analysis
 
-## Focus Areas
+Use Xcode Instruments (Cmd+I) to profile:
+1. Time Profiler - for CPU usage
+2. Core Animation - for FPS and rendering
+3. System Trace - for overall performance
+4. SwiftUI - for view updates
 
-1. SwiftUI view performance
-2. List/Grid scrolling optimization
-3. Image loading and caching
-4. Tab switching animations
-5. Form responsiveness
+## 📁 Project Structure
 
-Use Instruments to profile and identify bottlenecks.
+```
+src/ios_app/
+├── V10.xcodeproj       # Xcode project
+├── V10/
+│   ├── App/            # App configuration
+│   ├── Views/          # SwiftUI views (FOCUS HERE)
+│   ├── Models/         # Data models
+│   └── Services/       # API services
+└── Backend/            # Python backend (optional)
+```
+
+## ⚠️ Known Performance Issues
+
+1. **FitFeedbackView**: Complex form causing lag
+2. **ShopTab**: Grid/List scrolling is choppy
+3. **Tab Switching**: Slow transitions between tabs
+4. **Image Loading**: No caching implemented
+5. **List Rendering**: Not using lazy loading properly
+
+## ✅ Deliverables
+
+1. **Day 3**: Performance audit with Instruments traces
+2. **Day 7**: Initial optimizations implemented
+3. **Day 14**: Final fixes + documentation
+
+## 📝 Notes
+
+- All product/brand data is included for testing
+- The backend uses a test database with fake data
+- Focus on iOS UI performance, not backend optimization
+- Document all changes you make
+
+Good luck! Looking forward to seeing those performance improvements!
