@@ -3,8 +3,9 @@ import SwiftUI
 @main
 struct SiesApp: App {
     @StateObject private var userSettings = UserSettings()
-    @AppStorage("hasCompletedOnboarding") private var hasCompletedOnboarding = false
-    @State private var forceMainApp = false
+    // TEMPORARY: Force main app for debugging
+    @AppStorage("hasCompletedOnboarding") private var hasCompletedOnboarding = true
+    @State private var forceMainApp = true
     @State private var selectedTab = 0
     
     var body: some Scene {
