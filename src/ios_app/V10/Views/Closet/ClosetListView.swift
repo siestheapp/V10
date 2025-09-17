@@ -118,8 +118,8 @@ struct ClosetListView: View {
                 }
             }
             .onAppear {
-                // PERFORMANCE FIX: Only load when actually visible and not already loaded
-                if garments.isEmpty && !isLoading {
+                // Load garments on first appearance when empty
+                if garments.isEmpty {
                     loadGarments()
                 }
             }
@@ -127,6 +127,9 @@ struct ClosetListView: View {
     }
     
     private func loadGarments() {
+        isLoading = true
+        errorMessage = nil
+        
         print("🔧 Debug Config values:")
         print("   Config.baseURL = \(Config.baseURL)")
         print("   Config.defaultUserId = \(Config.defaultUserId)")
@@ -137,6 +140,7 @@ struct ClosetListView: View {
         guard let url = URL(string: urlString) else {
             errorMessage = "Invalid URL: \(urlString)"
             print("❌ Invalid URL: \(urlString)")
+            isLoading = false
             return
         }
         
