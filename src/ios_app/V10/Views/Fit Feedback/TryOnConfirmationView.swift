@@ -50,6 +50,7 @@ struct TryOnConfirmationView: View {
     @State private var selectedFit: String = ""
     @State private var navigateToFeedback = false
     @State private var displayedProductName: String = ""
+    @Environment(\.presentationMode) var presentationMode
     
     // Get fit options from session data
     private var availableFitOptions: [String] {
@@ -70,7 +71,8 @@ struct TryOnConfirmationView: View {
     }
     
     var body: some View {
-        ScrollView {
+        NavigationView {
+            ScrollView {
             VStack(spacing: 20) {
                 // Product Image - LARGE like real ecommerce apps
                 if !session.productImage.isEmpty {
@@ -208,6 +210,24 @@ struct TryOnConfirmationView: View {
                         .shadow(color: .black.opacity(0.1), radius: 2, x: 0, y: 1)
                 )
                 
+                // Try Another Product Button
+                Button(action: {
+                    print("🔍 Try Another Product button tapped")
+                    presentationMode.wrappedValue.dismiss()
+                }) {
+                    Text("Try Another Product")
+                        .font(.subheadline)
+                        .fontWeight(.medium)
+                        .foregroundColor(.blue)
+                        .frame(maxWidth: .infinity)
+                        .padding(.vertical, 12)
+                        .background(
+                            RoundedRectangle(cornerRadius: 8)
+                                .stroke(Color.blue, lineWidth: 1)
+                        )
+                }
+                .padding(.horizontal)
+                
                 // Continue Button - At bottom for better UX flow
                 Button(action: {
                     print("🔍 Continue button tapped")
@@ -250,6 +270,16 @@ struct TryOnConfirmationView: View {
                     fitType: selectedFit.isEmpty ? nil : selectedFit,
                     selectedColor: nil
                 )
+            }
+            }
+            .navigationTitle("Try-On")
+            .navigationBarTitleDisplayMode(.inline)
+            .toolbar {
+                ToolbarItem(placement: .navigationBarLeading) {
+                    Button("Try Another") {
+                        presentationMode.wrappedValue.dismiss()
+                    }
+                }
             }
         }
         .onAppear {
