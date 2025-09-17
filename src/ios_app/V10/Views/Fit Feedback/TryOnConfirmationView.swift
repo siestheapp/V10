@@ -210,24 +210,6 @@ struct TryOnConfirmationView: View {
                         .shadow(color: .black.opacity(0.1), radius: 2, x: 0, y: 1)
                 )
                 
-                // Try Another Product Button
-                Button(action: {
-                    print("🔍 Try Another Product button tapped")
-                    presentationMode.wrappedValue.dismiss()
-                }) {
-                    Text("Try Another Product")
-                        .font(.subheadline)
-                        .fontWeight(.medium)
-                        .foregroundColor(.blue)
-                        .frame(maxWidth: .infinity)
-                        .padding(.vertical, 12)
-                        .background(
-                            RoundedRectangle(cornerRadius: 8)
-                                .stroke(Color.blue, lineWidth: 1)
-                        )
-                }
-                .padding(.horizontal)
-                
                 // Continue Button - At bottom for better UX flow
                 Button(action: {
                     print("🔍 Continue button tapped")
