@@ -367,7 +367,6 @@ struct ScanTab: View {
                                         sizeRecommendation = nil
                                         tryOnSession = nil
                                         analysisError = nil
-                                        sessionMode = .recommended
                                     }
                                 }
                                 .onSubmit {
@@ -622,7 +621,6 @@ struct ScanTab: View {
         analysisError = nil
         sizeRecommendation = nil
         tryOnSession = nil  // Clear any existing session
-        sessionMode = .recommended  // Reset to recommended mode
         
         // Load fit zones only when needed for analysis (lazy loading)
         if userFitZones == nil && !isLoadingFitZones {
