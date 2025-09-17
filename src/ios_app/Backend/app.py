@@ -1293,27 +1293,27 @@ async def get_brands():
         cur = conn.cursor()
         
         try:
-            # Get brands that have men's size guides
+            # Simple query - just get all brands for now
             cur.execute("""
                 SELECT DISTINCT b.id, b.name 
                 FROM brands b
-                INNER JOIN size_guides_v2 sg ON b.id = sg.brand_id
-                WHERE sg.gender = 'Men'
                 ORDER BY b.name
             """)
             brands = cur.fetchall()
-            print(f"Found {len(brands)} men's brands")
+            print(f"Found {len(brands)} brands")
             
             formatted_brands = []
             for brand in brands:
-                # For each brand, get its categories and measurements from men's size guides
+                # For each brand, get its categories from measurement sets
                 cur.execute("""
                     SELECT DISTINCT 
-                        category,
-                        measurements_available
-                    FROM size_guides_v2 
-                    WHERE brand_id = %s
-                    AND gender = 'Men'
+                        c.name as category,
+                        array_agg(DISTINCT m.measurement_type) as measurements_available
+                    FROM measurement_sets ms
+                    LEFT JOIN categories c ON ms.category_id = c.id
+                    LEFT JOIN measurements m ON ms.id = m.set_id
+                    WHERE ms.brand_id = %s
+                    GROUP BY c.name
                 """, (brand["id"],))
                 
                 size_guides = cur.fetchall()
