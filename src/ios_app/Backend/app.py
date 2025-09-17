@@ -1199,7 +1199,7 @@ async def get_test_user_data(user_id: str):
                 u.email,
                 u.created_at,
                 u.gender,
-                u.unit_preference,
+                'imperial' as unit_preference,  -- Default to imperial since column doesn't exist
                 (
                     SELECT COUNT(*) 
                     FROM user_garments 
