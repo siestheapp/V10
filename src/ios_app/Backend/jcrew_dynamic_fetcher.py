@@ -71,7 +71,7 @@ class JCrewDynamicFetcher:
                 'current_fit': current_fit,
                 'current_product_name': self._build_product_name(cached_base['product_name'], current_fit),
                 'product_url': product_url,
-                'product_image': cached_base.get('product_image') or f'https://www.jcrew.com/s7-img-facade/{product_code}_WT0002?$pdp_enlarge$',
+                'product_image': cached_base.get('product_image') or f'https://www.jcrew.com/s7-img-facade/{product_code}_SU0001?$pdp_enlarge$',
                 
                 # All available fit options
                 'fit_options': cached_base.get('fit_options', []),
@@ -342,7 +342,7 @@ class JCrewDynamicFetcher:
                 'current_fit': current_fit,
                 'current_product_name': product_name,
                 'product_url': product_url,
-                'product_image': image or f'https://www.jcrew.com/s7-img-facade/{product_code}_WT0002?$pdp_enlarge$',
+                'product_image': image or f'https://www.jcrew.com/s7-img-facade/{product_code}_SU0001?$pdp_enlarge$',
                 'fit_options': fit_options,
                 'fit_variations': variations,
                 'sizes_available': sizes or ['XS', 'S', 'M', 'L', 'XL', 'XXL'],
