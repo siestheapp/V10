@@ -17,8 +17,9 @@ struct SiesApp: App {
                             // For development, auto-complete onboarding faster
                             #if DEBUG
                             print("🚀 DEBUG: Skipping onboarding")
-                            hasCompletedOnboarding = true
-                            forceMainApp = true
+                            // TEMPORARILY DISABLED TO RECREATE DILAWER'S VIEW
+                            // hasCompletedOnboarding = true
+                            // forceMainApp = true
                             #endif
                         }
                 }

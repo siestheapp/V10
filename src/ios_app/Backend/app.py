@@ -1213,9 +1213,11 @@ async def get_test_user_data(user_id: str):
                     LIMIT 1
                 ) as last_garment_input,
                 (
-                    SELECT array_agg(DISTINCT brand_name) 
-                    FROM user_garments 
-                    WHERE user_id = u.id AND owns_garment = true
+                    SELECT array_agg(DISTINCT b.name) 
+                    FROM user_garments ug
+                    LEFT JOIN product_master pm ON ug.product_master_id = pm.id
+                    LEFT JOIN brands b ON pm.brand_id = b.id
+                    WHERE ug.user_id = u.id AND ug.owns_garment = true
                 ) as brands_owned
             FROM users u
             WHERE u.id = %s
