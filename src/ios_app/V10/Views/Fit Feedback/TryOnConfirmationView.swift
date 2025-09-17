@@ -268,7 +268,8 @@ struct TryOnConfirmationView: View {
                     productUrl: session.productUrl,
                     brand: session.brand,
                     fitType: selectedFit.isEmpty ? nil : selectedFit,
-                    selectedColor: nil
+                    selectedColor: nil,
+                    availableMeasurements: session.availableMeasurements
                 )
             }
             }

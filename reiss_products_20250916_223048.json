@@ -1,0 +1,77 @@
+[
+  {
+    "name": "Slim-Fit Button-Down Collar Cotton Oxford Shirt in White",
+    "description": "True to an Oxford shirt style, the soft blue Greenwich long-sleeve is crafted with two-ply cotton for durability and structure. Its slim fit shape is fastened with a button-front closure and a button-down collar. Two-ply cotton. Soft-wash finish. Button-down collar. Patch pocket. Long sleeves. Buttoned cuffs. Slim fit.",
+    "sku": "D43-750",
+    "brand": "Reiss",
+    "price": "135",
+    "currency": "USD",
+    "sizes": [
+      "XS",
+      "S",
+      "M",
+      "L",
+      "XL",
+      "XXL"
+    ],
+    "color": "White",
+    "images": [
+      "https://cdn.platform.next/common/items/default/default/itemimages/3_4Ratio/product/lge/D43750s.jpg"
+    ],
+    "material": "",
+    "care": "",
+    "url": "https://www.reiss.com/us/en/style/st378878/d43750",
+    "style_code": "st378878",
+    "product_code": "D43750"
+  },
+  {
+    "name": "Slim-Fit Button-Down Collar Cotton Oxford Shirt in Soft Blue",
+    "description": "True to an Oxford shirt style, the soft blue Greenwich long-sleeve is crafted with two-ply cotton for durability and structure. Its slim fit shape is fastened with a button-front closure and a button-down collar. Two-ply cotton. Soft-wash finish. Button-down collar. Patch pocket. Long sleeves. Buttoned cuffs. Slim fit.",
+    "sku": "D40-078",
+    "brand": "Reiss",
+    "price": "135",
+    "currency": "USD",
+    "sizes": [
+      "XS",
+      "S",
+      "M",
+      "L",
+      "XL",
+      "XXL"
+    ],
+    "color": "Soft Blue",
+    "images": [
+      "https://cdn.platform.next/common/items/default/default/itemimages/3_4Ratio/product/lge/D40078s.jpg"
+    ],
+    "material": "",
+    "care": "",
+    "url": "https://www.reiss.com/us/en/style/st378878/d40078",
+    "style_code": "st378878",
+    "product_code": "D40078"
+  },
+  {
+    "name": "Slim-Fit Button-Down Collar Cotton Oxford Shirt in Navy",
+    "description": "True to an Oxford shirt style, the soft blue Greenwich long-sleeve is crafted with two-ply cotton for durability and structure. Its slim fit shape is fastened with a button-front closure and a button-down collar. Two-ply cotton. Soft-wash finish. Button-down collar. Patch pocket. Long sleeves. Buttoned cuffs. Slim fit.",
+    "sku": "T53-709",
+    "brand": "Reiss",
+    "price": "73",
+    "currency": "USD",
+    "sizes": [
+      "XS",
+      "S",
+      "M",
+      "L",
+      "XL",
+      "XXL"
+    ],
+    "color": "Navy",
+    "images": [
+      "https://cdn.platform.next/common/items/default/default/itemimages/3_4Ratio/product/lge/T53709s.jpg"
+    ],
+    "material": "",
+    "care": "",
+    "url": "https://www.reiss.com/us/en/style/st378878/t53709",
+    "style_code": "st378878",
+    "product_code": "T53709"
+  }
+]

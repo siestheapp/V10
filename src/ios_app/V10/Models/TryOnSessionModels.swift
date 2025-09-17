@@ -140,20 +140,22 @@ class TryOnSessionState: ObservableObject {
     @Published var skippedDimensions: Set<FitDimension> = []
     @Published var isSubmitting: Bool = false
     @Published var error: String?
+    @Published var availableDimensions: [FitDimension] = []
     
     var currentDimension: FitDimension? {
-        let dimensions = FitDimension.allCases
+        // Use only available dimensions from backend, not all cases
+        let dimensions = availableDimensions.isEmpty ? FitDimension.allCases.filter { $0 != .length } : availableDimensions
         guard currentDimensionIndex < dimensions.count else { return nil }
         return dimensions[currentDimensionIndex]
     }
     
     var isLastDimension: Bool {
-        let dimensions = FitDimension.allCases
+        let dimensions = availableDimensions.isEmpty ? FitDimension.allCases.filter { $0 != .length } : availableDimensions
         return currentDimensionIndex >= dimensions.count - 1
     }
     
     var progress: Double {
-        let dimensions = FitDimension.allCases
+        let dimensions = availableDimensions.isEmpty ? FitDimension.allCases.filter { $0 != .length } : availableDimensions
         return Double(currentDimensionIndex + 1) / Double(dimensions.count)
     }
     
@@ -186,6 +188,22 @@ class TryOnSessionState: ObservableObject {
         skippedDimensions = []
         selectedSize = ""
         error = nil
+        availableDimensions = []
+    }
+    
+    func setAvailableDimensions(from measurements: [String]) {
+        // Convert backend measurement names to FitDimension enum cases
+        availableDimensions = measurements.compactMap { measurement in
+            switch measurement.lowercased() {
+            case "overall": return .overall
+            case "chest": return .chest
+            case "neck": return .neck
+            case "sleeve": return .sleeve
+            case "waist": return .waist
+            case "length": return .length
+            default: return nil
+            }
+        }
     }
     
     func getFeedbackSummary() -> [(dimension: String, feedback: String)] {

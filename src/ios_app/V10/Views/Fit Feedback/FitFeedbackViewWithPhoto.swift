@@ -11,6 +11,7 @@ struct FitFeedbackViewWithPhoto: View {
     let brand: String?
     let fitType: String?
     let selectedColor: String?
+    let availableMeasurements: [String]
     
     @Environment(\.dismiss) private var dismiss
     @State private var fitFeedback: [String: Int] = [:]
@@ -27,13 +28,29 @@ struct FitFeedbackViewWithPhoto: View {
     @State private var currentGarmentId: Int?
     
     // Initializers
-    init(feedbackType: FeedbackType, selectedSize: String, productUrl: String? = nil, brand: String? = nil, fitType: String? = nil, selectedColor: String? = nil) {
+    init(feedbackType: FeedbackType, selectedSize: String, productUrl: String? = nil, brand: String? = nil, fitType: String? = nil, selectedColor: String? = nil, availableMeasurements: [String] = []) {
         self.feedbackType = feedbackType
         self.selectedSize = selectedSize
         self.productUrl = productUrl
         self.brand = brand
         self.fitType = fitType
         self.selectedColor = selectedColor
+        // Use provided measurements or fall back to defaults based on feedback type
+        self.availableMeasurements = availableMeasurements.isEmpty ? Self.getDefaultMeasurements(for: feedbackType) : availableMeasurements
+    }
+    
+    // Static helper to get default measurements
+    static func getDefaultMeasurements(for feedbackType: FeedbackType) -> [String] {
+        switch feedbackType {
+        case .manualEntry:
+            return ["Overall", "Chest", "Waist", "Sleeve"]
+        case .scannedGarment:
+            return ["Overall", "Chest", "Waist", "Sleeve", "Neck"]
+        case .newBrand:
+            return ["Overall", "Chest", "Waist", "Sleeve", "Shoulders"]
+        case .specialFit:
+            return ["Overall", "Chest", "Waist", "Hip", "Stretch Comfort"]
+        }
     }
 
     let fitOptions = [
@@ -244,15 +261,10 @@ struct FitFeedbackViewWithPhoto: View {
     }
 
     private func getMeasurementsForFeedbackType() -> [String] {
-        switch feedbackType {
-        case .manualEntry:
-            return ["Overall", "Chest", "Waist", "Sleeve"]
-        case .scannedGarment:
-            return ["Overall", "Chest", "Waist", "Sleeve", "Neck"]
-        case .newBrand:
-            return ["Overall", "Chest", "Waist", "Sleeve", "Shoulders"]
-        case .specialFit:
-            return ["Overall", "Chest", "Waist", "Hip", "Stretch Comfort"]
+        // Use the available measurements from backend instead of hardcoded values
+        return availableMeasurements.map { measurement in
+            // Capitalize first letter for display
+            measurement.prefix(1).uppercased() + measurement.dropFirst()
         }
     }
     
