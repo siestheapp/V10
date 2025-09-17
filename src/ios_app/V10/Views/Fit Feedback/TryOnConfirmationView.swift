@@ -75,24 +75,39 @@ struct TryOnConfirmationView: View {
             ScrollView {
             VStack(spacing: 20) {
                 // Product Image - LARGE like real ecommerce apps
-                if !session.productImage.isEmpty {
-                    AsyncImage(url: URL(string: session.productImage)) { image in
-                        image
-                            .resizable()
-                            .aspectRatio(contentMode: .fit)
-                    } placeholder: {
-                        Rectangle()
-                            .fill(Color.gray.opacity(0.1))
-                            .aspectRatio(1, contentMode: .fit) // Square placeholder
-                            .overlay(
-                                ProgressView()
-                            )
+                AsyncImage(url: URL(string: session.productImage.isEmpty ? "" : session.productImage)) { image in
+                    image
+                        .resizable()
+                        .aspectRatio(contentMode: .fit)
+                } placeholder: {
+                    // Better placeholder for missing images
+                    VStack(spacing: 12) {
+                        Image(systemName: "tshirt.fill")
+                            .font(.system(size: 48))
+                            .foregroundColor(.gray.opacity(0.4))
+                        
+                        VStack(spacing: 4) {
+                            Text(session.brand.uppercased())
+                                .font(.caption2)
+                                .fontWeight(.medium)
+                                .foregroundColor(.secondary)
+                                .tracking(1)
+                            
+                            Text("Product Image")
+                                .font(.caption)
+                                .foregroundColor(.secondary)
+                        }
                     }
-                    // Full width, let image determine its own height
                     .frame(maxWidth: .infinity)
-                    // No fixed height - image maintains its natural aspect ratio
-                    // No background color - removes grey padding
+                    .frame(height: 200)
+                    .background(Color.gray.opacity(0.05))
+                    .overlay(
+                        RoundedRectangle(cornerRadius: 8)
+                            .stroke(Color.gray.opacity(0.2), lineWidth: 1)
+                    )
                 }
+                .frame(maxWidth: .infinity)
+                .cornerRadius(8)
                 
                 VStack(spacing: 20) {
                     // Product Info (compact, below image)
