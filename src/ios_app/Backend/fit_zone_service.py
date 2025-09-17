@@ -462,11 +462,11 @@ class FitZoneService:
 if __name__ == "__main__":
     # Test script - populate fit zones for existing users
     DB_CONFIG = {
-        "host": "aws-0-us-east-2.pooler.supabase.com",
+        "host": "localhost",
         "port": 6543,
         "database": "postgres", 
-        "user": "postgres.lbilxlkchzpducggkrxx",
-        "password": "efvTower12"
+        "user": "postgres.CHANGE_ME",
+        "password": "CHANGE_ME"
     }
     
     service = FitZoneService(DB_CONFIG)

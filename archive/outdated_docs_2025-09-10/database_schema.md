@@ -1,1 +1,0 @@
-daily-notes/2025-07-22/TAILOR3_COMPLETE_SCHEMA.md

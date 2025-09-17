@@ -1,1 +1,0 @@
-docs/development/start_howto.md

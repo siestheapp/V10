@@ -21,9 +21,9 @@ from datetime import datetime
 # Database configuration
 DB_CONFIG = {
     "database": "postgres",
-    "user": "postgres.lbilxlkchzpducggkrxx",
-    "password": "efvTower12",
-    "host": "aws-0-us-east-2.pooler.supabase.com",
+    "user": "postgres.CHANGE_ME",
+    "password": "CHANGE_ME",
+    "host": "localhost",
     "port": "6543"
 }
 

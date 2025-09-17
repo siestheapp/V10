@@ -50,9 +50,9 @@ else:
 # Database configuration - Updated to use environment variables
 DB_CONFIG = {
     "database": os.getenv("DB_NAME", "postgres"),
-    "user": os.getenv("DB_USER", "postgres.lbilxlkchzpducggkrxx"),
-    "password": os.getenv("DB_PASSWORD", "efvTower12"),
-    "host": os.getenv("DB_HOST", "aws-0-us-east-2.pooler.supabase.com"),
+    "user": os.getenv("DB_USER", "postgres.CHANGE_ME"),
+    "password": os.getenv("DB_PASSWORD", "CHANGE_ME"),
+    "host": os.getenv("DB_HOST", "localhost"),
     "port": os.getenv("DB_PORT", "6543")
 }
 
@@ -1959,9 +1959,9 @@ async def get_garment_size_recommendation(request: dict):
         
         db_config = {
             "database": os.getenv("DB_NAME", "postgres"),
-            "user": os.getenv("DB_USER", "postgres.lbilxlkchzpducggkrxx"),
-            "password": os.getenv("DB_PASSWORD", "efvTower12"),
-            "host": os.getenv("DB_HOST", "aws-0-us-east-2.pooler.supabase.com"),
+            "user": os.getenv("DB_USER", "postgres.CHANGE_ME"),
+            "password": os.getenv("DB_PASSWORD", "CHANGE_ME"),
+            "host": os.getenv("DB_HOST", "localhost"),
             "port": os.getenv("DB_PORT", "6543")
         }
         

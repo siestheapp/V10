@@ -35,9 +35,9 @@ app = FastAPI()
 # Database connection settings - Updated to use environment variables
 DB_CONFIG = {
     "database": os.getenv("DB_NAME", "postgres"),
-    "user": os.getenv("DB_USER", "postgres.lbilxlkchzpducggkrxx"),
-    "password": os.getenv("DB_PASSWORD", "efvTower12"),
-    "host": os.getenv("DB_HOST", "aws-0-us-east-2.pooler.supabase.com"),
+    "user": os.getenv("DB_USER", "postgres.CHANGE_ME"),
+    "password": os.getenv("DB_PASSWORD", "CHANGE_ME"),
+    "host": os.getenv("DB_HOST", "localhost"),
     "port": os.getenv("DB_PORT", "6543")
 }
 
@@ -58,9 +58,9 @@ async def shutdown():
 def get_db():
     return psycopg2.connect(
         dbname=os.getenv("DB_NAME", "postgres"),  # psycopg2 uses dbname
-        user=os.getenv("DB_USER", "postgres.lbilxlkchzpducggkrxx"),
-        password=os.getenv("DB_PASSWORD", "efvTower12"),
-        host=os.getenv("DB_HOST", "aws-0-us-east-2.pooler.supabase.com"),
+        user=os.getenv("DB_USER", "postgres.CHANGE_ME"),
+        password=os.getenv("DB_PASSWORD", "CHANGE_ME"),
+        host=os.getenv("DB_HOST", "localhost"),
         port=os.getenv("DB_PORT", "6543"),
         cursor_factory=RealDictCursor
     )

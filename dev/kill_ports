@@ -1,4 +1,0 @@
-#!/bin/bash
-# Kill Stuck Ports - Easy access to port management
-cd /Users/seandavey/projects/V10
-python3 dev/scripts/ports/kill_ports.py "$@"
