@@ -347,28 +347,23 @@ struct ScanTab: View {
                                 .foregroundColor(.secondary)
                                 .frame(width: 20)
                             
-                            if isTextFieldReady {
-                                TextField("Paste product link here", text: $productLink)
-                                    .textFieldStyle(PlainTextFieldStyle())
-                                    .disabled(isAnalyzing)
-                                    .focused($isTextFieldFocused)
-                                    .autocorrectionDisabled()
-                                    .textInputAutocapitalization(.never)
-                                    .keyboardType(.URL)
-                                    .submitLabel(.go)
-                                    .id(textFieldId) // Simulator focus workaround
-                                    .onSubmit {
-                                        if !productLink.isEmpty {
-                                            analyzeProduct()
-                                        }
+                            // PERFORMANCE FIX: Always keep TextField in view hierarchy
+                            TextField("Paste product link here", text: $productLink)
+                                .textFieldStyle(PlainTextFieldStyle())
+                                .disabled(isAnalyzing || !isTextFieldReady)
+                                .focused($isTextFieldFocused)
+                                .autocorrectionDisabled()
+                                .textInputAutocapitalization(.never)
+                                .keyboardType(.URL)
+                                .submitLabel(.go)
+                                .id(textFieldId) // Simulator focus workaround
+                                .opacity(isTextFieldReady ? 1 : 0.3)
+                                .allowsHitTesting(isTextFieldReady)
+                                .onSubmit {
+                                    if !productLink.isEmpty {
+                                        analyzeProduct()
                                     }
-                                    // PERFORMANCE FIX: Added focus management and keyboard optimizations
-                            } else {
-                                // Show placeholder while text field initializes
-                                Text("Paste product link here")
-                                    .foregroundColor(.gray.opacity(0.3))
-                                    .frame(maxWidth: .infinity, alignment: .leading)
-                            }
+                                }
                         }
                         .padding(16)
                         .background(

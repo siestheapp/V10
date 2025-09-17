@@ -88,9 +88,10 @@ struct FitFeedbackViewWithPhoto: View {
                     }
                     .padding(.horizontal)
                     
-                    if let image = capturedImage {
-                        // Show captured/selected image
-                        VStack(spacing: 12) {
+                    // Always keep TextField in view hierarchy for performance
+                    VStack(spacing: 12) {
+                        // Image section
+                        if let image = capturedImage {
                             Image(uiImage: image)
                                 .resizable()
                                 .scaledToFit()
@@ -101,12 +102,18 @@ struct FitFeedbackViewWithPhoto: View {
                                         .stroke(Color.blue.opacity(0.3), lineWidth: 1)
                                 )
                                 .padding(.horizontal)
+                        }
+                        
+                        // TextField - always present but hidden when no image
+                        VStack(spacing: 8) {
+                            TextField("Add a note about the fit (optional)", text: $photoCaption)
+                                .textFieldStyle(RoundedBorderTextFieldStyle())
+                                .padding(.horizontal)
+                                .opacity(capturedImage != nil ? 1 : 0)
+                                .disabled(capturedImage == nil)
+                                .frame(height: capturedImage != nil ? nil : 0)
                             
-                            VStack(spacing: 8) {
-                                TextField("Add a note about the fit (optional)", text: $photoCaption)
-                                    .textFieldStyle(RoundedBorderTextFieldStyle())
-                                    .padding(.horizontal)
-                                
+                            if capturedImage != nil {
                                 Button(action: { 
                                     capturedImage = nil
                                     photoCaption = ""
@@ -120,10 +127,11 @@ struct FitFeedbackViewWithPhoto: View {
                                 }
                             }
                         }
-                    } else {
-                        // Photo capture buttons
-                        HStack(spacing: 16) {
-                            Button(action: { showCamera = true }) {
+                        
+                        // Photo capture buttons - show when no image
+                        if capturedImage == nil {
+                            HStack(spacing: 16) {
+                                Button(action: { showCamera = true }) {
                                 VStack(spacing: 8) {
                                     Image(systemName: "camera.fill")
                                         .font(.title2)
@@ -151,14 +159,15 @@ struct FitFeedbackViewWithPhoto: View {
                                 .background(Color.green.opacity(0.1))
                                 .cornerRadius(12)
                             }
-                        }
-                        .padding(.horizontal)
-                        
-                        Text("Optional: Add a photo to remember how this size looked on you")
-                            .font(.caption)
-                            .foregroundColor(.secondary)
+                            }
                             .padding(.horizontal)
-                            .padding(.top, 4)
+                            
+                            Text("Optional: Add a photo to remember how this size looked on you")
+                                .font(.caption)
+                                .foregroundColor(.secondary)
+                                .padding(.horizontal)
+                                .padding(.top, 4)
+                        }
                     }
                 }
                 .padding(.vertical)
