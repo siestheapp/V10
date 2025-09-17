@@ -359,6 +359,17 @@ struct ScanTab: View {
                                 .id(textFieldId) // Simulator focus workaround
                                 .opacity(isTextFieldReady ? 1 : 0.3)
                                 .allowsHitTesting(isTextFieldReady)
+                                .onChange(of: productLink) { _ in
+                                    // Clear existing session when URL changes
+                                    // This allows starting fresh with a new product
+                                    if tryOnSession != nil || sizeRecommendation != nil {
+                                        print("Clearing previous session for new URL")
+                                        sizeRecommendation = nil
+                                        tryOnSession = nil
+                                        analysisError = nil
+                                        sessionMode = .recommended
+                                    }
+                                }
                                 .onSubmit {
                                     if !productLink.isEmpty {
                                         analyzeProduct()
@@ -610,6 +621,8 @@ struct ScanTab: View {
         isAnalyzing = true
         analysisError = nil
         sizeRecommendation = nil
+        tryOnSession = nil  // Clear any existing session
+        sessionMode = .recommended  // Reset to recommended mode
         
         // Load fit zones only when needed for analysis (lazy loading)
         if userFitZones == nil && !isLoadingFitZones {
