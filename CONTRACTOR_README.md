@@ -2,25 +2,19 @@
 
 ## Quick Start
 
-1. **Run the backend locally**:
-   ```bash
-   cd src/ios_app/Backend
-   python app.py
-   ```
-   Backend will run on http://localhost:8006
-
-2. **Open iOS project**:
+1. **Open iOS project**:
    ```bash
    cd src/ios_app
    open V10.xcodeproj
    ```
 
-3. **Make sure Config.swift points to localhost**:
-   ```swift
-   static let baseURL = "http://127.0.0.1:8006"
+2. **Build and run** - The app is already configured to use our test backend at:
    ```
+   https://v10-2as4.onrender.com
+   ```
+   No need to run anything locally!
 
-4. **Test with user1 account**
+3. **Test with user1 account**
    - This account has random test data
    - Data is intentionally inconsistent (3XL too small, S too big, etc.)
    - This is fake data created by random button clicking
