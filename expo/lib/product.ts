@@ -102,7 +102,13 @@ export async function fetchProductByUrl(
   }
 
   const fallback = await selectFromView(client, FALLBACK_VIEW, normalized, trailing, false);
-  return fallback ?? [];
+  if (fallback && fallback.length) {
+    return fallback;
+  }
+
+  // Final safety net: use cache when variants don't exist yet
+  const cache = await selectFromCache(client, normalized, trailing);
+  return cache;
 }
 
 async function selectFromView(
@@ -182,4 +188,67 @@ function getTrailingPath(input: string): string | null {
 
 function escapeForILike(value: string): string {
   return value.replace(/[\\%_]/g, (char) => `\\${char}`);
+}
+
+async function selectFromCache(
+  client: SupabaseClient,
+  normalized: string,
+  trailing: string | null,
+): Promise<ProductResult[]> {
+  // 1) Exact in cache
+  const exact = await client
+    .from('jcrew_product_cache')
+    .select('product_url, product_image, product_code')
+    .eq('product_url', normalized)
+    .limit(1);
+  if (exact.error) return [];
+  let row = exact.data?.[0] as { product_url: string; product_image: string | null; product_code: string | null } | undefined;
+
+  // 2) Prefix in cache (by URL)
+  if (!row && trailing) {
+    const pref = await client
+      .from('jcrew_product_cache')
+      .select('product_url, product_image, product_code')
+      .ilike('product_url', `%${escapeForILike(trailing)}`)
+      .limit(1);
+    if (pref.error) return [];
+    row = pref.data?.[0];
+  }
+
+  if (!row) return [];
+
+  // 3) Get product_master for base name and brand
+  const code = row.product_code ?? null;
+  let styleName = '';
+  let brandName = '';
+  if (code) {
+    const pm = await client
+      .from('product_master')
+      .select('base_name, brand_id')
+      .eq('product_code', code)
+      .limit(1);
+    if (!pm.error && pm.data && pm.data[0]) {
+      styleName = (pm.data[0] as any).base_name ?? '';
+      const brandId = (pm.data[0] as any).brand_id as number | null;
+      if (brandId != null) {
+        const b = await client.from('brands').select('name').eq('id', brandId).limit(1);
+        if (!b.error && b.data && b.data[0]) {
+          brandName = (b.data[0] as any).name ?? '';
+        }
+      }
+    }
+  }
+
+  return [
+    {
+      brand: brandName,
+      style_name: styleName,
+      style_code: code,
+      fit: null,
+      color: null,
+      variant_code: null,
+      product_url: row.product_url ?? normalized,
+      image_url: row.product_image ?? null,
+    },
+  ];
 }
