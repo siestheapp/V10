@@ -42,6 +42,7 @@ export default function ScanScreen() {
         placeholder="https://brand.com/product"
         autoCapitalize="none"
         autoCorrect={false}
+        clearButtonMode="while-editing"
         keyboardType="url"
         returnKeyType="go"
         onSubmitEditing={handleSubmit}

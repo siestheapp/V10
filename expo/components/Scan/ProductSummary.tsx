@@ -1,5 +1,6 @@
 import { Image } from 'expo-image';
 import { Text, TouchableOpacity, View } from 'react-native';
+import { useRouter } from 'expo-router';
 import type { ProductResult } from '../../lib/product';
 
 type Props = {
@@ -7,6 +8,13 @@ type Props = {
 };
 
 export default function ProductSummary({ product }: Props) {
+  const router = useRouter();
+
+  const onNext = () => {
+    const payload = encodeURIComponent(JSON.stringify(product));
+    router.push(`/scan/confirm?p=${payload}`);
+  };
+
   return (
     <View style={{ marginTop: 24, gap: 12 }}>
       {product.image_url ? (
@@ -27,7 +35,7 @@ export default function ProductSummary({ product }: Props) {
       </View>
       <TouchableOpacity
         style={{ backgroundColor: '#111', paddingVertical: 14, borderRadius: 10, alignItems: 'center' }}
-        onPress={() => console.log('Next pressed', product)}
+        onPress={onNext}
         activeOpacity={0.85}
       >
         <Text style={{ color: '#fff', fontWeight: '600' }}>Next</Text>
