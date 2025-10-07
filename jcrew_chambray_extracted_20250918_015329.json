@@ -1,0 +1,181 @@
+[
+  {
+    "product_code": "BV479",
+    "name": "Midweight denim workshirt",
+    "price": 84.5,
+    "category": "shirts",
+    "subcategory": "chambray-and-denim-shirts",
+    "currency": "USD",
+    "brand": "J.Crew",
+    "colors": [
+      "BK0001"
+    ],
+    "fits": [
+      "Classic"
+    ],
+    "sizes": [],
+    "images": []
+  },
+  {
+    "product_code": "BX004",
+    "name": "Midweight denim western shirt",
+    "price": 118.0,
+    "category": "jeans",
+    "subcategory": "denim-shirts",
+    "currency": "USD",
+    "brand": "J.Crew",
+    "colors": [
+      "YD0281"
+    ],
+    "fits": [
+      "Classic"
+    ],
+    "sizes": [],
+    "images": []
+  },
+  {
+    "product_code": "BZ532",
+    "name": "Organic cotton chambray shirt",
+    "price": 69.5,
+    "category": "shirts",
+    "subcategory": "chambray-and-denim-shirts",
+    "currency": "USD",
+    "brand": "J.Crew",
+    "colors": [
+      "YD6369"
+    ],
+    "fits": [
+      "Slim",
+      "Classic"
+    ],
+    "sizes": [],
+    "images": []
+  },
+  {
+    "product_code": "BK273",
+    "name": "Midweight denim workshirt",
+    "price": 98.0,
+    "category": "jeans",
+    "subcategory": "denim-shirts",
+    "currency": "USD",
+    "brand": "J.Crew",
+    "colors": [
+      "YD0281"
+    ],
+    "fits": [
+      "Classic"
+    ],
+    "sizes": [],
+    "images": []
+  },
+  {
+    "product_code": "BE164",
+    "name": "Short-sleeve indigo organic chambray shirt",
+    "price": 89.5,
+    "category": "shirts",
+    "subcategory": "chambray-and-denim-shirts",
+    "currency": "USD",
+    "brand": "J.Crew",
+    "colors": [
+      "WZ1606"
+    ],
+    "fits": [
+      "Slim",
+      "Classic",
+      "Tall"
+    ],
+    "sizes": [],
+    "images": []
+  },
+  {
+    "product_code": "BE163",
+    "name": "Short-sleeve indigo organic chambray shirt",
+    "price": 89.5,
+    "category": "shirts",
+    "subcategory": "chambray-and-denim-shirts",
+    "currency": "USD",
+    "brand": "J.Crew",
+    "colors": [
+      "WZ1604"
+    ],
+    "fits": [
+      "Slim",
+      "Classic",
+      "Tall"
+    ],
+    "sizes": [],
+    "images": []
+  },
+  {
+    "product_code": "BE077",
+    "name": "Organic cotton chambray shirt in five-year wash",
+    "price": 98.0,
+    "category": "jeans",
+    "subcategory": "denim-shirts",
+    "currency": "USD",
+    "brand": "J.Crew",
+    "colors": [
+      "WZ1606"
+    ],
+    "fits": [
+      "Relaxed",
+      "Slim",
+      "Classic",
+      "Slim Untucked"
+    ],
+    "sizes": [],
+    "images": []
+  },
+  {
+    "product_code": "BE076",
+    "name": "Organic cotton chambray shirt in one-year wash",
+    "price": 98.0,
+    "category": "jeans",
+    "subcategory": "denim-shirts",
+    "currency": "USD",
+    "brand": "J.Crew",
+    "colors": [
+      "WZ1604"
+    ],
+    "fits": [
+      "Relaxed",
+      "Slim",
+      "Classic",
+      "Slim Untucked"
+    ],
+    "sizes": [],
+    "images": []
+  },
+  {
+    "name": "Your exclusive offers",
+    "product_code": "MP712",
+    "brand": "J.Crew",
+    "price": null,
+    "currency": "USD",
+    "sizes": [],
+    "colors": [],
+    "fits": [
+      "Classic"
+    ],
+    "images": [],
+    "category": "",
+    "subcategory": ""
+  },
+  {
+    "product_code": "BT744",
+    "name": "Midweight denim workshirt",
+    "price": 84.5,
+    "category": "jeans",
+    "subcategory": "denim-shirts",
+    "currency": "USD",
+    "brand": "J.Crew",
+    "colors": [
+      "YD0281"
+    ],
+    "fits": [
+      "Classic"
+    ],
+    "sizes": [],
+    "images": []
+  }
+]

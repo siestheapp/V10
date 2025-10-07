@@ -1,0 +1,39 @@
+{
+  "deleted_empty_names": [
+    {
+      "id": 90,
+      "code": "CP682"
+    },
+    {
+      "id": 95,
+      "code": "BM492"
+    },
+    {
+      "id": 96,
+      "code": "BM493"
+    },
+    {
+      "id": 97,
+      "code": "BN777"
+    },
+    {
+      "id": 98,
+      "code": "BN130"
+    },
+    {
+      "id": 99,
+      "code": "BU902"
+    }
+  ],
+  "consolidated_ludlow": {
+    "master": {
+      "id": 89,
+      "code": "AI873"
+    },
+    "consolidated": {
+      "id": 82,
+      "code": "AI874"
+    }
+  },
+  "timestamp": "2025-09-18T03:06:28.257546"
+}

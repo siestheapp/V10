@@ -1,0 +1,24 @@
+[
+  {
+    "timestamp": "2025-09-18T02:57:54.756828",
+    "product": "Midweight denim workshirt",
+    "code": "BK273",
+    "decision": {
+      "action": "skip",
+      "master_id": 112,
+      "confidence": 1.0,
+      "reason": "Exact code match: BK273"
+    }
+  },
+  {
+    "timestamp": "2025-09-18T02:57:55.075781",
+    "product": "Short-sleeve indigo organic chambray shirt",
+    "code": "BE164",
+    "decision": {
+      "action": "skip",
+      "master_id": 113,
+      "confidence": 1.0,
+      "reason": "Exact code match: BE164"
+    }
+  }
+]

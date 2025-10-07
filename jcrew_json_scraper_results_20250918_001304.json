@@ -1,0 +1,50 @@
+[
+  {
+    "product_code": "BE996",
+    "name": "Broken-in organic cotton oxford shirt",
+    "price": 45.99,
+    "category": "shirts",
+    "subcategory": "broken-in-oxford",
+    "currency": "USD",
+    "brand": "J.Crew",
+    "colors": [
+      "YD7306",
+      "YD8591",
+      "YD7734",
+      "YD7966",
+      "YD5795",
+      "YD7916",
+      "YD7685",
+      "YD1916",
+      "YD9346",
+      "YD7603",
+      "YD7821",
+      "WT0002",
+      "WX0651",
+      "YD7837",
+      "YD8593",
+      "YD8609",
+      "YD4460",
+      "YD8179",
+      "YD8174",
+      "YD7822",
+      "YD7088",
+      "WX0596",
+      "YD7382",
+      "YD7410",
+      "YD8381",
+      "YD8607"
+    ],
+    "fits": [
+      "Relaxed",
+      "Classic",
+      "Slim Untucked",
+      "Tall",
+      "Slim"
+    ],
+    "sizes": [],
+    "images": [],
+    "url": "https://www.jcrew.com/p/mens/categories/clothing/shirts/broken-in-oxford/broken-in-organic-cotton-oxford-shirt/BE996",
+    "scraped_at": "2025-09-18T00:13:04.743638"
+  }
+]

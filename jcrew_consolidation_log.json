@@ -1,0 +1,32 @@
+[
+  {
+    "product": "Midweight denim workshirt",
+    "master_kept": {
+      "id": 112,
+      "code": "BK273"
+    },
+    "variants_consolidated": [
+      [
+        117,
+        "BT744"
+      ],
+      [
+        109,
+        "BV479"
+      ]
+    ]
+  },
+  {
+    "product": "Short-sleeve indigo organic chambray shirt",
+    "master_kept": {
+      "id": 114,
+      "code": "BE163"
+    },
+    "variants_consolidated": [
+      [
+        113,
+        "BE164"
+      ]
+    ]
+  }
+]
