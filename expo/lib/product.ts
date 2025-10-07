@@ -56,6 +56,25 @@ export async function fetchProductByUrl(
   const normalized = normalizeUrl(url);
   if (!normalized) return [];
 
+  // Prefer RPC for tolerant server-side lookup (exact → prefix → style-code)
+  try {
+    const rpc = await client.rpc('product_lookup', { input_url: normalized });
+    if (!rpc.error && Array.isArray(rpc.data) && rpc.data.length) {
+      return rpc.data.map((row: any) => ({
+        brand: row.brand ?? '',
+        style_name: row.style_name ?? '',
+        style_code: row.style_code ?? null,
+        fit: row.fit ?? null,
+        color: row.color ?? null,
+        variant_code: row.variant_code ?? null,
+        product_url: row.product_url ?? normalized,
+        image_url: row.image_url ?? null,
+      }));
+    }
+  } catch {
+    // Fall through to the existing view-based strategy
+  }
+
   if (APP_MODE === 'render' && API_BASE) {
     try {
       const remote = new URL('/product/lookup', API_BASE);
