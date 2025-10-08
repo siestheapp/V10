@@ -3,17 +3,20 @@
 <head>
 <meta charset="utf-8"/>
 <meta name="viewport" content="width=device-width, initial-scale=1"/>
-<title>Sies – Profile (Refined)</title>
+<title>Freestyle – Profile (Refined)</title>
 <link href="https://fonts.googleapis.com/css2?family=Instrument+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
 <style>
 :root{
-  --bg:#faf8f6;
+  --bg:#FAF8F6;
   --ink:#1A1A1A;
-  --muted:#8A8A8F;
-  --accent:#9B7AAD;
-  --accent-light:#E8DFF1;
-  --stroke:#F0EDE9;
+  --muted:#6F6F74;
+  /* Freestyle brand */
+  --petrol-600:#009090; --petrol-500:#00A3A3; --petrol-400:#16B5B5; --petrol-100:#E0F7F7;
+  --mint-400:#A6FFCB; --ice-300:#7FE1FF;
+  --accent:var(--petrol-600);
+  --accent-light:var(--petrol-100);
+  --stroke:#E8E4DE;
   --card:#FFFFFF;
   --good:#22C55E;
   --personal:#D4A574;
@@ -117,12 +120,12 @@ body{
   font-weight:700;
   font-size:22px;
   letter-spacing:-.02em;
-  background:linear-gradient(180deg,#9B7AAD 0%,#6B4B7A 100%);
+  background:linear-gradient(135deg,var(--petrol-600), var(--ice-300) 46%, var(--mint-400));
   -webkit-background-clip:text;
   background-clip:text;
   -webkit-text-fill-color:transparent;
   font-family:Inter,system-ui,-apple-system,"Segoe UI",Roboto,Helvetica,Arial;
-  filter: drop-shadow(0 2px 4px rgba(0,0,0,0.15)) drop-shadow(0 0 8px rgba(155,122,173,0.3)) drop-shadow(0 0 4px rgba(255,255,255,0.4));
+  filter: drop-shadow(0 2px 4px rgba(0,0,0,0.12)) drop-shadow(0 0 6px rgba(0,163,163,0.25)) drop-shadow(0 0 4px rgba(255,255,255,0.35));
   animation: brandGlimmer 3s ease-in-out infinite;
 }
 
@@ -136,7 +139,7 @@ body{
   overflow:auto;
   padding:20px 20px 96px;
   background:
-    radial-gradient(260px 140px at 50% -40px, rgba(143,106,174,.06), rgba(143,106,174,0) 65%), var(--bg);
+    radial-gradient(260px 140px at 50% -40px, rgba(0,163,163,.06), rgba(0,163,163,0) 65%), var(--bg);
 }
 
 .content::-webkit-scrollbar{display:none}
@@ -170,9 +173,9 @@ body{
 }
 
 .cat-option.active{
-  color:#6f5a84;
+  color:var(--petrol-600);
   background:var(--accent-light);
-  border-color:rgba(143,106,174,.25);
+  border-color:rgba(0,163,163,.25);
 }
 
 .cat-option.active::after{ display:none }
@@ -215,7 +218,7 @@ body{
 .profile-strength{
   font-weight:700;
   font-size:16px;
-  background:linear-gradient(135deg,#C4A7D8,#9B7AAD);
+  background:linear-gradient(135deg,var(--petrol-500),var(--ice-300));
   -webkit-background-clip:text;
   background-clip:text;
   -webkit-text-fill-color:transparent;
@@ -231,7 +234,7 @@ body{
 
 .progress-fill{
   height:100%;
-  background:linear-gradient(90deg,#C4A7D8,#9B7AAD);
+  background:linear-gradient(90deg,var(--petrol-500),var(--mint-400));
   border-radius:10px;
   width:0;
   transition:width 1s cubic-bezier(0.4,0,0.2,1);
@@ -303,7 +306,7 @@ body{
 }
 
 .confidence-text .size-highlight{
-  background:linear-gradient(135deg,#C4A7D8,#9B7AAD);
+  background:linear-gradient(135deg,var(--petrol-500),var(--ice-300));
   -webkit-background-clip:text;
   background-clip:text;
   -webkit-text-fill-color:transparent;
@@ -526,7 +529,7 @@ body{
   font-weight:500;
 }
 
-.tab.active{color:#8F6AAE}
+.tab.active{color:var(--petrol-600)}
 
 .ico{width:28px;height:28px}
 
@@ -556,7 +559,7 @@ body{
       <div class="island"></div>
       <div class="status"><div>9:41</div><div class="right"><img src="../img/cellular-connection.svg" alt="cell"/><img src="../img/wifi.svg" alt="wifi"/><img src="../img/battery.svg" alt="battery"/></div></div>
       <div class="appbar">
-        <div class="left"><div class="brand-dot"><span class="brand-letter">S</span></div></div>
+        <div class="left"><div class="brand-dot"><span class="brand-letter">F</span></div></div>
         <div class="title">Fit Profile</div>
         <div class="right">
           <button class="icon-btn" aria-label="Settings">
