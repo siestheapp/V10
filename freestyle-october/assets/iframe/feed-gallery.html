@@ -14,8 +14,8 @@
   /* Freestyle brand */
   --petrol-600:#009090; --petrol-500:#00A3A3; --petrol-400:#16B5B5; --petrol-100:#E0F7F7;
   --mint-400:#A6FFCB; --ice-300:#7FE1FF;
-  /* Adaptive CTA ramp (warm, not neon) */
-  --cta-start:#00A3A3; --cta-mid:#5ECED7; --cta-end:#A6FFCB;
+  /* Adaptive CTA ramp (deepened default for contrast) */
+  --cta-start:#008888; --cta-mid:#34C3CC; --cta-end:#9BFFCF;
   --card:#FFFFFF; --track:#ECECEC; --shadow:0 10px 30px rgba(0,0,0,.06);
 }
 *{margin:0;padding:0;box-sizing:border-box}
@@ -112,7 +112,9 @@ body::before{
 /* Enhanced Best Fit CTA with icon */
 .size-cta{position:relative;display:flex;align-items:center;justify-content:space-between;gap:12px;width:100%;
   margin:12px 0 10px;padding:14px 20px;border:none;border-radius:24px;color:#fff;
-  background:#000;
+  background:
+    linear-gradient(180deg, rgba(255,255,255,.08) 0%, rgba(255,255,255,0) 8%),
+    linear-gradient(135deg, var(--cta-start), var(--cta-mid) 40%, var(--cta-end));
 
   font:700 15px/1 Inter;cursor:pointer;transform:translateZ(0);transition:all 0.2s ease}
 .size-cta:hover{transform:translateY(-1px)}
