@@ -1,0 +1,58 @@
+@use '../base/var' as *;
+@use '../base/breakpoints' as *;
+
+/* ===== CONTAINER ===== */
+.container {
+  max-width: 572px;
+  padding: 0 16px;
+  margin-right: auto;
+  margin-left: auto;
+  @include media-breakpoint-up(md) {
+    max-width: 742px;
+  }
+  @include media-breakpoint-up(lg) {
+    max-width: 960px;
+  }
+  @include media-breakpoint-up(xl) {
+    max-width: $max-width;
+    padding: 0 20px;
+  }
+}
+
+// WRAPPER
+.wrapper {
+  max-width: 500px;
+  margin-right: auto;
+  margin-left: auto;
+  @include media-breakpoint-up(lg) {
+    max-width: 540px;
+  }
+  @include media-breakpoint-up(xl) {
+    max-width: 760px;
+  }
+}
+
+// COLUMNS
+.cols {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 24px;
+  @include media-breakpoint-up(md) {
+    flex-direction: row;
+    justify-content: center;
+    gap: 16px;
+  }
+  @include media-breakpoint-up(xl) {
+    gap: 24px;
+    .col:nth-child(1) {flex-basis: 55%;}
+    .col:nth-child(2) {flex-basis: 45%;}
+  }
+}
+
+.col {
+  flex: 1;
+  @include media-breakpoint-down(md) {
+    width: 100%;
+  }
+}

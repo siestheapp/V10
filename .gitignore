@@ -2,5 +2,4 @@
 *.log
 
 
-vendor/
 .DS_Store
