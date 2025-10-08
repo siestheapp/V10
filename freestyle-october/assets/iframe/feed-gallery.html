@@ -9,14 +9,26 @@
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
 <style>
 :root{
+  /* Neutrals */
   --bg:#F7F9FB; --ink:#1F1F1F; --muted:#6F6F74;
+  /* Freestyle brand */
   --petrol-600:#009090; --petrol-500:#00A3A3; --petrol-400:#16B5B5; --petrol-100:#E0F7F7;
+  --mint-400:#A6FFCB; --ice-300:#7FE1FF;
+  /* Adaptive CTA ramp (warm, not neon) */
+  --cta-start:#00A3A3; --cta-mid:#5ECED7; --cta-end:#A6FFCB;
   --card:#FFFFFF; --track:#ECECEC; --shadow:0 10px 30px rgba(0,0,0,.06);
-  --brand-sheen: linear-gradient(135deg,#00A3A3 0%,#7FE1FF 46%,#A6FFCB 100%);
 }
 *{margin:0;padding:0;box-sizing:border-box}
 body{font-family:Inter,system-ui,-apple-system,"Segoe UI",Roboto,Helvetica,Arial;background:var(--bg);color:var(--ink);
-  min-height:100vh;display:flex;align-items:center;justify-content:center;padding:0}
+  min-height:100vh;display:flex;align-items:center;justify-content:center;padding:0;position:relative}
+/* Warm page glow behind app content */
+body::before{
+  content:""; position:fixed; inset:-20% -10% auto -10%; height:60vh; pointer-events:none;
+  background:
+    radial-gradient(800px 350px at 50% -120px, rgba(0,163,163,.08), transparent 60%),
+    radial-gradient(1200px 500px at 10% -80px, rgba(166,255,203,.08), transparent 65%);
+  filter:saturate(105%);
+}
 
 /* iPhone Frame (Finy Style) */
 .phone{width:430px;height:932px;border-radius:55px;background:#000;padding:2px;box-shadow:none}
@@ -32,7 +44,7 @@ body{font-family:Inter,system-ui,-apple-system,"Segoe UI",Roboto,Helvetica,Arial
 
 /* App Content */
 .header{padding:4px 24px 2px;display:flex;justify-content:space-between;align-items:center}
-.logo{font-weight:600;font-size:32px;letter-spacing:-.01em;background:var(--brand-sheen);
+.logo{font-weight:600;font-size:32px;letter-spacing:-.01em;background:linear-gradient(135deg,var(--cta-start),var(--cta-mid) 46%,var(--cta-end));
   -webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent}
 .section{
   padding:0 24px 6px;
@@ -102,7 +114,7 @@ body{font-family:Inter,system-ui,-apple-system,"Segoe UI",Roboto,Helvetica,Arial
   margin:12px 0 10px;padding:14px 20px;border:none;border-radius:24px;color:#fff;
   background:
     linear-gradient(180deg, rgba(255,255,255,.08) 0%, rgba(255,255,255,0) 8%),
-    linear-gradient(135deg, #00A3A3 0%, #5ECED7 40%, #A6FFCB 100%);
+    linear-gradient(135deg, var(--cta-start), var(--cta-mid) 40%, var(--cta-end));
 
   font:700 15px/1 Inter;cursor:pointer;transform:translateZ(0);transition:all 0.2s ease}
 .size-cta:hover{transform:translateY(-1px)}
@@ -375,6 +387,22 @@ body{font-family:Inter,system-ui,-apple-system,"Segoe UI",Roboto,Helvetica,Arial
     const saveBtn = document.getElementById('saveBtn');
     const chips = document.querySelector('.chips');
 
+    // Adaptive CTA ramps (subtle variety by category)
+    const RAMP = {
+      default: ['#00A3A3','#5ECED7','#A6FFCB'],
+      wedding: ['#009A99','#63D6C9','#A6FFCB'],
+      midi:    ['#008E9E','#7ED4E7','#B6FFDE'],
+      budget:  ['#00A3A3','#6EDBE0','#B6FFE9'],
+      quick:   ['#0096A8','#74CDE0','#AEEED9']
+    };
+    function setRamp(arr){
+      const [s,m,e] = arr || RAMP.default;
+      document.documentElement.style.setProperty('--cta-start', s);
+      document.documentElement.style.setProperty('--cta-mid',   m);
+      document.documentElement.style.setProperty('--cta-end',   e);
+    }
+    setRamp(RAMP.default);
+
     function setCollapsed(){
       body.classList.remove('view-detail');
       body.classList.add('view-feed');
@@ -419,12 +447,18 @@ body{font-family:Inter,system-ui,-apple-system,"Segoe UI",Roboto,Helvetica,Arial
       });
     }
 
-    // Track chip clicks
+    // Track chip clicks + set adaptive ramp
     if(chips){
       chips.addEventListener('click', (e)=>{
         const btn = e.target.closest('.chip');
         if(!btn) return;
-        try{ parent.postMessage({ type:'mock_button_click', key:`feed-chip-${(btn.textContent||'').trim().toLowerCase().replace(/\s+/g,'-')}` }, '*'); }catch(err){}
+        const label = (btn.textContent || '').toLowerCase();
+        if(label.includes('wedding'))      setRamp(RAMP.wedding);
+        else if(label.includes('midi'))    setRamp(RAMP.midi);
+        else if(label.includes('$') || label.includes('under')) setRamp(RAMP.budget);
+        else if(label.includes('quick'))   setRamp(RAMP.quick);
+        else                               setRamp(RAMP.default);
+        try{ parent.postMessage({ type:'mock_button_click', key:`feed-chip-${label.trim().replace(/\s+/g,'-')}` }, '*'); }catch(err){}
       }, {passive:true});
     }
   })();
