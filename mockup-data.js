@@ -152,47 +152,25 @@ const MOCKUP_DATA = {
         }
       },
       
-      // Emma's additional closet items
+      // Emma's anchor items only
       closet: [
         {
-          id: 'emma_ganni',
-          brand: 'Ganni',
-          name: 'Cotton Poplin Midi Dress',
-          size: '36',
+          id: 'emma_bryson',
+          brand: 'Reformation',
+          name: 'Bryson Dress',
+          size: '2',
           fit: 'perfect',
-          category: 'dress'
+          category: 'dress',
+          isAnchor: true
         },
         {
-          id: 'emma_rouje',
-          brand: 'Rouje',
-          name: 'Gabin Dress',
-          size: '36',
-          fit: 'slightly loose',
-          category: 'dress'
-        },
-        {
-          id: 'emma_doen',
-          brand: 'Dôen',
-          name: 'Clea Top',
+          id: 'emma_anthropologie',
+          brand: 'Anthropologie',
+          name: 'Fleur Strapless Satin Maxi Slip Dress',
           size: 'S',
-          fit: 'perfect',
-          category: 'top'
-        },
-        {
-          id: 'emma_sezane',
-          brand: 'Sézane',
-          name: 'Christie Cardigan',
-          size: 'S',
-          fit: 'perfect',
-          category: 'knitwear'
-        },
-        {
-          id: 'emma_realisation',
-          brand: 'Realisation Par',
-          name: 'Naomi Skirt',
-          size: 'S',
-          fit: 'runs small',
-          category: 'skirt'
+          fit: 'slightly loose in bust/waist, perfect in hips',
+          category: 'dress',
+          isAnchor: true
         }
       ],
       
