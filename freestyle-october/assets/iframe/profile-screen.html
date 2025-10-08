@@ -675,8 +675,9 @@ body{
   </div>
 
 <script src="https://cdn.jsdelivr.net/npm/d3@7"></script>
-<script type="module">
-  import * as THREE from 'https://unpkg.com/three@0.160.0/build/three.module.js';
+<script src="https://unpkg.com/three@0.160.0/build/three.min.js"></script>
+<script>
+  const THREE = window.THREE;
 
   // ---- Your closet items (brand ↙ / size ↘) ----
   const ITEMS = [
@@ -886,9 +887,9 @@ void main(){
   const mount = document.getElementById('mosaic');
   const canvas = document.getElementById('gl');
   const labelsLayer = document.getElementById('labels');
-  const renderer = new THREE.WebGLRenderer({canvas, alpha:true, antialias:true});
-  const scene = new THREE.Scene();
-  const camera = new THREE.OrthographicCamera(0, 1, 1, 0, -10, 10);
+  let renderer = null;
+  let scene = null;
+  let camera = null;
   const materials = [];
   const GAP = 2; // px total gap per tile (looks like grout)
 
@@ -914,6 +915,21 @@ void main(){
   }
 
   function draw(){
+    // If THREE or WebGL unavailable, use CSS fallback
+    if(!THREE || !canvas || !canvas.getContext || !canvas.getContext('webgl')){
+      drawFallback();
+      return;
+    }
+    if(!renderer){
+      try{
+        renderer = new THREE.WebGLRenderer({canvas, alpha:true, antialias:true});
+        scene = new THREE.Scene();
+        camera = new THREE.OrthographicCamera(0, 1, 1, 0, -10, 10);
+      }catch(e){
+        drawFallback();
+        return;
+      }
+    }
     const W = mount.clientWidth, H = mount.clientHeight;
     renderer.setPixelRatio(Math.min(2, window.devicePixelRatio||1));
     renderer.setSize(W,H,false);
@@ -989,7 +1005,7 @@ void main(){
   // animate sheen
   function tick(){
     materials.forEach(m => { m.uniforms.uTime.value = performance.now() * 0.001; });
-    renderer.render(scene,camera);
+    if(renderer && scene && camera){ renderer.render(scene,camera); }
     requestAnimationFrame(tick);
   }
   function init(){ draw(); requestAnimationFrame(tick); }
@@ -1012,6 +1028,49 @@ void main(){
 
   if(document.fonts && document.fonts.ready){ document.fonts.ready.then(init); } else { init(); }
   new ResizeObserver(draw).observe(mount);
+
+  // ----- Fallback (no WebGL): draw tiles with CSS -----
+  function drawFallback(){
+    const W = mount.clientWidth, H = mount.clientHeight;
+    labelsLayer.innerHTML = '';
+    // create a base layer for colored tiles
+    let tilesLayer = mount.querySelector('.tiles-fallback');
+    if(!tilesLayer){
+      tilesLayer = document.createElement('div');
+      tilesLayer.className = 'tiles-fallback';
+      tilesLayer.style.position = 'absolute';
+      tilesLayer.style.inset = '0';
+      tilesLayer.style.borderRadius = '0';
+      tilesLayer.style.overflow = 'hidden';
+      mount.insertBefore(tilesLayer, labelsLayer);
+    } else {
+      tilesLayer.innerHTML='';
+    }
+    const tiles = layoutTreemap(W,H);
+    tiles.forEach((t,i)=>{
+      const tile = document.createElement('div');
+      tile.style.position='absolute';
+      tile.style.left = t.x+'px';
+      tile.style.top  = t.y+'px';
+      tile.style.width = t.w+'px';
+      tile.style.height= t.h+'px';
+      tile.style.borderRadius='2px';
+      tile.style.boxShadow='inset 0 0 0 1px rgba(0,0,0,.06)';
+      // pick a pastel from category hue
+      const hue = CATEGORY_HUES[t.cat] || CATEGORY_HUES.all;
+      tile.style.background = `linear-gradient(180deg, ${hue}22, ${hue}33)`; // translucent
+      tilesLayer.appendChild(tile);
+
+      const div=document.createElement('div');
+      div.className='label';
+      div.style.left=(t.x)+'px';
+      div.style.top=(t.y)+'px';
+      div.style.width=(t.w)+'px';
+      div.style.height=(t.h)+'px';
+      div.innerHTML = `<span class="brand">${t.brand}</span><span class="size">${t.size}</span>`;
+      labelsLayer.appendChild(div);
+    });
+  }
 </script>
 
 <script>

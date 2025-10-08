@@ -3,14 +3,16 @@
 <head>
 <meta charset="utf-8"/>
 <meta name="viewport" content="width=device-width, initial-scale=1"/>
-<title>Sies — Your Fit Feed (Enhanced)</title>
+<title>Freestyle — Your Fit Feed</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
 <style>
 :root{
-  --bg:#FAF8F6; --ink:#1F1F1F; --muted:#6F6F74; --accent:#8F6AAE;
+  --bg:#F7F9FB; --ink:#1F1F1F; --muted:#6F6F74;
+  --petrol-600:#009090; --petrol-500:#00A3A3; --petrol-400:#16B5B5; --petrol-100:#E0F7F7;
   --card:#FFFFFF; --track:#ECECEC; --shadow:0 10px 30px rgba(0,0,0,.06);
+  --brand-sheen: linear-gradient(135deg,#00A3A3 0%,#7FE1FF 46%,#A6FFCB 100%);
 }
 *{margin:0;padding:0;box-sizing:border-box}
 body{font-family:Inter,system-ui,-apple-system,"Segoe UI",Roboto,Helvetica,Arial;background:var(--bg);color:var(--ink);
@@ -18,7 +20,7 @@ body{font-family:Inter,system-ui,-apple-system,"Segoe UI",Roboto,Helvetica,Arial
 
 /* iPhone Frame (Finy Style) */
 .phone{width:430px;height:932px;border-radius:55px;background:#000;padding:2px;box-shadow:none}
-.screen{height:100%;background:#fff;border-radius:53px;overflow:hidden;position:relative;display:flex;flex-direction:column}
+.screen{height:100%;background:#FAF8F6;border-radius:53px;overflow:hidden;position:relative;display:flex;flex-direction:column}
 
 /* Dynamic Island */
 .island{position:absolute;top:9px;left:50%;transform:translateX(-50%);width:126px;height:37px;background:#000;border-radius:19px;z-index:2}
@@ -30,7 +32,7 @@ body{font-family:Inter,system-ui,-apple-system,"Segoe UI",Roboto,Helvetica,Arial
 
 /* App Content */
 .header{padding:4px 24px 2px;display:flex;justify-content:space-between;align-items:center}
-.logo{font-weight:600;font-size:32px;letter-spacing:-.01em;background:linear-gradient(180deg,#F1DCE3 0%,#8B7F83 100%);
+.logo{font-weight:600;font-size:32px;letter-spacing:-.01em;background:var(--brand-sheen);
   -webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent}
 .section{
   padding:0 24px 6px;
@@ -53,12 +55,12 @@ body{font-family:Inter,system-ui,-apple-system,"Segoe UI",Roboto,Helvetica,Arial
 .count-pill{
   flex:0 0 auto;
   white-space:nowrap;
-  background:#F1EFF7;
-  border:1px solid #E8E4DE;
+  background:var(--petrol-100);
+  border:1px solid rgba(0,163,163,.25);
   padding:6px 10px;
   border-radius:999px;
   font:600 12px/1 Inter, system-ui;
-  color:#6F6F74;
+  color:var(--petrol-600);
 }
 
 /* Enhanced Chips */
@@ -66,7 +68,7 @@ body{font-family:Inter,system-ui,-apple-system,"Segoe UI",Roboto,Helvetica,Arial
 .chips{margin-top:6px}
 .chips::-webkit-scrollbar{display:none}
 .chip{border:1px solid #E8E4DE;background:#fff;color:var(--ink);border-radius:9999px;padding:10px 16px;font-size:13px;font-weight:500;white-space:nowrap;transition:all 0.2s ease}
-.chip.is-active{border-color:var(--accent);background:rgba(143,106,174,.15);color:#8F6AAE;font-weight:600;box-shadow:0 2px 8px rgba(143,106,174,.12)}
+.chip.is-active{border-color:var(--petrol-400);background:var(--petrol-100);color:var(--petrol-600);font-weight:600;box-shadow:0 2px 8px rgba(0,163,163,.12)}
 .chip:not(.is-active):hover{background:#f8f8f8;border-color:#d0d0d0}
 
 /* Feed */
@@ -93,14 +95,14 @@ body{font-family:Inter,system-ui,-apple-system,"Segoe UI",Roboto,Helvetica,Arial
   border:1px solid #E8E4DE;border-radius:999px;background:rgba(255,255,255,.88);backdrop-filter:blur(8px);
   font:600 12px/1 Inter;color:#4C4C50;z-index:2}
 .size-pill .dot{width:4px;height:4px;border-radius:50%;background:#C9C5C0;display:inline-block}
-.size-pill .conf{color:#6F6AAE;font-weight:700;font-size:12px}
+.size-pill .conf{color:var(--petrol-600);font-weight:700;font-size:12px}
 
 /* Enhanced Best Fit CTA with icon */
 .size-cta{position:relative;display:flex;align-items:center;justify-content:space-between;gap:12px;width:100%;
   margin:12px 0 10px;padding:14px 20px;border:none;border-radius:24px;color:#fff;
   background:
     linear-gradient(180deg, rgba(255,255,255,.08) 0%, rgba(255,255,255,0) 8%),
-    linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    linear-gradient(135deg, #00A3A3 0%, #5ECED7 40%, #A6FFCB 100%);
 
   font:700 15px/1 Inter;cursor:pointer;transform:translateZ(0);transition:all 0.2s ease}
 .size-cta:hover{transform:translateY(-1px)}
@@ -133,9 +135,9 @@ body{font-family:Inter,system-ui,-apple-system,"Segoe UI",Roboto,Helvetica,Arial
 
 /* Enhanced shop CTA */
 .shop-cta{display:inline-flex;align-items:center;gap:8px;padding:10px 16px;
-  background:rgba(143,106,174,.08);border:1px solid rgba(143,106,174,.2);border-radius:12px;
-  color:#8F6AAE;text-decoration:none;font-weight:600;font-size:14px;transition:all 0.2s ease}
-.shop-cta:hover{background:rgba(143,106,174,.15);border-color:rgba(143,106,174,.3);text-decoration:none;transform:translateY(-1px)}
+  background:rgba(0,163,163,.08);border:1px solid rgba(0,163,163,.25);border-radius:12px;
+  color:var(--petrol-600);text-decoration:none;font-weight:600;font-size:14px;transition:all 0.2s ease}
+.shop-cta:hover{background:rgba(0,163,163,.15);border-color:rgba(0,163,163,.35);text-decoration:none;transform:translateY(-1px)}
 .shop-cta svg{width:16px;height:16px}
 
 /* Trust signals */
@@ -154,37 +156,37 @@ body{font-family:Inter,system-ui,-apple-system,"Segoe UI",Roboto,Helvetica,Arial
 
 /* Spec rows with delta badges (expanded state) */
 .spec{display:flex;align-items:center;justify-content:space-between;padding:10px 0}
-.badge{display:inline-flex;align-items:center;justify-content:center;min-width:68px;font-size:14px;line-height:1;padding:8px 10px;border-radius:999px;background:#EEF2FF;color:#4338CA;font-weight:700;border:1px solid rgba(67,56,202,.15)}
+.badge{display:inline-flex;align-items:center;justify-content:center;min-width:68px;font-size:14px;line-height:1;padding:8px 10px;border-radius:999px;background:var(--petrol-100);color:var(--petrol-600);font-weight:700;border:1px solid var(--petrol-400)}
 .details .divider{height:1px;background:#ececec;margin:6px 0;border-radius:1px}
 
 /* Fit Tip card */
-.tip{display:flex;align-items:flex-start;gap:10px;margin:12px 0 2px;padding:14px;border-radius:12px;background:#f7f4ff;border:1px solid #ece6ff;color:#4c3f8f;font-size:13px}
+.tip{display:flex;align-items:flex-start;gap:10px;margin:12px 0 2px;padding:14px;border-radius:12px;background:var(--petrol-100);border:1px solid var(--petrol-400);color:#0B0F14;font-size:13px}
 .tip .copy{flex:1}
 
 /* Summary pill (feed view) */
 .tip-summary{
   margin-top:12px;
   padding:14px 16px;
-  background:#F9F8FF;
-  border:1px solid #EAE6F7;
+  background:var(--petrol-100);
+  border:1px solid var(--petrol-400);
   border-radius:12px;
   font-size:14px;
-  color:#3D3D40;
+  color:#0B0F14;
 }
 .shop-row{display:flex;justify-content:center;margin-top:10px;padding:0 18px}
 .shop-link{display:flex;align-items:center;justify-content:center;width:100%;min-height:44px;padding:12px 16px;
-  background:#FFFFFF;border:1px solid #E6DDF8;border-radius:12px;
-  color:#5C3FA8;text-decoration:none;font-weight:700;letter-spacing:-.01em;font-size:15px}
-.shop-link:hover{background:#F6F1FF;text-decoration:none}
-.shop-link:active{background:#EEE6FF}
-.shop-link:focus-visible{outline:2px solid rgba(143,106,174,.6);outline-offset:2px}
+  background:#FFFFFF;border:1px solid var(--petrol-400);border-radius:12px;
+  color:var(--petrol-600);text-decoration:none;font-weight:700;letter-spacing:-.01em;font-size:15px}
+.shop-link:hover{background:var(--petrol-100);text-decoration:none}
+.shop-link:active{background:var(--petrol-400);color:#fff}
+.shop-link:focus-visible{outline:2px solid var(--petrol-500);outline-offset:2px}
 .summary{margin-top:6px;font-size:13px;color:#6F6F74}
-.summary strong{color:#4C3F8F;font-weight:600}
+.summary strong{color:var(--petrol-600);font-weight:600}
 
 /* Inline heading (Explore + subline) */
 .heading-inline{display:flex;align-items:baseline;gap:10px;margin:0 0 6px;flex-wrap:wrap}
 .heading-inline .heading-main{font-size:26px;font-weight:700;color:var(--ink);letter-spacing:-0.01em;line-height:1.1}
-.heading-sub-inline{font-size:16px;font-weight:600;color:#6A5B4A;letter-spacing:-.005em;line-height:1.2}
+.heading-sub-inline{font-size:16px;font-weight:600;color:#6A7683;letter-spacing:-.005em;line-height:1.2}
 
 /* Accent highlight for key references (subtle blue) */
 .accent{color:#2F5DCC;font-weight:600}
@@ -192,11 +194,11 @@ body{font-family:Inter,system-ui,-apple-system,"Segoe UI",Roboto,Helvetica,Arial
 /* Inline advisory note (enhanced visibility) */
 .details .advice-inline{margin:6px 0 2px;font-size:15px;line-height:1.55;color:#4C4C50;font-weight:500}
 .advice-next{margin-top:14px}
-.details .advice-inline b{color:#2F5DCC}
+.details .advice-inline b{color:var(--petrol-600)}
 
 /* Expanded-state polish: hide feed summary and soften advisory tip */
 .view-detail .tip-summary{display:none}
-.details .tip{background:#F8FBFF;border:1px solid #E4F0FF;color:#274C77;padding:14px 16px;margin:12px 0}
+.details .tip{background:var(--petrol-100);border:1px solid var(--petrol-400);color:#0B0F14;padding:14px 16px;margin:12px 0}
 .details .tip .copy{font-size:14px;line-height:1.5}
 .details .tip .copy b{color:#1E40AF}
 
@@ -254,7 +256,7 @@ body{font-family:Inter,system-ui,-apple-system,"Segoe UI",Roboto,Helvetica,Arial
         <div class="status"><div>9:41</div><div class="right"><img src="../img/cellular-connection.svg" alt="cell"/><img src="../img/wifi.svg" alt="wifi"/><img src="../img/battery.svg" alt="battery"/></div></div>
 
         <div class="header">
-          <div class="logo">sies</div>
+          <div class="logo">freestyle</div>
         </div>
 
         <div class="section">
