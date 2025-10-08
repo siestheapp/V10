@@ -5,24 +5,54 @@
   <meta http-equiv="X-UA-Compatible" content="IE=edge">
   <meta name="viewport" content="width=device-width, initial-scale=1">
 
-  <title>Sies — In Your Size • Join the Waitlist</title>
-  <meta name="description" content="Sies predicts your best-fitting size across brands using the clothes you already own. Join the waitlist to get early access.">
+  <title>Freestyle — Find Your Size • Join the Waitlist</title>
+  <meta name="description" content="Freestyle predicts your best-fitting size across brands using the clothes you already own. Join the waitlist to get early access.">
   <meta name="copyright" content="Copyright © 2025 Sean Davey. All rights reserved.">
   <meta name="author" content="Sean Davey">
 
-  <meta property="og:site_name" content="Sies by Sean Davey">
+  <meta property="og:site_name" content="Freestyle by Sean Davey">
 
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
 
+  <link rel="stylesheet" href="../freestyle-tokens.css">
   <link rel="stylesheet" href="assets/css/style.css">
+  <style>
+    /* Fallback tokens in case the external tokens file fails to load */
+    :root{
+      --petrol-600:#009090; --petrol-500:#00A3A3; --petrol-400:#16B5B5;
+      --canvas-100:#E9EEF1; --ink-900:#0B0F14; --ink-500:#2A3642;
+      --brand-sheen: linear-gradient(135deg,#00A3A3 0%,#7FE1FF 50%,#A6FFCB 100%);
+    }
+    /* Freestyle overrides for branding without rebuilding CSS */
+    .header .logo a,
+    .header .logo{background:var(--brand-sheen);-webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent;text-decoration:none}
+    .btn{background:var(--petrol-500, #00A3A3);color:#fff;border:1px solid var(--petrol-400, #16B5B5)}
+    .btn:hover{background:var(--petrol-600, #009090)}
+    .section-title{border-bottom-color:var(--canvas-100, #E9EEF1)}
+
+    /* Inputs & forms */
+    .form-input{border:1px solid var(--canvas-100)}
+    .form-input:focus{outline:2px solid var(--ice-300);outline-offset:2px;border-color:var(--petrol-500)}
+
+    /* Copy colors for hierarchy */
+    .section-heading{color:var(--ink-900, #0B0F14)}
+    .section-subheading{color:var(--ink-500, #2A3642)}
+
+    /* Nav & links */
+    .nav a:hover{color:var(--petrol-500)}
+
+    /* FAQ details */
+    #faq summary{color:var(--ink-900)}
+    #faq details:hover summary{color:var(--petrol-500)}
+  </style>
 </head>
 <body>
 
 <header class="header">
   <div class="container">
-    <div class="logo"><a href="#top">sies</a></div>
+    <div class="logo"><a href="#top">freestyle</a></div>
     <ul class="nav">
       <li><a href="#how">How it works</a></li>
       <li><a href="#faq">FAQ</a></li>
