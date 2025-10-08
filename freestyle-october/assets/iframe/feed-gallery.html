@@ -200,8 +200,8 @@ body::before{
 .heading-inline .heading-main{font-size:26px;font-weight:700;color:var(--ink);letter-spacing:-0.01em;line-height:1.1}
 .heading-sub-inline{font-size:16px;font-weight:600;color:#6A7683;letter-spacing:-.005em;line-height:1.2}
 
-/* Accent highlight for key references (subtle blue) */
-.accent{color:#2F5DCC;font-weight:600}
+/* Accent highlight for key references (brand petrol) */
+.accent{color:var(--petrol-600);font-weight:600}
 
 /* Inline advisory note (enhanced visibility) */
 .details .advice-inline{margin:6px 0 2px;font-size:15px;line-height:1.55;color:#4C4C50;font-weight:500}
@@ -212,7 +212,7 @@ body::before{
 .view-detail .tip-summary{display:none}
 .details .tip{background:var(--petrol-100);border:1px solid var(--petrol-400);color:#0B0F14;padding:14px 16px;margin:12px 0}
 .details .tip .copy{font-size:14px;line-height:1.5}
-.details .tip .copy b{color:#1E40AF}
+.details .tip .copy b{color:var(--petrol-600)}
 
 /* Inline shop link inside expanded details */
 .shop-inline{
@@ -223,7 +223,7 @@ body::before{
   border-radius:12px;
   font-weight:800; letter-spacing:-.01em; font-size:16px; line-height:1.3;
   color:#fff; text-decoration:none;
-  background:linear-gradient(135deg,#8E7BFF 0%,#6B5BCE 100%);
+  background:linear-gradient(135deg, var(--cta-start), var(--cta-mid) 40%, var(--cta-end));
 
 }
 .shop-inline:hover{ filter:brightness(1.03) }
@@ -248,7 +248,7 @@ body::before{
 .tabs{position:absolute;left:0;right:0;bottom:0;height:83px;background:#fff;border-top:1px solid rgba(0,0,0,.08);
   display:flex;justify-content:space-around;align-items:flex-start;padding-top:8px;padding-bottom:34px}
 .tab{display:flex;flex-direction:column;align-items:center;gap:6px;text-decoration:none;color:#8e8e93;font-size:11px;font-weight:500;transition:color 0.2s ease}
-.tab.active{color:#6B46C1;font-weight:600}
+.tab.active{color:var(--petrol-600);font-weight:600}
 .ico{width:28px;height:28px;display:block}
 
 /* Misc */
