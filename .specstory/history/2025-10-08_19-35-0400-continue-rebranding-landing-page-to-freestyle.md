@@ -986,7 +986,74 @@ I need to make sure that my adjustments don’t cause any unexpected layout shif
 I’m thinking about adjusting the margin on the hero mock element to create more breathing room under the header. They want this space specifically above the mock in the hero area. The screenshot shows the sticky header at the top next to the hero text, with the phone mock to the right. By reducing the video mock size by about 1-2%, it might help the mock descend slightly, allowing for more space under the header. I’ll need to check the CSS controlling the width of the mock elements.
 **Exploring CSS scaling options**
 
-I'm looking into how to adjust the width for the mock video in the hero section. The current widths are set at 231, 270, and 300 pixels, depending on the desktop layout. While I can add a small CSS override to scale the mock's inner container down to 98% with a transform, I realize that this won’t affect the layout itself. The "breathing room" refers to the gap between the header and the phone mock, which can create a visual gap even if the bounding area stays the same.</details></think>
+I'm looking into how to adjust the width for the mock video in the hero section. The current widths are set at 231, 270, and 300 pixels, depending on the desktop layout. While I can add a small CSS override to scale the mock's inner container down to 98% with a transform, I realize that this won’t affect the layout itself. The "breathing room" refers to the gap between the header and the phone mock, which can create a visual gap even if the bounding area stays the same.
+**Finalizing adjustments for the hero mock**
+
+The user wants to ensure the phone doesn’t overlap with the header, and I see from the screenshot that the header is above it. While the bounding width hasn’t changed, shrinking the visible phone could create a gap without cropping risks since the container has overflow hidden. Instead of altering the main CSS, I can use inline CSS in index.html. I’ll apply a scale transform to the hero mock inner container and ensure it anchors correctly. I’ll choose a scale of 0.985 to be safe and move forward with implementing these changes.</details></think>
+
+---
+
+I'll add a scoped CSS override in the landing page to scale the hero video mock by about 1.5% so it sits slightly farther from the top header without affecting image quality or other mocks, then commit and push.
+
+---
+
+Tool use: **apply_patch**
+
+<details>
+        <summary>Apply patch for /Users/seandavey/Downloads/freestyle/freestyle-october/index.html</summary>
+      
+
+```diff
+*** Begin Patch
+*** Update File: /Users/seandavey/Downloads/freestyle/freestyle-october/index.html
+@@
+     .page{padding-top:36px}
++
++    /* Slightly reduce hero video mock size for extra breathing room */
++    .hero .mock.video .mock-inner{transform:scale(0.985);transform-origin:top right}
+   </style>
+*** End Patch
+```
+
+---
+
+Tool use: **read_lints**
+
+<details>
+          <summary>Read lints for 1 file</summary>
+      
+Lint paths:
+
+- `/Users/seandavey/Downloads/freestyle/freestyle-october/index.html`
+
+Lint results
+
+
+**No lint errors found**
+</details>
+
+---
+
+Tool use: **run_terminal_cmd**
+
+```bash
+git add -A && git commit -m "style(hero): scale down video mock ~1.5% for more header breathing room" && git push origin master
+```
+
+```
+[master b797a84] style(hero): scale down video mock ~1.5% for more header breathing room
+ 2 files changed, 90 insertions(+)
+To https://github.com/siestheapp/freestyle.git
+   d5fe173..b797a84  master -> master
+
+```
+
+---
+
+Done. I added a subtle scale on just the hero video mock:
+- `.hero .mock.video .mock-inner { transform: scale(0.985); transform-origin: top right; }`
+
+This reduces size by ~1.5% without affecting quality or other mock iframes. Committed and pushed. Want it 1% or 2% exactly? I can tweak to 0.99 or 0.98.
 
 ---
 
