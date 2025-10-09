@@ -38,10 +38,9 @@
 
     .picker{position:sticky;top:54px;z-index:4;background:#fff;margin:0 -24px 18px;padding:12px 24px;border-bottom:1px solid rgba(0,0,0,.06);display:flex;align-items:center;gap:12px;flex-wrap:wrap}
     .picker .kicker{font:600 11px/1 Inter;letter-spacing:.18em;text-transform:uppercase;color:#6F6F74}
-    .picker .select{display:flex;align-items:center;gap:10px;border:1px solid var(--border);background:#fff;border-radius:999px;padding:8px 12px;font:600 13px/1.2 Inter;color:#1F1F1F;cursor:pointer;box-shadow:0 4px 14px rgba(0,0,0,.06);transition:transform .2s ease, box-shadow .2s ease}
+    .picker .select{display:flex;align-items:center;gap:6px;border:1px solid var(--border);background:#fff;border-radius:999px;padding:8px 12px;font:600 13px/1.2 Inter;color:#1F1F1F;cursor:pointer;box-shadow:0 4px 14px rgba(0,0,0,.06);transition:transform .2s ease, box-shadow .2s ease}
     .picker .select:hover{transform:translateY(-1px);box-shadow:0 10px 22px rgba(0,0,0,.08)}
-    .thumb{width:42px;height:42px;object-fit:cover;border-radius:14px;border:1px solid rgba(0,0,0,.06)}
-    .ellipsis{max-width:170px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;display:block}
+    .ellipsis{max-width:220px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;display:block}
     .desktop-only{display:none}
     .picker .chips{display:flex;gap:8px}
     .picker .count{margin-left:auto;font:600 12px/1 Inter;color:var(--petrol-600)}
@@ -81,7 +80,7 @@
 
     @media (min-width:520px){
       .desktop-only{display:flex}
-      .ellipsis{max-width:220px}
+      .ellipsis{max-width:260px}
     }
     @media (prefers-reduced-motion:reduce){
       *,*::before,*::after{animation-duration:.01ms!important;animation-iteration-count:1!important;transition-duration:.01ms!important;scroll-behavior:auto!important}
@@ -109,12 +108,11 @@
         <div class="picker">
           <span class="kicker">Selected piece</span>
           <button class="select" type="button" aria-live="polite">
-            <img class="thumb" src="https://images.unsplash.com/photo-1520974742078-7da4a43a8315?q=80&w=200&auto=format&fit=crop" alt="Selected dress thumbnail">
-            <span class="ellipsis">Aritzia &bull; Wilfred Tempest Dress &bull; Size S</span>
+            <span class="ellipsis">ALEXIS &bull; Briette Satin Maxi Dress &bull; Size S</span>
           </button>
           <div class="chips desktop-only">
             <span class="chip">Size S</span>
-            <span class="chip">Aritzia</span>
+            <span class="chip">ALEXIS</span>
             <span class="chip">Dress</span>
           </div>
           <span class="count">23 size-matched people</span>
