@@ -37,22 +37,27 @@
     .picker .kicker{font:600 11px/1 Inter;letter-spacing:.18em;text-transform:uppercase;color:#6F6F74}
     .picker .select{display:flex;align-items:center;gap:10px;border:1px solid var(--border);background:#fff;border-radius:999px;padding:8px 14px;font:600 13px/1.2 Inter;color:#1F1F1F;cursor:pointer;box-shadow:0 4px 14px rgba(0,0,0,.06);transition:transform .2s ease, box-shadow .2s ease;flex:1 1 100%;min-width:240px}
     .picker .select:hover{transform:translateY(-1px);box-shadow:0 10px 22px rgba(0,0,0,.08)}
+    .picker .select .caret{margin-left:auto;width:14px;height:14px;color:#6F6F74;flex-shrink:0}
+    .picker .select[aria-expanded="true"] .caret{transform:rotate(180deg)}
     .ellipsis{max-width:100%;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;display:block}
     .piece-size{display:inline-flex;align-items:center;justify-content:center;padding:6px 12px;border-radius:999px;border:1px solid rgba(0,0,0,.12);font:600 12px/1 Inter;color:#1F1F1F;background:#fff;white-space:nowrap;flex-shrink:0}
     .desktop-only{display:none}
-    .picker .count{margin-left:auto;font:600 12px/1 Inter;color:var(--petrol-600)}
+    .picker .count{margin-left:0;font:600 12px/1.2 Inter;color:var(--muted);display:block}
+    .picker .count .product{color:var(--petrol-600);font-weight:700}
 
     .feed{display:flex;flex-direction:column;gap:18px;margin-top:4px}
     .look-card{background:var(--card);border:1px solid rgba(0,0,0,.05);border-radius:26px;padding:18px 18px 20px;box-shadow:0 14px 34px rgba(0,0,0,.08);transition:transform .25s ease, box-shadow .25s ease}
     .look-card:hover{transform:translateY(-3px);box-shadow:0 22px 50px rgba(0,0,0,.12)}
     .look-h{display:flex;align-items:center;gap:12px;margin-bottom:16px}
     .avatar{width:48px;height:48px;border-radius:16px;object-fit:cover;border:2px solid rgba(0,0,0,.05);box-shadow:0 6px 18px rgba(0,0,0,.12)}
+    .avatar--circle{border-radius:50%}
     .name{font:700 15px/1.2 Inter}
     .bads{display:flex;flex-wrap:wrap;gap:6px;margin-left:auto}
     .badge{background:var(--petrol-100);color:var(--petrol-600);font:600 11px/1 Inter;padding:6px 10px;border-radius:999px;border:1px solid rgba(0,163,163,.25);white-space:nowrap}
 
     .hero-wrap{position:relative;border-radius:22px;overflow:hidden;border:1px solid rgba(0,0,0,.04);background:#f5f6f8}
     .hero-img{width:100%;height:380px;object-fit:cover;display:block}
+    .hero-img--tight{object-position:center;transform:translateY(14px) scale(1.14)}
 
     .alt-strip{margin-top:14px;display:flex;gap:12px;overflow-x:auto;-webkit-overflow-scrolling:touch;padding-bottom:4px}
     .alt-strip::-webkit-scrollbar{height:0}
@@ -103,30 +108,30 @@
 
         <div class="picker">
           <span class="kicker">Your pieces</span>
-          <button class="select" type="button" aria-live="polite">
+          <button class="select" type="button" aria-live="polite" aria-haspopup="listbox" aria-expanded="false">
             <span class="ellipsis">ALEXIS &bull; Briette Satin Maxi Dress</span>
             <span class="piece-size">Size S</span>
+            <svg class="caret" viewBox="0 0 256 256" aria-hidden="true"><path fill="currentColor" d="M128 166a6 6 0 0 1-4.24-1.76l-56-56a6 6 0 0 1 8.48-8.48L128 151.51l51.76-51.75a6 6 0 0 1 8.48 8.48l-56 56A6 6 0 0 1 128 166Z"/></svg>
           </button>
-          <span class="count">23 size-matched people</span>
+          <span class="count"><span>23 users also wear </span><span class="product">Size S - Alexis Briette Satin Maxi Dress</span></span>
         </div>
 
         <div class="feed">
           <article class="look-card" data-fit="90" data-overlap="6">
             <header class="look-h">
-              <img class="avatar" src="https://i.pravatar.cc/64?img=32" alt="Lina profile photo">
-              <div class="name">Lina</div>
+              <img class="avatar avatar--circle" src="../img/ellaaa.jpg" alt="ellaa76 profile photo">
+              <div class="name">ellaa76</div>
               <div class="bads">
                 <span class="badge">Exact match in Selected Piece</span>
-                <span class="badge">90% fit match</span>
               </div>
             </header>
             <div class="hero-wrap">
               <img
-                class="hero-img"
+                class="hero-img hero-img--tight"
                 src="https://images.unsplash.com/photo-1503342217505-b0a15cf70489?q=80&w=1200&auto=format&fit=crop"
-                data-local-src="/images/size-twin-look-2.jpg"
+                data-local-src="../img/Hutch%20Corene%20Strapless%20Dress.jpeg"
                 data-fallback-src="https://images.unsplash.com/photo-1503342217505-b0a15cf70489?q=80&w=1200&auto=format&fit=crop"
-                alt="Lina styling the Tempest Dress with a blazer"
+                alt="ellaa76 wearing Hutch Corene Strapless Dress"
               >
             </div>
             <div class="alt-strip" aria-label="Closet overlap preview">
