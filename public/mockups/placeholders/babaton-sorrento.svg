@@ -1,0 +1,12 @@
+<svg width="320" height="400" viewBox="0 0 320 400" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <linearGradient id="babaton" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" stop-color="#F3F1FF"/>
+      <stop offset="100%" stop-color="#DAD0FF"/>
+    </linearGradient>
+  </defs>
+  <rect width="320" height="400" rx="36" fill="url(#babaton)"/>
+  <path d="M160 82C146 82 132 107 132 130C132 154 160 191 160 191C160 191 188 154 188 130C188 107 174 82 160 82Z" fill="#4F3C8C" fill-opacity="0.12"/>
+  <text x="50%" y="78%" text-anchor="middle" font-family="Inter, sans-serif" font-size="40" font-weight="600" fill="#32225D">Babaton</text>
+  <text x="50%" y="88%" text-anchor="middle" font-family="Inter, sans-serif" font-size="24" fill="#2A3642">Sorrento Mini</text>
+</svg>
