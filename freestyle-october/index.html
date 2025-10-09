@@ -320,5 +320,17 @@
     });
   })();
 </script>
+<script>
+  (function(){
+    var logoLink = document.querySelector('.header .logo a');
+    if(logoLink){
+      logoLink.addEventListener('click', function(e){
+        e.preventDefault();
+        try{ window.scrollTo({ top: 0, behavior: 'smooth' }); }
+        catch(err){ window.scrollTo(0,0); }
+      }, { passive: true });
+    }
+  })();
+</script>
 </body>
 </html>
