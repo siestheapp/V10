@@ -92,7 +92,7 @@ body::before{
 .card:hover{transform:translateY(-2px)}
 .card + .card{margin-top:6px}
 
-.fit-toggle{margin-top:10px;padding:10px 16px;border-radius:999px;border:1px solid rgba(0,0,0,.08);background:#fff;font:700 14px/1.1 Inter;color:#1F1F1F;cursor:pointer;transition:background .2s ease}
+.fit-toggle{padding:10px 16px;border-radius:999px;border:1px solid rgba(0,0,0,.08);background:#fff;font:700 14px/1.1 Inter;color:#1F1F1F;cursor:pointer;transition:background .2s ease}
 .fit-toggle:hover{background:#f7f7f7}
 
 .imgbox{position:relative;overflow:hidden;border-radius:18px}
@@ -306,8 +306,11 @@ body::before{
 .shop-inline:hover{ filter:brightness(1.03) }
 .shop-inline:active{ transform:translateY(1px) }
 
+.fit-details{display:none}
+.fit-details.open{display:block}
+
 /* SG fit-details block */
-.card .fit-details{display:block;padding:18px;border-radius:16px;background:#fff;border:1px solid rgba(0,0,0,.06);margin-top:16px}
+.card .fit-details{padding:18px;border-radius:16px;background:#fff;border:1px solid rgba(0,0,0,.06);margin-top:16px}
 .card .fit-details .micro{margin:0 0 12px;font:600 14px/1.35 Inter;color:#2F2F33}
 .card .fit-details .micro .link{color:var(--petrol-600);text-decoration:none}
 .card .fit-row{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:12px 0;border-top:1px solid rgba(0,0,0,.06)}
@@ -487,7 +490,7 @@ body::before{
                 </span>
                 <span class="match">Fit details</span>
               </button>
-              <button class="fit-toggle" type="button" aria-controls="sg-fit" aria-expanded="true">Hide details</button>
+              <button class="fit-toggle" type="button" data-target="#sg-fit" aria-expanded="false">Fit details</button>
 
               <div class="divider"></div>
 
@@ -504,7 +507,7 @@ body::before{
               </div>
               
               <!-- Fit details (expanded by default) -->
-              <div class="fit-details open" id="sg-fit" aria-expanded="true">
+              <div class="fit-details" id="sg-fit" aria-expanded="false">
                 <p class="micro">Compared to your size: <a href="#" class="link">Alexis S</a> (perfect fit)</p>
 
                 <div class="fit-row">
@@ -614,21 +617,39 @@ body::before{
 </script>
 
 <script>
-  // SG details toggle
-  (function(){
-    const btn = document.querySelector('.fit-toggle');
-    const details = document.querySelector('.fit-details');
-    if(!btn || !details) return;
-    details.style.display = details.classList.contains('open') ? 'block' : 'none';
+(function(){
+  document.querySelectorAll('.fit-toggle').forEach(btn=>{
+    const sel = btn.getAttribute('data-target');
+    const details = sel ? document.querySelector(sel) : null;
+    if(!details) return;
+    const sizeCta = document.getElementById('sizeCta');
+    const match = sizeCta ? sizeCta.querySelector('.match') : null;
+
+    let open = details.classList.contains('open') || details.getAttribute('aria-expanded') === 'true';
+    apply();
+
     btn.addEventListener('click', ()=>{
-      const isOpen = !details.classList.contains('open');
-      details.classList.toggle('open', isOpen);
-      details.style.display = isOpen ? 'block' : 'none';
-      btn.textContent = isOpen ? 'Hide details' : 'Fit details';
-      btn.setAttribute('aria-expanded', String(isOpen));
-      details.setAttribute('aria-expanded', String(isOpen));
+      open = !open;
+      apply();
     });
-  })();
+
+    if(sizeCta){
+      sizeCta.addEventListener('click', (e)=>{
+        e.preventDefault();
+        btn.click();
+      });
+    }
+
+    function apply(){
+      details.classList.toggle('open', open);
+      details.setAttribute('aria-expanded', String(open));
+      btn.textContent = open ? 'Hide details' : 'Fit details';
+      btn.setAttribute('aria-expanded', String(open));
+      if(match) match.textContent = open ? 'Hide details' : 'Fit details';
+      details.style.display = open ? 'block' : 'none';
+    }
+  });
+})();
 </script>
 
 <script>
