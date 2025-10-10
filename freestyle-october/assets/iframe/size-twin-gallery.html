@@ -63,7 +63,17 @@
 
     .hero-wrap{position:relative;border-radius:22px;overflow:hidden;border:1px solid rgba(0,0,0,.04);background:#f5f6f8}
     .hero-img{width:100%;height:380px;object-fit:cover;display:block}
-    .hero-img--tight{object-position:center;transform:translateY(14px) scale(1.14)}
+    .hero-img--tight{object-position:center 56%;transform:scale(1)}
+    .carousel{position:relative;height:380px}
+    .carousel .slide{position:absolute;inset:0;opacity:0;transition:opacity .35s ease}
+    .carousel .slide.active{opacity:1}
+    .carousel .nav{position:absolute;top:50%;transform:translateY(-50%);width:32px;height:32px;border-radius:999px;background:rgba(0,0,0,.35);color:#fff;display:flex;align-items:center;justify-content:center;border:none;cursor:pointer}
+    .carousel .nav.left{left:10px}
+    .carousel .nav.right{right:10px}
+    .carousel .dots{position:absolute;left:50%;bottom:6px;transform:translateX(-50%);display:flex;gap:6px;align-items:center;justify-content:center;background:rgba(255,255,255,.76);padding:3px 6px;border-radius:999px}
+    .carousel .dot{width:6px;height:6px;border-radius:999px;background:#c2c7cc;border:none;padding:0}
+    .carousel .dot.active{background:var(--petrol-600)}
+    .hero-img--no-head{object-position:center 40%;transform:scale(1)}
 
     .alt-strip{margin-top:14px;display:flex;gap:12px;overflow-x:auto;-webkit-overflow-scrolling:touch;padding-bottom:4px}
     .alt-strip::-webkit-scrollbar{height:0}
@@ -143,13 +153,36 @@
               </div>
             </header>
             <div class="hero-wrap">
-              <img
-                class="hero-img hero-img--tight"
-                src="https://images.unsplash.com/photo-1503342217505-b0a15cf70489?q=80&w=1200&auto=format&fit=crop"
-                data-local-src="../img/Hutch%20Corene%20Strapless%20Dress.jpeg"
-                data-fallback-src="https://images.unsplash.com/photo-1503342217505-b0a15cf70489?q=80&w=1200&auto=format&fit=crop"
-                alt="ellaa76 wearing Hutch Corene Strapless Dress"
-              >
+              <div class="carousel" data-index="0">
+                <img
+                  class="hero-img hero-img--tight slide active"
+                  src="https://images.unsplash.com/photo-1503342217505-b0a15cf70489?q=80&w=1200&auto=format&fit=crop"
+                  data-local-src="../img/videoframe_6964.png"
+                  data-fallback-src="https://images.unsplash.com/photo-1503342217505-b0a15cf70489?q=80&w=1200&auto=format&fit=crop"
+                  alt="ellaa76 wearing floral halter dress"
+                >
+                <img
+                  class="hero-img hero-img--tight slide"
+                  src="https://images.unsplash.com/photo-1512436991641-6745cdb1723f?q=80&w=1200&auto=format&fit=crop"
+                  data-local-src="../img/videoframe_33023.png"
+                  data-fallback-src="https://images.unsplash.com/photo-1512436991641-6745cdb1723f?q=80&w=1200&auto=format&fit=crop"
+                  alt="ellaa76 in a floral v-neck dress"
+                >
+                <img
+                  class="hero-img hero-img--no-head slide"
+                  src="https://images.unsplash.com/photo-1520975688810-00f17fb6c03a?q=80&w=1200&auto=format&fit=crop"
+                  data-local-src="../img/videoframe_66962.png"
+                  data-fallback-src="https://images.unsplash.com/photo-1520975688810-00f17fb6c03a?q=80&w=1200&auto=format&fit=crop"
+                  alt="brown blazer outfit, head cropped"
+                >
+                <button class="nav left" type="button" aria-label="Previous slide">‹</button>
+                <button class="nav right" type="button" aria-label="Next slide">›</button>
+                <div class="dots" aria-label="Slide position">
+                  <button class="dot active" type="button" aria-label="Slide 1"></button>
+                  <button class="dot" type="button" aria-label="Slide 2"></button>
+                  <button class="dot" type="button" aria-label="Slide 3"></button>
+                </div>
+              </div>
             </div>
             <div class="look-caption">
               <p><strong class="user">Anthropologie</strong>Somerset Maxi Dress — XS</p>
@@ -223,6 +256,41 @@
       probe.onload = ()=>{img.src = localSrc;};
       probe.onerror = ()=>{img.src = fallback;};
       probe.src = localSrc;
+    });
+
+    // Lightweight carousel controls
+    document.querySelectorAll('.carousel').forEach((car)=>{
+      const slides = Array.from(car.querySelectorAll('.slide'));
+      const dots = Array.from(car.querySelectorAll('.dot'));
+      let index = 0;
+
+      const setIndex = (i)=>{
+        index = (i + slides.length) % slides.length;
+        slides.forEach((s,si)=>s.classList.toggle('active', si===index));
+        dots.forEach((d,di)=>d.classList.toggle('active', di===index));
+      };
+
+      const next = ()=> setIndex(index+1);
+      const prev = ()=> setIndex(index-1);
+
+      car.querySelector('.nav.right')?.addEventListener('click', next);
+      car.querySelector('.nav.left')?.addEventListener('click', prev);
+      dots.forEach((d,di)=>d.addEventListener('click', ()=>setIndex(di)));
+
+      // Swipe support
+      let startX = null;
+      const onStart = (e)=>{ startX = (e.touches? e.touches[0].clientX : e.clientX); };
+      const onEnd = (e)=>{
+        if(startX===null) return;
+        const endX = (e.changedTouches? e.changedTouches[0].clientX : e.clientX);
+        const dx = endX - startX;
+        if(Math.abs(dx) > 30){ dx < 0 ? next() : prev(); }
+        startX = null;
+      };
+      car.addEventListener('mousedown', onStart);
+      car.addEventListener('mouseup', onEnd);
+      car.addEventListener('touchstart', onStart, {passive:true});
+      car.addEventListener('touchend', onEnd);
     });
   </script>
 </body>
