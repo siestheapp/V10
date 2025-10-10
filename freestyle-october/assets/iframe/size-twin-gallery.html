@@ -70,6 +70,11 @@
     .carousel .nav{position:absolute;top:50%;transform:translateY(-50%);width:32px;height:32px;border-radius:999px;background:rgba(0,0,0,.35);color:#fff;display:flex;align-items:center;justify-content:center;border:none;cursor:pointer}
     .carousel .nav.left{left:10px}
     .carousel .nav.right{right:10px}
+    /* Center chevrons visually within circular buttons */
+    .carousel .nav{font-size:0}
+    .carousel .nav::before{display:block;font-size:18px;line-height:1;color:#fff}
+    .carousel .nav.left::before{content:"\2039";transform:translateX(-1px)}
+    .carousel .nav.right::before{content:"\203A";transform:translateX(1px)}
     .carousel .dots{position:absolute;left:50%;bottom:6px;transform:translateX(-50%);display:flex;gap:6px;align-items:center;justify-content:center;background:rgba(255,255,255,.76);padding:3px 6px;border-radius:999px}
     .carousel .dot{width:6px;height:6px;border-radius:999px;background:#c2c7cc;border:none;padding:0}
     .carousel .dot.active{background:var(--petrol-600)}
