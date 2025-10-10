@@ -171,14 +171,17 @@ body::before{
 
 /* Spec rows with delta badges (expanded state) */
 .spec{display:flex;align-items:center;justify-content:space-between;padding:10px 0}
-.look-h{display:flex;align-items:center;gap:12px;margin-bottom:16px}
-.avatar{width:48px;height:48px;border-radius:16px;object-fit:cover;border:2px solid rgba(0,0,0,.05);box-shadow:0 6px 18px rgba(0,0,0,.12)}
-.avatar--circle{border-radius:50%}
-.name{font:700 15px/1.2 Inter}
-.bads{display:flex;flex-wrap:wrap;gap:6px;margin-left:auto}
-.badge{background:var(--petrol-100);color:var(--petrol-600);font:600 11px/1 Inter;padding:6px 10px;border-radius:999px;border:1px solid rgba(0,163,163,.25)}
-.look-h[data-proxy="false"]{display:none}
-.details .badge{display:inline-flex;align-items:center;justify-content:center;min-width:68px;font-size:14px;line-height:1;padding:8px 10px;border-radius:999px;background:var(--petrol-100);color:var(--petrol-600);font-weight:700;border:1px solid var(--petrol-400)}
+
+/* Proxy header (borrowed) */
+.look-h{display:flex;align-items:center;gap:10px;padding:10px 14px 0}
+.avatar{width:34px;height:34px;border-radius:10px;object-fit:cover}
+.avatar--circle{border-radius:999px}
+.name{font:700 14px/1.2 Inter;color:#2F2F33}
+.bads{display:flex;gap:8px;flex-wrap:wrap}
+.badge{display:inline-flex;align-items:center;gap:8px;padding:8px 12px;
+  border-radius:999px;border:1px solid rgba(0,0,0,.08);background:#fff;
+  font:700 12px/1.1 Inter;color:#2F2F33;white-space:nowrap}
+.details .badge{display:inline-flex;align-items:center;justify-content:center;gap:0;min-width:68px;font-size:14px;line-height:1;padding:8px 10px;border-radius:999px;background:var(--petrol-100);color:var(--petrol-600);font-weight:700;border:1px solid var(--petrol-400)}
 .details .divider{height:1px;background:#ececec;margin:6px 0;border-radius:1px}
 
 /* Fit Tip card */
@@ -297,10 +300,19 @@ body::before{
         </div>
 
         <div class="feed">
+          <!--
           <div class="info-card" role="note" aria-live="polite" data-empty-proxy="true">
             <p>A proxy is someone who wears the exact same piece as you, down to the size. Check out their other sizes – they’ll probably fit you too.</p>
           </div>
+          -->
           <div class="card">
+            <header class="look-h">
+              <img class="avatar avatar--circle" src="../img/videoframe_611.png" alt="ellaa76 profile photo">
+              <div class="name">ellaa76</div>
+              <div class="bads">
+                <span class="badge">Exact match in Selected Piece</span>
+              </div>
+            </header>
             <div class="imgbox">
               <img class="img" src="https://images.urbndata.com/is/image/Anthropologie/4130652010091_256_b?$redesign-zoom-5x$" alt="Anthropologie slip dress"/>
               
@@ -315,13 +327,6 @@ body::before{
             </div>
 
             <div class="info">
-              <header class="look-h" data-proxy="false">
-                <img class="avatar avatar--circle" src="../img/videoframe_611.png" alt="Proxy user photo">
-                <div class="name">ProxyUser</div>
-                <div class="bads">
-                  <span class="badge">Exact match in Selected Piece</span>
-                </div>
-              </header>
               <!-- Enhanced CTA with icon -->
               <button class="size-cta" type="button" id="sizeCta" aria-expanded="false">
                 <span class="label">
@@ -379,6 +384,88 @@ body::before{
 
               <!-- Feed summary -->
               <div class="tip tip-summary" id="fitSummary">
+                <div>Fits like your <strong>Alexis</strong> dress — roomier bust, matching waist & hips.</div>
+              </div>
+              <div class="shop-row">
+                <a class="shop-link" href="https://www.anthropologie.com/shop/the-jocelyn-sleeveless-slip-midi-dress-by-maeve?category=top-rated-dresses&color=256&type=STANDARD&quantity=1" aria-label="Shop size S" target="_blank" rel="noopener noreferrer">Shop S</a>
+              </div>
+
+              
+            </div>
+          </div>
+
+          <div class="card">
+            <div class="imgbox">
+              <img class="img" src="https://images.urbndata.com/is/image/Anthropologie/4130652010091_256_b?$redesign-zoom-5x$" alt="Anthropologie slip dress"/>
+              
+              <!-- Save/Heart button -->
+              <button class="save-btn" id="saveBtn2" title="Save to favorites">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/>
+                </svg>
+              </button>
+              
+              <div class="overlay"></div>
+            </div>
+
+            <div class="info">
+              <!-- Enhanced CTA with icon -->
+              <button class="size-cta" type="button" id="sizeCta2" aria-expanded="false">
+                <span class="label">
+                  <svg class="measure-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M3 7v10a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V9a2 2 0 0 0-2-2H5a2 2 0 0 0-2 2z"/>
+                    <line x1="8" y1="1" x2="8" y2="4"/>
+                    <line x1="16" y1="1" x2="16" y2="4"/>
+                  </svg>
+                  Best Fit: <strong>S</strong>
+                </span>
+                <span class="match">Fit details</span>
+              </button>
+
+              <div class="divider"></div>
+
+              <div class="row">
+                <div class="left-meta tappable">
+                  <div class="brand">ANTHROPOLOGIE</div>
+                  <span style="color:#c4c4c4;">|</span>
+                  <div class="price">$168.00</div>
+                </div>
+                <div class="trust-item">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M20 6L9 17l-5-5"/>
+                  </svg>
+                  Free returns
+                </div>
+              </div>
+              <div class="micro" style="margin-top:4px;">The Jocelyn Sleeveless Slip Midi Dress by Maeve</div>
+
+              
+
+              <!-- Expanded details -->
+              <div class="details hidden" id="fitDetails2">
+                <div class="item">
+                  <p class="advice-inline">Compared to your size: <strong class="accent">Alexis S</strong> <span class="muted">(perfect fit)</span></p>
+                </div>
+                <div class="spec">
+                  <span class="measure"><strong>Bust —</strong> Looser <span class="muted">(35–36″ vs 33″)</span></span>
+                  <span class="badge">+2–3″</span>
+                </div>
+                <div class="divider"></div>
+                <div class="spec">
+                  <span class="measure"><strong>Waist —</strong> Matches <span class="muted">(27–28″ vs 27″)</span></span>
+                  <span class="badge">≈</span>
+                </div>
+                <div class="divider"></div>
+                <div class="spec">
+                  <span class="measure"><strong>Hips —</strong> Matches <span class="muted">(37–38″ vs 37″)</span></span>
+                  <span class="badge">≈</span>
+                </div>
+                <p class="advice-inline advice-next">Prefer a slimmer look? XS will match the bust but feel snug at waist and hips (1–2″ smaller)</p>
+                <a href="https://www.anthropologie.com/shop/the-jocelyn-sleeveless-slip-midi-dress-by-maeve?category=top-rated-dresses&color=256&type=STANDARD&quantity=1" class="shop-inline" aria-label="Shop size S" target="_blank" rel="noopener noreferrer">Shop S →</a>
+              </div>
+
+              <!-- Feed summary -->
+              <div class="tip tip-summary" id="fitSummary2">
                 <div>Fits like your <strong>Alexis</strong> dress — roomier bust, matching waist & hips.</div>
               </div>
               <div class="shop-row">
@@ -482,49 +569,3 @@ body::before{
       }, {passive:true});
     }
   })();
-</script>
-
-<script>
-// Example data shape the app layer can overwrite later
-window.FEED_DATA = {
-  items: [
-    // Each item can optionally include a `proxy` object to trigger the header
-    // { proxy: { name: "ellaa76", avatar: "../img/videoframe_611.png", fit: 0.88 }, ... }
-  ],
-  hasAnyProxy: false
-};
-
-(function initUnifiedFeed(){
-  const infoCard = document.querySelector('[data-empty-proxy]');
-  if(infoCard) infoCard.style.display = window.FEED_DATA.hasAnyProxy ? 'none' : 'block';
-
-  // For each card, toggle the proxy header visibility
-  document.querySelectorAll('.card').forEach((card, i)=>{
-    const header = card.querySelector('.look-h');
-    const item = (window.FEED_DATA.items || [])[i] || {};
-    const hasProxy = !!item.proxy;
-    if(header){
-      header.dataset.proxy = hasProxy ? 'true' : 'false';
-      if(!hasProxy) header.style.display = 'none';
-      else {
-        // fill UI
-        header.querySelector('.name').textContent = item.proxy.name || 'Size twin';
-        header.querySelector('.avatar').src = item.proxy.avatar || header.querySelector('.avatar').src;
-        // optional second badge for fit% if provided
-        const bads = header.querySelector('.bads');
-        if(bads && item.proxy.fit != null){
-          const pct = Math.round(item.proxy.fit * 100);
-          const extra = document.createElement('span');
-          extra.className = 'badge';
-          extra.textContent = pct + '% fit match';
-          bads.appendChild(extra);
-        }
-        header.style.display = '';
-      }
-    }
-  });
-})();
-</script>
-
-</body>
-</html>
