@@ -173,6 +173,12 @@
                   data-local-src="../img/videoframe_6964.png"
                   data-fallback-src="https://images.unsplash.com/photo-1503342217505-b0a15cf70489?q=80&w=1200&auto=format&fit=crop"
                   alt="ellaa76 wearing floral halter dress"
+                  data-brand="Anthropologie"
+                  data-title="Somerset Maxi Dress"
+                  data-size="XS"
+                  data-comments="12"
+                  data-q="Is this petite or regular?"
+                  data-a="Regular!"
                 >
                 <img
                   class="hero-img hero-img--tight slide"
@@ -180,6 +186,12 @@
                   data-local-src="../img/videoframe_33023.png"
                   data-fallback-src="https://images.unsplash.com/photo-1512436991641-6745cdb1723f?q=80&w=1200&auto=format&fit=crop"
                   alt="ellaa76 in a floral v-neck dress"
+                  data-brand="Anthropologie"
+                  data-title="Peregrine Midi Dress"
+                  data-size="XS Petite"
+                  data-comments="7"
+                  data-q="How long is the skirt?"
+                  data-a="Hits mid-calf (I’m 5'3)."
                 >
                 <img
                   class="hero-img hero-img--no-head slide"
@@ -187,6 +199,12 @@
                   data-local-src="../img/videoframe_66962.png"
                   data-fallback-src="https://images.unsplash.com/photo-1520975688810-00f17fb6c03a?q=80&w=1200&auto=format&fit=crop"
                   alt="brown blazer outfit, head cropped"
+                  data-brand="LOFT"
+                  data-title="Versa Crepe Blazer"
+                  data-size="XXS Petite"
+                  data-comments="4"
+                  data-q="Sleeve length true petite?"
+                  data-a="Yes, lands at wrist."
                 >
                 <button class="nav left" type="button" aria-label="Previous slide">‹</button>
                 <button class="nav right" type="button" aria-label="Next slide">›</button>
@@ -198,10 +216,10 @@
               </div>
             </div>
             <div class="look-caption">
-              <p><strong class="user">Anthropologie</strong>Somerset Maxi Dress — XS</p>
-              <button class="comment-teaser" type="button" aria-label="View 12 comments">
-                <div class="k">Comments · 12</div>
-                <div class="row"><span class="q">Q:</span> Is this petite or regular? <span class="sep">·</span> <span class="a">A:</span> Regular!</div>
+              <p><strong class="user" id="brand">Anthropologie</strong><span id="title">Somerset Maxi Dress</span> — <span id="size">XS</span></p>
+              <button class="comment-teaser" type="button" aria-label="View comments" id="commentTeaser">
+                <div class="k">Comments · <span id="cCount">12</span></div>
+                <div class="row"><span class="q">Q:</span> <span id="cQ">Is this petite or regular?</span> <span class="sep">·</span> <span class="a">A:</span> <span id="cA">Regular!</span></div>
                 <div class="link">See full thread &gt;</div>
               </button>
               <div class="look-actions look-actions--center">
@@ -276,16 +294,35 @@
       probe.src = localSrc;
     });
 
-    // Lightweight carousel controls
+    // Lightweight carousel controls + dynamic caption/teaser updates
     document.querySelectorAll('.carousel').forEach((car)=>{
       const slides = Array.from(car.querySelectorAll('.slide'));
       const dots = Array.from(car.querySelectorAll('.dot'));
       let index = 0;
 
+      const brandEl = document.getElementById('brand');
+      const titleEl = document.getElementById('title');
+      const sizeEl = document.getElementById('size');
+      const cCountEl = document.getElementById('cCount');
+      const cQEl = document.getElementById('cQ');
+      const cAEl = document.getElementById('cA');
+
+      const applyFromSlide = (slide)=>{
+        if(!slide) return;
+        const { brand, title, size, comments, q, a } = slide.dataset;
+        if(brandEl) brandEl.textContent = brand || '';
+        if(titleEl) titleEl.textContent = title || '';
+        if(sizeEl) sizeEl.textContent = size || '';
+        if(cCountEl) cCountEl.textContent = comments || '0';
+        if(cQEl) cQEl.textContent = q || '';
+        if(cAEl) cAEl.textContent = a || '';
+      };
+
       const setIndex = (i)=>{
         index = (i + slides.length) % slides.length;
         slides.forEach((s,si)=>s.classList.toggle('active', si===index));
         dots.forEach((d,di)=>d.classList.toggle('active', di===index));
+        applyFromSlide(slides[index]);
       };
 
       const next = ()=> setIndex(index+1);
@@ -309,6 +346,8 @@
       car.addEventListener('mouseup', onEnd);
       car.addEventListener('touchstart', onStart, {passive:true});
       car.addEventListener('touchend', onEnd);
+      // Initial apply
+      applyFromSlide(slides[index]);
     });
   </script>
 </body>
