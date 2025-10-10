@@ -90,6 +90,8 @@
     .pill{display:inline-flex;align-items:center;justify-content:center;padding:10px 18px;border-radius:999px;border:1px solid rgba(0,0,0,.12);font:600 12px/1 Inter;color:#1F1F1F;background:#fff;word-spacing:0.12em}
     .btn-primary{flex:1;display:inline-flex;align-items:center;justify-content:center;padding:12px 14px;border:none;border-radius:16px;font:700 14px/1 Inter;color:#fff;background:linear-gradient(135deg,var(--cta-start),var(--cta-mid) 40%,var(--cta-end));box-shadow:0 12px 28px rgba(0,163,163,.25);cursor:pointer;transition:transform .2s ease, box-shadow .2s ease}
     .btn-primary:hover{transform:translateY(-1px);box-shadow:0 18px 40px rgba(0,163,163,.28)}
+    .btn-outline{flex:1;display:inline-flex;align-items:center;justify-content:center;padding:12px 14px;border-radius:16px;font:700 14px/1 Inter;color:#1F1F1F;background:#fff;border:1px solid rgba(0,0,0,.12);box-shadow:0 4px 12px rgba(0,0,0,.04);cursor:pointer;transition:background .2s ease, box-shadow .2s ease}
+    .btn-outline:hover{background:#f7f9fb;box-shadow:0 8px 18px rgba(0,0,0,.08)}
     /* Comment teaser styles */
     .comment-teaser{display:block;width:100%;text-align:left;margin-top:12px;border-radius:16px;border:1px solid rgba(0,0,0,.08);background:#fff;padding:10px 12px;box-shadow:0 2px 6px rgba(0,0,0,.03);cursor:pointer;transition:background .2s ease, box-shadow .2s ease}
     .comment-teaser:hover{background:#f7f9fb;box-shadow:0 6px 16px rgba(0,0,0,.06)}
@@ -98,6 +100,7 @@
     .comment-teaser .row .q,.comment-teaser .row .a{font-weight:700}
     .comment-teaser .row .sep{margin:0 8px;color:#c4c7cc}
     .comment-teaser .link{margin-top:6px;font:600 12px/1.2 Inter;color:var(--petrol-600)}
+    .comment-teaser .link-inline{margin-top:0;margin-left:8px;display:none;font:600 13px/1.45 Inter;color:var(--petrol-600);white-space:nowrap}
 
     /* Caption and helper copy under main image */
     .look-caption{margin-top:14px}
@@ -191,7 +194,6 @@
                   data-size="XS Petite"
                   data-comments="7"
                   data-q="How long is the skirt?"
-                  data-a="Hits mid-calf (I’m 5'3)."
                 >
                 <img
                   class="hero-img hero-img--no-head slide"
@@ -204,7 +206,6 @@
                   data-size="XXS Petite"
                   data-comments="4"
                   data-q="Sleeve length true petite?"
-                  data-a="Yes, lands at wrist."
                 >
                 <button class="nav left" type="button" aria-label="Previous slide">‹</button>
                 <button class="nav right" type="button" aria-label="Next slide">›</button>
@@ -219,16 +220,12 @@
               <p><strong class="user" id="brand">Anthropologie</strong><span id="title">Somerset Maxi Dress</span> — <span id="size">XS</span></p>
               <button class="comment-teaser" type="button" aria-label="View comments" id="commentTeaser">
                 <div class="k">Comments · <span id="cCount">12</span></div>
-                <div class="row"><span class="q">Q:</span> <span id="cQ">Is this petite or regular?</span> <span class="sep">·</span> <span class="a">A:</span> <span id="cA">Regular!</span></div>
-                <div class="link">See full thread &gt;</div>
+                <div class="row"><span class="q">Q:</span> <span id="cQ">Is this petite or regular?</span> <span class="sep">·</span> <span class="a">A:</span> <span id="cA">Regular!</span><span class="link link-inline" id="cLinkInline" aria-hidden="true">See full thread &gt;</span></div>
+                <div class="link" id="cLinkBlock">See full thread &gt;</div>
               </button>
-              <div class="look-actions look-actions--center">
+              <div class="look-actions">
                 <button class="btn-primary btn-primary--fit" type="button">Shop this item</button>
-              </div>
-              <div class="dots" aria-hidden="true" style="display:flex;gap:6px;align-items:center;justify-content:center;margin-top:10px">
-                <span style="width:6px;height:6px;border-radius:50%;background:#cfd3d8"></span>
-                <span style="width:12px;height:6px;border-radius:999px;background:var(--petrol-600)"></span>
-                <span style="width:6px;height:6px;border-radius:50%;background:#cfd3d8"></span>
+                <button class="btn-outline" type="button">See more from ellaa76</button>
               </div>
             </div>
           </article>
@@ -315,7 +312,28 @@
         if(sizeEl) sizeEl.textContent = size || '';
         if(cCountEl) cCountEl.textContent = comments || '0';
         if(cQEl) cQEl.textContent = q || '';
-        if(cAEl) cAEl.textContent = a || '';
+        if(cAEl){
+          cAEl.textContent = a || '';
+          // Hide the A/sep when no answer is provided
+          const aLabel = cAEl.previousElementSibling; // the 'A:' label span
+          const sep = aLabel?.previousElementSibling; // the separator dot span
+          const linkInline = document.getElementById('cLinkInline');
+          const linkBlock = document.getElementById('cLinkBlock');
+          if(!a){
+            // Hide A: label entirely and use inline link for a clean professional layout
+            if(aLabel && aLabel.classList.contains('a')) aLabel.style.display = 'none';
+            if(sep && sep.classList.contains('sep')) sep.style.display = 'none';
+            cAEl.style.display = 'none';
+            if(linkInline) linkInline.style.display = 'inline';
+            if(linkBlock) linkBlock.style.display = 'none';
+          }else{
+            if(aLabel && aLabel.classList.contains('a')) aLabel.style.display = '';
+            if(sep && sep.classList.contains('sep')) sep.style.display = '';
+            cAEl.style.display = '';
+            if(linkInline) linkInline.style.display = 'none';
+            if(linkBlock) linkBlock.style.display = '';
+          }
+        }
       };
 
       const setIndex = (i)=>{
