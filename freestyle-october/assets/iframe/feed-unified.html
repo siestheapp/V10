@@ -377,6 +377,22 @@ body::before{
 .pc-btn-primary{display:inline-flex;align-items:center;justify-content:center;gap:8px;padding:12px 18px;border-radius:999px;background:linear-gradient(135deg, var(--cta-start), var(--cta-mid) 46%, var(--cta-end)); color:#fff; font:700 15px/1.1 Inter; border:1px solid rgba(0,0,0,.04)}
 .pc-btn-secondary{display:inline-flex;align-items:center;justify-content:center;gap:8px;padding:12px 18px;border-radius:999px;background:#fff;border:1px solid rgba(0,0,0,.10); color:#1F1F1F; font:700 15px/1.1 Inter}
 .proxy-card + .card{margin-top:8px}
+
+/* --- Proxy carousel mechanics --- */
+.pc-carousel{
+  position:relative;
+  height:520px;
+  overflow:hidden;
+  border-radius:14px;
+}
+.pc-slide{
+  position:absolute;
+  inset:0;
+  opacity:0;
+  transition:opacity .25s ease;
+}
+.pc-slide.pc-active{ opacity:1; }
+.pc-hero-img{ width:100%; height:520px; object-fit:cover; object-position:center 22%; display:block; }
 </style>
 </head>
 <body class="view-feed">
@@ -563,6 +579,36 @@ body::before{
         try{ parent.postMessage({ type:'mock_button_click', key:`feed-chip-${label.trim().replace(/\s+/g,'-')}` }, '*'); }catch(err){}
       }, {passive:true});
     }
+  })();
+</script>
+
+<script>
+  // Minimal controller for namespaced Proxy carousel
+  (function () {
+    const card = document.querySelector('.proxy-card');
+    if (!card) return;
+    const slides = card.querySelectorAll('.pc-slide');
+    const dots   = card.querySelectorAll('.pc-dot');
+    let idx = 0;
+
+    function show(n){
+      idx = (n + slides.length) % slides.length;
+      slides.forEach((s,i)=> s.classList.toggle('pc-active', i===idx));
+      dots.forEach((d,i)=> d.classList.toggle('pc-active',  i===idx));
+    }
+    dots.forEach((d,i)=> d.addEventListener('click', ()=> show(i)));
+
+    // optional: swipe left/right
+    let startX = null;
+    card.addEventListener('touchstart', (e)=>{ startX = e.touches[0].clientX; }, {passive:true});
+    card.addEventListener('touchend', (e)=>{
+      if(startX==null) return;
+      const dx = e.changedTouches[0].clientX - startX;
+      if (Math.abs(dx) > 40) show(idx + (dx<0 ? 1 : -1));
+      startX = null;
+    }, {passive:true});
+
+    show(0); // init
   })();
 </script>
 
