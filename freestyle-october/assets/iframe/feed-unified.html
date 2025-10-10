@@ -84,7 +84,7 @@ body::before{
 .chip:not(.is-active):hover{background:#f8f8f8;border-color:#d0d0d0}
 
 /* Feed */
-.feed{padding:0 24px 96px;overflow-y:auto;display:flex;flex-direction:column;gap:18px}
+.feed{padding:0 24px 96px;overflow-y:auto}
 
 /* Enhanced Card */
 .card{background:#fff;border:1px solid #eee6;border-radius:18px;overflow:hidden;transition:transform 0.2s ease;position:relative}
@@ -93,11 +93,12 @@ body::before{
 .imgbox{position:relative;overflow:hidden;border-radius:18px}
 .imgbox img{display:block;width:100%;height:440px;object-fit:cover;object-position:center 22%}
 .imgbox .shadow{position:absolute;left:0;right:0;bottom:0;height:24%;background:linear-gradient(180deg,rgba(0,0,0,0) 0%,rgba(0,0,0,.16) 50%,rgba(0,0,0,.28) 100%)}
+/* Card shell + image (from working small feed) */
+.img{width:100%;height:440px;object-fit:cover;object-position:center 22%}
+.imgbox::after{content:"";position:absolute;left:0;right:0;bottom:0;height:20%;
+  background:linear-gradient(180deg,rgba(255,255,255,0) 0%,rgba(250,248,246,.56) 48%,#fff 100%)}
 
-/* Heart/Save Icon */
-.fav{position:absolute;top:16px;right:16px;width:36px;height:36px;border:none;border-radius:50%;background:rgba(255,255,255,.92);backdrop-filter:blur(10px);cursor:pointer;display:flex;align-items:center;justify-content:center;font-size:16px;line-height:1;color:#ff5c5c;box-shadow:0 6px 14px rgba(0,0,0,.12);transition:transform 0.2s ease,background 0.2s ease;z-index:2}
-.fav:hover{background:#fff;transform:scale(1.05)}
-.fav:active{transform:scale(.96)}
+/* (Heart/save UI removed for MVP) */
 
 /* Evidence pill */
 .size-pill{position:absolute;left:16px;bottom:16px;display:inline-flex;align-items:center;gap:6px;padding:6px 10px;
@@ -325,7 +326,7 @@ body::before{
 
         <div class="feed">
 
-          <!-- CARD 1 — PROXY-BACKED (yellow Somerset dress) -->
+          <!-- CARD 1 — PROXY HEADER + YELLOW SOMERSET -->
           <div class="card">
 
             <!-- Proxy header above image -->
@@ -337,67 +338,87 @@ body::before{
               </div>
             </header>
 
-            <!-- Image: copy the SAME main look image used on size-twin-gallery.html -->
-            <!-- Open freestyle-october/assets/iframe/size-twin-gallery.html, find the first proxy look for ellaa76 -->
-            <!-- and copy that <img ...> (yellow Somerset / mirror selfie) src into the tag below. -->
             <div class="imgbox">
-              <!-- REPLACE src below with the exact src from size-twin-gallery.html's main look image -->
-              <img src="../img/videoframe_6964.png" alt="ellaa76 wearing floral halter dress">
-              <button class="fav" aria-label="Like">❤</button>
-              <div class="shadow"></div>
+              <img class="img" src="../img/videoframe_6964.png" alt="Anthropologie Somerset Maxi Dress — XS">
+              <div class="overlay"></div>
             </div>
 
-            <!-- Keep your existing info layout from the feed mock (Best Fit CTA, brand/price row, summary, CTA) -->
             <div class="info">
-              <div class="cta">
-                <button class="btn btn--ramp" aria-label="Best fit size">🗓️&nbsp;&nbsp;<strong>Best Fit: S</strong></button>
-                <button class="btn btn--ghost">Fit details</button>
-              </div>
+              <button class="size-cta" type="button" aria-expanded="false">
+                <span class="label">
+                  <svg class="measure-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M3 7v10a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V9a2 2 0 0 0-2-2H5a2 2 0 0 0-2 2z"/>
+                    <line x1="8" y1="1" x2="8" y2="4"/><line x1="16" y1="1" x2="16" y2="4"/>
+                  </svg>
+                  Best Fit: <strong>S</strong>
+                </span>
+                <span class="match">Fit details</span>
+              </button>
 
-              <div class="row brandprice">
-                <div class="brand">ANTHROPOLOGIE</div>
-                <div class="price">$168.00</div>
-                <div class="perk">✓ Free returns</div>
-              </div>
+              <div class="divider"></div>
 
-              <div class="tip">
-                Fits like your <strong>Alexis</strong> dress — roomier bust, matching waist & hips.
+              <div class="row">
+                <div class="left-meta tappable">
+                  <div class="brand">ANTHROPOLOGIE</div>
+                  <span style="color:#c4c4c4;">|</span>
+                  <div class="price">$168.00</div>
+                </div>
+                <div class="trust-item">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 6L9 17l-5-5"/></svg>
+                  Free returns
+                </div>
               </div>
+              <div class="micro" style="margin-top:4px;">Somerset Maxi Dress by Anthropologie</div>
 
-              <div class="cta-b">
-                <button class="btn btn--ghost">Shop S</button>
+              <!-- Feed summary -->
+              <div class="tip tip-summary">
+                <div>Fits like your <strong>Alexis</strong> dress — roomier bust, matching waist & hips.</div>
+              </div>
+              <div class="shop-row">
+                <a class="shop-link" href="#" aria-label="Shop size S">Shop S</a>
               </div>
             </div>
           </div>
 
-          <!-- CARD 2 — SIZE-GUIDE ONLY (no proxy header) -->
+          <!-- CARD 2 — SIZE-GUIDE ONLY (DARK FLORAL), NO PROXY HEADER -->
           <div class="card">
             <div class="imgbox">
-              <!-- Keep the original dark floral image already used in the small feed mock -->
-              <!-- If unsure, reuse the same <img> src that was previously in the first card of feed-gallery.html -->
-              <img src="https://images.urbndata.com/is/image/Anthropologie/4130652010091_256_b?$redesign-zoom-5x$" alt="Anthropologie slip dress">
-              <button class="fav" aria-label="Like">❤</button>
-              <div class="shadow"></div>
+              <img class="img" src="https://images.urbndata.com/is/image/Anthropologie/4130652010091_256_b?$redesign-zoom-5x$" alt="Anthropologie slip dress"/>
+              <div class="overlay"></div>
             </div>
 
             <div class="info">
-              <div class="cta">
-                <button class="btn btn--ramp" aria-label="Best fit size">🗓️&nbsp;&nbsp;<strong>Best Fit: S</strong></button>
-                <button class="btn btn--ghost">Fit details</button>
-              </div>
+              <button class="size-cta" type="button" aria-expanded="false">
+                <span class="label">
+                  <svg class="measure-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M3 7v10a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V9a2 2 0 0 0-2-2H5a2 2 0 0 0-2 2z"/>
+                    <line x1="8" y1="1" x2="8" y2="4"/><line x1="16" y1="1" x2="16" y2="4"/>
+                  </svg>
+                  Best Fit: <strong>S</strong>
+                </span>
+                <span class="match">Fit details</span>
+              </button>
 
-              <div class="row brandprice">
-                <div class="brand">ANTHROPOLOGIE</div>
-                <div class="price">$168.00</div>
-                <div class="perk">✓ Free returns</div>
-              </div>
+              <div class="divider"></div>
 
-              <div class="tip">
-                Fits like your <strong>Alexis</strong> dress — roomier bust, matching waist & hips.
+              <div class="row">
+                <div class="left-meta tappable">
+                  <div class="brand">ANTHROPOLOGIE</div>
+                  <span style="color:#c4c4c4;">|</span>
+                  <div class="price">$168.00</div>
+                </div>
+                <div class="trust-item">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 6L9 17l-5-5"/></svg>
+                  Free returns
+                </div>
               </div>
+              <div class="micro" style="margin-top:4px;">The Jocelyn Sleeveless Slip Midi Dress by Maeve</div>
 
-              <div class="cta-b">
-                <button class="btn btn--ghost">Shop S</button>
+              <div class="tip tip-summary">
+                <div>Fits like your <strong>Alexis</strong> dress — roomier bust, matching waist & hips.</div>
+              </div>
+              <div class="shop-row">
+                <a class="shop-link" href="https://www.anthropologie.com/shop/the-jocelyn-sleeveless-slip-midi-dress-by-maeve?category=top-rated-dresses&color=256&type=STANDARD&quantity=1" aria-label="Shop size S" target="_blank" rel="noopener noreferrer">Shop S</a>
               </div>
             </div>
           </div>
@@ -419,7 +440,7 @@ body::before{
     const body = document.body;
     const sizeCta = document.getElementById('sizeCta');
     const matchLabel = sizeCta ? sizeCta.querySelector('.match') : null;
-    const saveBtn = document.getElementById('saveBtn');
+    
     const chips = document.querySelector('.chips');
 
     // Adaptive CTA ramps (subtle variety by category)
@@ -463,24 +484,7 @@ body::before{
       });
     }
 
-    // Save button functionality
-    if(saveBtn) {
-      saveBtn.addEventListener('click', (e) => {
-        e.preventDefault();
-        saveBtn.classList.toggle('saved');
-        const isSaved = saveBtn.classList.contains('saved');
-        saveBtn.title = isSaved ? 'Remove from favorites' : 'Save to favorites';
-        try{ parent.postMessage({ type:'mock_button_click', key: isSaved ? 'feed-save-on' : 'feed-save-off' }, '*'); }catch(e){}
-        
-        // Update heart icon
-        const svg = saveBtn.querySelector('svg');
-        if(isSaved) {
-          svg.innerHTML = '<path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z" fill="currentColor"/>';
-        } else {
-          svg.innerHTML = '<path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z" fill="none" stroke="currentColor" stroke-width="2"/>';
-        }
-      });
-    }
+    // (heart/save functionality removed for MVP)
 
     // Track chip clicks + set adaptive ramp
     if(chips){
