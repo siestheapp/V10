@@ -345,6 +345,39 @@ body::before{
 .comment-teaser .link{margin-top:6px;font:600 12px/1.2 Inter;color:var(--petrol-600)}
 .comment-teaser .link-inline{margin-top:0;margin-left:8px;display:none;font:600 13px/1.45 Inter;color:var(--petrol-600);white-space:nowrap}
 </style>
+<style>
+/* ===== Proxy card (namespaced from size-twin) ===== */
+.proxy-card{background:#fff;border:1px solid rgba(0,0,0,.06);border-radius:18px;padding:12px 12px 14px}
+.pc-look-h{display:flex;align-items:center;gap:10px;padding:6px 6px 10px}
+.pc-avatar{width:34px;height:34px;border-radius:10px;object-fit:cover}
+.pc-avatar--circle{border-radius:999px}
+.pc-name{font:700 14px/1.2 Inter;color:#2F2F33}
+.pc-bads{display:flex;gap:8px;flex-wrap:wrap}
+.pc-badge{display:inline-flex;align-items:center;gap:8px;padding:8px 12px;border-radius:999px;border:1px solid rgba(0,0,0,.08);background:#fff;font:700 12px/1.1 Inter;color:#2F2F33;white-space:nowrap}
+.pc-hero-wrap{position:relative}
+.pc-carousel{position:relative}
+.pc-hero-img{display:block;width:100%;height:520px;object-fit:cover;border-radius:14px}
+.pc-hero-img--tight{object-position:center 22%}
+.pc-dots{position:absolute;left:50%;bottom:12px;transform:translateX(-50%);display:flex;gap:6px}
+.pc-dot{width:8px;height:8px;border-radius:50%;background:#e6e6ea;opacity:.9}
+.pc-dot.pc-active{background:#c9c5c0}
+.pc-look-caption{margin-top:14px}
+.pc-look-caption p{font:600 14px/1.45 Inter;color:#2F2F33}
+.pc-sub{margin-top:6px;font:500 13px/1.4 Inter;color:#6F6F74}
+.pc-user{margin-right:8px}
+.pc-comment-teaser{display:block;width:100%;text-align:left;margin-top:12px;border-radius:16px;border:1px solid rgba(0,0,0,.08);background:#fff;padding:10px 12px;box-shadow:0 2px 6px rgba(0,0,0,.03)}
+.pc-comment-teaser:hover{background:#f7f9fb;box-shadow:0 6px 16px rgba(0,0,0,.06)}
+.pc-k{font:600 11px/1.2 Inter;color:#6F6F74;margin-bottom:6px}
+.pc-row{font:600 13px/1.45 Inter;color:#2F2F33}
+.pc-q,.pc-a{font-weight:700}
+.pc-sep{margin:0 8px;color:#c4c7cc}
+.pc-link{margin-top:6px;font:600 12px/1.2 Inter;color:#009090}
+.pc-link-inline{margin-top:0;margin-left:8px;display:none;font:600 13px/1.45 Inter;color:#009090;white-space:nowrap}
+.pc-look-actions{display:flex;gap:14px;margin:16px 0 6px}
+.pc-btn-primary{display:inline-flex;align-items:center;justify-content:center;gap:8px;padding:12px 18px;border-radius:999px;background:linear-gradient(135deg, var(--cta-start), var(--cta-mid) 46%, var(--cta-end)); color:#fff; font:700 15px/1.1 Inter; border:1px solid rgba(0,0,0,.04)}
+.pc-btn-secondary{display:inline-flex;align-items:center;justify-content:center;gap:8px;padding:12px 18px;border-radius:999px;background:#fff;border:1px solid rgba(0,0,0,.10); color:#1F1F1F; font:700 15px/1.1 Inter}
+.proxy-card + .card{margin-top:8px}
+</style>
 </head>
 <body class="view-feed">
   <div class="phone">
@@ -373,45 +406,43 @@ body::before{
 
         <div class="feed">
 
-          <div class="card">
-            <!-- Proxy header above image -->
-            <header class="look-h">
-              <img class="avatar avatar--circle" src="../img/videoframe_611.png" alt="ellaa76 profile photo">
-              <div class="name">ellaa76</div>
-              <div class="bads">
-                <span class="badge">Exact match in Selected Piece</span>
-              </div>
+          <!-- ===== PROXY CARD (lifted from size-twin, namespaced) ===== -->
+          <section class="proxy-card">
+            <header class="pc-look-h">
+              <img class="pc-avatar pc-avatar--circle" src="../img/videoframe_611.png" alt="ellaa76 profile photo">
+              <div class="pc-name">ellaa76</div>
+              <div class="pc-bads"><span class="pc-badge">Exact match in Selected Piece</span></div>
             </header>
 
-            <div class="imgbox">
-              <img class="img" src="../img/videoframe_6964.png" alt="Anthropologie Somerset Maxi Dress — XS">
-              <div class="overlay"></div>
-            </div>
-
-            <!-- CAPTION -->
-            <div class="look-caption">
-              <p><span class="user"><strong>Anthropologie</strong></span> Somerset Maxi Dress — XS</p>
-              <div class="sub">Comments · 12</div>
-            </div>
-
-            <!-- COMMENT TEASER (exact from size-twin) -->
-            <div class="comment-teaser" role="button" aria-label="View comments">
-              <div class="k">Comments · 12</div>
-              <div class="row">
-                <span class="q">Q:</span> Is this petite or regular?
-                <span class="sep">·</span>
-                <span class="a">A:</span> Regular!
-                <span class="link link-inline" aria-hidden="true">See full thread &gt;</span>
+            <div class="pc-hero-wrap">
+              <div class="pc-carousel" data-index="0">
+                <img class="pc-hero-img pc-hero-img--tight pc-slide pc-active" src="../img/videoframe_6964.png" alt="ellaa76 wearing Somerset Maxi Dress">
+                <img class="pc-hero-img pc-hero-img--tight pc-slide" src="../img/videoframe_33023.png" alt="ellaa76 alternate look">
+                <div class="pc-dots"><span class="pc-dot pc-active"></span><span class="pc-dot"></span></div>
               </div>
-              <div class="link">See full thread &gt;</div>
             </div>
 
-            <!-- ACTIONS -->
-            <div class="look-actions look-actions--center">
-              <button class="btn-primary btn-primary--fit">Shop this item</button>
-              <button class="btn-secondary">See more from ellaa76</button>
+            <div class="pc-look-caption">
+              <p><span class="pc-user"><strong>Anthropologie</strong></span> Somerset Maxi Dress — XS</p>
+              <div class="pc-sub">Comments · 12</div>
             </div>
-          </div>
+
+            <div class="pc-comment-teaser" role="button" aria-label="View comments">
+              <div class="pc-k">Comments · 12</div>
+              <div class="pc-row">
+                <span class="pc-q">Q:</span> Is this petite or regular?
+                <span class="pc-sep">·</span>
+                <span class="pc-a">A:</span> Regular!
+                <span class="pc-link-inline" aria-hidden="true">See full thread &gt;</span>
+              </div>
+              <div class="pc-link">See full thread &gt;</div>
+            </div>
+
+            <div class="pc-look-actions">
+              <button class="pc-btn-primary">Shop this item</button>
+              <button class="pc-btn-secondary">See more from ellaa76</button>
+            </div>
+          </section>
 
           <!-- CARD 2 — SIZE-GUIDE ONLY (DARK FLORAL), NO PROXY HEADER -->
           <div class="card">
