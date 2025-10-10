@@ -84,8 +84,8 @@ body::before{
 .chip:not(.is-active):hover{background:#f8f8f8;border-color:#d0d0d0}
 
 /* Feed */
-/* Vertical spacing between cards */
-.feed{padding:0 24px 96px;overflow-y:auto;display:flex;flex-direction:column;gap:18px}
+/* Feed scroll + spacing between cards */
+.feed{padding:0 24px 96px; overflow-y:auto; display:flex; flex-direction:column; gap:24px}
 
 /* Enhanced Card */
 .card{background:#fff;border:1px solid #eee6;border-radius:18px;overflow:hidden;transition:transform 0.2s ease;position:relative}
@@ -96,8 +96,11 @@ body::before{
 .imgbox .shadow{position:absolute;left:0;right:0;bottom:0;height:24%;background:linear-gradient(180deg,rgba(0,0,0,0) 0%,rgba(0,0,0,.16) 50%,rgba(0,0,0,.28) 100%)}
 /* Card shell + image (from working small feed) */
 .img{width:100%;height:440px;object-fit:cover;object-position:center 22%}
-.imgbox::after{content:"";position:absolute;left:0;right:0;bottom:0;height:20%;
-  background:linear-gradient(180deg,rgba(255,255,255,0) 0%,rgba(250,248,246,.56) 48%,#fff 100%)}
+.imgbox::after{
+  content:""; position:absolute; left:0; right:0; bottom:0; height:20%;
+  background:linear-gradient(180deg,rgba(255,255,255,0) 0%,rgba(250,248,246,.56) 48%,#fff 100%);
+  pointer-events:none; /* important */
+}
 
 /* (Heart/save UI removed for MVP) */
 
@@ -229,7 +232,7 @@ body::before{
 }
 .card > .look-h .avatar{box-shadow:0 1px 3px rgba(0,0,0,.08)}
 .card > .look-h + .hero-wrap{border-top-left-radius:0;border-top-right-radius:0}
-.fav{display:none!important}
+
 
 .brandprice{align-items:center;gap:10px}
 .brandprice .brand{font-size:12px;letter-spacing:.3px;color:#555;font-weight:600;text-transform:uppercase}
@@ -380,50 +383,28 @@ body::before{
               <div class="overlay"></div>
             </div>
 
-            <div class="info">
-              <button class="size-cta" type="button" aria-expanded="false">
-                <span class="label">
-                  <svg class="measure-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                    <path d="M3 7v10a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V9a2 2 0 0 0-2-2H5a2 2 0 0 0-2 2z"/>
-                    <line x1="8" y1="1" x2="8" y2="4"/><line x1="16" y1="1" x2="16" y2="4"/>
-                  </svg>
-                  Best Fit: <strong>S</strong>
-                </span>
-                <span class="match">Fit details</span>
-              </button>
+            <!-- CAPTION -->
+            <div class="look-caption">
+              <p><span class="user"><strong>Anthropologie</strong></span> Somerset Maxi Dress — XS</p>
+              <div class="sub">Comments · 12</div>
+            </div>
 
-              <div class="divider"></div>
-
+            <!-- COMMENT TEASER (exact from size-twin) -->
+            <div class="comment-teaser" role="button" aria-label="View comments">
+              <div class="k">Comments · 12</div>
               <div class="row">
-                <div class="left-meta tappable">
-                  <div class="brand">ANTHROPOLOGIE</div>
-                  <span style="color:#c4c4c4;">|</span>
-                  <div class="price">$168.00</div>
-                </div>
-                <div class="trust-item">
-                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 6L9 17l-5-5"/></svg>
-                  Free returns
-                </div>
+                <span class="q">Q:</span> Is this petite or regular?
+                <span class="sep">·</span>
+                <span class="a">A:</span> Regular!
+                <span class="link link-inline" aria-hidden="true">See full thread &gt;</span>
               </div>
-              <div class="micro" style="margin-top:4px;">Somerset Maxi Dress by Anthropologie</div>
+              <div class="link">See full thread &gt;</div>
+            </div>
 
-              <div class="comment-teaser" role="button" aria-label="View comments">
-                <div class="k">Comments · 12</div>
-                <div class="row">
-                  <span class="q">Q:</span> Is this petite or regular?
-                  <span class="sep">·</span>
-                  <span class="a">A:</span> Regular!
-                  <span class="link link-inline" aria-hidden="true">See full thread &gt;</span>
-                </div>
-                <div class="link">See full thread &gt;</div>
-              </div>
-
-              <div class="tip tip-summary">
-                <div>Fits like your <strong>Alexis</strong> dress — roomier bust, matching waist & hips.</div>
-              </div>
-              <div class="shop-row">
-                <a class="shop-link" href="#" aria-label="Shop size S">Shop S</a>
-              </div>
+            <!-- ACTIONS -->
+            <div class="look-actions look-actions--center">
+              <button class="btn-primary btn-primary--fit">Shop this item</button>
+              <button class="btn-secondary">See more from ellaa76</button>
             </div>
           </div>
 
