@@ -88,8 +88,9 @@ body::before{
 .feed{padding:0 24px 96px; overflow-y:auto; display:flex; flex-direction:column; gap:24px}
 
 /* Enhanced Card */
-.card{background:#fff;border:1px solid #eee6;border-radius:18px;overflow:hidden;transition:transform 0.2s ease;position:relative}
+.card{background:#fff;border:1px solid #eee6;border-radius:18px;overflow:visible;transition:transform 0.2s ease;position:relative}
 .card:hover{transform:translateY(-2px)}
+.card + .card{margin-top:6px}
 
 .imgbox{position:relative;overflow:hidden;border-radius:18px}
 .imgbox img{display:block;width:100%;height:440px;object-fit:cover;object-position:center 22%}
@@ -99,7 +100,7 @@ body::before{
 .imgbox::after{
   content:""; position:absolute; left:0; right:0; bottom:0; height:20%;
   background:linear-gradient(180deg,rgba(255,255,255,0) 0%,rgba(250,248,246,.56) 48%,#fff 100%);
-  pointer-events:none; /* important */
+  pointer-events:none; /* important so it doesn't swallow scroll/clicks */
 }
 
 /* (Heart/save UI removed for MVP) */
@@ -131,7 +132,7 @@ body::before{
 /* Measuring tape icon */
 .measure-icon{width:16px;height:16px;opacity:0.9}
 
-.info{position:relative;margin-top:-10px;padding:14px 18px 12px}
+.info{position:relative;margin-top:12px;padding:14px 18px 12px}
 .info::before{content:"";position:absolute;top:-10px;left:0;right:0;height:10px;
   background:linear-gradient(180deg,rgba(0,0,0,.06),rgba(0,0,0,0));
   border-top-left-radius:12px;border-top-right-radius:12px}
@@ -210,12 +211,16 @@ body::before{
 .look-caption p{font:600 14px/1.45 Inter;color:#2F2F33}
 .look-caption .sub{margin-top:6px;font:500 13px/1.4 Inter;color:#6F6F74}
 .look-caption .user{margin-right:8px}
-.comment-teaser{margin-top:12px;padding:14px 16px;border-radius:12px;background:#fff;border:1px solid rgba(0,0,0,.06)}
-.comment-teaser .k{font:600 11px/1.2 Inter;color:#6F6F74;margin-bottom:6px}
+.comment-teaser{display:block;width:100%;text-align:left;margin-top:12px;border-radius:16px;
+  border:1px solid rgba(0,0,0,.08);background:#fff;padding:10px 12px;box-shadow:0 2px 6px rgba(0,0,0,.03);
+  cursor:pointer;transition:background .2s ease, box-shadow .2s ease}
+.comment-teaser:hover{background:#f7f9fb;box-shadow:0 6px 16px rgba(0,0,0,.06)}
+.comment-teaser .k{font:600 11px/1.2 Inter;color:var(--muted);margin-bottom:6px}
 .comment-teaser .row{font:600 13px/1.45 Inter;color:#2F2F33}
 .comment-teaser .row .q,.comment-teaser .row .a{font-weight:700}
 .comment-teaser .row .sep{margin:0 8px;color:#c4c7cc}
-.comment-teaser .link{margin-top:6px;font:600 12px/1.2 Inter;color:#009090}
+.comment-teaser .link{margin-top:6px;font:600 12px/1.2 Inter;color:var(--petrol-600)}
+.comment-teaser .link-inline{margin-top:0;margin-left:8px;display:none;font:600 13px/1.45 Inter;color:var(--petrol-600);white-space:nowrap}
 .look-actions{display:flex;gap:14px;margin:16px 0 6px}
 .look-actions--center{justify-content:center;flex-wrap:wrap}
 .btn-primary--fit{flex:0 0 auto}
