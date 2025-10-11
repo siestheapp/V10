@@ -70,34 +70,6 @@
   --border: rgba(255,255,255,.08);
 }
 
-/* Light theme mappings (token-based) */
-.theme-light{
-  --bg: var(--canvas-0);
-  --ink: var(--ink-900);
-  --muted: var(--ink-500);
-  --accent: var(--petrol-500);
-  --card: #FFFFFF;
-  --track: var(--canvas-100);
-  --shadow: var(--elev-0);
-  --border: rgba(11,15,20,.08);
-}
-
-/* Component adjustments in light */
-.theme-light .screen{ background:#fff; }
-.theme-light .card,
-.theme-light .details{ background:#fff; border:1px solid var(--border); box-shadow:var(--elev-0); }
-.theme-light .chip{ border:1px solid var(--canvas-100); background:#fff; color:var(--ink); }
-.theme-light .chip.is-active{ background:var(--petrol-100); color:var(--petrol-600); border-color:var(--petrol-400); box-shadow:0 2px 8px rgba(0,163,163,.12); }
-.theme-light .status{ color:var(--ink-900); }
-.theme-light .status .right img{ filter:none; }
-.theme-light .tabs{ background:rgba(255,255,255,.85); border-top:1px solid var(--canvas-100); }
-.theme-light .tab{ color:var(--ink-500); }
-.theme-light .tab.active{ color:var(--petrol-600); }
-
-/* Theme toggle button */
-.theme-toggle{ margin-left:auto; border:1px solid var(--border); background:transparent; color:var(--ink); border-radius:10px; padding:6px 10px; font:600 12px/1 Inter; cursor:pointer }
-.theme-toggle:hover{ background:rgba(0,0,0,.04) }
-
 *{margin:0;padding:0;box-sizing:border-box}
 body{font-family:Inter,system-ui,-apple-system,"Segoe UI",Roboto,Helvetica,Arial;background:linear-gradient(180deg, #FFFFFF 0%, #F8F9FA 100%);color:var(--ink);
   min-height:100vh;display:flex;align-items:center;justify-content:center;padding:0;position:relative}
@@ -360,7 +332,6 @@ body{font-family:Inter,system-ui,-apple-system,"Segoe UI",Roboto,Helvetica,Arial
             <img src="Wifi.svg" alt="wifi"/>
             <img src="Battery.svg" alt="battery"/>
           </div>
-          <button id="themeBtn" class="theme-toggle" title="Toggle theme">Light</button>
         </div>
 
         <div class="header">
@@ -982,27 +953,6 @@ if(saveBtn2) {
     }
   });
 }
-
-// Theme toggle logic (persisted)
-(function(){
-  const btn = document.getElementById('themeBtn');
-  if(!btn) return;
-  const KEY = 'freestyle-theme';
-  function apply(theme){
-    document.body.classList.toggle('theme-light', theme === 'light');
-    btn.textContent = theme === 'light' ? 'Dark' : 'Light';
-  }
-  let theme = localStorage.getItem(KEY);
-  if(!theme){
-    theme = window.matchMedia('(prefers-color-scheme: light)').matches ? 'light' : 'dark';
-  }
-  apply(theme);
-  btn.addEventListener('click', ()=>{
-    theme = (theme === 'light') ? 'dark' : 'light';
-    localStorage.setItem(KEY, theme);
-    apply(theme);
-  });
-})();
 </script>
 
 </body>
