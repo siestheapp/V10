@@ -19,46 +19,65 @@ interface FeedItem {
   matched_at: string;
 }
 
+// Hook to track userId across auth state changes
+function useUserId() {
+  const [userId, setUserId] = useState<string | null>(null);
+
+  useEffect(() => {
+    const init = async () => {
+      const { data: { session } } = await supabase.auth.getSession();
+      setUserId(session?.user?.id ?? null);
+    };
+    const sub = supabase.auth.onAuthStateChange((_e, s) => {
+      setUserId(s?.user?.id ?? null);
+    });
+    init();
+    return () => sub.data.subscription.unsubscribe();
+  }, []);
+
+  return userId;
+}
+
+// Extracted feed loading function
+async function loadFeedData(userId: string): Promise<FeedItem[]> {
+  const { data, error } = await supabase.rpc('api_feed', { p_user_id: userId });
+  if (error) {
+    console.error('Feed error:', error);
+    throw error;
+  }
+  return data || [];
+}
+
 export default function Home() {
   const [feedItems, setFeedItems] = useState<FeedItem[]>([]);
   const [loading, setLoading] = useState(true);
   const [refreshing, setRefreshing] = useState(false);
   const { open, setOpen, registerTap } = useDemoTrigger();
+  
+  // Guard: track userId and only load feed when signed in
+  const userId = useUserId();
 
   const loadFeed = useCallback(async (isRefresh = false) => {
+    if (!userId) return; // Don't call until signed in
+
     try {
       if (isRefresh) setRefreshing(true);
       else setLoading(true);
 
-      // Get real auth session
-      const { data: { session } } = await supabase.auth.getSession();
-      if (!session?.user) {
-        setFeedItems([]);
-        setLoading(false);
-        setRefreshing(false);
-        return;
-      }
-
-      // Call Supabase RPC to get feed with real user ID
-      const { data, error } = await supabase.rpc('api_feed', { p_user_id: session.user.id });
-
-      if (error) {
-        console.error('Feed error:', error);
-        return;
-      }
-
-      setFeedItems(data || []);
+      const data = await loadFeedData(userId);
+      setFeedItems(data);
     } catch (err) {
       console.error('Failed to load feed:', err);
     } finally {
       setLoading(false);
       setRefreshing(false);
     }
-  }, []);
+  }, [userId]);
 
   useEffect(() => {
+    if (!userId) return; // Don't call until signed in
     loadFeed();
-  }, [loadFeed]);
+  }, [userId, loadFeed]);
   if (loading) {
     return (
       <SafeAreaView style={{ flex: 1, backgroundColor: colors.background, alignItems: 'center', justifyContent: 'center' }}>
