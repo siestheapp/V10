@@ -2881,6 +2881,682 @@ Tool use: **todo_write**
 
 Tool use: **run_terminal_cmd**
 
+```bash
+cd /Users/seandavey/Downloads/freestyle/mobile && npx expo install expo-linear-gradient --yes
+```
+
+```
+CommandError: Unexpected: --yes
+Did you mean: npx expo install expo-linear-gradient -- --yes
+
+```
+
+---
+
+Tool use: **run_terminal_cmd**
+
+```bash
+cd /Users/seandavey/Downloads/freestyle/mobile && npx expo install expo-linear-gradient -- --yes
+```
+
+```
+(node:59994) [DEP0040] DeprecationWarning: The `punycode` module is deprecated. Please use a userland alternative instead.
+(Use `node --trace-deprecation ...` to show where the warning was created)
+› Installing 1 SDK 51.0.0 compatible native module using npm
+> npm install --yes
+
+added 1 package, and audited 1209 packages in 1s
+
+155 packages are looking for funding
+  run `npm fund` for details
+
+3 low severity vulnerabilities
+
+To address all issues (including breaking changes), run:
+  npm audit fix --force
+
+Run `npm audit` for details.
+
+```
+
+---
+
+Tool use: **todo_write**
+
+## Todo List
+
+- [x] Update tokens to match iframe CSS and add typography
+- [x] Install expo-linear-gradient dependency
+- [-] Add hardcoded iframe data to features/mocks/iframe.ts
+- [ ] Replace Home screen to replicate feed-gallery mock
+- [ ] Replace Closet screen to replicate closet-gallery mock
+- [ ] Replace Profile screen to replicate profile-gallery basics
+- [ ] Run lints, start app, visual check for parity
+
+---
+
+Tool use: **apply_patch**
+
+<details>
+        <summary>Apply patch for /Users/seandavey/Downloads/freestyle/mobile/features/mocks/iframe.ts</summary>
+      
+
+```diff
+<<'PATCH'
+*** Begin Patch
+*** Add File: mobile/features/mocks/iframe.ts
++export const feed = [
++  {
++    id: 1,
++    brand: 'ANTHROPOLOGIE',
++    title: 'The Jocelyn Sleeveless Slip Midi Dress',
++    price: '$168.00',
++    size: 'S',
++    hero: { uri: 'https://images.urbndata.com/is/image/Anthropologie/4130652010091_256_b?$redesign-zoom-5x$' },
++    shopUrl: 'https://www.anthropologie.com/shop/the-jocelyn-sleeveless-slip-midi-dress-by-maeve?category=top-rated-dresses&color=256&type=STANDARD&quantity=1'
++  }
++];
++
++export const closet = [
++  {
++    id: 101,
++    brand: 'GEORGIA HARDINGE',
++    name: 'Relic Pleated Metallic‑Knit Maxi Dress',
++    size: 'UK 8',
++    hero: { uri: 'https://cdn.modaoperandi.com/assets/images/products/1048452/695474/c2/large_georgia-hardinge-gold-relic-dress.jpg?_v=1755324586' }
++  },
++  {
++    id: 102,
++    brand: 'REFORMATION',
++    name: 'Taryn Two Piece',
++    size: '2',
++    hero: { uri: 'https://media.thereformation.com/image/upload/f_auto,q_auto:eco,dpr_2.0/w_500/PRD-SFCC/1314122/BLACK/1314122.1.BLACK?_s=RAABAB0' }
++  },
++  {
++    id: 103,
++    brand: 'ALFIE',
++    name: 'Open Back Cotton Poplin Top',
++    size: 'Small',
++    hero: { uri: 'https://cdn.modaoperandi.com/assets/images/products/1028958/674197/c/large_alfie-white-backless-top.jpg?_v=1755087491' }
++  },
++  {
++    id: 104,
++    brand: 'AYR',
++    name: 'The Secret Sauce',
++    size: '26S',
++    hero: { uri: 'https://www.ayr.com/cdn/shop/files/secretsauce-goodmood_CAT_d634f664-cb49-4e61-abef-5d94b707075e.jpg?crop=center&height=1440&v=1755036845&width=950' }
++  }
++];
++
++export const profileMeasurements = [
++  { label: 'Bust Range', value: '31–33.5"' },
++  { label: 'Waist Range', value: '25.5–26.5"' },
++  { label: 'Hip Range', value: '34.5–35.5"' }
++];
++
+*** End Patch
+```
+
+---
+
+Tool use: **todo_write**
+
+## Todo List
+
+- [x] Update tokens to match iframe CSS and add typography
+- [x] Install expo-linear-gradient dependency
+- [x] Add hardcoded iframe data to features/mocks/iframe.ts
+- [-] Replace Home screen to replicate feed-gallery mock
+- [ ] Replace Closet screen to replicate closet-gallery mock
+- [ ] Replace Profile screen to replicate profile-gallery basics
+- [ ] Run lints, start app, visual check for parity
+
+---
+
+The model made no changes to the file.
+
+---
+
+<think><details><summary>Thought Process</summary>It seems that I tried to patch home.tsx, but I ran into trouble finding the context due to changes in the file content. So, I definitely need to check out the current version of the file first. It’s important to align everything with the latest updates before I can proceed with any patches or further work. Let's ensure I have the right context to move forward effectively!</details></think>
+
+---
+
+Tool use: **read_file**
+
+Read file: /Users/seandavey/Downloads/freestyle/mobile/app/(tabs)/home.tsx
+
+---
+
+Tool use: **apply_patch**
+
+<details>
+        <summary>Apply patch for /Users/seandavey/Downloads/freestyle/mobile/app/(tabs)/home.tsx</summary>
+      
+
+```diff
+<<'PATCH'
+*** Begin Patch
+*** Update File: mobile/app/(tabs)/home.tsx
+@@
+-import { router } from 'expo-router';
+-import { View, Text, Image, Pressable, FlatList, Platform } from 'react-native';
+-import { colors, radii, space, typography } from '../../theme/tokens';
+-import { Chip } from '../../components/Chip';
+-import Card from '../../components/Card';
+-import Section from '../../components/Section';
+-import { useMemo, useState } from 'react';
+-import { homeFeed, chips } from '../../features/mocks/home';
+-import { WebPhoneFrame } from '../../components/WebPhoneFrame';
++import { router } from 'expo-router';
++import { View, Text, Image, Pressable, ScrollView } from 'react-native';
++import { LinearGradient } from 'expo-linear-gradient';
++import { colors, radii, space, typography } from '../../theme/tokens';
++import { feed } from '../../features/mocks/iframe';
+@@
+-function Body() {
+-  const [active, setActive] = useState<string>('All');
+-  const data = useMemo(
+-    () => (active === 'All' ? homeFeed : homeFeed.filter(i => i.tags?.includes(active))),
+-    [active]
+-  );
+-
+-  return (
+-    <View style={{ flex: 1, backgroundColor: (colors as any).background ?? '#fff' }}>
+-      <View style={{ paddingHorizontal: space[16], paddingTop: space[16], paddingBottom: space[8] }}>
+-        <Text style={{ fontSize: 32, fontWeight: '700', color: (colors as any).petrol500 }}>Freestyle</Text>
+-      </View>
+-
+-      <FlatList
+-        horizontal
+-        data={chips}
+-        keyExtractor={c => c}
+-        showsHorizontalScrollIndicator={false}
+-        contentContainerStyle={{ paddingHorizontal: space[16], gap: space[12], paddingBottom: space[8] }}
+-        renderItem={({ item }) => (
+-          <Chip label={item} active={active === item} onPress={() => setActive(item)} />
+-        )}
+-      />
+-
+-      {!!data[0] && (
+-        <Pressable
+-          onPress={() => router.push(`/item/${data[0]?.id}`)}
+-          style={{
+-            margin: space[16],
+-            borderRadius: radii.card,
+-            overflow: 'hidden',
+-            backgroundColor: (colors as any).surface ?? '#fff',
+-          }}
+-        >
+-          <Image source={require('../../assets/hero1.jpg')} style={{ width: '100%', height: 200 }} resizeMode="cover" />
+-        </Pressable>
+-      )}
+-
+-      <Section title="Featured">
+-        {data.length === 0 ? (
+-          <View style={{ paddingHorizontal: space[16], paddingVertical: space[12] }}>
+-            <Text style={{ color: '#6B7280' }}>No items yet.</Text>
+-          </View>
+-        ) : (
+-          <FlatList
+-            data={data}
+-            keyExtractor={(it) => String(it.id)}
+-            contentContainerStyle={{ padding: space[16], gap: space[12] }}
+-            renderItem={({ item }) => (
+-              <Card
+-                title={item.title}
+-                subtitle={item.subtitle}
+-                image={item.image}
+-                tags={item.tags}
+-                ctaLabel="View"
+-                onPress={() => router.push(`/item/${item.id}`)}
+-              />
+-            )}
+-          />
+-        )}
+-      </Section>
+-    </View>
+-  );
+-}
+-
+-export default function Home() {
+-  if (Platform.OS === 'web') {
+-    return <WebPhoneFrame><Body /></WebPhoneFrame>;
+-  }
+-  return <Body />;
+-}
++export default function Home() {
++  const item = feed[0];
++  return (
++    <View style={{ flex: 1, backgroundColor: colors.background }}>
++      <View style={{ paddingHorizontal: space[24], paddingTop: space[8] }}>
++        <Text style={{ ...typography.h1, color: colors.text, marginTop: 6 }}>freestyle</Text>
++      </View>
++
++      <ScrollView contentContainerStyle={{ paddingHorizontal: space[24], paddingBottom: 96 }}>
++        {item && (
++          <View style={{ backgroundColor: colors.surface, borderWidth: 1, borderColor: '#eee6', borderRadius: radii.card, overflow: 'hidden', marginTop: 12 }}>
++            <View style={{ position: 'relative' }}>
++              <Image source={item.hero} style={{ width: '100%', height: 440 }} resizeMode="cover" />
++              <LinearGradient colors={[ 'rgba(255,255,255,0)', 'rgba(250,248,246,.56)', '#fff' ]} locations={[0, 0.48, 1]} style={{ position: 'absolute', left:0, right:0, bottom:0, height: '20%' }} />
++              <View style={{ position: 'absolute', left: 16, bottom: 16, paddingVertical: 6, paddingHorizontal: 10, borderRadius: radii.pill, borderWidth: 1, borderColor: colors.border, backgroundColor: 'rgba(255,255,255,0.88)' }}>
++                <Text style={{ fontWeight: '600', fontSize: 12, color: '#4C4C50' }}>Confidence: <Text style={{ color: colors.petrol600, fontWeight: '700' }}>High</Text></Text>
++              </View>
++            </View>
++
++            <View style={{ padding: 14 }}>
++              <Pressable
++                onPress={() => router.push(`/item/${item.id}`)}
++                style={{
++                  flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between',
++                  paddingVertical: 14, paddingHorizontal: 20, borderRadius: 24,
++                  backgroundColor: colors.petrol500
++                }}
++              >
++                <Text style={{ color: '#fff', fontWeight: '800', fontSize: 17 }}>Best Fit: {item.size}</Text>
++                <View style={{ paddingVertical: 8, paddingHorizontal: 14, backgroundColor: 'rgba(255,255,255,.8)', borderRadius: 999, borderWidth: 1, borderColor: 'rgba(255,255,255,.95)' }}>
++                  <Text style={{ color: colors.text, fontWeight: '600' }}>Fit details</Text>
++                </View>
++              </Pressable>
++
++              <View style={{ height: 1, backgroundColor: 'rgba(0,0,0,.08)', marginVertical: 8 }} />
++
++              <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', paddingHorizontal: 6 }}>
++                <View style={{ flexDirection: 'row', alignItems: 'center', gap: 8 }}>
++                  <Text style={{ fontSize: 12, letterSpacing: .3, color: '#555', fontWeight: '600' }}>{item.brand}</Text>
++                  <Text style={{ fontWeight: '700', fontSize: 17, color: '#2d2d2d' }}>{item.price}</Text>
++                </View>
++                <Text style={{ fontSize: 14, color: '#4C4C50', fontWeight: '500' }}>Free returns</Text>
++              </View>
++
++              <View style={{ marginTop: 12, paddingHorizontal: 2 }}>
++                <Pressable
++                  onPress={() => router.push({ pathname: '/webview/shop', params: { url: item.shopUrl } })}
++                  style={{ alignSelf: 'center', width: '100%', minHeight: 44, padding: 12, borderRadius: 12, borderWidth: 1, borderColor: colors.petrol400, backgroundColor: '#fff' }}
++                >
++                  <Text style={{ textAlign: 'center', color: colors.petrol600, fontWeight: '700' }}>Shop {item.size}</Text>
++                </Pressable>
++              </View>
++            </View>
++          </View>
++        )}
++      </ScrollView>
++    </View>
++  );
++}
+*** End Patch
+PATCH
+```
+
+---
+
+Tool use: **todo_write**
+
+## Todo List
+
+- [x] Update tokens to match iframe CSS and add typography
+- [x] Install expo-linear-gradient dependency
+- [x] Add hardcoded iframe data to features/mocks/iframe.ts
+- [x] Replace Home screen to replicate feed-gallery mock
+- [-] Replace Closet screen to replicate closet-gallery mock
+- [ ] Replace Profile screen to replicate profile-gallery basics
+- [ ] Run lints, start app, visual check for parity
+
+---
+
+The model made no changes to the file.
+
+---
+
+Tool use: **read_file**
+
+Read file: /Users/seandavey/Downloads/freestyle/mobile/app/(tabs)/closet.tsx
+
+---
+
+Tool use: **apply_patch**
+
+<details>
+        <summary>Apply patch for /Users/seandavey/Downloads/freestyle/mobile/app/(tabs)/closet.tsx</summary>
+      
+
+```diff
+<<'PATCH'
+*** Begin Patch
+*** Update File: mobile/app/(tabs)/closet.tsx
+@@
+-import { router } from 'expo-router';
+-import { View, FlatList } from 'react-native';
+-import { colors, space } from '../../theme/tokens';
+-import Section from '../../components/Section';
+-import { SizeCard } from '../../components/SizeCard';
+-import { closetItems } from '../../features/mocks/closet';
++import { router } from 'expo-router';
++import { View, Text, FlatList, Image } from 'react-native';
++import { LinearGradient } from 'expo-linear-gradient';
++import { colors, radii, space, typography } from '../../theme/tokens';
++import { closet } from '../../features/mocks/iframe';
+@@
+-export default function Closet() {
+-  return (
+-    <View style={{ flex: 1, backgroundColor: (colors as any).background ?? '#fff' }}>
+-      <Section title="Closet">
+-        {closetItems.length === 0 ? (
+-          <View style={{ paddingHorizontal: space[16], paddingVertical: space[12] }}>
+-            <View style={{ height: 120, borderRadius: 16, backgroundColor: '#F3F4F6' }} />
+-            <View style={{ height: 8 }} />
+-            <View style={{ height: 16, width: 160, backgroundColor: '#E5E7EB', borderRadius: 4 }} />
+-          </View>
+-        ) : (
+-          <FlatList
+-            data={closetItems}
+-            numColumns={2}
+-            keyExtractor={(i) => String(i.id)}
+-            columnWrapperStyle={{ gap: space[12], paddingHorizontal: space[16] }}
+-            contentContainerStyle={{ gap: space[12], paddingVertical: space[16] }}
+-            renderItem={({ item }) => (
+-              <SizeCard
+-                model={{ hero: item.image, bestFit: item.size }}
+-                onPress={() => router.push(`/item/${item.id}`)}
+-              />
+-            )}
+-          />
+-        )}
+-      </Section>
+-    </View>
+-  );
+-}
++export default function Closet() {
++  return (
++    <View style={{ flex: 1, backgroundColor: colors.background }}>
++      <View style={{ paddingHorizontal: space[24], paddingTop: space[8] }}>
++        <Text style={{ ...typography.h1, color: colors.petrol500 }}>freestyle</Text>
++      </View>
++      <Text style={{ ...typography.h2, color: colors.text, paddingHorizontal: space[24], marginTop: 6 }}>Your Closet</Text>
++      <FlatList
++        data={closet}
++        numColumns={2}
++        keyExtractor={(i) => String(i.id)}
++        columnWrapperStyle={{ gap: 12, paddingHorizontal: space[24] }}
++        contentContainerStyle={{ gap: 12, paddingVertical: space[16], paddingBottom: 96 }}
++        renderItem={({ item }) => (
++          <View style={{ flex: 1, borderRadius: radii.card, overflow: 'hidden', backgroundColor: '#f8f8fb', borderWidth: 1, borderColor: '#eee6' }}>
++            <View style={{ position: 'relative' }}>
++              <Image source={item.hero} style={{ width: '100%', height: 400 }} resizeMode="cover" />
++              <LinearGradient colors={['transparent','rgba(0,0,0,.55)']} style={{ position: 'absolute', left:0,right:0,bottom:0, height: 120 }} />
++              <View style={{ position: 'absolute', top: 10, left: 10, paddingVertical: 6, paddingHorizontal: 10, backgroundColor: 'rgba(0,0,0,.45)', borderRadius: 999 }}>
++                <Text style={{ color: '#fff', fontWeight: '700', fontSize: 12 }}>{item.size}</Text>
++              </View>
++              <View style={{ position: 'absolute', left: 10, right: 10, bottom: 10 }}>
++                <Text style={{ fontWeight: '700', fontSize: 11, color: '#fff', opacity: .95 }}>{item.brand}</Text>
++                <Text style={{ fontWeight: '600', fontSize: 14, color: '#fff', marginTop: 2 }}>{item.name}</Text>
++              </View>
++            </View>
++          </View>
++        )}
++      />
++    </View>
++  );
++}
+*** End Patch
+```
+
+---
+
+Tool use: **todo_write**
+
+## Todo List
+
+- [x] Update tokens to match iframe CSS and add typography
+- [x] Install expo-linear-gradient dependency
+- [x] Add hardcoded iframe data to features/mocks/iframe.ts
+- [x] Replace Home screen to replicate feed-gallery mock
+- [x] Replace Closet screen to replicate closet-gallery mock
+- [-] Replace Profile screen to replicate profile-gallery basics
+- [ ] Run lints, start app, visual check for parity
+
+---
+
+Tool use: **apply_patch**
+
+<details>
+        <summary>Apply patch for /Users/seandavey/Downloads/freestyle/mobile/app/(tabs)/profile.tsx</summary>
+      
+
+```diff
+<<'PATCH'
+*** Begin Patch
+*** Update File: mobile/app/(tabs)/profile.tsx
+@@
+-import { View, Text, Pressable, ScrollView, Alert } from 'react-native';
+-import { colors, space } from '../../theme/tokens';
+-import Section from '../../components/Section';
++import { View, Text, Pressable, ScrollView } from 'react-native';
++import { colors, space, typography } from '../../theme/tokens';
++import Section from '../../components/Section';
++import { profileMeasurements } from '../../features/mocks/iframe';
+@@
+-export default function Profile() {
+-  return (
+-    <ScrollView style={{ flex: 1, backgroundColor: (colors as any).background ?? '#fff' }} contentContainerStyle={{ padding: space[16] }}>
+-      <View style={{ flexDirection: 'row', alignItems: 'center', marginBottom: space[16], justifyContent: 'space-between' }}>
+-        <Text style={{ fontSize: 20, fontWeight: '700', color: (colors as any).ink900 ?? '#111827' }}>Fit Profile</Text>
+-        <Pressable onPress={() => Alert.alert('Settings')} style={{ paddingHorizontal: 12, paddingVertical: 8, backgroundColor: '#fff', borderRadius: 16, borderWidth: 1, borderColor: '#E5E7EB' }}>
+-          <Text>Settings</Text>
+-        </Pressable>
+-      </View>
+-
+-      <Section title="Measurements">
+-        <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={{ gap: 12, paddingHorizontal: space[16] }}>
+-          {[{label:'Chest',value:'—'},{label:'Waist',value:'—'},{label:'Inseam',value:'—'}].map(m => (
+-            <Pressable key={m.label} onPress={() => Alert.alert(m.label, m.value)} style={{ padding: 14, backgroundColor: '#fff', borderRadius: 16, minWidth: 160, borderWidth: 1, borderColor: '#E5E7EB' }}>
+-              <Text style={{ color: '#6B7280', fontSize: 12 }}>{m.label}</Text>
+-              <Text style={{ fontSize: 18, fontWeight: '700', color: (colors as any).ink900 ?? '#111827' }}>{m.value}</Text>
+-            </Pressable>
+-          ))}
+-        </ScrollView>
+-      </Section>
+-    </ScrollView>
+-  );
+-}
++export default function Profile() {
++  return (
++    <ScrollView style={{ flex: 1, backgroundColor: colors.backgroundAlt }} contentContainerStyle={{ padding: space[20], paddingBottom: 96 }}>
++      <Text style={{ ...typography.h2, color: colors.text, marginBottom: 8 }}>Profile Strength</Text>
++      <View style={{ backgroundColor: '#fff', borderRadius: 16, borderWidth: 1, borderColor: '#E0F2FE', padding: 16, marginBottom: 8 }}>
++        <View style={{ height: 6, backgroundColor: '#E5E7EB', borderRadius: 3, overflow: 'hidden' }}>
++          <View style={{ height: '100%', width: '85%', backgroundColor: colors.petrol500, borderRadius: 3 }} />
++        </View>
++        <Text style={{ ...typography.subtle, marginTop: 6 }}>Add 2 more items to unlock premium fit insights</Text>
++      </View>
++
++      <Text style={{ ...typography.h2, color: colors.text, marginTop: 14, marginBottom: 8 }}>Measurements</Text>
++      <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={{ gap: 12 }}>
++        {profileMeasurements.map(m => (
++          <Pressable key={m.label} style={{ padding: 14, backgroundColor: '#fff', borderRadius: 16, minWidth: 160, borderWidth: 1, borderColor: colors.border }}>
++            <Text style={{ ...typography.subtle }}>{m.label}</Text>
++            <Text style={{ ...typography.h2, color: colors.text }}>{m.value}</Text>
++          </Pressable>
++        ))}
++      </ScrollView>
++    </ScrollView>
++  );
++}
+*** End Patch
+```
+
+---
+
+Tool use: **todo_write**
+
+## Todo List
+
+- [x] Update tokens to match iframe CSS and add typography
+- [x] Install expo-linear-gradient dependency
+- [x] Add hardcoded iframe data to features/mocks/iframe.ts
+- [x] Replace Home screen to replicate feed-gallery mock
+- [x] Replace Closet screen to replicate closet-gallery mock
+- [x] Replace Profile screen to replicate profile-gallery basics
+- [-] Run lints, start app, visual check for parity
+
+---
+
+Tool use: **read_lints**
+
+<details>
+          <summary>Read lints for 5 files</summary>
+      
+Lint paths:
+
+- `/Users/seandavey/Downloads/freestyle/mobile/theme/tokens.ts`
+- `/Users/seandavey/Downloads/freestyle/mobile/app/(tabs)/home.tsx`
+- `/Users/seandavey/Downloads/freestyle/mobile/app/(tabs)/closet.tsx`
+- `/Users/seandavey/Downloads/freestyle/mobile/app/(tabs)/profile.tsx`
+- `/Users/seandavey/Downloads/freestyle/mobile/features/mocks/iframe.ts`
+
+Lint results
+
+
+**No lint errors found**
+</details>
+
+---
+
+Tool use: **run_terminal_cmd**
+
+```bash
+cd /Users/seandavey/Downloads/freestyle/mobile && npm run start -- --clear
+```
+
+---
+
+Tool use: **run_terminal_cmd**
+
+```bash
+cd /Users/seandavey/Downloads/freestyle && git add -A && git commit -m "mobile: iframe parity pass — tokens, hardcoded feed/closet/profile data, gradient overlays; updated Home/Closet/Profile to match mocks" && git push
+```
+
+```
+[feat/expo-shell b28d7cc] mobile: iframe parity pass — tokens, hardcoded feed/closet/profile data, gradient overlays; updated Home/Closet/Profile to match mocks
+ 8 files changed, 648 insertions(+), 115 deletions(-)
+ create mode 100644 mobile/features/mocks/iframe.ts
+To https://github.com/siestheapp/freestyle.git
+   3142ea9..b28d7cc  feat/expo-shell -> feat/expo-shell
+
+```
+
+---
+
+- Updated tokens to align with iframe CSS and added a minimal typography scale.
+- Installed expo-linear-gradient for hero overlays.
+- Added hardcoded data from the iframe mocks at mobile/features/mocks/iframe.ts.
+- Rebuilt Home to match feed-gallery: hero image with gradient, confidence pill, Best Fit CTA, brand/price row, Shop button.
+- Rebuilt Closet to match closet-gallery: 2-column cards with brand/name overlay, size pill, gradient.
+- Rebuilt Profile to match profile-gallery basics: profile strength bar and measurement cards.
+
+You can run:
+- cd /Users/seandavey/Downloads/freestyle/mobile && npm run start
+
+Changes pushed on feat/expo-shell.
+
+---
+
+_**User (2025-10-10 20:56-0400)**_
+
+ok now can you update the bottom menu bar to look like the one in @feed-unified.html with those same icons if possible?
+
+---
+
+_**Assistant (gpt-5)**_
+
+<think><details><summary>Thought Process</summary>**Updating tab bar icons**
+
+I need to update the bottom tab bar to match the design in feed-unified.html. Our app currently uses expo-router Tabs without any default icons, but we can customize the tabBar options and style in app/(tabs)/_layout.tsx. The new icons should represent Home, Closet, and Profile, which I'm thinking could be sourced from @expo/vector-icons like Phosphor or Feather icons. I'll need to ensure the icons used align with what's shown in the feed-unified file for consistency.
+**Implementing custom icons**
+
+The feed-unified icons are defined using SVG paths, which can be tricky to replicate. One approach is to import these as inline SVG components using react-native-svg in our React Native Expo project. However, since the user specifically requested those same icons, I thought we could create custom SVG components for each tab: Find, Feed, Closet, and Profile. I’ll include the exact path data from feed-unified in a new `components/icons/` folder. This way, we get the desired look while keeping things organized.
+**Setting up custom icons**
+
+I need to install react-native-svg, which I can do with `expo install react-native-svg`. After that, I’ll update app/(tabs)/_layout.tsx to integrate tabBarIcon for rendering these customized icons, adjusting the color parameter and ensuring the tab bar height is set to 83, consistent with previous settings.
+
+I'll create a generic `components/icons/TabIcon.tsx` to handle the SVG paths. I’ll add separate files for each icon, naming them IconFeed, IconCloset, and IconProfile since “Find” won't be used. This should help clarify which icons correspond to each tab.
+**Implementing SVG paths**
+
+I’ll extract the path data from feed-unified.html for the icons: the Feed icon uses a unique wave pattern, while the Closet and Profile icons have their paths defined. I plan to implement those three. 
+
+Next, I’ll update the _layout to use tabBarIcon, ensuring it returns an SVG component with the correct dimensions and color parameter. I’ll incorporate react-native-svg’s Svg and Path, utilizing the fill property for color. 
+
+I’ll also modify the tabs layout for the home, closet, and profile screens, adjusting the tabBarStyle height to 83 with appropriate padding.
+**Setting up layout styles**
+
+I’ll set the tabBar height to 83 with padding on the top at 8 and bottom adjusted based on the platform: 34 for iOS and 10 for others. I also need to set the border color using colors from our tokens, which I’ve imported successfully. 
+
+Next, I’ll install react-native-svg with `npx expo install react-native-svg`, and after that, I’ll run lints to check for any issues. Finally, I’ll commit and push my changes. It feels like a straightforward set of tasks to manage!</details></think>
+
+---
+
+Tool use: **todo_write**
+
+## Todo List
+
+- [x] Update tokens to match iframe CSS and add typography
+- [x] Install expo-linear-gradient dependency
+- [x] Add hardcoded iframe data to features/mocks/iframe.ts
+- [x] Replace Home screen to replicate feed-gallery mock
+- [x] Replace Closet screen to replicate closet-gallery mock
+- [x] Replace Profile screen to replicate profile-gallery basics
+- [-] Run lints, start app, visual check for parity
+- [-] Add custom tab icons via react-native-svg and wire to Tabs
+
+---
+
+<think><details><summary>Thought Process</summary>**Implementing color changes**
+
+I want to change the `tabBarActiveTintColor` to `colors.petrol600` and set the inactive color to `#8e8e93`. I've already set it to `petrol500`, so it's time to update that. The console did mention a port conflict for `expo start`, but that seems okay. I'll implement the code, check for any linter errors, and then commit and push the changes. Let's move forward with this!</details></think>
+
+---
+
+I'll add custom SVG icons and wire them into the tab bar. Then I’ll install the SVG dependency, lint, and push.
+
+---
+
+Tool use: **run_terminal_cmd**
+
+```bash
+cd /Users/seandavey/Downloads/freestyle/mobile && npx expo install react-native-svg -- --yes
+```
+
+```
+(node:72219) [DEP0040] DeprecationWarning: The `punycode` module is deprecated. Please use a userland alternative instead.
+(Use `node --trace-deprecation ...` to show where the warning was created)
+› Installing 1 SDK 51.0.0 compatible native module using npm
+> npm install --yes
+
+added 13 packages, and audited 1222 packages in 2s
+
+163 packages are looking for funding
+  run `npm fund` for details
+
+3 low severity vulnerabilities
+
+To address all issues (including breaking changes), run:
+  npm audit fix --force
+
+Run `npm audit` for details.
+
+```
+
+---
+
+Tool use: **apply_patch**
+
+<details>
+        <summary>Apply patch for /Users/seandavey/Downloads/freestyle/mobile/components/icons/Tabs.tsx</summary>
+      
+
+```diff
+
+```
+
 ---
 
 

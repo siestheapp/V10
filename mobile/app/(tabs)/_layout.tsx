@@ -1,6 +1,7 @@
 import { Tabs } from 'expo-router';
 import { Platform } from 'react-native';
 import { colors } from '../../theme/tokens';
+import { IconFind, IconFeed, IconCloset, IconProfile } from '../../components/icons/Tabs';
 
 export default function TabsLayout() {
   return (
@@ -20,9 +21,27 @@ export default function TabsLayout() {
         },
       }}
     >
-      <Tabs.Screen name="home" options={{ title: 'Home' }} />
-      <Tabs.Screen name="closet" options={{ title: 'Closet' }} />
-      <Tabs.Screen name="profile" options={{ title: 'Profile' }} />
+      <Tabs.Screen
+        name="home"
+        options={{
+          title: 'Home',
+          tabBarIcon: ({ color, focused }) => <IconFeed color={focused ? colors.petrol500 : '#8e8e93'} />,
+        }}
+      />
+      <Tabs.Screen
+        name="closet"
+        options={{
+          title: 'Closet',
+          tabBarIcon: ({ color, focused }) => <IconCloset color={focused ? colors.petrol500 : '#8e8e93'} />,
+        }}
+      />
+      <Tabs.Screen
+        name="profile"
+        options={{
+          title: 'Profile',
+          tabBarIcon: ({ color, focused }) => <IconProfile color={focused ? colors.petrol500 : '#8e8e93'} />,
+        }}
+      />
     </Tabs>
   );
 }
