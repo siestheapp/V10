@@ -12,6 +12,7 @@
       "backgroundColor": "#FAF8F6"
     },
     "ios": {
+      "bundleIdentifier": "com.davey.proxy",
       "supportsTablet": true
     },
     "web": {
