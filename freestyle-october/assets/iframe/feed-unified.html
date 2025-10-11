@@ -521,6 +521,29 @@ body::before{
               <!-- optional divider -->
               <div class="divider"></div>
 
+              <!-- Expanded details (nested inner card) -->
+              <div class="details hidden" id="fitDetails">
+                <div class="item">
+                  <p class="advice-inline">Compared to your size: <strong class="accent">Alexis S</strong> <span class="muted">(perfect fit)</span></p>
+                </div>
+                <div class="spec">
+                  <span class="measure"><strong>Bust —</strong> Looser <span class="muted">(35–36″ vs 33″)</span></span>
+                  <span class="badge">+2–3″</span>
+                </div>
+                <div class="divider"></div>
+                <div class="spec">
+                  <span class="measure"><strong>Waist —</strong> Matches <span class="muted">(27–28″ vs 27″)</span></span>
+                  <span class="badge">≈</span>
+                </div>
+                <div class="divider"></div>
+                <div class="spec">
+                  <span class="measure"><strong>Hips —</strong> Matches <span class="muted">(37–38″ vs 37″)</span></span>
+                  <span class="badge">≈</span>
+                </div>
+                <p class="advice-inline advice-next">Prefer a slimmer look? XS will match the bust but feel snug at waist and hips (1–2″ smaller)</p>
+                <a class="shop-inline" href="#" aria-label="Shop size S">Shop S →</a>
+              </div>
+
               <!-- 3) Fit blurb -->
               <div class="tip-summary">
                 Fits like your <strong>Alexis</strong> dress — roomier bust, matching waist &amp; hips.
@@ -667,16 +690,18 @@ body::before{
     const body = document.body;
     const sizeCta = document.getElementById('sizeCta');
     const match = sizeCta ? sizeCta.querySelector('.match') : null;
+    const details = document.getElementById('fitDetails');
+    const summary = document.querySelector('.tip-summary');
 
     function setCollapsed(){
-      body.classList.remove('view-detail');
-      body.classList.add('view-feed');
+      if(details){ details.classList.add('hidden'); details.setAttribute('aria-hidden','true'); }
+      if(summary){ summary.style.display = ''; }
       if(sizeCta) sizeCta.setAttribute('aria-expanded','false');
       if(match) match.textContent = 'Fit details';
     }
     function setExpanded(){
-      body.classList.remove('view-feed');
-      body.classList.add('view-detail');
+      if(details){ details.classList.remove('hidden'); details.setAttribute('aria-hidden','false'); }
+      if(summary){ summary.style.display = 'none'; }
       if(sizeCta) sizeCta.setAttribute('aria-expanded','true');
       if(match) match.textContent = 'Hide details';
     }
@@ -684,8 +709,8 @@ body::before{
     if(sizeCta){
       setCollapsed();
       sizeCta.addEventListener('click', ()=>{
-        const expanded = body.classList.contains('view-detail');
-        expanded ? setCollapsed() : setExpanded();
+        const open = details && !details.classList.contains('hidden');
+        open ? setCollapsed() : setExpanded();
       });
     }
   })();
