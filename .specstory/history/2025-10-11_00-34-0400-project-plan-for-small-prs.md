@@ -5801,7 +5801,133 @@ For instance, using something like:
 Image inclusion might be optional in the new Expo setup, so even a background color would suffice. Additionally, it’s best to avoid using Updates.reloadAsync right now, as we can rely on DevSettings.reload in development.
 **Implementing splash image setup**
 
-In the mobile/assets folder, we have hero1.jpg, which we can use as the splash</details></think>
+In the mobile/assets folder, we have hero1.jpg, which we can use as the splash image. I suggest including it in the configuration with a background color of "#FAF8F6" for safety. The configuration would look like this: 
+
+```json
+"splash": { "image": "./assets/hero1.jpg", "resizeMode": "contain", "backgroundColor": "#FAF8F6" }
+```
+
+We should also consider adding iOS support for tablets, but since Expo uses a common splash property, the changes won’t be extensive. Before committing, let’s verify that expo-splash-screen is installed, though it’s typically included. Then, I can provide a quick explanation and finalize the commit!</details></think>
+
+---
+
+Tool use: **apply_patch**
+
+<details>
+        <summary>Apply patch for /Users/seandavey/Downloads/freestyle/mobile/app.json</summary>
+      
+
+```diff
+<<'PATCH'
+*** Begin Patch
+*** Update File: mobile/app.json
+@@
+   "expo": {
+     "name": "Freestyle Mobile",
+     "slug": "freestyle-mobile",
+     "version": "1.0.0",
+     "scheme": "freestyle",
+     "orientation": "portrait",
+     "userInterfaceStyle": "automatic",
++    "splash": {
++      "image": "./assets/hero1.jpg",
++      "resizeMode": "contain",
++      "backgroundColor": "#FAF8F6"
++    },
+     "ios": {
+       "supportsTablet": true
+     },
+*** End Patch
+```
+
+---
+
+Tool use: **run_terminal_cmd**
+
+```bash
+cd /Users/seandavey/Downloads/freestyle && git add -A && git commit -m "mobile: define splash config to silence native splash controller warning in Expo Go" && git push
+```
+
+```
+[feat/expo-shell 91bb0fa] mobile: define splash config to silence native splash controller warning in Expo Go
+ 2 files changed, 140 insertions(+)
+To https://github.com/siestheapp/freestyle.git
+   663728b..91bb0fa  feat/expo-shell -> feat/expo-shell
+
+```
+
+---
+
+I added a minimal splash config so the native controller is satisfied and the “No native splash screen registered” warning stops:
+
+- Updated mobile/app.json with splash:
+  - image: ./assets/hero1.jpg
+  - resizeMode: contain
+  - backgroundColor: #FAF8F6
+
+You’re now seeing all closet items; after this change the splash warning should no longer appear on reset. If it persists, fully quit Expo Go and relaunch once so it reloads the new config.
+
+---
+
+_**User (2025-10-10 20:56-0400)**_
+
+what about if you click reset demo data and then it asks sign out or erase...and either one takes you to the start screen (which we need to make) and then the sign in...and unless you click erase you can just sign back in with the fake email we are going to add through the fake google authentication we are also going to add
+
+---
+
+_**Assistant (gpt-5)**_
+
+<think><details><summary>Thought Process</summary>**Planning implementation steps**
+
+I need to add the `demoSignOut` function in the demoStore and create the UI in `app/start.tsx`. I'll also set up `app/auth/signin.tsx`. It's important to modify `app/index.tsx` to include a user check. Additionally, I'll update the DemoControls by adding two options and ensure navigation works properly. To accomplish all this, I’ll import the router from expo-router. Let’s get started on these tasks!</details></think>
+
+---
+
+Tool use: **todo_write**
+
+## Todo List
+
+- [-] Create app/start.tsx landing screen for demo mode
+- [ ] Create app/auth/signin.tsx with Demo Google button
+- [ ] Update app/index.tsx to check local user and route to start or tabs
+- [ ] Add demoSignOut and integrate in DemoControls with Sign Out and Erase
+
+---
+
+Great idea. Here’s a compact plan we can implement next to support Reset flow with “Sign out” vs “Erase,” a Start screen, and fake Google sign-in:
+
+What you’ll get
+- Start screen: simple landing with “Continue with Google” (fake) and “Continue with email” (optional).
+- Fake Google auth: single tap sets demo user to alexis@example.com and proceeds.
+- Reset flow:
+  - “Sign out” clears only session token, keeps seeded closet/feed. Returns to Start; user can sign back in immediately.
+  - “Erase” clears everything and re-seeds; returns to Start.
+- Index redirect: on app launch, if demo user exists → tabs; else → Start.
+
+Changes to add
+- app/start.tsx: Start/landing screen with Demo Google button.
+- app/auth/signin.tsx (optional for future email flow).
+- app/index.tsx: check AsyncStorage “demo:user”; route to Start or /(tabs)/home.
+- Demo controls: replace “Reset demo data” with a sheet:
+  - “Sign out” → demoSignOut() then navigate to /start
+  - “Erase” → demoErase() then navigate to /start
+- demoStore additions:
+  - demoSignOut: remove demo:token only
+  - demoErase: clear AsyncStorage/SecureStore; re-seed; soft reload or route to Start
+
+If you want, I’ll implement this now with minimal UI and the “Google” button as a styled Pressable that calls demoSignUp('alexis@example.com').
+
+---
+
+_**User (2025-10-10 20:56-0400)**_
+
+i want the startup screen to be the background color from here@freestyle-app.html with the freestyle logo from our current screens in vertical + horizontl center...it should show for a second and then take user to sign in or sign up screen
+
+---
+
+_**Assistant (gpt-5)**_
+
+
 
 ---
 

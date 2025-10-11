@@ -1,6 +1,7 @@
 import { View, Text, Pressable, Modal } from 'react-native';
 import { useState } from 'react';
-import { demoBootstrap, demoClearAll } from './demoStore';
+import { demoBootstrap, demoClearAll, demoSignOut } from './demoStore';
+import { useRouter } from 'expo-router';
 import { IS_DEMO } from '../config';
 
 export function useDemoTrigger() {
@@ -17,12 +18,16 @@ export function useDemoTrigger() {
 
 export function DemoControls({ open, onClose }: { open: boolean; onClose: () => void }) {
   if (!IS_DEMO) return null;
+  const router = useRouter();
   return (
     <Modal visible={open} animationType="slide" transparent onRequestClose={onClose}>
       <View style={{ flex: 1, backgroundColor: 'rgba(0,0,0,.3)', justifyContent: 'flex-end' }}>
         <View style={{ backgroundColor: '#fff', padding: 16, borderTopLeftRadius: 16, borderTopRightRadius: 16 }}>
           <Text style={{ fontWeight: '800', fontSize: 16, marginBottom: 8 }}>Demo Controls</Text>
-          <Pressable onPress={async () => { await demoClearAll(); }} style={{ padding: 12, borderRadius: 12, backgroundColor: '#00A3A3', marginBottom: 8 }}>
+          <Pressable onPress={async () => { await demoSignOut(); router.replace('/start'); onClose(); }} style={{ padding: 12, borderRadius: 12, backgroundColor: '#111827', marginBottom: 8 }}>
+            <Text style={{ color: '#fff', fontWeight: '700', textAlign: 'center' }}>Sign out (keep data)</Text>
+          </Pressable>
+          <Pressable onPress={async () => { await demoClearAll(); router.replace('/start'); }} style={{ padding: 12, borderRadius: 12, backgroundColor: '#00A3A3', marginBottom: 8 }}>
             <Text style={{ color: '#fff', fontWeight: '700', textAlign: 'center' }}>Reset demo data</Text>
           </Pressable>
           <Pressable onPress={async () => { await demoBootstrap(); onClose(); }} style={{ padding: 12, borderRadius: 12, borderWidth: 1, borderColor: '#E5E7EB' }}>

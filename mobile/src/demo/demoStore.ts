@@ -29,6 +29,10 @@ export async function demoSignUp(email: string, _password: string) {
   return user;
 }
 
+export async function demoSignOut() {
+  try { await SecureStore.deleteItemAsync('demo:token'); } catch {}
+}
+
 export async function demoBootstrap() {
   if (!IS_DEMO) return;
   const seeded = await AsyncStorage.getItem('demo:seeded');
