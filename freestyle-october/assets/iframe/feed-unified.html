@@ -32,19 +32,19 @@ body::before{
 
 /* iPhone Frame (Finy Style) */
 .phone{width:430px;height:932px;border-radius:55px;background:#000;padding:2px;box-shadow:none}
-.screen{height:100%;background:#FAF8F6;border-radius:53px;overflow:hidden;position:relative;display:flex;flex-direction:column}
+.screen{height:100%;background:#fff;border-radius:53px;overflow:hidden;position:relative;display:flex;flex-direction:column}
 
 /* Dynamic Island */
-.island{position:absolute;top:11px;left:50%;transform:translateX(-50%);width:126px;height:30px;background:#000;border-radius:16px;z-index:2}
+.island{position:absolute;top:11px;left:50%;transform:translateX(-50%);width:126px;height:37px;background:#000;border-radius:19px;z-index:5}
 
 /* Status Bar */
-.status{height:44px;margin-top:12px;display:flex;align-items:center;justify-content:space-between;padding:0 26px;font-weight:600;color:#000;font-size:16px;letter-spacing:-.02em}
+.status{height:54px;margin-top:20px;display:flex;align-items:center;justify-content:space-between;padding:0 30px;font-weight:600;color:#000;font-size:17px;letter-spacing:-.02em}
 .status .right{display:flex;align-items:center;gap:6px}
 .status .right img{height:13px;width:auto;display:block}
 
 /* App Content */
-.header{padding:12px 24px 2px;display:flex;justify-content:space-between;align-items:center}
-.logo{font-weight:600;font-size:28px;letter-spacing:-.01em;background:linear-gradient(135deg,var(--cta-start),var(--cta-mid) 46%,var(--cta-end));
+.header{padding:12px 24px 2px;display:flex;align-items:center;justify-content:center;position:relative}
+.logo{font-weight:600;font-size:32px;letter-spacing:-.01em;background:linear-gradient(135deg,var(--cta-start),var(--cta-mid) 46%,var(--cta-end));
   -webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent}
 .section{
   padding:4px 24px 6px;
@@ -82,6 +82,18 @@ body::before{
 .chip{border:1px solid #E8E4DE;background:#fff;color:var(--ink);border-radius:9999px;padding:10px 16px;font-size:13px;font-weight:500;white-space:nowrap;transition:all 0.2s ease}
 .chip.is-active{border-color:var(--petrol-400);background:var(--petrol-100);color:var(--petrol-600);font-weight:600;box-shadow:0 2px 8px rgba(0,163,163,.12)}
 .chip:not(.is-active):hover{background:#f8f8f8;border-color:#d0d0d0}
+
+.explainer{
+  display:inline-flex;align-items:center;gap:8px;
+  margin-top:6px;
+  padding:8px 12px;
+  border-radius:999px;
+  background:var(--petrol-100);
+  border:1px solid var(--petrol-400);
+  color:#0B0F14;
+  font:600 12px/1.2 Inter, system-ui;
+}
+.explainer .sym{font-weight:800;}
 
 /* Feed */
 /* Feed scroll + spacing between cards */
@@ -451,11 +463,10 @@ body::before{
         </div>
 
         <div class="section">
-          <div class="heading-inline">
-            <h1 class="heading-main">Explore</h1>
-            <span class="heading-sub-inline">Curated based on your sizes.</span>
+          <div class="explainer" role="note" aria-label="Explainer: same item same size">
+            <span class="sym">≡</span>
+            means you and others own the same item in the same size.
           </div>
-
           <div class="chips">
             <button class="chip is-active">Wedding guest</button>
             <button class="chip">Midi</button>

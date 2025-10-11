@@ -5927,7 +5927,312 @@ i want the startup screen to be the background color from here@freestyle-app.htm
 
 _**Assistant (gpt-5)**_
 
+<think><details><summary>Thought Process</summary>I'm considering that we route from the index and, after signing in, we set the user and token. It seems like updating the demo controls might be something for later—though not required right now. I should implement this soon and get things moving. So, I'll plan to run the apply_patch function to create it. There's a lot to keep track of, but I'm getting there!</details></think>
 
+---
+
+Tool use: **todo_write**
+
+## Todo List
+
+- [-] Create app/start.tsx landing screen for demo mode
+- [ ] Create app/auth/signin.tsx with Demo Google button
+- [ ] Update app/index.tsx to check local user and route to start or tabs
+- [ ] Add demoSignOut and integrate in DemoControls with Sign Out and Erase
+
+---
+
+Tool use: **apply_patch**
+
+<details>
+        <summary>Apply patch for /Users/seandavey/Downloads/freestyle/mobile/app/start.tsx</summary>
+      
+
+```diff
+<<'PATCH'
+*** Begin Patch
+*** Add File: mobile/app/start.tsx
++import { useEffect } from 'react';
++import { View, Text } from 'react-native';
++import { useRouter } from 'expo-router';
++
++export default function Start() {
++  const router = useRouter();
++  useEffect(() => {
++    const t = setTimeout(() => {
++      router.replace('/auth/signin');
++    }, 900);
++    return () => clearTimeout(t);
++  }, [router]);
++
++  return (
++    <View style={{ flex: 1, backgroundColor: '#F7F9FB', alignItems: 'center', justifyContent: 'center' }}>
++      <Text style={{ fontSize: 32, fontWeight: '700', letterSpacing: -0.2, color: '#00A3A3' }}>freestyle</Text>
++    </View>
++  );
++}
++
+*** End Patch
+```
+
+---
+
+Tool use: **apply_patch**
+
+<details>
+        <summary>Apply patch for /Users/seandavey/Downloads/freestyle/mobile/app/auth/signin.tsx</summary>
+      
+
+```diff
+<<'PATCH'
+*** Begin Patch
+*** Add File: mobile/app/auth/signin.tsx
++import { View, Text, Pressable } from 'react-native';
++import { useRouter } from 'expo-router';
++import AsyncStorage from '@react-native-async-storage/async-storage';
++import { demoSignUp } from '../../src/demo/demoStore';
++
++export default function SignIn() {
++  const router = useRouter();
++
++  async function onGoogle() {
++    await demoSignUp('alexis@example.com', 'demo');
++    router.replace('/(tabs)/home');
++  }
++
++  return (
++    <View style={{ flex: 1, backgroundColor: '#F7F9FB', alignItems: 'center', justifyContent: 'center', padding: 24 }}>
++      <Text style={{ fontSize: 28, fontWeight: '700', color: '#1F1F1F', marginBottom: 16 }}>Welcome</Text>
++      <Text style={{ color: '#6F6F74', marginBottom: 24 }}>Sign in to continue</Text>
++
++      <Pressable onPress={onGoogle} style={{ backgroundColor: '#00A3A3', paddingVertical: 14, paddingHorizontal: 18, borderRadius: 12, width: '100%' }}>
++        <Text style={{ textAlign: 'center', color: '#fff', fontWeight: '700' }}>Continue with Google (demo)</Text>
++      </Pressable>
++    </View>
++  );
++}
++
+*** End Patch
+```
+
+---
+
+Tool use: **read_file**
+
+Read file: /Users/seandavey/Downloads/freestyle/mobile/app/index.tsx
+
+---
+
+Tool use: **apply_patch**
+
+<details>
+        <summary>Apply patch for /Users/seandavey/Downloads/freestyle/mobile/app/index.tsx</summary>
+      
+
+```diff
+<<'PATCH'
+*** Begin Patch
+*** Update File: mobile/app/index.tsx
+@@
+-import { Redirect } from 'expo-router';
+-export default function Index() {
+-  return <Redirect href='/(tabs)/home' />;
+-}
++import { Redirect } from 'expo-router';
++import AsyncStorage from '@react-native-async-storage/async-storage';
++import { useEffect, useState } from 'react';
++
++export default function Index() {
++  const [ready, setReady] = useState(false);
++  const [signedIn, setSignedIn] = useState(false);
++
++  useEffect(() => {
++    AsyncStorage.getItem('demo:user').then(v => {
++      setSignedIn(!!v);
++      setReady(true);
++    });
++  }, []);
++
++  if (!ready) return null;
++  return <Redirect href={signedIn ? '/(tabs)/home' : '/start'} />;
++}
+*** End Patch
+```
+
+---
+
+Tool use: **todo_write**
+
+## Todo List
+
+- [x] Create app/start.tsx landing screen for demo mode
+- [x] Create app/auth/signin.tsx with Demo Google button
+- [x] Update app/index.tsx to check local user and route to start or tabs
+- [ ] Add demoSignOut and integrate in DemoControls with Sign Out and Erase
+
+---
+
+Tool use: **apply_patch**
+
+<details>
+        <summary>Apply patch for /Users/seandavey/Downloads/freestyle/mobile/src/demo/DemoControls.tsx</summary>
+      
+
+```diff
+<<'PATCH'
+*** Begin Patch
+*** Update File: mobile/src/demo/DemoControls.tsx
+@@
+-import { demoBootstrap, demoClearAll } from './demoStore';
++import { demoBootstrap, demoClearAll, demoSignOut } from './demoStore';
++import { useRouter } from 'expo-router';
+@@
+-export function DemoControls({ open, onClose }: { open: boolean; onClose: () => void }) {
++export function DemoControls({ open, onClose }: { open: boolean; onClose: () => void }) {
+   if (!IS_DEMO) return null;
++  const router = useRouter();
+   return (
+     <Modal visible={open} animationType="slide" transparent onRequestClose={onClose}>
+       <View style={{ flex: 1, backgroundColor: 'rgba(0,0,0,.3)', justifyContent: 'flex-end' }}>
+         <View style={{ backgroundColor: '#fff', padding: 16, borderTopLeftRadius: 16, borderTopRightRadius: 16 }}>
+           <Text style={{ fontWeight: '800', fontSize: 16, marginBottom: 8 }}>Demo Controls</Text>
+-          <Pressable onPress={async () => { await demoClearAll(); }} style={{ padding: 12, borderRadius: 12, backgroundColor: '#00A3A3', marginBottom: 8 }}>
++          <Pressable onPress={async () => { await demoSignOut(); router.replace('/start'); onClose(); }} style={{ padding: 12, borderRadius: 12, backgroundColor: '#111827', marginBottom: 8 }}>
++            <Text style={{ color: '#fff', fontWeight: '700', textAlign: 'center' }}>Sign out (keep data)</Text>
++          </Pressable>
++          <Pressable onPress={async () => { await demoClearAll(); router.replace('/start'); }} style={{ padding: 12, borderRadius: 12, backgroundColor: '#00A3A3', marginBottom: 8 }}>
+             <Text style={{ color: '#fff', fontWeight: '700', textAlign: 'center' }}>Reset demo data</Text>
+           </Pressable>
+           <Pressable onPress={async () => { await demoBootstrap(); onClose(); }} style={{ padding: 12, borderRadius: 12, borderWidth: 1, borderColor: '#E5E7EB' }}>
+             <Text style={{ fontWeight: '700', textAlign: 'center' }}>Re-seed without reload</Text>
+           </Pressable>
+*** End Patch
+```
+
+---
+
+Tool use: **apply_patch**
+
+<details>
+        <summary>Apply patch for /Users/seandavey/Downloads/freestyle/mobile/src/demo/demoStore.ts</summary>
+      
+
+```diff
+<<'PATCH'
+*** Begin Patch
+*** Update File: mobile/src/demo/demoStore.ts
+@@
+ export async function demoSignUp(email: string, _password: string) {
+@@
+ }
+ 
++export async function demoSignOut() {
++  try { await SecureStore.deleteItemAsync('demo:token'); } catch {}
++}
++
+*** End Patch
+```
+
+---
+
+Tool use: **todo_write**
+
+## Todo List
+
+- [x] Create app/start.tsx landing screen for demo mode
+- [x] Create app/auth/signin.tsx with Demo Google button
+- [x] Update app/index.tsx to check local user and route to start or tabs
+- [x] Add demoSignOut and integrate in DemoControls with Sign Out and Erase
+
+---
+
+Tool use: **read_lints**
+
+<details>
+          <summary>Read lints for 5 files</summary>
+      
+Lint paths:
+
+- `/Users/seandavey/Downloads/freestyle/mobile/app/start.tsx`
+- `/Users/seandavey/Downloads/freestyle/mobile/app/auth/signin.tsx`
+- `/Users/seandavey/Downloads/freestyle/mobile/app/index.tsx`
+- `/Users/seandavey/Downloads/freestyle/mobile/src/demo/DemoControls.tsx`
+- `/Users/seandavey/Downloads/freestyle/mobile/src/demo/demoStore.ts`
+
+Lint results
+
+
+**No lint errors found**
+</details>
+
+---
+
+Tool use: **run_terminal_cmd**
+
+```bash
+cd /Users/seandavey/Downloads/freestyle && git add -A && git commit -m "mobile: add Start screen with brand background/logo; demo Sign In with Google; index redirect based on session; DemoControls with Sign out or Erase flows" && git push
+```
+
+```
+[feat/expo-shell 67c6eac] mobile: add Start screen with brand background/logo; demo Sign In with Google; index redirect based on session; DemoControls with Sign out or Erase flows
+ 6 files changed, 200 insertions(+), 4 deletions(-)
+ create mode 100644 mobile/app/auth/signin.tsx
+ create mode 100644 mobile/app/start.tsx
+To https://github.com/siestheapp/freestyle.git
+   91bb0fa..67c6eac  feat/expo-shell -> feat/expo-shell
+
+```
+
+---
+
+Implemented the startup flow you described:
+
+- Start screen
+  - Background color from the mock (`#F7F9FB`)
+  - “freestyle” logo centered vertically and horizontally
+  - Auto-advances after ~900ms to the sign-in screen
+
+- Sign in screen
+  - “Continue with Google (demo)” button
+  - One-tap sets the demo user (alexis@example.com) and routes to Home
+
+- Index redirect
+  - On app launch, checks `demo:user`
+  - If present → `/(tabs)/home`; otherwise → `/start`
+
+- Demo Controls update
+  - “Sign out (keep data)” clears session only and routes to `/start`
+  - “Reset demo data” erases/seed and routes to `/start`
+  - “Re-seed without reload” stays in place
+
+Files added/updated
+- app/start.tsx
+- app/auth/signin.tsx
+- app/index.tsx (redirect logic)
+- src/demo/DemoControls.tsx (Sign out + Erase)
+- src/demo/demoStore.ts (added demoSignOut)
+- app.json (splash defined to silence warning)
+
+How to try it
+- Fully quit Expo Go and relaunch so the splash and new routes are picked up.
+- You’ll see the Start screen flash, then Sign In.
+- Tap “Continue with Google (demo)” to enter the app.
+- Triple‑tap “freestyle” → choose “Sign out” or “Reset demo data” to test flows.
+
+---
+
+_**User (2025-10-10 20:56-0400)**_
+
+how do i fully quit expo go
+
+---
+
+_**Assistant (gpt-5)**_
+
+- On iOS Simulator: Hardware menu → Home. Then double-press Shift+Command+H to open the app switcher, swipe up on “Expo Go” to force quit. Or press Command+Q while Expo Go is focused.
+- On a real iPhone: Swipe up from the bottom and hold, find Expo Go, swipe it up to dismiss.
+- On Android Emulator: Click the square/overview button, swipe Expo Go away. Or Settings → Apps → Expo Go → Force stop.
+- From terminal: Stop Metro (Ctrl+C), then run npm run start again after force quitting the app.
 
 ---
 
