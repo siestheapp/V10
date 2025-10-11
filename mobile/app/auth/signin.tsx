@@ -42,23 +42,18 @@ export default function SignIn() {
   async function onGoogle() {
     setLoading(true);
     try {
-      // Generate redirect URI - force deep link instead of localhost
-      const redirectTo = AuthSession.makeRedirectUri({
-        scheme: 'freestyle',
-        path: 'auth/callback',
-        preferLocalhost: false,      // Force deep link
-        isTripleSlashed: true,
-      });
+      // Use hard-coded redirect URI instead of makeRedirectUri for now
+      const REDIRECT_TO = 'freestyle://auth/callback';
 
-      console.log('Redirect URI:', redirectTo);
+      console.log('Redirect URI:', REDIRECT_TO);
       console.log('Add this URL to Supabase Dashboard → Auth → URL Configuration → Redirect URLs');
 
       // Initiate OAuth flow
       const { data, error } = await supabase.auth.signInWithOAuth({
         provider: 'google',
         options: {
-          redirectTo,
-          skipBrowserRedirect: false
+          redirectTo: REDIRECT_TO,          // <— force deep link
+          skipBrowserRedirect: false,
         }
       });
 
@@ -77,7 +72,7 @@ export default function SignIn() {
       console.log('Opening OAuth URL:', data.url);
       const result = await WebBrowser.openAuthSessionAsync(
         data.url,
-        redirectTo
+        REDIRECT_TO
       );
 
       console.log('OAuth result:', result);
