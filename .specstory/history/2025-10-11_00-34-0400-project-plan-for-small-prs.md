@@ -2411,6 +2411,478 @@ ok do a commit and push
 
 _**Assistant (gpt-5)**_
 
+<think><details><summary>Thought Process</summary>**Analyzing commit process**
+
+Alright, the tool has restrictions where commands run in a sandbox without network access. I need to request the necessary permissions for network and git_write. After a push, should I update the todos to completed PR2 verify and PR3 verify? We didn’t run ‘doctor’ or confirm, but we've implemented the code. The todos are still in progress. Since the user’s request is to commit and push, not finalize todos, we might leave them pending for now.
+**Preparing for commit and push**
+
+We’ve swapped empties for mocks, which is acceptable. After the push, I should provide a summary confirming that the commit was pushed and include the commit hash from the terminal outputs. I’ll capture these outputs, but the tool may fail due to sandbox restrictions. If the push fails due to missing credentials, I might need to suggest the user configure remote credentials. However, I can also propose a command to run on their behalf. Let’s execute 'git add -A && git commit -m "..." && git push'.</details></think>
+
+---
+
+I'll commit all changes on the current branch and push them to origin.
+
+---
+
+Tool use: **run_terminal_cmd**
+
+```bash
+cd /Users/seandavey/Downloads/freestyle && git add -A && git commit -m "mobile: PR1–PR3 scaffolding — tabs, home, closet, detail, profile, modals, webview, shared components, mocks, scripts/tasks; empty states and placeholders" && git push
+```
+
+```
+[feat/expo-shell 3142ea9] mobile: PR1–PR3 scaffolding — tabs, home, closet, detail, profile, modals, webview, shared components, mocks, scripts/tasks; empty states and placeholders
+ 24 files changed, 3598 insertions(+), 162 deletions(-)
+ create mode 100644 .specstory/history/2025-10-11_00-34-0400-project-plan-for-small-prs.md
+ create mode 100644 mobile/.vscode/tasks.json
+ create mode 100644 mobile/app/(modals)/_layout.tsx
+ create mode 100644 mobile/app/(modals)/settings.tsx
+ create mode 100644 mobile/app/(modals)/tips.tsx
+ create mode 100644 mobile/app/(tabs)/_layout.tsx
+ create mode 100644 mobile/app/(tabs)/closet.tsx
+ create mode 100644 mobile/app/(tabs)/home.tsx
+ create mode 100644 mobile/app/(tabs)/profile.tsx
+ create mode 100644 mobile/app/item/[id].tsx
+ create mode 100644 mobile/app/webview/shop.tsx
+ create mode 100644 mobile/components/Card.tsx
+ create mode 100644 mobile/components/Pill.tsx
+ create mode 100644 mobile/components/Section.tsx
+ create mode 100644 mobile/components/WebPhoneFrame.tsx
+ create mode 100644 mobile/features/mocks/closet.ts
+ create mode 100644 mobile/features/mocks/common.ts
+ create mode 100644 mobile/features/mocks/home.ts
+ create mode 100644 mobile/features/mocks/profile.ts
+ create mode 100644 mobile/features/mocks/types.ts
+To https://github.com/siestheapp/freestyle.git
+   a73b7bb..3142ea9  feat/expo-shell -> feat/expo-shell
+
+```
+
+---
+
+Pushed.
+- Branch: feat/expo-shell
+- Commit: “mobile: PR1–PR3 scaffolding — tabs, home, closet, detail, profile, modals, webview, shared components, mocks, scripts/tasks; empty states and placeholders”
+
+You can now run:
+- npm run start
+- npm run web
+- npm run doctor
+
+---
+
+_**User (2025-10-10 20:56-0400)**_
+
+ok the app looks a mess. i want you to look at the screens here@iframe/ . we are trying to replicate those mockups in expo go, with the user data from those mockups hardcoded in expo for now. how do we do this
+
+---
+
+_**Assistant (gpt-5)**_
+
+<think><details><summary>Thought Process</summary>**Planning Expo Go Instructions**
+
+I need to respond clearly and concisely about replicating iframe mockups in Expo Go with user data hardcoded. Since we can't edit, I'll offer a minimal plan with specific mappings of iframe assets to Expo components. It’s important to inspect mobile tokens to adjust style differences; the available tokens are quite limited. I'll suggest adding or expanding tokens and a shared theme for typography, colors, and backgrounds. Finally, I'll outline step-by-step instructions to port the specified galleries to React Native.
+**Proposing Expo Go Enhancements**
+
+I should suggest adding design tokens that replicate CSS variables used in the iframe, like colors, spacing, shadows, and more. For mock data, we’ll pull images using remote URLs with the Image component's `uri`. I’ll also hardcode items arrays that replicate the cards and provide TypeScript types and measurement items.  
+
+Next, we need to build specific screens: the Home/Feed with a hero image card, a Closet grid with two columns, and a Profile layout that includes progress cards and insights.
+**Replicating Iframe Mocks in Expo Go**
+
+The user wants to replicate iframe content in Expo Go rather than embedding it. While we could consider using WebView, it seems better to create a React Native implementation. I’ll propose creating a file, `mobile/features/mocks/iframe.ts`, with arrays that reflect items from `closet-gallery.html` using remote URLs.  
+
+Next, I plan to implement the `Feed`, `Closet`, and `Profile` screens in React Native and map the home tab to "Feed," since they want the feed called "Home feed." I’ll provide sample code for each screen that maintains the intended style.
+**Implementing Gradient Overlays in RN**
+
+I need to ensure we include gradient overlays in our React Native setup. For fallback, we can use `expo-linear-gradient`, which isn’t installed yet. It might be included with Expo, so I’ll suggest instructing the user to install it using `npx expo install expo-linear-gradient`. If immediate use is needed, I can provide a fallback using `ImageBackground` with a gradient. Alternatively, we can create a View overlay with a semi-transparent gradient. 
+
+I’ll outline steps:  
+1. Extend tokens.  
+2. Install necessary dependencies like `expo-linear-gradient`.  
+3. Create data arrays for "feed" and "closet" mirroring the HTML.
+**Updating App Components with New Structure**
+
+I need to replace the current Home, Closet, and Profile screens with new versions that use shared components like `FeedCard`, `ClosetCard`, and `ProfileMeasureCard`. I’ll provide code snippets with placeholders using markdown for clarity and ensure minimal updates to existing components.
+
+First, we’ll extend `tokens.ts` with new colors and a typography object while keeping the indentation style. I'll propose specific code snippets for users to paste to implement these changes. 
+
+Next, I’ll outline steps: 
+
+1. Install `expo-linear-gradient`.  
+2. Update `tokens.ts` with extended tokens, providing the full file code.  
+3. Create `iframed.ts` with arrays for feed and closet items, including sample items with remote URLs.  
+4. Update `home.tsx` with new feed screen code that features toggling details.  
+5. Modify `closet.tsx` for grid rendering using closet items.  
+6. Revamp `profile.tsx` with progress and measurement cards.  
+7. Discuss styles and expectations, suggesting changes based on their existing implementation.</details></think>
+
+---
+
+Here’s the fastest way to make the Expo screens match your iframe mocks with hardcoded data.
+
+1) Add/extend tokens to match iframe CSS
+- Replace mobile/theme/tokens.ts with this (adds background/surface/border/text/muted and basic type scale):
+
+```ts
+export const colors = {
+  ink900: '#0B0F14',
+  ink700: '#121A22',
+  ink500: '#2A3642',
+  text: '#1F1F1F',
+  muted: '#6F6F74',
+  background: '#F7F9FB',     // feed default
+  backgroundAlt: '#FAF8F6',  // profile alt
+  surface: '#FFFFFF',
+  border: '#E8E4DE',
+  petrol600: '#009090',
+  petrol500: '#00A3A3',
+  petrol400: '#16B5B5',
+  petrol100: '#E0F7F7',
+  mint400: '#A6FFCB',
+  ice300: '#7FE1FF'
+};
+export const radii = { card: 18, pill: 999, button: 16 };
+export const space = { 4: 4, 6: 6, 8: 8, 10: 10, 12: 12, 14: 14, 16: 16, 18: 18, 20: 20, 24: 24 };
+export const typography = {
+  h1: { fontSize: 26, fontWeight: '700', letterSpacing: -0.2 },
+  h2: { fontSize: 20, fontWeight: '700' },
+  body: { fontSize: 14, fontWeight: '600' },
+  subtle: { fontSize: 12, color: colors.muted },
+  badge: { fontSize: 12, fontWeight: '700' }
+};
+```
+
+2) Install gradient overlay for hero images
+- Run: npx expo install expo-linear-gradient
+
+3) Seed hardcoded data from iframes
+- Add mobile/features/mocks/iframe.ts:
+
+```ts
+export const feed = [
+  {
+    id: 1,
+    brand: 'ANTHROPOLOGIE',
+    title: 'The Jocelyn Sleeveless Slip Midi Dress',
+    price: '$168.00',
+    size: 'S',
+    hero: { uri: 'https://images.urbndata.com/is/image/Anthropologie/4130652010091_256_b?$redesign-zoom-5x$' },
+    shopUrl: 'https://www.anthropologie.com/shop/the-jocelyn-sleeveless-slip-midi-dress-by-maeve?category=top-rated-dresses&color=256&type=STANDARD&quantity=1'
+  }
+];
+
+export const closet = [
+  {
+    id: 101,
+    brand: 'GEORGIA HARDINGE',
+    name: 'Relic Pleated Metallic‑Knit Maxi Dress',
+    size: 'UK 8',
+    hero: { uri: 'https://cdn.modaoperandi.com/assets/images/products/1048452/695474/c2/large_georgia-hardinge-gold-relic-dress.jpg?_v=1755324586' }
+  },
+  {
+    id: 102,
+    brand: 'REFORMATION',
+    name: 'Taryn Two Piece',
+    size: '2',
+    hero: { uri: 'https://media.thereformation.com/image/upload/f_auto,q_auto:eco,dpr_2.0/w_500/PRD-SFCC/1314122/BLACK/1314122.1.BLACK?_s=RAABAB0' }
+  }
+];
+
+export const profileMeasurements = [
+  { label: 'Bust Range', value: '31–33.5"' },
+  { label: 'Waist Range', value: '25.5–26.5"' },
+  { label: 'Hip Range', value: '34.5–35.5"' }
+];
+```
+
+4) Home/Feed screen (replicate feed-gallery)
+- Replace mobile/app/(tabs)/home.tsx:
+
+```tsx
+import { router } from 'expo-router';
+import { View, Text, Image, Pressable, ScrollView } from 'react-native';
+import { LinearGradient } from 'expo-linear-gradient';
+import { colors, radii, space, typography } from '../../theme/tokens';
+import { feed } from '../../features/mocks/iframe';
+
+export default function FeedScreen() {
+  const item = feed[0];
+  return (
+    <View style={{ flex: 1, backgroundColor: colors.background }}>
+      <View style={{ paddingHorizontal: space[24], paddingTop: space[8] }}>
+        <Text style={{ ...typography.h1, color: colors.text, marginTop: 6 }}>freestyle</Text>
+      </View>
+
+      <ScrollView contentContainerStyle={{ paddingHorizontal: space[24], paddingBottom: 96 }}>
+        <View style={{ backgroundColor: colors.surface, borderWidth: 1, borderColor: '#eee6', borderRadius: 18, overflow: 'hidden', marginTop: 12 }}>
+          <View style={{ position: 'relative' }}>
+            <Image source={item.hero} style={{ width: '100%', height: 440 }} resizeMode="cover" />
+            <LinearGradient
+              colors={['rgba(0,0,0,0)', 'rgba(0,0,0,0.28)']}
+              style={{ position: 'absolute', left: 0, right: 0, bottom: 0, height: '24%' }}
+            />
+            <View style={{ position: 'absolute', left: 16, bottom: 16, paddingVertical: 6, paddingHorizontal: 10, borderRadius: radii.pill, borderWidth: 1, borderColor: colors.border, backgroundColor: 'rgba(255,255,255,0.88)' }}>
+              <Text style={{ fontWeight: '700', fontSize: 12, color: '#4C4C50' }}>Confidence: <Text style={{ color: colors.petrol600 }}>High</Text></Text>
+            </View>
+          </View>
+
+          <View style={{ padding: 14 }}>
+            <Pressable
+              onPress={() => router.push(`/item/${item.id}`)}
+              style={{
+                flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between',
+                paddingVertical: 14, paddingHorizontal: 20, borderRadius: 24,
+                backgroundColor: colors.petrol500
+              }}
+            >
+              <Text style={{ color: '#fff', fontWeight: '800', fontSize: 17 }}>Best Fit: {item.size}</Text>
+              <View style={{ paddingVertical: 8, paddingHorizontal: 14, backgroundColor: 'rgba(255,255,255,.8)', borderRadius: 999, borderWidth: 1, borderColor: 'rgba(255,255,255,.95)' }}>
+                <Text style={{ color: colors.text, fontWeight: '600' }}>Fit details</Text>
+              </View>
+            </Pressable>
+
+            <View style={{ height: 1, backgroundColor: 'rgba(0,0,0,.08)', marginVertical: 8 }} />
+
+            <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', paddingHorizontal: 6 }}>
+              <View style={{ flexDirection: 'row', alignItems: 'center', gap: 8 }}>
+                <Text style={{ fontSize: 12, letterSpacing: .3, color: '#555', fontWeight: '600' }}>{item.brand}</Text>
+                <Text style={{ fontWeight: '700', fontSize: 17, color: '#2d2d2d' }}>{item.price}</Text>
+              </View>
+              <Text style={{ fontSize: 14, color: '#4C4C50', fontWeight: '500' }}>Free returns</Text>
+            </View>
+
+            <View style={{ marginTop: 12, paddingHorizontal: 2 }}>
+              <Pressable
+                onPress={() => router.push({ pathname: '/webview/shop', params: { url: item.shopUrl } })}
+                style={{ alignSelf: 'center', width: '100%', minHeight: 44, padding: 12, borderRadius: 12, borderWidth: 1, borderColor: colors.petrol400, backgroundColor: '#fff' }}
+              >
+                <Text style={{ textAlign: 'center', color: colors.petrol600, fontWeight: '700' }}>Shop {item.size}</Text>
+              </Pressable>
+            </View>
+          </View>
+        </View>
+      </ScrollView>
+    </View>
+  );
+}
+```
+
+5) Closet grid (replicate closet-gallery/screen)
+- Replace mobile/app/(tabs)/closet.tsx:
+
+```tsx
+import { router } from 'expo-router';
+import { View, Text, FlatList, Image } from 'react-native';
+import { colors, radii, space, typography } from '../../theme/tokens';
+import { LinearGradient } from 'expo-linear-gradient';
+import { closet } from '../../features/mocks/iframe';
+
+export default function Closet() {
+  return (
+    <View style={{ flex: 1, backgroundColor: colors.background }}>
+      <View style={{ paddingHorizontal: space[24], paddingTop: space[8] }}>
+        <Text style={{ ...typography.h1, color: colors.petrol500 }}>freestyle</Text>
+      </View>
+
+      <Text style={{ ...typography.h2, color: colors.text, paddingHorizontal: space[24], marginTop: 6 }}>Your Closet</Text>
+
+      <FlatList
+        data={closet}
+        numColumns={2}
+        keyExtractor={(i) => String(i.id)}
+        columnWrapperStyle={{ gap: 12, paddingHorizontal: space[24] }}
+        contentContainerStyle={{ gap: 12, paddingVertical: space[16], paddingBottom: 96 }}
+        renderItem={({ item }) => (
+          <View style={{ flex: 1, borderRadius: 18, overflow: 'hidden', backgroundColor: '#f8f8fb', borderWidth: 1, borderColor: '#eee6' }}>
+            <View style={{ position: 'relative' }}>
+              <Image source={item.hero} style={{ width: '100%', height: 400 }} resizeMode="cover" />
+              <LinearGradient colors={['transparent','rgba(0,0,0,.55)']} style={{ position: 'absolute', left:0,right:0,bottom:0, height: 120 }} />
+              <View style={{ position: 'absolute', top: 10, left: 10, paddingVertical: 6, paddingHorizontal: 10, backgroundColor: 'rgba(0,0,0,.45)', borderRadius: 999 }}>
+                <Text style={{ color: '#fff', fontWeight: '700', fontSize: 12 }}>{item.size}</Text>
+              </View>
+              <View style={{ position: 'absolute', left: 10, right: 10, bottom: 10 }}>
+                <Text style={{ fontWeight: '700', fontSize: 11, color: '#fff', opacity: .95 }}>{item.brand}</Text>
+                <Text style={{ fontWeight: '600', fontSize: 14, color: '#fff', marginTop: 2 }}>{item.name}</Text>
+              </View>
+            </View>
+          </View>
+        )}
+      />
+    </View>
+  );
+}
+```
+
+6) Profile basics (replicate profile-gallery key blocks)
+- Replace mobile/app/(tabs)/profile.tsx:
+
+```tsx
+import { View, Text, ScrollView, Pressable } from 'react-native';
+import { colors, space, typography, radii } from '../../theme/tokens';
+import { profileMeasurements } from '../../features/mocks/iframe';
+
+export default function Profile() {
+  return (
+    <ScrollView style={{ flex: 1, backgroundColor: colors.backgroundAlt }} contentContainerStyle={{ padding: space[20], paddingBottom: 96 }}>
+      <Text style={{ ...typography.h2, color: colors.text, marginBottom: 8 }}>Profile Strength</Text>
+      <View style={{ backgroundColor: '#fff', borderRadius: 16, borderWidth: 1, borderColor: '#E0F2FE', padding: 16, marginBottom: 8 }}>
+        <View style={{ height: 6, backgroundColor: '#E5E7EB', borderRadius: 3, overflow: 'hidden' }}>
+          <View style={{ height: '100%', width: '85%', backgroundColor: colors.petrol500, borderRadius: 3 }} />
+        </View>
+        <Text style={{ ...typography.subtle, marginTop: 6 }}>Add 2 more items to unlock premium fit insights</Text>
+      </View>
+
+      <Text style={{ ...typography.h2, color: colors.text, marginTop: 14, marginBottom: 8 }}>Measurements</Text>
+      <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={{ gap: 12 }}>
+        {profileMeasurements.map(m => (
+          <Pressable key={m.label} style={{ padding: 14, backgroundColor: '#fff', borderRadius: 16, minWidth: 160, borderWidth: 1, borderColor: colors.border }}>
+            <Text style={{ ...typography.subtle }}>{m.label}</Text>
+            <Text style={{ ...typography.h2, color: colors.text }}>{m.value}</Text>
+          </Pressable>
+        ))}
+      </ScrollView>
+    </ScrollView>
+  );
+}
+```
+
+7) Notes
+- Keep your existing item detail and modals; shop link flows will work with the new feed hardcoded item.
+- If you prefer to embed the exact iframe screens temporarily, install react-native-webview and point to those HTML files, but the above gives native RN replicas aligned with your mocks.
+
+That’s it. After applying the snippets above, run:
+- cd /Users/seandavey/Downloads/freestyle/mobile
+- npm run start or npm run web
+
+This will render the feed/closet/profile close to your iframe mocks with the same hardcoded data.
+
+---
+
+_**User (2025-10-10 20:56-0400)**_
+
+ok switching to agent. start executing
+
+---
+
+_**Assistant (gpt-5)**_
+
+<think><details><summary>Thought Process</summary>I’m noticing that the code we created is using two spaces for indentation. It's important to keep things consistent, so I want to make sure I follow that throughout. Now, let’s move on to creating the `todo_write` function and then apply the necessary patches after that. I want to ensure everything functions properly and aligns with our established formatting. Consistency really matters in coding!</details></think>
+
+---
+
+I’m going to update tokens to match the iframe styling, install expo-linear-gradient, add a new mocks file with hardcoded data from the iframes, and replace the Home, Closet, and Profile screens to replicate the mockups. Then I’ll run a lint check and commit/push.
+
+---
+
+Tool use: **todo_write**
+
+## Todo List
+
+- [-] Update tokens to match iframe CSS and add typography
+- [ ] Install expo-linear-gradient dependency
+- [ ] Add hardcoded iframe data to features/mocks/iframe.ts
+- [ ] Replace Home screen to replicate feed-gallery mock
+- [ ] Replace Closet screen to replicate closet-gallery mock
+- [ ] Replace Profile screen to replicate profile-gallery basics
+- [ ] Run lints, start app, visual check for parity
+
+---
+
+<think><details><summary>Thought Process</summary>**Implementing token updates**
+
+I need to implement several steps: first, update the tokens file, install expo-linear-gradient, and add a mocks file. I’ll also replace home, closet, and profile screens with new code. Running lints is crucial, and I’ll use tools like apply_patch and run_terminal_cmd for this.
+
+We previously modified tokens.ts, and now we need to include additional properties. Let's review the current tokens and expand them to include background colors and a typography object to enhance usage. We also need to adjust the code in home.tsx for the updated tokens.
+**Implementing updates step by step**
+
+I'm planning to implement several updates now. First, I need to update tokens.ts according to the suggested code. Then, I’ll install expo-linear-gradient using run_terminal_cmd.
+
+Next, I'll add the features/mocks/iframe.ts file and replace home.tsx, closet.tsx, and profile.tsx with new code based on feed-gallery. It’s vital to ensure all imports and code compile correctly.
+
+For navigation, I'll make sure the home screen uses router.push for item detail references, and lastly, I'll run lint checks, commit, and push everything while preserving the two-space indentation style. Let's get started!</details></think>
+
+---
+
+I’m updating `mobile/theme/tokens.ts`, adding `mobile/features/mocks/iframe.ts`, replacing the Home, Closet, and Profile screens to match the iframe mocks, and installing expo-linear-gradient. Then I’ll lint and commit.
+
+---
+
+Tool use: **apply_patch**
+
+<details>
+        <summary>Apply patch for /Users/seandavey/Downloads/freestyle/mobile/theme/tokens.ts</summary>
+      
+
+```diff
+<<'PATCH'
+*** Begin Patch
+*** Update File: mobile/theme/tokens.ts
+@@
+-export const colors = {
+-  ink900: '#0B0F14',
+-  ink700: '#121A22',
+-  ink500: '#2A3642',
+-  petrol600: '#009090',
+-  petrol500: '#00A3A3',
+-  petrol400: '#16B5B5',
+-  petrol100: '#E0F7F7',
+-  ice300: '#7FE1FF',
+-  mint400: '#A6FFCB'
+-};
+-
+-export const radii = { card: 16, pill: 999 };
+-export const space = { 8: 8, 12: 12, 16: 16, 24: 24 };
++export const colors = {
++  ink900: '#0B0F14',
++  ink700: '#121A22',
++  ink500: '#2A3642',
++  text: '#1F1F1F',
++  muted: '#6F6F74',
++  background: '#F7F9FB',
++  backgroundAlt: '#FAF8F6',
++  surface: '#FFFFFF',
++  border: '#E8E4DE',
++  petrol600: '#009090',
++  petrol500: '#00A3A3',
++  petrol400: '#16B5B5',
++  petrol100: '#E0F7F7',
++  ice300: '#7FE1FF',
++  mint400: '#A6FFCB'
++};
++
++export const radii = { card: 18, pill: 999, button: 16 };
++export const space = { 4: 4, 6: 6, 8: 8, 10: 10, 12: 12, 14: 14, 16: 16, 18: 18, 20: 20, 24: 24 };
++export const typography = {
++  h1: { fontSize: 26, fontWeight: '700', letterSpacing: -0.2 as const },
++  h2: { fontSize: 20, fontWeight: '700' as const },
++  body: { fontSize: 14, fontWeight: '600' as const },
++  subtle: { fontSize: 12, color: colors.muted },
++  badge: { fontSize: 12, fontWeight: '700' as const }
++};
+*** End Patch
+PATCH
+```
+
+---
+
+Tool use: **todo_write**
+
+## Todo List
+
+- [x] Update tokens to match iframe CSS and add typography
+- [-] Install expo-linear-gradient dependency
+- [ ] Add hardcoded iframe data to features/mocks/iframe.ts
+- [ ] Replace Home screen to replicate feed-gallery mock
+- [ ] Replace Closet screen to replicate closet-gallery mock
+- [ ] Replace Profile screen to replicate profile-gallery basics
+- [ ] Run lints, start app, visual check for parity
+
+---
+
+Tool use: **run_terminal_cmd**
+
+---
+
 
 
 ---

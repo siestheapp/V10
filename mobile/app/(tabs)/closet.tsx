@@ -1,36 +1,38 @@
 import { router } from 'expo-router';
-import { View, FlatList } from 'react-native';
-import { colors, space } from '../../theme/tokens';
-import Section from '../../components/Section';
-import { SizeCard } from '../../components/SizeCard';
-import { closetItems } from '../../features/mocks/closet';
+import { View, Text, FlatList, Image } from 'react-native';
+import { LinearGradient } from 'expo-linear-gradient';
+import { colors, radii, space, typography } from '../../theme/tokens';
+import { closet } from '../../features/mocks/iframe';
 
 export default function Closet() {
   return (
-    <View style={{ flex: 1, backgroundColor: (colors as any).background ?? '#fff' }}>
-      <Section title="Closet">
-        {closetItems.length === 0 ? (
-          <View style={{ paddingHorizontal: space[16], paddingVertical: space[12] }}>
-            <View style={{ height: 120, borderRadius: 16, backgroundColor: '#F3F4F6' }} />
-            <View style={{ height: 8 }} />
-            <View style={{ height: 16, width: 160, backgroundColor: '#E5E7EB', borderRadius: 4 }} />
+    <View style={{ flex: 1, backgroundColor: colors.background }}>
+      <View style={{ paddingHorizontal: space[24], paddingTop: space[8] }}>
+        <Text style={{ ...typography.h1, color: colors.petrol500 }}>freestyle</Text>
+      </View>
+      <Text style={{ ...typography.h2, color: colors.text, paddingHorizontal: space[24], marginTop: 6 }}>Your Closet</Text>
+      <FlatList
+        data={closet}
+        numColumns={2}
+        keyExtractor={(i) => String(i.id)}
+        columnWrapperStyle={{ gap: 12, paddingHorizontal: space[24] }}
+        contentContainerStyle={{ gap: 12, paddingVertical: space[16], paddingBottom: 96 }}
+        renderItem={({ item }) => (
+          <View style={{ flex: 1, borderRadius: radii.card, overflow: 'hidden', backgroundColor: '#f8f8fb', borderWidth: 1, borderColor: '#eee6' }}>
+            <View style={{ position: 'relative' }}>
+              <Image source={item.hero} style={{ width: '100%', height: 400 }} resizeMode="cover" />
+              <LinearGradient colors={['transparent','rgba(0,0,0,.55)']} style={{ position: 'absolute', left:0,right:0,bottom:0, height: 120 }} />
+              <View style={{ position: 'absolute', top: 10, left: 10, paddingVertical: 6, paddingHorizontal: 10, backgroundColor: 'rgba(0,0,0,.45)', borderRadius: 999 }}>
+                <Text style={{ color: '#fff', fontWeight: '700', fontSize: 12 }}>{item.size}</Text>
+              </View>
+              <View style={{ position: 'absolute', left: 10, right: 10, bottom: 10 }}>
+                <Text style={{ fontWeight: '700', fontSize: 11, color: '#fff', opacity: .95 }}>{item.brand}</Text>
+                <Text style={{ fontWeight: '600', fontSize: 14, color: '#fff', marginTop: 2 }}>{item.name}</Text>
+              </View>
+            </View>
           </View>
-        ) : (
-          <FlatList
-            data={closetItems}
-            numColumns={2}
-            keyExtractor={(i) => String(i.id)}
-            columnWrapperStyle={{ gap: space[12], paddingHorizontal: space[16] }}
-            contentContainerStyle={{ gap: space[12], paddingVertical: space[16] }}
-            renderItem={({ item }) => (
-              <SizeCard
-                model={{ hero: item.image, bestFit: item.size }}
-                onPress={() => router.push(`/item/${item.id}`)}
-              />
-            )}
-          />
         )}
-      </Section>
+      />
     </View>
   );
 }
