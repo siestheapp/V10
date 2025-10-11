@@ -451,8 +451,8 @@ body::before{
 
             <div class="pc-hero-wrap">
               <div class="pc-carousel" data-index="0">
-                <img class="pc-hero-img pc-hero-img--tight pc-slide pc-active" src="../img/videoframe_6964.png" alt="ellaa76 wearing Somerset Maxi Dress">
-                <img class="pc-hero-img pc-hero-img--tight pc-slide" src="../img/videoframe_33023.png" alt="ellaa76 alternate look">
+                <img class="pc-hero-img pc-hero-img--tight pc-slide pc-active" src="../img/videoframe_6964.png" alt="ellaa76 wearing Somerset Maxi Dress" data-brand="Anthropologie" data-title="Somerset Maxi Dress" data-size="XS" data-comments="12" data-q="Is this petite or regular?" data-a="Regular!">
+                <img class="pc-hero-img pc-hero-img--tight pc-slide" src="../img/videoframe_33023.png" alt="ellaa76 alternate look" data-brand="Anthropologie" data-title="Peregrine Midi Dress" data-size="XS Petite" data-comments="7" data-q="How long is the skirt?">
                 <button class="pc-nav left" type="button" aria-label="Previous slide"></button>
                 <button class="pc-nav right" type="button" aria-label="Next slide"></button>
                 <div class="pc-dots" aria-label="Slide position">
@@ -463,18 +463,18 @@ body::before{
             </div>
 
             <div class="pc-look-caption">
-              <p><span class="pc-user"><strong>Anthropologie</strong></span> Somerset Maxi Dress — XS</p>
+              <p><span class="pc-user"><strong id="pcBrand">Anthropologie</strong></span> <span id="pcTitle">Somerset Maxi Dress</span> — <span id="pcSize">XS</span></p>
             </div>
 
             <div class="pc-comment-teaser" role="button" aria-label="View comments">
-              <div class="pc-k">Comments · 12</div>
+              <div class="pc-k">Comments · <span id="pcCCount">12</span></div>
               <div class="pc-row">
-                <span class="pc-q">Q:</span> Is this petite or regular?
+                <span class="pc-q">Q:</span> <span id="pcCQ">Is this petite or regular?</span>
                 <span class="pc-sep">·</span>
-                <span class="pc-a">A:</span> Regular!
-                <span class="pc-link-inline" aria-hidden="true">See full thread &gt;</span>
+                <span class="pc-a">A:</span> <span id="pcCA">Regular!</span>
+                <span class="pc-link-inline" id="pcLinkInline" aria-hidden="true">See full thread &gt;</span>
               </div>
-              <div class="pc-link">See full thread &gt;</div>
+              <div class="pc-link" id="pcLinkBlock">See full thread &gt;</div>
             </div>
 
             <div class="pc-look-actions">
@@ -594,11 +594,51 @@ body::before{
     const dots   = card.querySelectorAll('.pc-dot');
     slides.forEach(img => img.classList.add('pc-slide'));
 
+    // Targets for caption/teaser
+    const brandEl = document.getElementById('pcBrand');
+    const titleEl = document.getElementById('pcTitle');
+    const sizeEl  = document.getElementById('pcSize');
+    const cCountEl = document.getElementById('pcCCount');
+    const cQEl = document.getElementById('pcCQ');
+    const cAEl = document.getElementById('pcCA');
+    const linkInline = document.getElementById('pcLinkInline');
+    const linkBlock  = document.getElementById('pcLinkBlock');
+
+    function applyFromSlide(slide){
+      if(!slide) return;
+      const { brand, title, size, comments, q, a } = slide.dataset || {};
+      if(brandEl) brandEl.textContent = brand || '';
+      if(titleEl) titleEl.textContent = title || '';
+      if(sizeEl)  sizeEl.textContent  = size || '';
+      if(cCountEl) cCountEl.textContent = comments || '0';
+      if(cQEl) cQEl.textContent = q || '';
+      if(cAEl){
+        cAEl.textContent = a || '';
+        // Show/hide A and separator when no answer
+        const aLabel = cAEl.previousElementSibling; // spans .pc-a label 'A:'
+        const sep = aLabel ? aLabel.previousElementSibling : null; // '·'
+        if(!a){
+          if(aLabel && aLabel.classList.contains('pc-a')) aLabel.style.display = 'none';
+          if(sep && sep.classList.contains('pc-sep')) sep.style.display = 'none';
+          cAEl.style.display = 'none';
+          if(linkInline) linkInline.style.display = 'inline';
+          if(linkBlock)  linkBlock.style.display  = 'none';
+        }else{
+          if(aLabel && aLabel.classList.contains('pc-a')) aLabel.style.display = '';
+          if(sep && sep.classList.contains('pc-sep')) sep.style.display = '';
+          cAEl.style.display = '';
+          if(linkInline) linkInline.style.display = 'none';
+          if(linkBlock)  linkBlock.style.display  = '';
+        }
+      }
+    }
+
     let idx = 0;
     function show(n){
       idx = (n + slides.length) % slides.length;
       slides.forEach((s,i)=> s.classList.toggle('pc-active', i===idx));
       dots.forEach((d,i)=> d.classList.toggle('pc-active',  i===idx));
+      applyFromSlide(slides[idx]);
     }
     dots.forEach((d,i)=> d.addEventListener('click', ()=> show(i)));
 
