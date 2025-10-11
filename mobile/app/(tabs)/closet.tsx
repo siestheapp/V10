@@ -1,13 +1,14 @@
 import { router } from 'expo-router';
 import { View, Text, FlatList, Image } from 'react-native';
+import { SafeAreaView } from 'react-native-safe-area-context';
 import { LinearGradient } from 'expo-linear-gradient';
 import { colors, radii, space, typography } from '../../theme/tokens';
 import { closet } from '../../features/mocks/iframe';
 
 export default function Closet() {
   return (
-    <View style={{ flex: 1, backgroundColor: colors.background }}>
-      <View style={{ paddingHorizontal: space[24], paddingTop: space[8] }}>
+    <SafeAreaView style={{ flex: 1, backgroundColor: colors.background }}>
+      <View style={{ paddingHorizontal: space[24] }}>
         <Text style={{ ...typography.h1, color: colors.petrol500 }}>freestyle</Text>
       </View>
       <Text style={{ ...typography.h2, color: colors.text, paddingHorizontal: space[24], marginTop: 6 }}>Your Closet</Text>
@@ -33,7 +34,7 @@ export default function Closet() {
           </View>
         )}
       />
-    </View>
+    </SafeAreaView>
   );
 }
 

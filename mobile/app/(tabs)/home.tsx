@@ -1,5 +1,6 @@
 import { router } from 'expo-router';
 import { View, Text, Image, Pressable, ScrollView } from 'react-native';
+import { SafeAreaView } from 'react-native-safe-area-context';
 import { LinearGradient } from 'expo-linear-gradient';
 import { colors, radii, space, typography } from '../../theme/tokens';
 import { feed } from '../../features/mocks/iframe';
@@ -7,8 +8,8 @@ import { feed } from '../../features/mocks/iframe';
 export default function Home() {
   const item = feed[0];
   return (
-    <View style={{ flex: 1, backgroundColor: colors.background }}>
-      <View style={{ paddingHorizontal: space[24], paddingTop: space[8] }}>
+    <SafeAreaView style={{ flex: 1, backgroundColor: colors.background }}>
+      <View style={{ paddingHorizontal: space[24] }}>
         <Text style={{ ...typography.h1, color: colors.text, marginTop: 6 }}>freestyle</Text>
       </View>
 
@@ -60,7 +61,7 @@ export default function Home() {
           </View>
         )}
       </ScrollView>
-    </View>
+    </SafeAreaView>
   );
 }
 

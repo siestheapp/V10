@@ -3554,8 +3554,327 @@ Tool use: **apply_patch**
       
 
 ```diff
+<<'PATCH'
+*** Begin Patch
+*** Add File: mobile/components/icons/Tabs.tsx
++import Svg, { Path } from 'react-native-svg';
++
++export function IconFind({ color = '#8e8e93' }: { color?: string }) {
++  return (
++    <Svg width={28} height={28} viewBox="0 0 256 256">
++      <Path fill={color} d="M241,150.65s0,0,0-.05a51.33,51.33,0,0,0-2.53-5.9L196.93,50.18a12,12,0,0,0-2.5-3.65,36,36,0,0,0-50.92,0A12,12,0,0,0,140,55V76H116V55a12,12,0,0,0-3.51-8.48,36,36,0,0,0-50.92,0,12,12,0,0,0-2.5,3.65L17.53,144.7A51.33,51.33,0,0,0,15,150.6s0,0,0,.05A52,52,0,1,0,116,168V100h24v68a52,52,0,1,0,101-17.35ZM80,62.28a12,12,0,0,1,12-1.22v63.15a51.9,51.9,0,0,0-35.9-7.62ZM64,196a28,28,0,1,1,28-28A28,28,0,0,1,64,196ZM164,61.06a12.06,12.06,0,0,1,12,1.22l23.87,54.31a51.9,51.9,0,0,0-35.9,7.62ZM192,196a28,28,0,1,1,28-28A28,28,0,0,1,192,196Z"/>
++    </Svg>
++  );
++}
++
++export function IconFeed({ color = '#8e8e93' }: { color?: string }) {
++  return (
++    <Svg width={28} height={28} viewBox="0 0 256 256">
++      <Path fill={color} d="M225.24,174.74a12,12,0,0,1-1.58,16.89C205.49,206.71,189.06,212,174.15,212c-19.76,0-36.86-9.29-51.88-17.44-25.06-13.62-44.86-24.37-74.61.3a12,12,0,1,1-15.32-18.48c42.25-35,75-17.23,101.39-2.92,25.06,13.61,44.86,24.37,74.61-.3A12,12,0,0,1,225.24,174.74Zm-16.9-57.59c-29.75,24.67-49.55,13.91-74.61.3-26.35-14.3-59.14-32.11-101.39,2.92a12,12,0,0,0,15.32,18.48c29.75-24.67,49.55-13.92,74.61-.3,15,8.15,32.12,17.44,51.88,17.44,14.91,0,31.34-5.29,49.51-20.36a12,12,0,0,0-15.32-18.48ZM47.66,82.84c29.75-24.67,49.55-13.92,74.61-.3,15,8.15,32.12,17.44,51.88,17.44,14.91,0,31.34-5.29,49.51-20.36a12,12,0,0,0-15.32-18.48c-29.75,24.67-49.55,13.92-74.61.3-26.35-14.3-59.14-32.11-101.39,2.93A12,12,0,1,0,47.66,82.84Z"/>
++    </Svg>
++  );
++}
++
++export function IconCloset({ color = '#8e8e93' }: { color?: string }) {
++  return (
++    <Svg width={28} height={28} viewBox="0 0 256 256">
++      <Path fill={color} d="M244,168,148,96l19.2-14.4A12,12,0,0,0,172,72a44,44,0,0,0-87.66-5.48,12,12,0,1,0,23.82,3,20,20,0,0,1,39.09-2.92L121,86.24c-.15.1-.29.21-.43.32L12,168a20,20,0,0,0,12,36H232a20,20,0,0,0,12-36ZM36,180l92-69,92,69Z"/>
++    </Svg>
++  );
++}
++
++export function IconProfile({ color = '#8e8e93' }: { color?: string }) {
++  return (
++    <Svg width={28} height={28} viewBox="0 0 256 256">
++      <Path fill={color} d="M234.38,210a123.36,123.36,0,0,0-60.78-53.23,76,76,0,1,0-91.2,0A123.36,123.36,0,0,0,21.62,210a12,12,0,1,0,20.77,12c18.12-31.32,50.12-50,85.61-50s67.49,18.69,85.61,50a12,12,0,0,0,20.77-12ZM76,96a52,52,0,1,1,52,52A52.06,52.06,0,0,1,76,96Z"/>
++    </Svg>
++  );
++}
++
+*** End Patch
+```
+
+---
+
+Tool use: **read_file**
+
+Read file: /Users/seandavey/Downloads/freestyle/mobile/app/(tabs)/_layout.tsx
+
+---
+
+Tool use: **apply_patch**
+
+<details>
+        <summary>Apply patch for /Users/seandavey/Downloads/freestyle/mobile/app/(tabs)/_layout.tsx</summary>
+      
+
+```diff
+<<'PATCH'
+*** Begin Patch
+*** Update File: mobile/app/(tabs)/_layout.tsx
+@@
+-import { Tabs } from 'expo-router';
+-import { Platform } from 'react-native';
+-import { colors } from '../../theme/tokens';
++import { Tabs } from 'expo-router';
++import { Platform } from 'react-native';
++import { colors } from '../../theme/tokens';
++import { IconFind, IconFeed, IconCloset, IconProfile } from '../../components/icons/Tabs';
+@@
+-      <Tabs.Screen name="home" options={{ title: 'Home' }} />
+-      <Tabs.Screen name="closet" options={{ title: 'Closet' }} />
+-      <Tabs.Screen name="profile" options={{ title: 'Profile' }} />
++      <Tabs.Screen
++        name="home"
++        options={{
++          title: 'Home',
++          tabBarIcon: ({ color, focused }) => <IconFeed color={focused ? colors.petrol500 : '#8e8e93'} />,
++        }}
++      />
++      <Tabs.Screen
++        name="closet"
++        options={{
++          title: 'Closet',
++          tabBarIcon: ({ color, focused }) => <IconCloset color={focused ? colors.petrol500 : '#8e8e93'} />,
++        }}
++      />
++      <Tabs.Screen
++        name="profile"
++        options={{
++          title: 'Profile',
++          tabBarIcon: ({ color, focused }) => <IconProfile color={focused ? colors.petrol500 : '#8e8e93'} />,
++        }}
++      />
+*** End Patch
+```
+
+---
+
+Tool use: **read_lints**
+
+<details>
+          <summary>Read lints for 2 files</summary>
+      
+Lint paths:
+
+- `/Users/seandavey/Downloads/freestyle/mobile/components/icons/Tabs.tsx`
+- `/Users/seandavey/Downloads/freestyle/mobile/app/(tabs)/_layout.tsx`
+
+Lint results
+
+
+**No lint errors found**
+</details>
+
+---
+
+Tool use: **todo_write**
+
+## Todo List
+
+- [x] Update tokens to match iframe CSS and add typography
+- [x] Install expo-linear-gradient dependency
+- [x] Add hardcoded iframe data to features/mocks/iframe.ts
+- [x] Replace Home screen to replicate feed-gallery mock
+- [x] Replace Closet screen to replicate closet-gallery mock
+- [x] Replace Profile screen to replicate profile-gallery basics
+- [x] Run lints, start app, visual check for parity
+- [x] Add custom tab icons via react-native-svg and wire to Tabs
+
+---
+
+Tool use: **run_terminal_cmd**
+
+```bash
+cd /Users/seandavey/Downloads/freestyle && git add -A && git commit -m "mobile: custom tab bar icons to match iframe mocks (feed/closet/profile), svg install" && git push
+```
 
 ```
+[feat/expo-shell 1b1ac00] mobile: custom tab bar icons to match iframe mocks (feed/closet/profile), svg install
+ 5 files changed, 890 insertions(+), 3 deletions(-)
+ create mode 100644 mobile/components/icons/Tabs.tsx
+To https://github.com/siestheapp/freestyle.git
+   b28d7cc..1b1ac00  feat/expo-shell -> feat/expo-shell
+
+```
+
+---
+
+- Installed react-native-svg and added tab icons that match the iframe mocks.
+- Wired icons into `app/(tabs)/_layout.tsx` with active state color `colors.petrol500` and inactive `#8e8e93`.
+- Commit pushed on feat/expo-shell.
+
+If the dev server prompts for a new port, press y or restart with:
+- kill existing Metro, then run: cd /Users/seandavey/Downloads/freestyle/mobile && npm run start -- --clear
+
+---
+
+_**User (2025-10-10 20:56-0400)**_
+
+can you add some padding so the app stars lower on the screen and hte user can see the time and wifi etc icons at the very top? on left is the mockup in chrome, on right is the ios simulator
+
+---
+
+_**Assistant (gpt-5)**_
+
+<think><details><summary>Thought Process</summary>**Updating app layout**
+
+I need to adjust the app layout to ensure it respects safe areas for top padding. In Expo/React Native, I can use `SafeAreaView` from the react-native-safe-area-context or apply padding using `useSafeAreaInsets`. I'll need to update the screen containers for Home, Closet, and Profile to adopt these safe area insets. It seems like wrapping the outermost container in `SafeAreaView` or a custom `Screen` component will be an efficient way to implement this. I already have the necessary dependency in package.json.
+**Implementing SafeAreaView updates**
+
+I need to update `home.tsx` by wrapping the top-level container in `SafeAreaView` and specifying `edges={['top']}` for the appropriate style. This will ensure that only the top area is adjusted since we want to avoid interference with the tab bar. I also need to make similar adjustments in `closet.tsx` and `profile.tsx`. Since these screens might already have some `paddingTop`, it sounds like we can keep a slight additional spacing. Just wrapping them should be enough to push the content down below the status bar. Let's implement these updates!
+**Applying changes in multiple files**
+
+I need to implement changes across three files: `home.tsx`, `closet.tsx`, and `profile.tsx`. This means addressing the lines where the top-level View container is created. There's also that dev server prompt issue about port 8081, but it seems like it's not a big deal. I could stop the existing service if needed, but it looks like they can manage it. After implementing the changes, I’ll run the linting process and push the updates. Let's get started!</details></think>
+
+---
+
+Tool use: **todo_write**
+
+## Todo List
+
+- [x] Update tokens to match iframe CSS and add typography
+- [x] Install expo-linear-gradient dependency
+- [x] Add hardcoded iframe data to features/mocks/iframe.ts
+- [x] Replace Home screen to replicate feed-gallery mock
+- [x] Replace Closet screen to replicate closet-gallery mock
+- [x] Replace Profile screen to replicate profile-gallery basics
+- [x] Run lints, start app, visual check for parity
+- [x] Add custom tab icons via react-native-svg and wire to Tabs
+- [-] Add SafeAreaView top padding to Home/Closet/Profile
+
+---
+
+Tool use: **apply_patch**
+
+<details>
+        <summary>Apply patch for /Users/seandavey/Downloads/freestyle/mobile/app/(tabs)/home.tsx</summary>
+      
+
+```diff
+<<'PATCH'
+*** Begin Patch
+*** Update File: mobile/app/(tabs)/home.tsx
+@@
+-import { View, Text, Image, Pressable, ScrollView } from 'react-native';
++import { View, Text, Image, Pressable, ScrollView } from 'react-native';
++import { SafeAreaView } from 'react-native-safe-area-context';
+@@
+-    <View style={{ flex: 1, backgroundColor: colors.background }}>
+-      <View style={{ paddingHorizontal: space[24], paddingTop: space[8] }}>
++    <SafeAreaView style={{ flex: 1, backgroundColor: colors.background }}>
++      <View style={{ paddingHorizontal: space[24] }}>
+         <Text style={{ ...typography.h1, color: colors.text, marginTop: 6 }}>freestyle</Text>
+       </View>
+@@
+-    </View>
++    </SafeAreaView>
+   );
+ }
+*** End Patch
+```
+
+---
+
+Tool use: **apply_patch**
+
+<details>
+        <summary>Apply patch for /Users/seandavey/Downloads/freestyle/mobile/app/(tabs)/closet.tsx</summary>
+      
+
+```diff
+<<'PATCH'
+*** Begin Patch
+*** Update File: mobile/app/(tabs)/closet.tsx
+@@
+-import { View, Text, FlatList, Image } from 'react-native';
++import { View, Text, FlatList, Image } from 'react-native';
++import { SafeAreaView } from 'react-native-safe-area-context';
+@@
+-  return (
+-    <View style={{ flex: 1, backgroundColor: colors.background }}>
+-      <View style={{ paddingHorizontal: space[24], paddingTop: space[8] }}>
++  return (
++    <SafeAreaView style={{ flex: 1, backgroundColor: colors.background }}>
++      <View style={{ paddingHorizontal: space[24] }}>
+         <Text style={{ ...typography.h1, color: colors.petrol500 }}>freestyle</Text>
+       </View>
+@@
+-      />
+-    </View>
++      />
++    </SafeAreaView>
+   );
+ }
+*** End Patch
+```
+
+---
+
+Tool use: **apply_patch**
+
+<details>
+        <summary>Apply patch for /Users/seandavey/Downloads/freestyle/mobile/app/(tabs)/profile.tsx</summary>
+      
+
+```diff
+<<'PATCH'
+*** Begin Patch
+*** Update File: mobile/app/(tabs)/profile.tsx
+@@
+-import { View, Text, Pressable, ScrollView } from 'react-native';
++import { View, Text, Pressable, ScrollView } from 'react-native';
++import { SafeAreaView } from 'react-native-safe-area-context';
+@@
+-  return (
+-    <ScrollView style={{ flex: 1, backgroundColor: colors.backgroundAlt }} contentContainerStyle={{ padding: space[20], paddingBottom: 96 }}>
++  return (
++    <ScrollView style={{ flex: 1, backgroundColor: colors.backgroundAlt }} contentContainerStyle={{ paddingBottom: 96 }}>
++      <SafeAreaView style={{ paddingHorizontal: space[20] }}>
+       <Text style={{ ...typography.h2, color: colors.text, marginBottom: 8 }}>Profile Strength</Text>
+       <View style={{ backgroundColor: '#fff', borderRadius: 16, borderWidth: 1, borderColor: '#E0F2FE', padding: 16, marginBottom: 8 }}>
+         <View style={{ height: 6, backgroundColor: '#E5E7EB', borderRadius: 3, overflow: 'hidden' }}>
+           <View style={{ height: '100%', width: '85%', backgroundColor: colors.petrol500, borderRadius: 3 }} />
+         </View>
+         <Text style={{ ...typography.subtle, marginTop: 6 }}>Add 2 more items to unlock premium fit insights</Text>
+       </View>
+ 
+       <Text style={{ ...typography.h2, color: colors.text, marginTop: 14, marginBottom: 8 }}>Measurements</Text>
+-      <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={{ gap: 12 }}>
++      <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={{ gap: 12 }}>
+         {profileMeasurements.map(m => (
+           <Pressable key={m.label} style={{ padding: 14, backgroundColor: '#fff', borderRadius: 16, minWidth: 160, borderWidth: 1, borderColor: colors.border }}>
+             <Text style={{ ...typography.subtle }}>{m.label}</Text>
+             <Text style={{ ...typography.h2, color: colors.text }}>{m.value}</Text>
+           </Pressable>
+         ))}
+       </ScrollView>
+-    </ScrollView>
++      </SafeAreaView>
++    </ScrollView>
+   );
+ }
+*** End Patch
+```
+
+---
+
+Tool use: **read_lints**
+
+<details>
+          <summary>Read lints for 3 files</summary>
+      
+Lint paths:
+
+- `/Users/seandavey/Downloads/freestyle/mobile/app/(tabs)/home.tsx`
+- `/Users/seandavey/Downloads/freestyle/mobile/app/(tabs)/closet.tsx`
+- `/Users/seandavey/Downloads/freestyle/mobile/app/(tabs)/profile.tsx`
+
+Lint results
+
+
+**No lint errors found**
+</details>
 
 ---
 
