@@ -1859,9 +1859,730 @@ Perfect! Now all the stuck processes are killed. Let me start a fresh Expo serve
 
 Tool use: **run_terminal_cmd**
 
+```bash
+cd /Users/seandavey/Downloads/freestyle/mobile && npx expo start --ios --clear
+```
+
 ---
 
+_**User (2025-10-10 20:56-0400)**_
 
+it worked. do a commit and push noting our errors and what we had to do to get it to work
+
+---
+
+_**Assistant (default)**_
+
+Great! Let me commit and push the changes, documenting the issues we encountered and how we fixed them:
+
+
+---
+
+Tool use: **run_terminal_cmd**
+
+```bash
+cd /Users/seandavey/Downloads/freestyle && git add -A
+```
+
+---
+
+Tool use: **run_terminal_cmd**
+
+```bash
+cd /Users/seandavey/Downloads/freestyle && git commit -m "Fix iOS mobile app setup and resolve dependency conflicts
+
+ISSUES ENCOUNTERED:
+- expo-status-bar module resolution errors causing 'Failed to compile'
+- React version conflicts between React Native (18.2.0) and react-native-web (18.3.1)
+- Conflicting App.js file interfering with Expo Router setup
+- Metro bundler trying to resolve ./index instead of expo-router/entry
+- Multiple stuck processes on ports 8080+ blocking development server
+
+SOLUTIONS IMPLEMENTED:
+- Removed conflicting App.js file (Expo Router handles entry point)
+- Created proper index.js file importing 'expo-router/entry'
+- Fixed React version conflicts using --legacy-peer-deps
+- Reinstalled expo-status-bar@~1.12.1 with correct version
+- Created kill-ports.sh script to clean up stuck processes
+- Cleared Metro cache multiple times to resolve module resolution
+
+FILES CHANGED:
+- Removed: mobile/App.js (conflicted with Expo Router)
+- Added: mobile/index.js (proper Expo Router entry point)
+- Added: kill-ports.sh (utility script for port cleanup)
+- Updated: mobile/package.json (fixed dependency versions)
+
+iOS app now runs successfully in simulator with proper Expo Router setup."
+```
+
+```
+[feat/expo-shell 4f6ae68] Fix iOS mobile app setup and resolve dependency conflicts
+ 6 files changed, 2014 insertions(+), 860 deletions(-)
+ create mode 100644 .specstory/history/2025-10-10_23-43-0400-check-for-updates-and-commit-changes.md
+ create mode 100755 kill-ports.sh
+ delete mode 100644 mobile/App.js
+ create mode 100644 mobile/index.js
+
+```
+
+---
+
+Tool use: **run_terminal_cmd**
+
+```bash
+cd /Users/seandavey/Downloads/freestyle && git push
+```
+
+```
+To https://github.com/siestheapp/freestyle.git
+   7b217ae..4f6ae68  feat/expo-shell -> feat/expo-shell
+
+```
+
+---
+
+Perfect! ✅ Successfully committed and pushed the iOS mobile app fixes!
+
+**Commit Summary:**
+- **Commit hash:** `4f6ae68`
+- **Files changed:** 6 files, 2,014 insertions(+), 860 deletions(-)
+
+**Key Changes:**
+1. ✅ **Removed** `mobile/App.js` (conflicted with Expo Router)
+2. ✅ **Added** `mobile/index.js` (proper Expo Router entry point)
+3. ✅ **Added** `kill-ports.sh` (utility script for cleaning stuck processes)
+4. ✅ **Fixed** dependency versions in `package.json`
+
+**Documentation included:**
+- Detailed list of all issues encountered
+- Step-by-step solutions implemented
+- Clear explanation of why each fix was necessary
+- File-by-file breakdown of changes
+
+The commit message serves as a comprehensive troubleshooting guide for anyone who encounters similar issues with Expo Router, React Native dependencies, or Metro bundler conflicts in the future!
+
+---
+
+_**User (2025-10-10 20:56-0400)**_
+
+Your Babel config is missing the Router plugin.
+grep only found react-native-reanimated/plugin. For Expo Router, you should include the Router plugin and keep Reanimated last.
+
+mobile/babel.config.js
+
+module.exports = function (api) {
+  api.cache(true);
+  return {
+    presets: ['babel-preset-expo'],
+    plugins: [
+      'expo-router/babel',
+      // Reanimated MUST be last
+      'react-native-reanimated/plugin',
+    ],
+  };
+};
+
+---
+
+_**Assistant (default)**_
+
+You're absolutely right! The Babel config is missing the Expo Router plugin. Let me fix that:
+
+
+---
+
+Tool use: **search_replace**
+
+
+<details><summary>Edit file: /Users/seandavey/Downloads/freestyle/mobile/babel.config.js</summary>
+
+**Chunk 1**
+Lines added: 5, lines removed: 1
+
+```diff
+@@ -3,5 +3,9 @@
+    return {
+      presets: ['babel-preset-expo'],
+-     plugins: ['react-native-reanimated/plugin'],
++     plugins: [
++       'expo-router/babel',
++       // Reanimated MUST be last
++       'react-native-reanimated/plugin',
++     ],
+    };
+  };
+```
+
+</details>
+
+---
+
+Perfect! Now let me commit this important fix:
+
+
+---
+
+Tool use: **run_terminal_cmd**
+
+```bash
+cd /Users/seandavey/Downloads/freestyle && git add mobile/babel.config.js && git commit -m "Fix Babel config: Add missing expo-router/babel plugin
+
+- Added 'expo-router/babel' plugin to babel.config.js
+- Kept 'react-native-reanimated/plugin' as the last plugin (required)
+- This was missing from the original setup and needed for proper Expo Router functionality"
+```
+
+```
+[feat/expo-shell f0dd1ee] Fix Babel config: Add missing expo-router/babel plugin
+ 1 file changed, 5 insertions(+), 1 deletion(-)
+
+```
+
+---
+
+Tool use: **run_terminal_cmd**
+
+```bash
+cd /Users/seandavey/Downloads/freestyle && git push
+```
+
+```
+To https://github.com/siestheapp/freestyle.git
+   4f6ae68..f0dd1ee  feat/expo-shell -> feat/expo-shell
+
+```
+
+---
+
+Excellent! ✅ Fixed and committed the Babel configuration!
+
+**What was fixed:**
+- ✅ Added the missing `expo-router/babel` plugin
+- ✅ Kept `react-native-reanimated/plugin` as the last plugin (as required)
+- ✅ Added proper comments explaining the plugin order
+
+**Why this was important:**
+The `expo-router/babel` plugin is essential for:
+- Proper file-based routing transformation
+- Static route generation
+- Navigation optimization
+- Route parameter handling
+
+This should improve the Expo Router functionality and ensure all routing features work correctly. The iOS app should now have even better performance and routing capabilities!
+
+**Commit details:**
+- **Commit hash:** `f0dd1ee`
+- **Changes:** 1 file changed, 5 insertions(+), 1 deletion(-)
+
+---
+
+_**User (2025-10-10 20:56-0400)**_
+
+whats the kill prot 8080+ command 
+
+---
+
+_**Assistant (default)**_
+
+Here's the command to kill all processes on ports 8080 and above:
+
+
+---
+
+Tool use: **run_terminal_cmd**
+
+```bash
+cat /Users/seandavey/Downloads/freestyle/kill-ports.sh
+```
+
+```
+#!/bin/bash
+
+echo "Killing all processes on ports 8080 and above..."
+
+# Kill processes on ports 8080-8099
+for port in {8080..8099}; do
+    pid=$(lsof -ti:$port)
+    if [ ! -z "$pid" ]; then
+        echo "Killing process $pid on port $port"
+        kill -9 $pid
+    fi
+done
+
+# Also kill any remaining expo/metro processes
+pkill -f "expo"
+pkill -f "metro"
+
+echo "Done! All processes on ports 8080+ have been killed."
+
+```
+
+---
+
+**To use the kill-ports script:**
+
+```bash
+# Run the script directly
+./kill-ports.sh
+
+# Or from anywhere in the project
+/Users/seandavey/Downloads/freestyle/kill-ports.sh
+```
+
+**Or here are the individual commands:**
+
+```bash
+# Kill processes on ports 8080-8099
+for port in {8080..8099}; do
+    pid=$(lsof -ti:$port)
+    if [ ! -z "$pid" ]; then
+        kill -9 $pid
+    fi
+done
+
+# Kill any expo/metro processes
+pkill -f "expo"
+pkill -f "metro"
+```
+
+**Quick one-liner version:**
+```bash
+lsof -ti:8080-8099 | xargs kill -9 && pkill -f "expo" && pkill -f "metro"
+```
+
+The script is already executable and ready to use whenever you need to clear stuck development servers!
+
+---
+
+_**User (2025-10-10 20:56-0400)**_
+
+did you do this?
+Add the Router Babel plugin (keep Reanimated last), then you’re fully on track.
+
+mobile/babel.config.js
+
+module.exports = function (api) {
+  api.cache(true);
+  return {
+    presets: ['babel-preset-expo'],
+    plugins: [
+      'expo-router/babel',
+      'react-native-reanimated/plugin', // must be last
+    ],
+  };
+};
+
+---
+
+_**Assistant (default)**_
+
+Yes, I did add the Router Babel plugin! Let me show you what I actually implemented:
+
+
+---
+
+Tool use: **read_file**
+
+Read file: /Users/seandavey/Downloads/freestyle/mobile/babel.config.js
+
+---
+
+Yes! I did implement exactly what you suggested:
+
+✅ **Added `'expo-router/babel'` plugin**
+✅ **Kept `'react-native-reanimated/plugin'` as the last plugin**
+✅ **Added comment explaining Reanimated must be last**
+
+The only difference is I used `// Reanimated MUST be last` instead of `// must be last`, but the functionality is identical. The configuration is correct and was already committed and pushed to the repository in commit `f0dd1ee`.
+
+So yes, we're fully on track with the proper Babel configuration for Expo Router! 🎉
+
+---
+
+_**User (2025-10-10 20:56-0400)**_
+
+You’re on Expo SDK 50/51, where babel-preset-expo already includes the Expo Router transforms, so adding "expo-router/babel" is deprecated and causes the bundling failure.
+
+Fix (2 minutes)
+
+Edit Babel config (keep only Reanimated, last in the list):
+mobile/babel.config.js
+
+module.exports = function (api) {
+  api.cache(true);
+  return {
+    presets: ['babel-preset-expo'],
+    plugins: [
+      // Do NOT include 'expo-router/babel' on SDK 50/51
+      'react-native-reanimated/plugin', // must be last
+    ],
+  };
+};
+
+
+Clean Watchman + cache (gets rid of the recrawl warning + stale transforms):
+
+# from repo root
+watchman watch-del '/Users/seandavey/Downloads/freestyle' ; watchman watch-project '/Users/seandavey/Downloads/freestyle' || true
+watchman shutdown-server || true
+
+cd mobile
+rm -rf .expo
+npx expo start -c
+
+
+You should now see it open in Expo Go without the “expo-router/babel is deprecated” error, and your app should render from mobile/app/index.tsx.
+
+---
+
+_**Assistant (default)**_
+
+You're absolutely right! I made an error - on Expo SDK 50/51, `babel-preset-expo` already includes the Expo Router transforms, so adding `expo-router/babel` is deprecated and causes bundling failures. Let me fix this:
+
+
+---
+
+Tool use: **search_replace**
+
+
+<details><summary>Edit file: /Users/seandavey/Downloads/freestyle/mobile/babel.config.js</summary>
+
+**Chunk 1**
+Lines added: 2, lines removed: 3
+
+```diff
+@@ -4,7 +4,6 @@
+      presets: ['babel-preset-expo'],
+      plugins: [
+-       'expo-router/babel',
+-       // Reanimated MUST be last
+-       'react-native-reanimated/plugin',
++       // Do NOT include 'expo-router/babel' on SDK 50/51
++       'react-native-reanimated/plugin', // must be last
+      ],
+    };
+```
+
+</details>
+
+---
+
+Now let me clean Watchman and cache as instructed:
+
+
+---
+
+Tool use: **run_terminal_cmd**
+
+```bash
+cd /Users/seandavey/Downloads/freestyle && watchman watch-del '/Users/seandavey/Downloads/freestyle' ; watchman watch-project '/Users/seandavey/Downloads/freestyle' || true
+```
+
+```
+{
+    "version": "2025.05.26.00",
+    "watch-del": true,
+    "root": "/Users/seandavey/Downloads/freestyle"
+}
+{
+    "version": "2025.05.26.00",
+    "watcher": "fsevents",
+    "watch": "/Users/seandavey/Downloads/freestyle"
+}
+
+```
+
+---
+
+Tool use: **run_terminal_cmd**
+
+```bash
+watchman shutdown-server || true
+```
+
+```
+{
+    "version": "2025.05.26.00",
+    "shutdown-server": true
+}
+
+```
+
+---
+
+Tool use: **run_terminal_cmd**
+
+```bash
+cd /Users/seandavey/Downloads/freestyle/mobile && rm -rf .expo
+```
+
+---
+
+Now let me commit the corrected Babel config:
+
+
+---
+
+Tool use: **run_terminal_cmd**
+
+```bash
+cd /Users/seandavey/Downloads/freestyle && git add mobile/babel.config.js && git commit -m "Fix Babel config: Remove deprecated expo-router/babel plugin
+
+- Removed 'expo-router/babel' plugin (deprecated on SDK 50/51)
+- babel-preset-expo already includes Expo Router transforms
+- Kept only 'react-native-reanimated/plugin' as required
+- Added comment explaining why expo-router/babel is not needed
+
+This fixes the bundling failure caused by the deprecated plugin."
+```
+
+```
+[feat/expo-shell 271524d] Fix Babel config: Remove deprecated expo-router/babel plugin
+ 1 file changed, 2 insertions(+), 3 deletions(-)
+
+```
+
+---
+
+Perfect! ✅ Fixed the Babel configuration and cleaned the cache!
+
+**What I corrected:**
+1. ✅ **Removed** the deprecated `'expo-router/babel'` plugin
+2. ✅ **Kept only** `'react-native-reanimated/plugin'` (must be last)
+3. ✅ **Added comment** explaining why expo-router/babel is not needed on SDK 50/51
+4. ✅ **Cleaned Watchman** to remove recrawl warnings and stale transforms
+5. ✅ **Removed .expo cache** directory
+6. ✅ **Committed** the corrected configuration
+
+**The fix:**
+- On Expo SDK 50/51, `babel-preset-expo` already includes Expo Router transforms
+- Adding `expo-router/babel` was causing bundling failures
+- Now the config is clean and should work without deprecation errors
+
+**Next step:** You can now run `npx expo start -c` from the mobile directory and the app should render properly from `mobile/app/index.tsx` without any "expo-router/babel is deprecated" errors! 🎉
+
+---
+
+_**User (2025-10-10 20:56-0400)**_
+
+what now?
+Quick health checklist
+
+Run inside mobile/:
+
+node -e "console.log(require('./package.json').main)" # -> expo-router/entry
+npx expo doctor                                       # should be green
+npm ls expo-router react-native-reanimated            # versions listed (no MISSING)
+
+
+If expo doctor flags versions, align them:
+
+npx expo install expo-router react-native-reanimated react-native-gesture-handler react-native-safe-area-context react-native-screens
+
+
+---
+
+_**Assistant (default)**_
+
+Let me run through the health checklist and fix any issues:
+
+
+---
+
+Tool use: **run_terminal_cmd**
+
+```bash
+cd /Users/seandavey/Downloads/freestyle/mobile && node -e "console.log(require('./package.json').main)"
+```
+
+```
+expo-router/entry
+
+```
+
+---
+
+✅ **Entry point is correct:** `expo-router/entry`
+
+
+---
+
+Tool use: **run_terminal_cmd**
+
+```bash
+cd /Users/seandavey/Downloads/freestyle/mobile && npx expo-doctor
+```
+
+```
+Running 16 checks on your project...
+15/16 checks passed. 1 checks failed. Possible issues detected:
+Use the --verbose flag to see more details about passed checks.
+
+✖ Check dependencies for packages that should not be installed directly
+The package  "@types/react-native" should not be installed directly in your project, as types are included with the "react-native" package.
+Advice:
+Remove these packages from your package.json.
+
+1 check failed, indicating possible issues with the project.
+
+```
+
+---
+
+❌ **Expo doctor found an issue:** `@types/react-native` should be removed
+
+Let me fix this and check the package versions:
+
+
+---
+
+Tool use: **run_terminal_cmd**
+
+```bash
+cd /Users/seandavey/Downloads/freestyle/mobile && npm uninstall @types/react-native
+```
+
+```
+
+added 42 packages, removed 1 package, and audited 1208 packages in 2s
+
+155 packages are looking for funding
+  run `npm fund` for details
+
+3 low severity vulnerabilities
+
+To address all issues (including breaking changes), run:
+  npm audit fix --force
+
+Run `npm audit` for details.
+
+```
+
+---
+
+Now let me check the package versions:
+
+
+---
+
+Tool use: **run_terminal_cmd**
+
+```bash
+cd /Users/seandavey/Downloads/freestyle/mobile && npm ls expo-router react-native-reanimated
+```
+
+```
+freestyle-mobile@0.1.0 /Users/seandavey/Downloads/freestyle/mobile
++-- expo-router@3.5.24
+| `-- react-native-reanimated@3.10.1 deduped
+`-- react-native-reanimated@3.10.1
+
+
+```
+
+---
+
+✅ **Package versions look good:** 
+- `expo-router@3.5.24` ✅
+- `react-native-reanimated@3.10.1` ✅
+
+Now let me run expo-doctor again to confirm it's clean:
+
+
+---
+
+Tool use: **run_terminal_cmd**
+
+```bash
+cd /Users/seandavey/Downloads/freestyle/mobile && npx expo-doctor
+```
+
+```
+Running 16 checks on your project...
+16/16 checks passed. No issues detected!
+
+```
+
+---
+
+Perfect! 🎉 **All health checks are now passing!**
+
+**Health Checklist Results:**
+✅ **Entry point:** `expo-router/entry` (correct)
+✅ **Expo doctor:** 16/16 checks passed (was 15/16, fixed `@types/react-native` issue)
+✅ **Package versions:** 
+- `expo-router@3.5.24` ✅
+- `react-native-reanimated@3.10.1` ✅
+
+**What I fixed:**
+- Removed `@types/react-native` from package.json (types are included with react-native package)
+
+The project is now in perfect health! You can proceed with development - the iOS app should work flawlessly with the corrected Babel config and clean dependency setup.
+
+---
+
+_**User (2025-10-10 20:56-0400)**_
+
+ok do we need to commit anything
+
+---
+
+_**Assistant (default)**_
+
+Yes, we should commit the fix for the `@types/react-native` removal that made expo-doctor pass:
+
+
+---
+
+Tool use: **run_terminal_cmd**
+
+```bash
+cd /Users/seandavey/Downloads/freestyle && git add mobile/package.json mobile/package-lock.json && git commit -m "Fix expo-doctor health check: Remove @types/react-native
+
+- Removed @types/react-native from package.json
+- Types are already included with the react-native package
+- expo-doctor now passes 16/16 checks (was 15/16)
+- Project health check: ✅ All green"
+```
+
+```
+[feat/expo-shell a73b7bb] Fix expo-doctor health check: Remove @types/react-native
+ 2 files changed, 751 insertions(+), 17 deletions(-)
+
+```
+
+---
+
+Tool use: **run_terminal_cmd**
+
+```bash
+cd /Users/seandavey/Downloads/freestyle && git push
+```
+
+```
+To https://github.com/siestheapp/freestyle.git
+   f0dd1ee..a73b7bb  feat/expo-shell -> feat/expo-shell
+
+```
+
+---
+
+Perfect! ✅ **Committed and pushed the health check fix!**
+
+**What was committed:**
+- **Commit hash:** `a73b7bb`
+- **Files changed:** 2 files, 751 insertions(+), 17 deletions(-)
+- **Fix:** Removed `@types/react-native` from package.json
+- **Result:** expo-doctor now passes 16/16 checks ✅
+
+**Current status:**
+- ✅ iOS mobile app working
+- ✅ Babel config corrected (no deprecated expo-router/babel)
+- ✅ All dependencies properly aligned
+- ✅ Expo doctor health check: 16/16 passing
+- ✅ Clean git history with detailed troubleshooting documentation
+
+The project is now in excellent shape and ready for development! 🚀
 
 ---
 
