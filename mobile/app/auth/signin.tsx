@@ -42,11 +42,11 @@ export default function SignIn() {
   async function onGoogle() {
     setLoading(true);
     try {
-      // Generate redirect URI
+      // Generate redirect URI - use explicit development URL
       const redirectTo = AuthSession.makeRedirectUri({
         scheme: 'freestyle',
-        preferLocalhost: true,
-        isTripleSlashed: true
+        preferLocalhost: false,
+        isTripleSlashed: false
       });
 
       console.log('Redirect URI:', redirectTo);
@@ -62,14 +62,35 @@ export default function SignIn() {
       });
 
       if (error) {
+        console.error('OAuth error:', error);
         Alert.alert('Error', error.message);
         return;
       }
 
-      // OAuth will handle the redirect, onAuthStateChange will catch the sign-in
+      if (!data.url) {
+        Alert.alert('Error', 'Failed to get OAuth URL');
+        return;
+      }
+
+      // Open the OAuth URL in browser
+      console.log('Opening OAuth URL:', data.url);
+      const result = await WebBrowser.openAuthSessionAsync(
+        data.url,
+        redirectTo
+      );
+
+      console.log('OAuth result:', result);
+
+      if (result.type === 'success') {
+        // Extract the URL and let Supabase handle it
+        const { url } = result;
+        console.log('OAuth success, redirected to:', url);
+      } else {
+        console.log('OAuth cancelled or failed:', result);
+      }
     } catch (err) {
       Alert.alert('Error', 'Failed to sign in with Google');
-      console.error(err);
+      console.error('OAuth exception:', err);
     } finally {
       setLoading(false);
     }
