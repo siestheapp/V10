@@ -6,6 +6,11 @@
     "scheme": "freestyle",
     "orientation": "portrait",
     "userInterfaceStyle": "automatic",
+    "splash": {
+      "image": "./assets/hero1.jpg",
+      "resizeMode": "contain",
+      "backgroundColor": "#FAF8F6"
+    },
     "ios": {
       "supportsTablet": true
     },

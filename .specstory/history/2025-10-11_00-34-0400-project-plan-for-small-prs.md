@@ -5661,12 +5661,147 @@ Tool use: **apply_patch**
       
 
 ```diff
+<<'PATCH'
+*** Begin Patch
+*** Update File: mobile/src/demo/seed.json
+@@
+-  "closet": [
+-    {
+-      "id": "dress_somerset_xs",
+-      "brand": "Anthropologie",
+-      "title": "Somerset Maxi Dress",
+-      "size": "XS",
+-      "price": 16800,
+-      "image": "local://hero1"
+-    }
+-  ],
++  "closet": [
++    {
++      "id": "georgia_relic_uk8",
++      "brand": "GEORGIA HARDINGE",
++      "name": "Relic Pleated Metallic‑Knit Maxi Dress",
++      "size": "UK 8",
++      "image": "https://cdn.modaoperandi.com/assets/images/products/1048452/695474/c2/large_georgia-hardinge-gold-relic-dress.jpg?_v=1755324586"
++    },
++    {
++      "id": "reformation_taryn_2",
++      "brand": "REFORMATION",
++      "name": "Taryn Two Piece",
++      "size": "2",
++      "image": "https://media.thereformation.com/image/upload/f_auto,q_auto:eco,dpr_2.0/w_500/PRD-SFCC/1314122/BLACK/1314122.1.BLACK?_s=RAABAB0"
++    },
++    {
++      "id": "alfie_open_back_top_s",
++      "brand": "ALFIE",
++      "name": "Open Back Cotton Poplin Top",
++      "size": "Small",
++      "image": "https://cdn.modaoperandi.com/assets/images/products/1028958/674197/c/large_alfie-white-backless-top.jpg?_v=1755087491"
++    },
++    {
++      "id": "ayr_secret_sauce_26s",
++      "brand": "AYR",
++      "name": "The Secret Sauce",
++      "size": "26S",
++      "image": "https://www.ayr.com/cdn/shop/files/secretsauce-goodmood_CAT_d634f664-cb49-4e61-abef-5d94b707075e.jpg?crop=center&height=1440&v=1755036845&width=950"
++    },
++    {
++      "id": "zara_flare_pants_m",
++      "brand": "ZARA",
++      "name": "Flare Pants",
++      "size": "M",
++      "image": "https://static.zara.net/assets/public/a4e8/d8da/2c3b44728736/7e4b4c39762b/03152505800-a1/03152505800-a1.jpg?ts=1753971869534&w=1900"
++    },
++    {
++      "id": "cos_shrunken_tee_xs",
++      "brand": "COS",
++      "name": "Shrunken T‑shirt",
++      "size": "XS",
++      "image": "https://media.cos.com/assets/001/6e/d0/6ed0142c6e69ad42e826224d9a8d013f6d3f4685_xxl-1.jpg?imwidth=2160"
++    },
++    {
++      "id": "alexis_briette_s",
++      "brand": "ALEXIS",
++      "name": "Briette Satin Maxi Dress",
++      "size": "S",
++      "image": "https://cdn.modaoperandi.com/assets/images/products/1039207/685257/c/large_alexis-blue-briette-dress.jpg?_v=1755195214"
++    }
++  ],
+*** End Patch
+```
+
+---
+
+Tool use: **apply_patch**
+
+<details>
+        <summary>Apply patch for /Users/seandavey/Downloads/freestyle/mobile/src/demo/demoStore.ts</summary>
+      
+
+```diff
+<<'PATCH'
+*** Begin Patch
+*** Update File: mobile/src/demo/demoStore.ts
+@@
+-  const closet = (seed.closet || []).map((it: any) => ({ ...it, hero: resolveImage(it.image) }));
++  const closet = (seed.closet || []).map((it: any) => ({ ...it, hero: resolveImage(it.image) }));
+*** End Patch
+```
+
+---
+
+Tool use: **run_terminal_cmd**
+
+```bash
+cd /Users/seandavey/Downloads/freestyle && git add -A && git commit -m "mobile: expand demo seed closet to match iframe closet-gallery (7 items)" && git push
+```
+
+```
+[feat/expo-shell 663728b] mobile: expand demo seed closet to match iframe closet-gallery (7 items)
+ 2 files changed, 193 insertions(+), 5 deletions(-)
+To https://github.com/siestheapp/freestyle.git
+   9422c4c..663728b  feat/expo-shell -> feat/expo-shell
 
 ```
 
 ---
 
+I expanded Demo Mode’s closet seed to include all the items from the closet-gallery mock (7 items: Georgia Hardinge, Reformation, ALFIE, AYR, ZARA, COS, ALEXIS). After a reset, Closet should now show the full grid.
 
+To refresh:
+- Triple‑tap “freestyle” → Reset demo data
+- Open Closet; you should see all seeded items
+
+If any don’t appear, fully quit Expo Go and reopen, then try Reset again.
+
+---
+
+_**User (2025-10-10 20:56-0400)**_
+
+ok i see the items again but now this error...chcek terminal
+
+---
+
+_**Assistant (gpt-5)**_
+
+<think><details><summary>Thought Process</summary>**Diagnosing splash screen error**
+
+I've noticed the user reports a console warning about an unhandled promise rejection regarding the splash screen. This often pops up in Expo Go when there's an issue with the splash screen setup, possibly linked to methods like Updates.reloadAsync or preventAutoHideAsync. 
+
+The error seems to originate from DemoControls reset, indicating that the splash screen isn't properly registered. I should highlight checks for native splash configuration in app.json and confirm interactions with expo-splash-screen. This will help me fix the issue effectively.
+**Addressing splash screen configuration**
+
+The error appears after navigating to the closet screen, but the terminal logs only show accessibility issues, which aren't very helpful. The user mentioned they’re seeing items again but facing a new error, and while the logs don’t provide clarity, I should suggest adding a splash configuration in app.json for expo-splash-screen. 
+
+For instance, using something like: 
+
+```json
+"expo": { "splash": { "image": "./assets/splash.png", "resizeMode": "contain", "backgroundColor": "#ffffff" } }
+```
+
+Image inclusion might be optional in the new Expo setup, so even a background color would suffice. Additionally, it’s best to avoid using Updates.reloadAsync right now, as we can rely on DevSettings.reload in development.
+**Implementing splash image setup**
+
+In the mobile/assets folder, we have hero1.jpg, which we can use as the splash</details></think>
 
 ---
 
