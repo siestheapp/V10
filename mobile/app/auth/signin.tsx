@@ -78,9 +78,39 @@ export default function SignIn() {
       console.log('OAuth result:', result);
 
       if (result.type === 'success') {
-        // Extract the URL and let Supabase handle it
+        // Extract tokens from URL and set session manually
         const { url } = result;
         console.log('OAuth success, redirected to:', url);
+        
+        // Parse the URL fragment (everything after #)
+        const fragment = url.split('#')[1];
+        if (fragment) {
+          const params = new URLSearchParams(fragment);
+          const access_token = params.get('access_token');
+          const refresh_token = params.get('refresh_token');
+          
+          if (access_token && refresh_token) {
+            // Set the session with tokens
+            const { data: sessionData, error: sessionError } = await supabase.auth.setSession({
+              access_token,
+              refresh_token,
+            });
+            
+            if (sessionError) {
+              console.error('Session error:', sessionError);
+              Alert.alert('Error', 'Failed to complete sign in');
+              return;
+            }
+            
+            console.log('Session set successfully:', sessionData.user?.email);
+            
+            // Link to demo profile
+            if (sessionData.user) {
+              await linkToDemoProfile(sessionData.user);
+              router.replace('/(tabs)/home');
+            }
+          }
+        }
       } else {
         console.log('OAuth cancelled or failed:', result);
       }
