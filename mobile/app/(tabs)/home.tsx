@@ -3,14 +3,29 @@ import { View, Text, Image, Pressable, ScrollView } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { LinearGradient } from 'expo-linear-gradient';
 import { colors, radii, space, typography } from '../../theme/tokens';
-import { feed } from '../../features/mocks/iframe';
+import { feed as mockFeed } from '../../features/mocks/iframe';
+import AsyncStorage from '@react-native-async-storage/async-storage';
+import { useEffect, useState } from 'react';
+import { IS_DEMO } from '../../src/config';
+import { DemoControls, useDemoTrigger } from '../../src/demo/DemoControls';
 
 export default function Home() {
-  const item = feed[0];
+  const [item, setItem] = useState<any>(mockFeed[0]);
+  useEffect(() => {
+    if (!IS_DEMO) return;
+    AsyncStorage.getItem('demo:feed').then(raw => {
+      if (!raw) return;
+      try {
+        const arr = JSON.parse(raw);
+        if (Array.isArray(arr) && arr[0]) setItem(arr[0]);
+      } catch {}
+    });
+  }, []);
+  const { open, setOpen, registerTap } = useDemoTrigger();
   return (
     <SafeAreaView style={{ flex: 1, backgroundColor: colors.background }}>
       <View style={{ paddingHorizontal: space[24] }}>
-        <Text style={{ ...typography.h1, color: colors.text, marginTop: 6 }}>freestyle</Text>
+        <Text onPress={registerTap} style={{ ...typography.h1, color: colors.text, marginTop: 6 }}>freestyle</Text>
       </View>
 
       <ScrollView contentContainerStyle={{ paddingHorizontal: space[24], paddingBottom: 96 }}>
@@ -61,6 +76,7 @@ export default function Home() {
           </View>
         )}
       </ScrollView>
+      <DemoControls open={open} onClose={() => setOpen(false)} />
     </SafeAreaView>
   );
 }

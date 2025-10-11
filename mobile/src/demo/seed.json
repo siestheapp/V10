@@ -1,0 +1,27 @@
+{
+  "user": { "email": "alexis@example.com", "name": "Alexis" },
+  "closet": [
+    {
+      "id": "dress_somerset_xs",
+      "brand": "Anthropologie",
+      "title": "Somerset Maxi Dress",
+      "size": "XS",
+      "price": 16800,
+      "image": "local://hero1"
+    }
+  ],
+  "feed": [
+    {
+      "id": "look_1",
+      "brand": "Anthropologie",
+      "title": "Somerset Maxi Dress",
+      "size": "XS",
+      "comments": 12,
+      "q": "Is this petite or regular?",
+      "a": "Regular!",
+      "image": "local://hero1"
+    }
+  ]
+}
+
+

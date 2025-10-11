@@ -3878,6 +3878,494 @@ Lint results
 
 ---
 
+Tool use: **todo_write**
+
+## Todo List
+
+- [x] Update tokens to match iframe CSS and add typography
+- [x] Install expo-linear-gradient dependency
+- [x] Add hardcoded iframe data to features/mocks/iframe.ts
+- [x] Replace Home screen to replicate feed-gallery mock
+- [x] Replace Closet screen to replicate closet-gallery mock
+- [x] Replace Profile screen to replicate profile-gallery basics
+- [x] Run lints, start app, visual check for parity
+- [x] Add custom tab icons via react-native-svg and wire to Tabs
+- [x] Add SafeAreaView top padding to Home/Closet/Profile
+
+---
+
+Tool use: **run_terminal_cmd**
+
+```bash
+cd /Users/seandavey/Downloads/freestyle && git add -A && git commit -m "mobile: add SafeAreaView to top of Home/Closet/Profile for status bar spacing" && git push
+```
+
+```
+[feat/expo-shell 6c31fef] mobile: add SafeAreaView to top of Home/Closet/Profile for status bar spacing
+ 4 files changed, 331 insertions(+), 7 deletions(-)
+To https://github.com/siestheapp/freestyle.git
+   1b1ac00..6c31fef  feat/expo-shell -> feat/expo-shell
+
+```
+
+---
+
+Done. I wrapped Home, Closet, and Profile in SafeAreaView so content starts below the system status bar.
+
+- Files updated:
+  - mobile/app/(tabs)/home.tsx
+  - mobile/app/(tabs)/closet.tsx
+  - mobile/app/(tabs)/profile.tsx
+
+- Commit pushed on feat/expo-shell: “mobile: add SafeAreaView to top of Home/Closet/Profile for status bar spacing”
+
+If the Metro server asks to switch ports, press y or restart with:
+- kill the old process, then run: cd /Users/seandavey/Downloads/freestyle/mobile && npm run start -- --clear
+
+---
+
+_**User (2025-10-10 20:56-0400)**_
+
+The short answer: add a Demo Mode that keeps all data local + resettable, so you can replay the exact same flow (same email, same dress, same screens) endlessly with 1 tap (or a hidden gesture).
+
+Here’s a tight, Expo-friendly plan you can drop into your MVP now:
+
+What we’ll do
+
+Demo Mode flag: run the app with DEMO=true (via app.json/app.config.ts or an env).
+
+Local-only auth stub: “sign up” doesn’t talk to Supabase; it just writes a local user object (and always allows the same email).
+
+Seeded data: closet, feed, etc. come from a single seed.json so every reset yields the same products/content.
+
+One-tap Reset: a “Reset demo” action clears local storage (AsyncStorage, SecureStore, SQLite, files) and re-seeds, then reloads the app.
+
+Hidden access (optional): triple-tap the logo or a long-press opens a small “Demo Controls” sheet so it stays out of user view.
+
+This is how a lot of teams/companies do repeatable demos for MVPs and sales: ephemeral local state + deterministic seeds + reset hook. Later, when you wire Supabase, you either (a) point to a staging project with a teardown endpoint that deletes the demo user & their rows, or (b) keep this Demo Mode permanently as an offline sandbox.
+
+Implementation (Expo / React Native)
+1) Add a Demo flag
+
+app.config.ts
+
+export default ({ config }) => ({
+  ...config,
+  extra: {
+    ...config.extra,
+    DEMO: true,
+  },
+});
+
+
+src/config.ts
+
+import Constants from "expo-constants";
+export const IS_DEMO = !!Constants.expoConfig?.extra?.DEMO;
+
+2) Seed file
+
+src/demo/seed.json (same products each run; mirror your freestyle-october/assets/iframe mock)
+
+{
+  "user": { "email": "alexis@example.com", "name": "Alexis" },
+  "closet": [
+    {
+      "id": "dress_somerset_xs",
+      "brand": "Anthropologie",
+      "title": "Somerset Maxi Dress",
+      "size": "XS",
+      "price": 16800,
+      "image": require("../../assets/img/videoframe_6964.png")
+    }
+  ],
+  "feed": [
+    { "id": "look_1", "brand": "Anthropologie", "title": "Somerset Maxi Dress", "size": "XS",
+      "comments": 12, "q": "Is this petite or regular?", "a": "Regular!",
+      "image": require("../../assets/img/videoframe_6964.png")
+    }
+  ]
+}
+
+3) Demo storage + reset helpers
+
+src/demo/demoStore.ts
+
+import * as SecureStore from "expo-secure-store";
+import AsyncStorage from "@react-native-async-storage/async-storage";
+import * as FileSystem from "expo-file-system";
+import * as Updates from "expo-updates";
+import * as SQLite from "expo-sqlite";
+import seed from "./seed.json";
+import { IS_DEMO } from "../config";
+
+const DB_NAME = "app.db"; // if you are using SQLite
+
+export async function demoSignUp(email: string, password: string) {
+  if (!IS_DEMO) throw new Error("demoSignUp used outside demo mode");
+  // Overwrite any existing “account” so you can reuse the same email every time.
+  await AsyncStorage.setItem("demo:user", JSON.stringify({ email, name: seed.user.name }));
+  // Optionally stash token in SecureStore to mimic real auth:
+  await SecureStore.setItemAsync("demo:token", "demo-token");
+  return { email, name: seed.user.name };
+}
+
+export async function demoAddClosetItem(id: string) {
+  const raw = await AsyncStorage.getItem("demo:closet");
+  const closet = raw ? JSON.parse(raw) : [];
+  const item = seed.closet.find((x) => x.id === id);
+  if (item && !closet.some((c: any) => c.id === id)) {
+    closet.push(item);
+    await AsyncStorage.setItem("demo:closet", JSON.stringify(closet));
+  }
+  return closet;
+}
+
+export async function demoBootstrap() {
+  // Seed deterministic data on first run or after reset
+  await AsyncStorage.setItem("demo:closet", JSON.stringify(seed.closet));
+  await AsyncStorage.setItem("demo:feed", JSON.stringify(seed.feed));
+}
+
+export async function demoClearAll() {
+  // 1) AsyncStorage
+  await AsyncStorage.clear();
+
+  // 2) SecureStore
+  const keys = ["demo:token"];
+  await Promise.all(keys.map((k) => SecureStore.deleteItemAsync(k)));
+
+  // 3) SQLite: delete DB file (if used)
+  try {
+    const db = SQLite.openDatabase(DB_NAME);
+    db.closeAsync?.(); // only in SDK 51+
+  } catch {}
+  try {
+    await FileSystem.deleteAsync(`${FileSystem.documentDirectory}SQLite/${DB_NAME}`, { idempotent: true });
+  } catch {}
+
+  // 4) Any files in document cache you created
+  try {
+    await FileSystem.deleteAsync(FileSystem.documentDirectory + "demo/", { idempotent: true });
+  } catch {}
+
+  // 5) Reload the app so we start clean and run demoBootstrap() on startup
+  await Updates.reloadAsync();
+}
+
+4) Use the demo auth + seeds in the UI flow
+
+On app start, if IS_DEMO, call demoBootstrap() once (e.g., in App.tsx).
+
+In your Sign Up screen, if IS_DEMO then call demoSignUp(email, password) instead of Supabase.
+
+Always succeeds, always “creates” the same account by overwriting local user.
+
+In your Closet screen, read from AsyncStorage.getItem("demo:closet").
+
+In your Feed/Proxy/Size Twin screens, read from demo:feed.
+
+SignUp.tsx (excerpt)
+
+import { IS_DEMO } from "../config";
+import { demoSignUp } from "../demo/demoStore";
+// ... your normal imports
+
+async function onSubmit(values: { email: string; password: string }) {
+  if (IS_DEMO) {
+    await demoSignUp(values.email, values.password);
+  } else {
+    // TODO: real Supabase sign-up
+  }
+  // Navigate to onboarding / feed
+}
+
+5) Add a Reset control (one-tap fresh start)
+
+DemoControlsSheet.tsx (excerpt)
+
+import { demoClearAll, demoBootstrap } from "../demo/demoStore";
+import { IS_DEMO } from "../config";
+
+export function DemoControls() {
+  if (!IS_DEMO) return null;
+  return (
+    <BottomSheet>
+      <Button title="Reset demo data" onPress={async () => { 
+        await demoClearAll(); // app reloads and seed runs
+      }}/>
+      <Button title="Re-seed without reload" onPress={async () => {
+        await demoBootstrap();
+      }}/>
+    </BottomSheet>
+  );
+}
+
+
+Hidden trigger (e.g., on your splash/logo):
+
+const [taps, setTaps] = useState(0);
+return (
+  <Pressable onPress={() => {
+    const n = taps + 1; setTaps(n);
+    if (n >= 3) { openDemoControls(); setTaps(0); }
+    setTimeout(()=> setTaps(0), 1200);
+  }}>
+    <Logo />
+  </Pressable>
+);
+
+How this solves your exact pain
+
+You can sign up with the same email and add the same dress every time → the “account” just overwrites locally.
+
+A single Reset returns the app to the exact same deterministic state (same email, same closet, same feed).
+
+No network needed; perfect for fast, reliable demos.
+
+---
+
+_**Assistant (gpt-5)**_
+
+<think><details><summary>Thought Process</summary>**Implementing demo features**
+
+I'm considering using `useEffect` in `_layout` to seed everything once during the app run, but I feel like it might be better placed in `app/index.tsx`. However, that involves redirects. So, I'm opting for `_layout.tsx`, where I can import `IS_DEMO` and `demoBootstrap`. I’ll ensure it doesn't block the UI and need to implement demo data usage on the screens. Right now, those are pulling data from constant arrays, but I’ll adjust them to read from AsyncStorage instead when `IS_DEMO` is true, using fallback arrays when not.
+**Proposing demo mode plan**
+
+In plan mode, we're focusing on proposing rather than implementing. I'm thinking about adding a UI reset option, like a hidden triple-tap on the "freestyle" text in the header to access an action sheet or a simple reset Alert. For now, I'll propose a `DemoControls` modal using `react-native`'s ActionSheetIOS. We need to create a plan called "Add Demo Mode," which includes various tasks like updating app.json, adding config.ts, demoStore.ts, and ensuring Home/Closet source from demo storage when `IS_DEMO`. Lastly, I’ll suggest installing necessary modules and potentially include minimal code snippets.</details></think>
+
+---
+
+Tool use: **create_plan**
+
+---
+
+_**User (2025-10-10 20:56-0400)**_
+
+Implement the plan as specified. To-do's from the plan have already been created, do not create them again.
+
+---
+
+_**Assistant (gpt-5)**_
+
+
+
+---
+
+I'll add the DEMO flag, seed data and helpers, wire bootstrap and screens, and include hidden demo controls. Then I’ll lint, run, and push.
+
+---
+
+Tool use: **read_file**
+
+Read file: /Users/seandavey/Downloads/freestyle/mobile/app.json
+
+---
+
+Tool use: **todo_write**
+
+## Todo List
+
+- [x] Update tokens to match iframe CSS and add typography
+- [x] Install expo-linear-gradient dependency
+- [x] Add hardcoded iframe data to features/mocks/iframe.ts
+- [x] Replace Home screen to replicate feed-gallery mock
+- [x] Replace Closet screen to replicate closet-gallery mock
+- [x] Replace Profile screen to replicate profile-gallery basics
+- [x] Run lints, start app, visual check for parity
+- [x] Add custom tab icons via react-native-svg and wire to Tabs
+- [x] Add SafeAreaView top padding to Home/Closet/Profile
+- [ ] Replace app/index.tsx and add tabs layout at app/(tabs)/_layout.tsx
+- [ ] Add home screen and shared Card, Section, WebPhoneFrame components
+- [ ] Create mocks and types for home feed in features/mocks
+- [ ] Run app; verify tabs render and Home works
+- [ ] Add Closet tab and seed closet mocks
+- [ ] Implement item detail page at app/item/[id].tsx
+- [ ] Verify Closet grid, navigate to detail, back works
+- [ ] Implement Profile screen and modals stack with settings/tips
+- [ ] Add webview proxy screen for shop links
+- [ ] Update package.json scripts and add .vscode/tasks.json
+- [ ] Run web preview and expo-doctor; confirm navigation everywhere
+- [-] Add DEMO=true to app.json extra and create src/config.ts
+
+---
+
+Tool use: **apply_patch**
+
+<details>
+        <summary>Apply patch for /Users/seandavey/Downloads/freestyle/mobile/app.json</summary>
+      
+
+```diff
+<<'PATCH'
+*** Begin Patch
+*** Update File: mobile/app.json
+@@
+     "experiments": {
+       "typedRoutes": true
+     },
++    "extra": {
++      "DEMO": true
++    },
+     "plugins": [
+       "expo-router"
+     ]
+   }
+ }
+*** End Patch
+PATCH
+```
+
+---
+
+Tool use: **apply_patch**
+
+<details>
+        <summary>Apply patch for /Users/seandavey/Downloads/freestyle/mobile/src/config.ts</summary>
+      
+
+```diff
+<<'PATCH'
+*** Begin Patch
+*** Add File: mobile/src/config.ts
++import Constants from 'expo-constants';
++
++export const IS_DEMO: boolean = !!(Constants.expoConfig as any)?.extra?.DEMO;
++
+*** End Patch
+```
+
+---
+
+Tool use: **todo_write**
+
+## Todo List
+
+- [x] Update tokens to match iframe CSS and add typography
+- [x] Install expo-linear-gradient dependency
+- [x] Add hardcoded iframe data to features/mocks/iframe.ts
+- [x] Replace Home screen to replicate feed-gallery mock
+- [x] Replace Closet screen to replicate closet-gallery mock
+- [x] Replace Profile screen to replicate profile-gallery basics
+- [x] Run lints, start app, visual check for parity
+- [x] Add custom tab icons via react-native-svg and wire to Tabs
+- [x] Add SafeAreaView top padding to Home/Closet/Profile
+- [ ] Replace app/index.tsx and add tabs layout at app/(tabs)/_layout.tsx
+- [ ] Add home screen and shared Card, Section, WebPhoneFrame components
+- [ ] Create mocks and types for home feed in features/mocks
+- [ ] Run app; verify tabs render and Home works
+- [ ] Add Closet tab and seed closet mocks
+- [ ] Implement item detail page at app/item/[id].tsx
+- [ ] Verify Closet grid, navigate to detail, back works
+- [ ] Implement Profile screen and modals stack with settings/tips
+- [ ] Add webview proxy screen for shop links
+- [ ] Update package.json scripts and add .vscode/tasks.json
+- [ ] Run web preview and expo-doctor; confirm navigation everywhere
+- [x] Add DEMO=true to app.json extra and create src/config.ts
+- [-] Install async-storage, secure-store, file-system, updates, sqlite
+
+---
+
+Tool use: **run_terminal_cmd**
+
+```bash
+cd /Users/seandavey/Downloads/freestyle/mobile && npx expo install @react-native-async-storage/async-storage expo-secure-store expo-file-system expo-updates expo-sqlite -- --yes
+```
+
+```
+(node:86025) [DEP0040] DeprecationWarning: The `punycode` module is deprecated. Please use a userland alternative instead.
+(Use `node --trace-deprecation ...` to show where the warning was created)
+› Installing 5 SDK 51.0.0 compatible native modules using npm
+> npm install --yes
+
+added 19 packages, and audited 1241 packages in 4s
+
+163 packages are looking for funding
+  run `npm fund` for details
+
+3 low severity vulnerabilities
+
+To address all issues (including breaking changes), run:
+  npm audit fix --force
+
+Run `npm audit` for details.
+› Added config plugin: expo-secure-store
+
+```
+
+---
+
+Tool use: **todo_write**
+
+## Todo List
+
+- [x] Update tokens to match iframe CSS and add typography
+- [x] Install expo-linear-gradient dependency
+- [x] Add hardcoded iframe data to features/mocks/iframe.ts
+- [x] Replace Home screen to replicate feed-gallery mock
+- [x] Replace Closet screen to replicate closet-gallery mock
+- [x] Replace Profile screen to replicate profile-gallery basics
+- [x] Run lints, start app, visual check for parity
+- [x] Add custom tab icons via react-native-svg and wire to Tabs
+- [x] Add SafeAreaView top padding to Home/Closet/Profile
+- [ ] Replace app/index.tsx and add tabs layout at app/(tabs)/_layout.tsx
+- [ ] Add home screen and shared Card, Section, WebPhoneFrame components
+- [ ] Create mocks and types for home feed in features/mocks
+- [ ] Run app; verify tabs render and Home works
+- [ ] Add Closet tab and seed closet mocks
+- [ ] Implement item detail page at app/item/[id].tsx
+- [ ] Verify Closet grid, navigate to detail, back works
+- [ ] Implement Profile screen and modals stack with settings/tips
+- [ ] Add webview proxy screen for shop links
+- [ ] Update package.json scripts and add .vscode/tasks.json
+- [ ] Run web preview and expo-doctor; confirm navigation everywhere
+- [x] Add DEMO=true to app.json extra and create src/config.ts
+- [x] Install async-storage, secure-store, file-system, updates, sqlite
+- [-] Create src/demo/seed.json with user, closet, feed items
+
+---
+
+Tool use: **apply_patch**
+
+<details>
+        <summary>Apply patch for /Users/seandavey/Downloads/freestyle/mobile/src/demo/seed.json</summary>
+      
+
+```diff
+<<'PATCH'
+*** Begin Patch
+*** Add File: mobile/src/demo/seed.json
++{
++  "user": { "email": "alexis@example.com", "name": "Alexis" },
++  "closet": [
++    {
++      "id": "dress_somerset_xs",
++      "brand": "Anthropologie",
++      "title": "Somerset Maxi Dress",
++      "size": "XS",
++      "price": 16800,
++      "image": "local://hero1"
++    }
++  ],
++  "feed": [
++    {
++      "id": "look_1",
++      "brand": "Anthropologie",
++      "title": "Somerset Maxi Dress",
++      "size": "XS",
++      "comments": 12,
++      "q": "Is this petite or regular?",
++      "a": "Regular!",
++      "image": "local://hero1"
++    }
++  ]
++}
++
+*** End Patch
+```
+
+---
+
 
 
 ---

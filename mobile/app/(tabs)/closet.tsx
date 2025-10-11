@@ -3,9 +3,23 @@ import { View, Text, FlatList, Image } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { LinearGradient } from 'expo-linear-gradient';
 import { colors, radii, space, typography } from '../../theme/tokens';
-import { closet } from '../../features/mocks/iframe';
+import { closet as mockCloset } from '../../features/mocks/iframe';
+import AsyncStorage from '@react-native-async-storage/async-storage';
+import { useEffect, useState } from 'react';
+import { IS_DEMO } from '../../src/config';
 
 export default function Closet() {
+  const [data, setData] = useState<any[]>(mockCloset);
+  useEffect(() => {
+    if (!IS_DEMO) return;
+    AsyncStorage.getItem('demo:closet').then(raw => {
+      if (!raw) return;
+      try {
+        const arr = JSON.parse(raw);
+        if (Array.isArray(arr)) setData(arr);
+      } catch {}
+    });
+  }, []);
   return (
     <SafeAreaView style={{ flex: 1, backgroundColor: colors.background }}>
       <View style={{ paddingHorizontal: space[24] }}>
@@ -13,7 +27,7 @@ export default function Closet() {
       </View>
       <Text style={{ ...typography.h2, color: colors.text, paddingHorizontal: space[24], marginTop: 6 }}>Your Closet</Text>
       <FlatList
-        data={closet}
+        data={data}
         numColumns={2}
         keyExtractor={(i) => String(i.id)}
         columnWrapperStyle={{ gap: 12, paddingHorizontal: space[24] }}
