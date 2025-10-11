@@ -406,6 +406,12 @@ body::before{
   display:block; width:100%; height:520px;
   object-fit:cover; object-position:center 22%; border-radius:14px;
 }
+/* Proxy carousel nav controls (mirrors size-twin .carousel .nav) */
+.proxy-card .pc-carousel .pc-nav{position:absolute;top:50%;transform:translateY(-50%);width:32px;height:32px;border-radius:999px;background:rgba(0,0,0,.35);color:#fff;display:flex;align-items:center;justify-content:center;border:none;cursor:pointer;font-size:0}
+.proxy-card .pc-carousel .pc-nav.left{left:10px}
+.proxy-card .pc-carousel .pc-nav.right{right:10px}
+.proxy-card .pc-carousel .pc-nav.left::before{content:"\2039";font-size:18px;line-height:1;transform:translateX(-1px)}
+.proxy-card .pc-carousel .pc-nav.right::before{content:"\203A";font-size:18px;line-height:1;transform:translateX(1px)}
 </style>
 </head>
 <body class="view-feed">
@@ -447,7 +453,12 @@ body::before{
               <div class="pc-carousel" data-index="0">
                 <img class="pc-hero-img pc-hero-img--tight pc-slide pc-active" src="../img/videoframe_6964.png" alt="ellaa76 wearing Somerset Maxi Dress">
                 <img class="pc-hero-img pc-hero-img--tight pc-slide" src="../img/videoframe_33023.png" alt="ellaa76 alternate look">
-                <div class="pc-dots"><span class="pc-dot pc-active"></span><span class="pc-dot"></span></div>
+                <button class="pc-nav left" type="button" aria-label="Previous slide"></button>
+                <button class="pc-nav right" type="button" aria-label="Next slide"></button>
+                <div class="pc-dots" aria-label="Slide position">
+                  <button class="pc-dot pc-active" type="button" aria-label="Slide 1"></button>
+                  <button class="pc-dot" type="button" aria-label="Slide 2"></button>
+                </div>
               </div>
             </div>
 
@@ -480,56 +491,45 @@ body::before{
             </div>
 
             <div class="info">
+              <!-- 1) Best Fit CTA row -->
               <button class="size-cta" id="sizeCta" type="button" aria-expanded="false">
                 <span class="label">
                   <svg class="measure-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                     <path d="M3 7v10a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V9a2 2 0 0 0-2-2H5a2 2 0 0 0-2 2z"/>
-                    <line x1="8" y1="1" x2="8" y2="4"/><line x1="16" y1="1" x2="16" y2="4"/>
+                    <line x1="8" y1="1" x2="8" y2="4"/>
+                    <line x1="16" y1="1" x2="16" y2="4"/>
                   </svg>
                   Best Fit: <strong>S</strong>
                 </span>
                 <span class="match">Fit details</span>
               </button>
-              <button class="fit-toggle" type="button" data-target="#sg-fit" aria-expanded="false">Fit details</button>
 
+              <!-- optional divider -->
               <div class="divider"></div>
 
+              <!-- 2) Brand/price + trust item row -->
               <div class="row">
-                <div class="left-meta tappable">
-                  <div class="brand">ANTHROPOLOGIE</div>
-                  <span style="color:#c4c4c4;">|</span>
-                  <div class="price">$168.00</div>
+                <div class="left-meta">
+                  <span class="brand">ANTHROPOLOGIE</span>
+                  <span class="price">$168.00</span>
                 </div>
                 <div class="trust-item">
-                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 6L9 17l-5-5"/></svg>
+                  <svg viewBox="0 0 16 16" aria-hidden="true"><path d="M6.5 11.2 3.8 8.6l1-1 1.7 1.7 4-4 1 1-5 5z"/></svg>
                   Free returns
                 </div>
               </div>
-              
-              <!-- Fit details (expanded by default) -->
-              <div class="fit-details" id="sg-fit" aria-expanded="false">
-                <p class="micro">Compared to your size: <a href="#" class="link">Alexis S</a> (perfect fit)</p>
 
-                <div class="fit-row">
-                  <div class="k">Bust —</div>
-                  <div class="v">Looser <span class="muted">(35–36" vs 33")</span></div>
-                  <button class="chip">+2–3"</button>
-                </div>
+              <!-- optional divider -->
+              <div class="divider"></div>
 
-                <div class="fit-row">
-                  <div class="k">Waist —</div>
-                  <div class="v">Matches <span class="muted">(27–28" vs 27")</span></div>
-                  <button class="chip">≈</button>
-                </div>
+              <!-- 3) Fit blurb -->
+              <div class="tip-summary">
+                Fits like your <strong>Alexis</strong> dress — roomier bust, matching waist &amp; hips.
+              </div>
 
-                <div class="fit-row">
-                  <div class="k">Hips —</div>
-                  <div class="v">Matches <span class="muted">(37–38" vs 37")</span></div>
-                  <button class="chip">≈</button>
-                </div>
-
-                <p class="note">Prefer a slimmer look? XS will match the bust but feel snug at waist and hips (1–2" smaller)</p>
-                <a class="cta" href="#">Shop S →</a>
+              <!-- 4) Shop CTA -->
+              <div class="shop-row">
+                <a class="shop-link" href="#shop-s">Shop S</a>
               </div>
             </div>
           </div>
@@ -603,6 +603,12 @@ body::before{
     }
     dots.forEach((d,i)=> d.addEventListener('click', ()=> show(i)));
 
+    // Wire left/right nav buttons
+    const navLeft  = card.querySelector('.pc-nav.left');
+    const navRight = card.querySelector('.pc-nav.right');
+    if(navLeft)  navLeft.addEventListener('click', ()=> show(idx - 1));
+    if(navRight) navRight.addEventListener('click', ()=> show(idx + 1));
+
     let startX = null;
     card.addEventListener('touchstart', (e)=>{ startX = e.touches[0].clientX; }, {passive:true});
     card.addEventListener('touchend', (e)=>{
@@ -617,39 +623,33 @@ body::before{
 </script>
 
 <script>
-(function(){
-  document.querySelectorAll('.fit-toggle').forEach(btn=>{
-    const sel = btn.getAttribute('data-target');
-    const details = sel ? document.querySelector(sel) : null;
-    if(!details) return;
+  // Simple view toggle for SG card (mirror feed-gallery)
+  (function(){
+    const body = document.body;
     const sizeCta = document.getElementById('sizeCta');
     const match = sizeCta ? sizeCta.querySelector('.match') : null;
 
-    let open = details.classList.contains('open') || details.getAttribute('aria-expanded') === 'true';
-    apply();
-
-    btn.addEventListener('click', ()=>{
-      open = !open;
-      apply();
-    });
+    function setCollapsed(){
+      body.classList.remove('view-detail');
+      body.classList.add('view-feed');
+      if(sizeCta) sizeCta.setAttribute('aria-expanded','false');
+      if(match) match.textContent = 'Fit details';
+    }
+    function setExpanded(){
+      body.classList.remove('view-feed');
+      body.classList.add('view-detail');
+      if(sizeCta) sizeCta.setAttribute('aria-expanded','true');
+      if(match) match.textContent = 'Hide details';
+    }
 
     if(sizeCta){
-      sizeCta.addEventListener('click', (e)=>{
-        e.preventDefault();
-        btn.click();
+      setCollapsed();
+      sizeCta.addEventListener('click', ()=>{
+        const expanded = body.classList.contains('view-detail');
+        expanded ? setCollapsed() : setExpanded();
       });
     }
-
-    function apply(){
-      details.classList.toggle('open', open);
-      details.setAttribute('aria-expanded', String(open));
-      btn.textContent = open ? 'Hide details' : 'Fit details';
-      btn.setAttribute('aria-expanded', String(open));
-      if(match) match.textContent = open ? 'Hide details' : 'Fit details';
-      details.style.display = open ? 'block' : 'none';
-    }
-  });
-})();
+  })();
 </script>
 
 <script>
