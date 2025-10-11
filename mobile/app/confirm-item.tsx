@@ -1,7 +1,6 @@
 import { View, Text, Pressable, Alert, Image, ScrollView } from 'react-native';
 import { useRouter, useLocalSearchParams } from 'expo-router';
 import { useState } from 'react';
-import AsyncStorage from '@react-native-async-storage/async-storage';
 import { supabase } from '../src/lib/supabase';
 
 const SIZES = ['XXS', 'XS', 'S', 'M', 'L', 'XL', 'XXL'];
@@ -28,19 +27,17 @@ export default function ConfirmItem() {
 
     setLoading(true);
     try {
-      // Get user ID from storage
-      const userJson = await AsyncStorage.getItem('demo:user');
-      if (!userJson) {
+      // Get real auth session
+      const { data: { session } } = await supabase.auth.getSession();
+      if (!session?.user) {
         Alert.alert('Error', 'User not found. Please sign in again.');
         router.replace('/auth/signin');
         return;
       }
 
-      const user = JSON.parse(userJson);
-
-      // Call Supabase RPC to claim ownership
+      // Call Supabase RPC to claim ownership with real user ID
       const { data, error } = await supabase.rpc('api_claim', {
-        p_user_id: user.id,
+        p_user_id: session.user.id,
         p_variant_id: parseInt(variantId),
         p_size_label: selectedSize,
         p_url: sourceUrl,

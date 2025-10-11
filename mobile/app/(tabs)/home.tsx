@@ -3,7 +3,6 @@ import { View, Text, Image, Pressable, ScrollView, ActivityIndicator, RefreshCon
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { LinearGradient } from 'expo-linear-gradient';
 import { colors, radii, space, typography } from '../../theme/tokens';
-import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useEffect, useState, useCallback } from 'react';
 import { supabase } from '../../src/lib/supabase';
 import { DemoControls, useDemoTrigger } from '../../src/demo/DemoControls';
@@ -31,17 +30,17 @@ export default function Home() {
       if (isRefresh) setRefreshing(true);
       else setLoading(true);
 
-      // Get user ID from storage
-      const userJson = await AsyncStorage.getItem('demo:user');
-      if (!userJson) {
+      // Get real auth session
+      const { data: { session } } = await supabase.auth.getSession();
+      if (!session?.user) {
         setFeedItems([]);
+        setLoading(false);
+        setRefreshing(false);
         return;
       }
 
-      const user = JSON.parse(userJson);
-
-      // Call Supabase RPC to get feed
-      const { data, error } = await supabase.rpc('api_feed', { p_user_id: user.id });
+      // Call Supabase RPC to get feed with real user ID
+      const { data, error } = await supabase.rpc('api_feed', { p_user_id: session.user.id });
 
       if (error) {
         console.error('Feed error:', error);

@@ -1,38 +1,74 @@
 import { View, Text, Pressable, Alert } from 'react-native';
 import { useRouter } from 'expo-router';
-import AsyncStorage from '@react-native-async-storage/async-storage';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
+import * as AuthSession from 'expo-auth-session';
+import * as WebBrowser from 'expo-web-browser';
 import { supabase } from '../../src/lib/supabase';
+import { linkToDemoProfile } from '../../src/lib/auth';
+
+// Required for proper browser session handling
+WebBrowser.maybeCompleteAuthSession();
 
 export default function SignIn() {
   const router = useRouter();
   const [loading, setLoading] = useState(false);
 
+  // Listen for auth state changes
+  useEffect(() => {
+    // Check if user is already signed in
+    supabase.auth.getSession().then(({ data: { session } }) => {
+      if (session?.user) {
+        // User is already signed in, navigate to home
+        router.replace('/(tabs)/home');
+      }
+    });
+
+    // Set up auth state listener
+    const { data: { subscription } } = supabase.auth.onAuthStateChange(
+      async (event, session) => {
+        console.log('Auth event:', event);
+        
+        if (event === 'SIGNED_IN' && session?.user) {
+          // Link to demo profile
+          await linkToDemoProfile(session.user);
+          router.replace('/(tabs)/home');
+        }
+      }
+    );
+
+    return () => subscription.unsubscribe();
+  }, []);
+
   async function onGoogle() {
     setLoading(true);
     try {
-      // Generate random username for demo
-      const username = `user${Math.floor(Math.random() * 900) + 100}`;
-      
-      // Call Supabase RPC to create demo user
-      const { data, error } = await supabase.rpc('api_signup', { p_username: username });
-      
+      // Generate redirect URI
+      const redirectTo = AuthSession.makeRedirectUri({
+        scheme: 'freestyle',
+        preferLocalhost: true,
+        isTripleSlashed: true
+      });
+
+      console.log('Redirect URI:', redirectTo);
+      console.log('Add this URL to Supabase Dashboard → Auth → URL Configuration → Redirect URLs');
+
+      // Initiate OAuth flow
+      const { data, error } = await supabase.auth.signInWithOAuth({
+        provider: 'google',
+        options: {
+          redirectTo,
+          skipBrowserRedirect: false
+        }
+      });
+
       if (error) {
         Alert.alert('Error', error.message);
         return;
       }
 
-      if (data && data.length > 0) {
-        const userId = data[0].id;
-        const userName = data[0].username;
-        
-        // Store user info in AsyncStorage
-        await AsyncStorage.setItem('demo:user', JSON.stringify({ id: userId, username: userName }));
-        
-        router.replace('/(tabs)/home');
-      }
+      // OAuth will handle the redirect, onAuthStateChange will catch the sign-in
     } catch (err) {
-      Alert.alert('Error', 'Failed to sign up');
+      Alert.alert('Error', 'Failed to sign in with Google');
       console.error(err);
     } finally {
       setLoading(false);
@@ -56,7 +92,7 @@ export default function SignIn() {
         }}
       >
         <Text style={{ textAlign: 'center', color: '#fff', fontWeight: '700' }}>
-          {loading ? 'Signing in...' : 'Continue with Google (demo)'}
+          {loading ? 'Signing in...' : 'Continue with Google'}
         </Text>
       </Pressable>
     </View>
