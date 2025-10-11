@@ -12,11 +12,9 @@ import { DemoControls, useDemoTrigger } from '../../src/demo/DemoControls';
 export default function Home() {
   const [item, setItem] = useState<any>(mockFeed[0]);
   useEffect(() => {
-    if (!IS_DEMO) return;
     AsyncStorage.getItem('demo:feed').then(raw => {
-      if (!raw) return;
       try {
-        const arr = JSON.parse(raw);
+        const arr = raw ? JSON.parse(raw) : null;
         if (Array.isArray(arr) && arr[0]) setItem(arr[0]);
       } catch {}
     });

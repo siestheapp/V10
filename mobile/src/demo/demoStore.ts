@@ -31,7 +31,18 @@ export async function demoSignUp(email: string, _password: string) {
 export async function demoBootstrap() {
   if (!IS_DEMO) return;
   const seeded = await AsyncStorage.getItem('demo:seeded');
-  if (seeded) return;
+  // If previously marked seeded but data is missing (e.g., after partial clears), re-seed
+  try {
+    const [closetRaw, feedRaw] = await Promise.all([
+      AsyncStorage.getItem('demo:closet'),
+      AsyncStorage.getItem('demo:feed'),
+    ]);
+    const closetOk = !!closetRaw && Array.isArray(JSON.parse(closetRaw)) && JSON.parse(closetRaw).length > 0;
+    const feedOk = !!feedRaw && Array.isArray(JSON.parse(feedRaw)) && JSON.parse(feedRaw).length > 0;
+    if (seeded && closetOk && feedOk) return;
+  } catch {
+    // fall through to reseed
+  }
   const closet = (seed.closet || []).map((it: any) => ({ ...it, hero: resolveImage(it.image) }));
   const feed = (seed.feed || []).map((it: any) => ({ ...it, hero: resolveImage(it.image) }));
   await AsyncStorage.multiSet([

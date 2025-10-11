@@ -11,11 +11,9 @@ import { IS_DEMO } from '../../src/config';
 export default function Closet() {
   const [data, setData] = useState<any[]>(mockCloset);
   useEffect(() => {
-    if (!IS_DEMO) return;
     AsyncStorage.getItem('demo:closet').then(raw => {
-      if (!raw) return;
       try {
-        const arr = JSON.parse(raw);
+        const arr = raw ? JSON.parse(raw) : null;
         if (Array.isArray(arr)) setData(arr);
       } catch {}
     });
