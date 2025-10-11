@@ -1,18 +1,18 @@
-import { View, Text, ScrollView } from 'react-native';
-import { mockSizeTwin } from '../features/mocks/sizeTwin';
-import { SizeCard } from '../components/SizeCard';
-import { Chip } from '../components/Chip';
-import { colors, space } from '../theme/tokens';
-// If you installed expo-linear-gradient, you can uncomment this for a proper sheen:
-// import { LinearGradient } from 'expo-linear-gradient';
+import React from 'react';
+import { View, Text, ScrollView, Image, Pressable } from 'react-native';
 
-export default function Home() {
+// Import our components and data
+import { Chip } from './components/Chip';
+import { SizeCard } from './components/SizeCard';
+import { mockSizeTwin } from './features/mocks/sizeTwin';
+import { colors, space } from './theme/tokens';
+
+export default function App() {
   return (
     <View style={{ flex: 1, backgroundColor: colors.ink900 }}>
       <ScrollView contentContainerStyle={{ paddingHorizontal: space[24], paddingBottom: 96 }}>
         {/* Header */}
         <View style={{ paddingVertical: 8 }}>
-          {/* Simple solid as a fallback. Replace with gradient for brand sheen if desired. */}
           <Text style={{ fontSize: 32, fontWeight: '600', color: '#E7FFFF' }}>Freestyle</Text>
         </View>
 
