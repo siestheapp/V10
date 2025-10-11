@@ -42,11 +42,12 @@ export default function SignIn() {
   async function onGoogle() {
     setLoading(true);
     try {
-      // Generate redirect URI - use explicit development URL
+      // Generate redirect URI - force deep link instead of localhost
       const redirectTo = AuthSession.makeRedirectUri({
         scheme: 'freestyle',
-        preferLocalhost: false,
-        isTripleSlashed: false
+        path: 'auth/callback',
+        preferLocalhost: false,      // Force deep link
+        isTripleSlashed: true,
       });
 
       console.log('Redirect URI:', redirectTo);
