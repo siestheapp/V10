@@ -3,6 +3,7 @@ import * as SecureStore from 'expo-secure-store';
 import * as FileSystem from 'expo-file-system';
 import * as Updates from 'expo-updates';
 import * as SQLite from 'expo-sqlite';
+import { DevSettings } from 'react-native';
 import { IS_DEMO } from '../config';
 
 // Import seed as plain JSON; resolve "local://hero1" at runtime to a bundled image
@@ -55,14 +56,22 @@ export async function demoBootstrap() {
 export async function demoClearAll() {
   try { await AsyncStorage.clear(); } catch {}
   try { await SecureStore.deleteItemAsync('demo:token'); } catch {}
+  // Avoid aggressive native file/DB operations in Expo Go—they can contribute to splash errors.
+  // If needed for a dev build, re-enable the blocks below.
+  // try {
+  //   const db = SQLite.openDatabase(DB_NAME);
+  //   // @ts-ignore SDK 51+
+  //   if (db.closeAsync) await db.closeAsync();
+  //   await FileSystem.deleteAsync(`${FileSystem.documentDirectory}SQLite/${DB_NAME}`, { idempotent: true });
+  //   await FileSystem.deleteAsync(FileSystem.documentDirectory + 'demo/', { idempotent: true });
+  // } catch {}
   try {
-    const db = SQLite.openDatabase(DB_NAME);
-    // @ts-ignore SDK 51+
-    if (db.closeAsync) await db.closeAsync();
+    if (__DEV__ && (DevSettings as any)?.reload) {
+      (DevSettings as any).reload();
+    } else {
+      await Updates.reloadAsync();
+    }
   } catch {}
-  try { await FileSystem.deleteAsync(`${FileSystem.documentDirectory}SQLite/${DB_NAME}`, { idempotent: true }); } catch {}
-  try { await FileSystem.deleteAsync(FileSystem.documentDirectory + 'demo/', { idempotent: true }); } catch {}
-  try { await Updates.reloadAsync(); } catch {}
 }
 
 

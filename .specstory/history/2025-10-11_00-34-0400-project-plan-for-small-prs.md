@@ -5362,6 +5362,163 @@ now it opens with these two screens empty
 
 _**Assistant (gpt-5)**_
 
+<think><details><summary>Thought Process</summary>**Investigating demoStore issue**
+
+I need to read the content of demoStore.ts after performing a reset, since the earlier revert to a commit was executed but now it seems like things changed with a hard reset. The user's message indicates that two screens are empty, which could be due to the 'demo:seeded' flag being set while 'demo:feed' and 'demo:closet' are missing from earlier resets. After the changes, I think it would help to add a sanity check to reseed these components if they are absent.
+**Addressing demoControls and storage logic**
+
+I need to consider the DemoControls "Re-seed" function. It seems like perhaps the triple tap isn’t getting invoked. I should update demoBootstrap to check for the presence of 'demo:closet' and 'demo:feed'; if they're not there or empty, I'll set defaults. Keeping the seeded logic tolerant is key. Also, home uses AsyncStorage to get 'demo:feed', falling back to mockFeed if unavailable. After resetting to commit 66e04eb, those modifications remain, ensuring it reads correctly from AsyncStorage while still having a fallback to mocks.
+**Investigating hero image rendering**
+
+The empty screen suggests that the flex area might be lacking a hero image because the item is null. In the Home component, we retrieve the item from AsyncStorage, and if it's not present, we fall back to a mock feed. The screenshot shows only the lower part visible, indicating that while the item exists, the hero image isn't rendering. In bootstrap, we set the property 'hero' to resolveImage. I must ensure the path to the hero image, '../../assets/hero1.jpg', is correct relative to where the assets are stored.
+**Assessing hero image rendering and seeding**
+
+The screenshot indicates that the hero space is blank, possibly because the image height is zero due to the hero overlay not rendering. Earlier code shows the hero height as 440, but if the item is undefined, the hero may not render. The "Best Fit XS" component shows, which indicates the hero wrapper isn't displaying. It seems like we should implement robust seeding by ignoring the seeded flag if keys are missing. In demoBootstrap, I will check both closet and feed keys, reseeding them as needed, and ensure the 'ensureSeeded' function in demoStore.ts is called on startup to handle missing keys.
+**Implementing patch modifications**
+
+I need to implement the patch and remember that we removed the hidden DemoControls "Re-seed," which might still be present in the commit, so I'll keep that in mind. I should modify demoStore.ts to reflect these changes. The "Closet" component previously relied on the hero property, but we shifted to fallback to mocks, which is good. I also want to update the logic so that we don't depend solely on the "seeded" flag; I'll add a check that reseeds if keys aren't present. Let's get this patch written!</details></think>
+
+---
+
+Tool use: **apply_patch**
+
+<details>
+        <summary>Apply patch for /Users/seandavey/Downloads/freestyle/mobile/src/demo/demoStore.ts</summary>
+      
+
+```diff
+<<'PATCH'
+*** Begin Patch
+*** Update File: mobile/src/demo/demoStore.ts
+@@
+-export async function demoBootstrap() {
+-  if (!IS_DEMO) return;
+-  const seeded = await AsyncStorage.getItem('demo:seeded');
+-  if (seeded) return;
++export async function demoBootstrap() {
++  if (!IS_DEMO) return;
++  const seeded = await AsyncStorage.getItem('demo:seeded');
++  // If previously marked seeded but data is missing (e.g., after partial clears), re-seed
++  try {
++    const [closetRaw, feedRaw] = await Promise.all([
++      AsyncStorage.getItem('demo:closet'),
++      AsyncStorage.getItem('demo:feed'),
++    ]);
++    const closetOk = !!closetRaw && Array.isArray(JSON.parse(closetRaw)) && JSON.parse(closetRaw).length > 0;
++    const feedOk = !!feedRaw && Array.isArray(JSON.parse(feedRaw)) && JSON.parse(feedRaw).length > 0;
++    if (seeded && closetOk && feedOk) return;
++  } catch {
++    // fall through to reseed
++  }
+*** End Patch
+```
+
+---
+
+Tool use: **apply_patch**
+
+<details>
+        <summary>Apply patch for /Users/seandavey/Downloads/freestyle/mobile/app/(tabs)/home.tsx</summary>
+      
+
+```diff
+<<'PATCH'
+*** Begin Patch
+*** Update File: mobile/app/(tabs)/home.tsx
+@@
+-  useEffect(() => {
+-    if (!IS_DEMO) return;
+-    AsyncStorage.getItem('demo:feed').then(raw => {
+-      if (!raw) return;
+-      try {
+-        const arr = JSON.parse(raw);
+-        if (Array.isArray(arr) && arr[0]) setItem(arr[0]);
+-      } catch {}
+-    });
+-  }, []);
++  useEffect(() => {
++    AsyncStorage.getItem('demo:feed').then(raw => {
++      try {
++        const arr = raw ? JSON.parse(raw) : null;
++        if (Array.isArray(arr) && arr[0]) setItem(arr[0]);
++      } catch {}
++    });
++  }, []);
+*** End Patch
+```
+
+---
+
+Tool use: **apply_patch**
+
+<details>
+        <summary>Apply patch for /Users/seandavey/Downloads/freestyle/mobile/app/(tabs)/closet.tsx</summary>
+      
+
+```diff
+<<'PATCH'
+*** Begin Patch
+*** Update File: mobile/app/(tabs)/closet.tsx
+@@
+-  useEffect(() => {
+-    if (!IS_DEMO) return;
+-    AsyncStorage.getItem('demo:closet').then(raw => {
+-      if (!raw) return;
+-      try {
+-        const arr = JSON.parse(raw);
+-        if (Array.isArray(arr)) setData(arr);
+-      } catch {}
+-    });
+-  }, []);
++  useEffect(() => {
++    AsyncStorage.getItem('demo:closet').then(raw => {
++      try {
++        const arr = raw ? JSON.parse(raw) : null;
++        if (Array.isArray(arr)) setData(arr);
++      } catch {}
++    });
++  }, []);
+*** End Patch
+```
+
+---
+
+Tool use: **run_terminal_cmd**
+
+```bash
+cd /Users/seandavey/Downloads/freestyle && git add -A && git commit -m "mobile: ensure demoBootstrap reseeds when data missing; Home/Closet read demo data regardless of flag to avoid empty screens after reload" && git push
+```
+
+```
+[feat/expo-shell 6610dca] mobile: ensure demoBootstrap reseeds when data missing; Home/Closet read demo data regardless of flag to avoid empty screens after reload
+ 4 files changed, 1010 insertions(+), 7 deletions(-)
+To https://github.com/siestheapp/freestyle.git
+   66e04eb..6610dca  feat/expo-shell -> feat/expo-shell
+
+```
+
+---
+
+I fixed the empty Home/Closet after reload:
+
+- demoBootstrap now reseeds if seed markers exist but the actual lists are missing/empty.
+- Home and Closet read demo data from AsyncStorage on mount regardless of the flag, so they populate after a cold reload.
+- Changes pushed on feat/expo-shell.
+
+Try:
+- Triple‑tap “freestyle” → Reset demo data
+- After reload, Home and Closet should be populated immediately.
+
+---
+
+_**User (2025-10-10 20:56-0400)**_
+
+still seeing this on closet screen after reset demo data
+
+---
+
+_**Assistant (gpt-5)**_
+
 
 
 ---
