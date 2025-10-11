@@ -2,12 +2,53 @@
   "user": { "email": "alexis@example.com", "name": "Alexis" },
   "closet": [
     {
-      "id": "dress_somerset_xs",
-      "brand": "Anthropologie",
-      "title": "Somerset Maxi Dress",
+      "id": "georgia_relic_uk8",
+      "brand": "GEORGIA HARDINGE",
+      "name": "Relic Pleated Metallic‑Knit Maxi Dress",
+      "size": "UK 8",
+      "image": "https://cdn.modaoperandi.com/assets/images/products/1048452/695474/c2/large_georgia-hardinge-gold-relic-dress.jpg?_v=1755324586"
+    },
+    {
+      "id": "reformation_taryn_2",
+      "brand": "REFORMATION",
+      "name": "Taryn Two Piece",
+      "size": "2",
+      "image": "https://media.thereformation.com/image/upload/f_auto,q_auto:eco,dpr_2.0/w_500/PRD-SFCC/1314122/BLACK/1314122.1.BLACK?_s=RAABAB0"
+    },
+    {
+      "id": "alfie_open_back_top_s",
+      "brand": "ALFIE",
+      "name": "Open Back Cotton Poplin Top",
+      "size": "Small",
+      "image": "https://cdn.modaoperandi.com/assets/images/products/1028958/674197/c/large_alfie-white-backless-top.jpg?_v=1755087491"
+    },
+    {
+      "id": "ayr_secret_sauce_26s",
+      "brand": "AYR",
+      "name": "The Secret Sauce",
+      "size": "26S",
+      "image": "https://www.ayr.com/cdn/shop/files/secretsauce-goodmood_CAT_d634f664-cb49-4e61-abef-5d94b707075e.jpg?crop=center&height=1440&v=1755036845&width=950"
+    },
+    {
+      "id": "zara_flare_pants_m",
+      "brand": "ZARA",
+      "name": "Flare Pants",
+      "size": "M",
+      "image": "https://static.zara.net/assets/public/a4e8/d8da/2c3b44728736/7e4b4c39762b/03152505800-a1/03152505800-a1.jpg?ts=1753971869534&w=1900"
+    },
+    {
+      "id": "cos_shrunken_tee_xs",
+      "brand": "COS",
+      "name": "Shrunken T‑shirt",
       "size": "XS",
-      "price": 16800,
-      "image": "local://hero1"
+      "image": "https://media.cos.com/assets/001/6e/d0/6ed0142c6e69ad42e826224d9a8d013f6d3f4685_xxl-1.jpg?imwidth=2160"
+    },
+    {
+      "id": "alexis_briette_s",
+      "brand": "ALEXIS",
+      "name": "Briette Satin Maxi Dress",
+      "size": "S",
+      "image": "https://cdn.modaoperandi.com/assets/images/products/1039207/685257/c/large_alexis-blue-briette-dress.jpg?_v=1755195214"
     }
   ],
   "feed": [
