@@ -2,6 +2,10 @@ module.exports = function (api) {
   api.cache(true);
   return {
     presets: ['babel-preset-expo'],
-    plugins: ['react-native-reanimated/plugin'],
+    plugins: [
+      'expo-router/babel',
+      // Reanimated MUST be last
+      'react-native-reanimated/plugin',
+    ],
   };
 };
