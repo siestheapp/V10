@@ -84,10 +84,11 @@
       width:28px; height:28px; border-radius:999px; padding:0;
       background:#fff; border:1px solid rgba(0,0,0,.08);
       box-shadow:0 2px 6px rgba(0,0,0,.08);
-      font:800 12px/1 Inter; color:#1f1f1f; display:inline-flex; align-items:center; justify-content:center;
+      font:800 12px/1 Inter; color:#1f1f1f; display:inline-flex; align-items:center; justify-content:center; gap:2px;
       cursor:pointer;
     }
-    .proxy-badge .count{margin-left:2px; font-weight:900}
+    .equiv-icon{display:block; fill:#1f1f1f}
+    .proxy-badge .count{margin-left:2px; font-weight:900; line-height:1}
     .proxy-badge[aria-disabled="true"]{opacity:.5}
 
     /* bottom sheet */
@@ -160,49 +161,98 @@
           <!-- Cards (use data-category for filtering) -->
           <article class="card" data-category="dresses" data-name="GEORGIA HARDINGE Relic Dress" data-size="UK 8">
             <span class="size-chip" aria-label="Your size for this item">UK 8</span>
-            <button class="proxy-badge" aria-label="2 proxies for this item in your size">≡<span class="count">2</span></button>
+            <button class="proxy-badge" aria-label="2 proxies for this item in your size">
+              <svg class="equiv-icon" viewBox="0 0 12 12" width="10" height="10" aria-hidden="true">
+                <rect x="0" y="1" width="12" height="2" rx="1"/>
+                <rect x="0" y="5" width="12" height="2" rx="1"/>
+                <rect x="0" y="9" width="12" height="2" rx="1"/>
+              </svg>
+              <span class="count">2</span>
+            </button>
             <img class="img tall" src="https://cdn.modaoperandi.com/assets/images/products/1048452/695474/c2/large_georgia-hardinge-gold-relic-dress.jpg?_v=1755324586" alt="Georgia Hardinge Relic Pleated Metallic‑Knit Maxi Dress">
             <div class="overlay"><div class="brand">GEORGIA HARDINGE</div><div class="name">Relic Pleated Metallic‑Knit Maxi Dress</div></div>
           </article>
 
           <article class="card" data-category="tops" data-name="Reformation Taryn Two Piece" data-size="2">
             <span class="size-chip" aria-label="Your size for this item">2</span>
-            <button class="proxy-badge" aria-label="2 proxies for this item in your size">≡<span class="count">2</span></button>
+            <button class="proxy-badge" aria-label="2 proxies for this item in your size">
+              <svg class="equiv-icon" viewBox="0 0 12 12" width="10" height="10" aria-hidden="true">
+                <rect x="0" y="1" width="12" height="2" rx="1"/>
+                <rect x="0" y="5" width="12" height="2" rx="1"/>
+                <rect x="0" y="9" width="12" height="2" rx="1"/>
+              </svg>
+              <span class="count">2</span>
+            </button>
             <img class="img" src="https://media.thereformation.com/image/upload/f_auto,q_auto:eco,dpr_2.0/w_500/PRD-SFCC/1314122/BLACK/1314122.1.BLACK?_s=RAABAB0" alt="Reformation Taryn Two Piece">
             <div class="overlay"><div class="brand">REFORMATION</div><div class="name">Taryn Two Piece</div></div>
           </article>
 
           <article class="card" data-category="tops" data-name="ALFIE Open Back Cotton Poplin Top" data-size="Small">
             <span class="size-chip" aria-label="Your size for this item">Small</span>
-            <button class="proxy-badge" aria-label="2 proxies for this item in your size">≡<span class="count">2</span></button>
+            <button class="proxy-badge" aria-label="2 proxies for this item in your size">
+              <svg class="equiv-icon" viewBox="0 0 12 12" width="10" height="10" aria-hidden="true">
+                <rect x="0" y="1" width="12" height="2" rx="1"/>
+                <rect x="0" y="5" width="12" height="2" rx="1"/>
+                <rect x="0" y="9" width="12" height="2" rx="1"/>
+              </svg>
+              <span class="count">2</span>
+            </button>
             <img class="img" src="https://cdn.modaoperandi.com/assets/images/products/1028958/674197/c/large_alfie-white-backless-top.jpg?_v=1755087491" alt="ALFIE Open Back Cotton Poplin Top">
             <div class="overlay"><div class="brand">ALFIE</div><div class="name">Open Back Cotton Poplin Top</div></div>
           </article>
 
           <article class="card" data-category="bottoms" data-name="AYR The Secret Sauce" data-size="26S">
             <span class="size-chip" aria-label="Your size for this item">26S</span>
-            <button class="proxy-badge" aria-label="2 proxies for this item in your size">≡<span class="count">2</span></button>
+            <button class="proxy-badge" aria-label="2 proxies for this item in your size">
+              <svg class="equiv-icon" viewBox="0 0 12 12" width="10" height="10" aria-hidden="true">
+                <rect x="0" y="1" width="12" height="2" rx="1"/>
+                <rect x="0" y="5" width="12" height="2" rx="1"/>
+                <rect x="0" y="9" width="12" height="2" rx="1"/>
+              </svg>
+              <span class="count">2</span>
+            </button>
             <img class="img" src="https://www.ayr.com/cdn/shop/files/secretsauce-goodmood_CAT_d634f664-cb49-4e61-abef-5d94b707075e.jpg?crop=center&height=1440&v=1755036845&width=950" alt="AYR The Secret Sauce">
             <div class="overlay"><div class="brand">AYR</div><div class="name">The Secret Sauce</div></div>
           </article>
 
           <article class="card" data-category="bottoms" data-name="ZARA Flare Pants" data-size="M">
             <span class="size-chip" aria-label="Your size for this item">M</span>
-            <button class="proxy-badge" aria-label="2 proxies for this item in your size">≡<span class="count">2</span></button>
+            <button class="proxy-badge" aria-label="2 proxies for this item in your size">
+              <svg class="equiv-icon" viewBox="0 0 12 12" width="10" height="10" aria-hidden="true">
+                <rect x="0" y="1" width="12" height="2" rx="1"/>
+                <rect x="0" y="5" width="12" height="2" rx="1"/>
+                <rect x="0" y="9" width="12" height="2" rx="1"/>
+              </svg>
+              <span class="count">2</span>
+            </button>
             <img class="img" src="https://static.zara.net/assets/public/a4e8/d8da/2c3b44728736/7e4b4c39762b/03152505800-a1/03152505800-a1.jpg?ts=1753971869534&w=1900" alt="ZARA Flare Pants">
             <div class="overlay"><div class="brand">ZARA</div><div class="name">Flare Pants</div></div>
           </article>
 
           <article class="card" data-category="tops" data-name="COS Shrunken T-shirt" data-size="XS">
             <span class="size-chip" aria-label="Your size for this item">XS</span>
-            <button class="proxy-badge" aria-label="2 proxies for this item in your size">≡<span class="count">2</span></button>
+            <button class="proxy-badge" aria-label="2 proxies for this item in your size">
+              <svg class="equiv-icon" viewBox="0 0 12 12" width="10" height="10" aria-hidden="true">
+                <rect x="0" y="1" width="12" height="2" rx="1"/>
+                <rect x="0" y="5" width="12" height="2" rx="1"/>
+                <rect x="0" y="9" width="12" height="2" rx="1"/>
+              </svg>
+              <span class="count">2</span>
+            </button>
             <img class="img" src="https://media.cos.com/assets/001/6e/d0/6ed0142c6e69ad42e826224d9a8d013f6d3f4685_xxl-1.jpg?imwidth=2160" alt="COS Shrunken T-shirt">
             <div class="overlay"><div class="brand">COS</div><div class="name">Shrunken T‑shirt</div></div>
           </article>
 
           <article class="card" data-category="dresses" data-name="ALEXIS Briette Satin Maxi Dress" data-size="S">
             <span class="size-chip" aria-label="Your size for this item">S</span>
-            <button class="proxy-badge" aria-label="2 proxies for this item in your size">≡<span class="count">2</span></button>
+            <button class="proxy-badge" aria-label="2 proxies for this item in your size">
+              <svg class="equiv-icon" viewBox="0 0 12 12" width="10" height="10" aria-hidden="true">
+                <rect x="0" y="1" width="12" height="2" rx="1"/>
+                <rect x="0" y="5" width="12" height="2" rx="1"/>
+                <rect x="0" y="9" width="12" height="2" rx="1"/>
+              </svg>
+              <span class="count">2</span>
+            </button>
             <img class="img tall" src="https://cdn.modaoperandi.com/assets/images/products/1039207/685257/c/large_alexis-blue-briette-dress.jpg?_v=1755195214" alt="ALEXIS Briette Satin Maxi Dress">
             <div class="overlay"><div class="brand">ALEXIS</div><div class="name">Briette Satin Maxi Dress</div></div>
           </article>
