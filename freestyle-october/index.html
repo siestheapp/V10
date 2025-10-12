@@ -28,6 +28,7 @@
     /* Freestyle overrides for branding without rebuilding CSS */
     .header .logo a,
     .header .logo{background:var(--brand-sheen);-webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent;text-decoration:none}
+    .brand-text{background:var(--brand-sheen);-webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent}
     .btn{background:var(--petrol-500, #00A3A3);color:#fff;border:1px solid var(--petrol-400, #16B5B5)}
     .btn:hover{background:var(--petrol-600, #009090)}
     .section-title{border-bottom-color:var(--canvas-100, #E9EEF1)}
@@ -81,7 +82,7 @@
       <div class="cols">
         <div class="col">
           <header class="section-header">
-            <h1 class="section-heading">Try on clothes by proxy!</h1>
+            <h1 class="section-heading">Try on clothes by <s>proxy</s> <span class="brand-text">proxi</span>.</h1>
             <p class="section-subheading">No&nbsp;measuring. No&nbsp;guesswork. No&nbsp;surprises.</p>
           </header>
           <form class="form" method="POST" action="/thanks" name="waitlist" data-netlify="true" netlify-honeypot="bot-field" autocomplete="on">
