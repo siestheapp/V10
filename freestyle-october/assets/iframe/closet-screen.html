@@ -72,17 +72,21 @@
 
     .card{position:relative}
     .card img{display:block; border-radius:14px}
-    .proxy-badge{
+    /* proxy pill (upper-right) */
+    .proxy-pill{
       position:absolute; top:10px; right:10px; z-index:3;
-      width:28px; height:28px; border-radius:999px; padding:0;
-      background:#fff; border:1px solid rgba(0,0,0,.08);
-      box-shadow:0 2px 6px rgba(0,0,0,.08);
-      font:800 12px/1 Inter; color:#1f1f1f; display:inline-flex; align-items:center; justify-content:center; gap:2px;
-      cursor:pointer;
+      display:inline-flex; align-items:center; gap:3px;
+      padding:6px 8px; height:28px; border-radius:9999px;
+      font:600 12px/1 Inter; letter-spacing:.01em;
+      color:#1F1F1F; background:#fff;
+      border:1px solid var(--border);
+      box-shadow:0 1px 2px rgba(16,24,40,.06), 0 1px 1px rgba(16,24,40,.04), inset 0 0 0 1px rgba(16,24,40,.06);
+      cursor:default; user-select:none;
     }
-    .equiv-icon{display:block; fill:#1f1f1f}
-    .proxy-badge .count{margin-left:2px; font-weight:900; line-height:1}
-    .proxy-badge[aria-disabled="true"]{opacity:.5}
+    .proxy-pill .icon{display:block; width:1.05em; height:1.05em; line-height:1}
+    .proxy-pill .icon svg{display:block; width:100%; height:100%; vertical-align:middle}
+    .proxy-pill .count{line-height:1; font-feature-settings:"tnum" 1}
+    .proxy-pill[aria-disabled="true"]{opacity:.5}
 
     /* bottom sheet */
     .sheet{position:fixed; inset:0; background:rgba(0,0,0,.3); display:flex; align-items:flex-end}
@@ -154,12 +158,12 @@
           <!-- Cards (use data-category for filtering) -->
           <article class="card" data-category="dresses" data-name="GEORGIA HARDINGE Relic Dress" data-size="UK 8">
             <span class="size" aria-label="Your size for this item">UK 8</span>
-            <button class="proxy-badge" aria-label="2 proxies for this item in your size">
-              <svg class="equiv-icon" viewBox="0 0 12 12" width="10" height="10" aria-hidden="true">
-                <rect x="0" y="1" width="12" height="2" rx="1"/>
-                <rect x="0" y="5" width="12" height="2" rx="1"/>
-                <rect x="0" y="9" width="12" height="2" rx="1"/>
-              </svg>
+            <button class="proxy-pill" aria-label="2 proxies for this item in your size">
+              <span class="icon" aria-hidden="true">
+                <svg viewBox="0 0 24 24" role="img" focusable="false" aria-hidden="true">
+                  <path d="M4 7h16M4 12h16M4 17h16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+                </svg>
+              </span>
               <span class="count">2</span>
             </button>
             <img class="img tall" src="https://cdn.modaoperandi.com/assets/images/products/1048452/695474/c2/large_georgia-hardinge-gold-relic-dress.jpg?_v=1755324586" alt="Georgia Hardinge Relic Pleated Metallic‑Knit Maxi Dress">
@@ -168,12 +172,12 @@
 
           <article class="card" data-category="tops" data-name="Reformation Taryn Two Piece" data-size="2">
             <span class="size" aria-label="Your size for this item">2</span>
-            <button class="proxy-badge" aria-label="2 proxies for this item in your size">
-              <svg class="equiv-icon" viewBox="0 0 12 12" width="10" height="10" aria-hidden="true">
-                <rect x="0" y="1" width="12" height="2" rx="1"/>
-                <rect x="0" y="5" width="12" height="2" rx="1"/>
-                <rect x="0" y="9" width="12" height="2" rx="1"/>
-              </svg>
+            <button class="proxy-pill" aria-label="2 proxies for this item in your size">
+              <span class="icon" aria-hidden="true">
+                <svg viewBox="0 0 24 24" role="img" focusable="false" aria-hidden="true">
+                  <path d="M4 7h16M4 12h16M4 17h16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+                </svg>
+              </span>
               <span class="count">2</span>
             </button>
             <img class="img" src="https://media.thereformation.com/image/upload/f_auto,q_auto:eco,dpr_2.0/w_500/PRD-SFCC/1314122/BLACK/1314122.1.BLACK?_s=RAABAB0" alt="Reformation Taryn Two Piece">
@@ -182,12 +186,12 @@
 
           <article class="card" data-category="tops" data-name="ALFIE Open Back Cotton Poplin Top" data-size="Small">
             <span class="size" aria-label="Your size for this item">Small</span>
-            <button class="proxy-badge" aria-label="2 proxies for this item in your size">
-              <svg class="equiv-icon" viewBox="0 0 12 12" width="10" height="10" aria-hidden="true">
-                <rect x="0" y="1" width="12" height="2" rx="1"/>
-                <rect x="0" y="5" width="12" height="2" rx="1"/>
-                <rect x="0" y="9" width="12" height="2" rx="1"/>
-              </svg>
+            <button class="proxy-pill" aria-label="2 proxies for this item in your size">
+              <span class="icon" aria-hidden="true">
+                <svg viewBox="0 0 24 24" role="img" focusable="false" aria-hidden="true">
+                  <path d="M4 7h16M4 12h16M4 17h16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+                </svg>
+              </span>
               <span class="count">2</span>
             </button>
             <img class="img" src="https://cdn.modaoperandi.com/assets/images/products/1028958/674197/c/large_alfie-white-backless-top.jpg?_v=1755087491" alt="ALFIE Open Back Cotton Poplin Top">
@@ -196,12 +200,12 @@
 
           <article class="card" data-category="bottoms" data-name="AYR The Secret Sauce" data-size="26S">
             <span class="size" aria-label="Your size for this item">26S</span>
-            <button class="proxy-badge" aria-label="2 proxies for this item in your size">
-              <svg class="equiv-icon" viewBox="0 0 12 12" width="10" height="10" aria-hidden="true">
-                <rect x="0" y="1" width="12" height="2" rx="1"/>
-                <rect x="0" y="5" width="12" height="2" rx="1"/>
-                <rect x="0" y="9" width="12" height="2" rx="1"/>
-              </svg>
+            <button class="proxy-pill" aria-label="2 proxies for this item in your size">
+              <span class="icon" aria-hidden="true">
+                <svg viewBox="0 0 24 24" role="img" focusable="false" aria-hidden="true">
+                  <path d="M4 7h16M4 12h16M4 17h16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+                </svg>
+              </span>
               <span class="count">2</span>
             </button>
             <img class="img" src="https://www.ayr.com/cdn/shop/files/secretsauce-goodmood_CAT_d634f664-cb49-4e61-abef-5d94b707075e.jpg?crop=center&height=1440&v=1755036845&width=950" alt="AYR The Secret Sauce">
@@ -210,12 +214,12 @@
 
           <article class="card" data-category="bottoms" data-name="ZARA Flare Pants" data-size="M">
             <span class="size" aria-label="Your size for this item">M</span>
-            <button class="proxy-badge" aria-label="2 proxies for this item in your size">
-              <svg class="equiv-icon" viewBox="0 0 12 12" width="10" height="10" aria-hidden="true">
-                <rect x="0" y="1" width="12" height="2" rx="1"/>
-                <rect x="0" y="5" width="12" height="2" rx="1"/>
-                <rect x="0" y="9" width="12" height="2" rx="1"/>
-              </svg>
+            <button class="proxy-pill" aria-label="2 proxies for this item in your size">
+              <span class="icon" aria-hidden="true">
+                <svg viewBox="0 0 24 24" role="img" focusable="false" aria-hidden="true">
+                  <path d="M4 7h16M4 12h16M4 17h16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+                </svg>
+              </span>
               <span class="count">2</span>
             </button>
             <img class="img" src="https://static.zara.net/assets/public/a4e8/d8da/2c3b44728736/7e4b4c39762b/03152505800-a1/03152505800-a1.jpg?ts=1753971869534&w=1900" alt="ZARA Flare Pants">
@@ -224,12 +228,12 @@
 
           <article class="card" data-category="tops" data-name="COS Shrunken T-shirt" data-size="XS">
             <span class="size" aria-label="Your size for this item">XS</span>
-            <button class="proxy-badge" aria-label="2 proxies for this item in your size">
-              <svg class="equiv-icon" viewBox="0 0 12 12" width="10" height="10" aria-hidden="true">
-                <rect x="0" y="1" width="12" height="2" rx="1"/>
-                <rect x="0" y="5" width="12" height="2" rx="1"/>
-                <rect x="0" y="9" width="12" height="2" rx="1"/>
-              </svg>
+            <button class="proxy-pill" aria-label="2 proxies for this item in your size">
+              <span class="icon" aria-hidden="true">
+                <svg viewBox="0 0 24 24" role="img" focusable="false" aria-hidden="true">
+                  <path d="M4 7h16M4 12h16M4 17h16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+                </svg>
+              </span>
               <span class="count">2</span>
             </button>
             <img class="img" src="https://media.cos.com/assets/001/6e/d0/6ed0142c6e69ad42e826224d9a8d013f6d3f4685_xxl-1.jpg?imwidth=2160" alt="COS Shrunken T-shirt">
@@ -238,12 +242,12 @@
 
           <article class="card" data-category="dresses" data-name="ALEXIS Briette Satin Maxi Dress" data-size="S">
             <span class="size" aria-label="Your size for this item">S</span>
-            <button class="proxy-badge" aria-label="2 proxies for this item in your size">
-              <svg class="equiv-icon" viewBox="0 0 12 12" width="10" height="10" aria-hidden="true">
-                <rect x="0" y="1" width="12" height="2" rx="1"/>
-                <rect x="0" y="5" width="12" height="2" rx="1"/>
-                <rect x="0" y="9" width="12" height="2" rx="1"/>
-              </svg>
+            <button class="proxy-pill" aria-label="2 proxies for this item in your size">
+              <span class="icon" aria-hidden="true">
+                <svg viewBox="0 0 24 24" role="img" focusable="false" aria-hidden="true">
+                  <path d="M4 7h16M4 12h16M4 17h16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+                </svg>
+              </span>
               <span class="count">2</span>
             </button>
             <img class="img tall" src="https://cdn.modaoperandi.com/assets/images/products/1039207/685257/c/large_alexis-blue-briette-dress.jpg?_v=1755195214" alt="ALEXIS Briette Satin Maxi Dress">
@@ -339,7 +343,7 @@
 
     // Tiny JS to open/close proxy sheet
     document.addEventListener('click', (e)=>{
-      const btn = e.target.closest('.proxy-badge');
+      const btn = e.target.closest('.proxy-pill');
       if(btn){
         document.querySelector('#proxy-sheet')?.removeAttribute('hidden');
       }
