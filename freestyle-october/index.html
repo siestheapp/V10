@@ -47,6 +47,8 @@
     /* FAQ details */
     #faq summary{color:var(--ink-900)}
     #faq details:hover summary{color:var(--petrol-500)}
+    /* Override the purple bullet to match teal numbers */
+    #faq .faq-list details summary::before{background:linear-gradient(135deg, var(--petrol-600, #009090), #35D1AE); box-shadow:0 4px 12px rgba(0,163,163,.22)}
 
     /* Tighten site header height and reduce top spacing */
     .header{padding:.5em 0}
@@ -210,10 +212,6 @@
             <div>A proxi is a real person who owns the same item in the same size as you. We surface their photos and sizes so you can shop "by proxi" with confidence.</div>
           </details>
           <details>
-            <summary>How does Proxi know who’s my proxi?</summary>
-            <div>When you add an item to your Closet, we match the brand, item and size. If someone else has that exact combo, they become your proxi for that piece.</div>
-          </details>
-          <details>
             <summary>Do I have to upload photos?</summary>
             <div>No. Photos help others, but they’re optional. Adding items + sizes is enough to get proxi matches and size guidance.</div>
           </details>
@@ -221,18 +219,7 @@
             <summary>How many items do I need to start?</summary>
             <div>Just one. Add a single piece you already own and you’ll see proxi matches and recommended sizes on similar items right away. More items = better matches.</div>
           </details>
-          <details>
-            <summary>What does the ≡ number mean?</summary>
-            <div>The ≡ badge shows how many proxies exist for that item in your size (e.g., "≡ 3" = three people you can learn from).</div>
-          </details>
-          <details>
-            <summary>What if there aren’t proxies yet?</summary>
-            <div>You’ll still get recommendations based on your Closet, as well as garment specs and brand size guides. As the community grows, new proxies appear automatically.</div>
-          </details>
-          <details>
-            <summary>Are my sizes public?</summary>
-            <div>Yes, but with a caveat. Item sizes you share are visible only to your proxies, aka people who share that exact same item and size.</div>
-          </details>
+          
           <details>
             <summary>How is my data used?</summary>
             <div>Only to match you with proxies and improve recommendations. We don’t sell personal data. You can delete your Closet and account at any time.</div>
