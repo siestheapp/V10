@@ -23,11 +23,11 @@
     :root{
       --petrol-600:#009090; --petrol-500:#00A3A3; --petrol-400:#16B5B5;
       --canvas-100:#E9EEF1; --ink-900:#0B0F14; --ink-500:#2A3642;
-      --brand-sheen: linear-gradient(135deg,#00A3A3 0%,#7FE1FF 50%,#A6FFCB 100%);
+      --brand-sheen: linear-gradient(135deg,#009090 0%,#1FAED9 42%,#00A3A3 62%,#35D1AE 100%);
     }
     /* Freestyle overrides for branding without rebuilding CSS */
     .header .logo a,
-    .header .logo{background:var(--brand-sheen);-webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent;text-decoration:none}
+    .header .logo{background:var(--brand-sheen);-webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent;text-decoration:none;-webkit-text-stroke:.5px rgba(11,15,20,.22);text-shadow:0 1px 0 rgba(11,15,20,.04)}
     .btn{background:var(--petrol-500, #00A3A3);color:#fff;border:1px solid var(--petrol-400, #16B5B5)}
     .btn:hover{background:var(--petrol-600, #009090)}
     .section-title{border-bottom-color:var(--canvas-100, #E9EEF1)}
@@ -52,6 +52,7 @@
     @media (min-width:1280px){ .header{padding-top:.75em} }
     .header .logo{font-size:1.6em;line-height:1}
     @media (min-width:1280px){ .header .logo{font-size:1.8em} }
+    @media (prefers-contrast: more){ .header .logo a, .header .logo{background:none;-webkit-text-fill-color:#0B0F14;-webkit-text-stroke:0;text-shadow:none;color:#0B0F14} }
     .page{padding-top:36px}
 
     /* Slightly reduce hero video mock size for extra breathing room */
