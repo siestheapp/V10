@@ -67,10 +67,11 @@
     .size{position:absolute;top:10px;left:10px;padding:6px 10px;border-radius:999px;background:rgba(0,0,0,.45);backdrop-filter:blur(2px);color:#fff;font:700 12px/1 Inter;z-index:3}
 
     /* Legend row under title */
-    .legend-row{display:flex; align-items:center; gap:10px; margin-top:4px; margin-bottom:10px; color:#6F6F74; font:500 13px/1.25 Inter}
-    .legend-dot{width:18px; height:18px; border-radius:9999px; background:var(--petrol-400); box-shadow:0 0 0 2px rgba(0,163,163,.18); translate:0 1px; display:inline-grid; place-items:center}
-    .legend-dot svg{width:12px; height:12px; display:block}
-    .legend-text strong{color:#1F1F1F; font-weight:700}
+    .legend-row{display:flex; align-items:center; gap:10px; margin-top:6px; margin-bottom:10px; color:#667085; font:500 13px/1.25 Inter}
+    .legend-dot{width:8px; height:8px; border-radius:9999px; background:#66E3D4; box-shadow:0 0 0 2px rgba(102,227,212,.18); transform:translateY(1px)}
+    .legend-icon{display:inline-flex; width:16px; height:16px; color:#344054}
+    .legend-icon svg{width:100%; height:100%; display:block}
+    .legend-text strong{color:#1F2A37; font-weight:600}
     
 
     .card{position:relative}
@@ -78,16 +79,14 @@
     /* proxy pill (upper-right) */
     .proxy-pill{
       position:absolute; top:10px; right:10px; z-index:3;
-      display:inline-flex; align-items:center; gap:2px;
-      padding:4px 5px; height:28px; border-radius:9999px;
-      font:700 12px/1 Inter; letter-spacing:.01em;
-      color:var(--petrol-600); background:var(--petrol-100);
-      border:1px solid var(--petrol-400);
-      box-shadow:0 2px 8px rgba(0,163,163,.12);
-      cursor:default; user-select:none;
+      display:inline-flex; align-items:center; gap:4px;
+      height:28px; padding:0 8px; border-radius:9999px;
+      background:#E9FBF8; border:1px solid #BBF2EA;
+      color:#056B5D; font:600 13px/1 Inter; cursor:default; user-select:none;
+      box-shadow:0 1px 2px rgba(2,122,115,.08);
     }
-    .proxy-pill .icon{display:block; width:1.05em; height:1.05em; line-height:1}
-    .proxy-pill .icon svg{display:block; width:100%; height:100%; vertical-align:middle}
+    .proxy-pill .icon{display:block; width:14px; height:14px}
+    .proxy-pill .icon svg{display:block; width:100%; height:100%; stroke:currentColor; stroke-width:2; fill:none; transform:translateY(.5px)}
     .proxy-pill .count{line-height:1; font-feature-settings:"tnum" 1}
     .proxy-pill[aria-disabled="true"]{opacity:.5}
 
@@ -156,12 +155,11 @@
       <div class="content">
         <h1 class="title">Your Closet</h1>
         <div class="legend-row" role="note">
-          <span class="legend-dot" aria-hidden="true">
-            <svg viewBox="0 0 24 24" aria-hidden="true">
-              <path d="M4 7h16M4 12h16M4 17h16" fill="none" stroke="#ffffff" stroke-width="2" stroke-linecap="round"/>
-            </svg>
+          <span class="legend-dot" aria-hidden="true"></span>
+          <span class="legend-icon" aria-hidden="true">
+            <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 7h16M4 12h16M4 17h16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
           </span>
-          <span class="legend-text"><strong>Proxies</strong> – users who wear this item in your size</span>
+          <span class="legend-text"><strong>Proxies</strong> — people who own this in your size</span>
         </div>
 
         <div id="items" class="grid">
