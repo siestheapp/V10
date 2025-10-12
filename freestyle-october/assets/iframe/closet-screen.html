@@ -63,15 +63,8 @@
     .overlay{position:absolute;inset:auto 0 0 0;padding:10px 10px 12px;background:linear-gradient(180deg,rgba(0,0,0,0) 0%,rgba(0,0,0,.55) 60%,rgba(0,0,0,.75) 100%);color:#fff}
     .brand{font:700 11px/1 Inter;letter-spacing:.04em;opacity:.95}
     .name{font:600 14px/1.2 Inter;margin-top:2px}
-    /* legacy .size retained if referenced elsewhere, but not used on cards */
-    .size{display:none}
-    .size-chip{
-      position:absolute; top:10px; left:10px; z-index:3;
-      height:28px; padding:0 10px; border-radius:999px;
-      background:#fff; border:1px solid rgba(0,0,0,.08);
-      box-shadow:0 2px 6px rgba(0,0,0,.08);
-      font:800 12px/1 Inter; color:#1f1f1f; display:inline-flex; align-items:center;
-    }
+    /* Size chip (original dark translucent badge at top-left) */
+    .size{position:absolute;top:10px;left:10px;padding:6px 10px;border-radius:999px;background:rgba(0,0,0,.45);backdrop-filter:blur(2px);color:#fff;font:700 12px/1 Inter;z-index:3}
 
     /* Legend and proxy elements */
     .legend{margin:4px 0 10px; font:600 12px/1.2 Inter; color:#6F6F74}
@@ -160,7 +153,7 @@
         <div id="items" class="grid">
           <!-- Cards (use data-category for filtering) -->
           <article class="card" data-category="dresses" data-name="GEORGIA HARDINGE Relic Dress" data-size="UK 8">
-            <span class="size-chip" aria-label="Your size for this item">UK 8</span>
+            <span class="size" aria-label="Your size for this item">UK 8</span>
             <button class="proxy-badge" aria-label="2 proxies for this item in your size">
               <svg class="equiv-icon" viewBox="0 0 12 12" width="10" height="10" aria-hidden="true">
                 <rect x="0" y="1" width="12" height="2" rx="1"/>
@@ -174,7 +167,7 @@
           </article>
 
           <article class="card" data-category="tops" data-name="Reformation Taryn Two Piece" data-size="2">
-            <span class="size-chip" aria-label="Your size for this item">2</span>
+            <span class="size" aria-label="Your size for this item">2</span>
             <button class="proxy-badge" aria-label="2 proxies for this item in your size">
               <svg class="equiv-icon" viewBox="0 0 12 12" width="10" height="10" aria-hidden="true">
                 <rect x="0" y="1" width="12" height="2" rx="1"/>
@@ -188,7 +181,7 @@
           </article>
 
           <article class="card" data-category="tops" data-name="ALFIE Open Back Cotton Poplin Top" data-size="Small">
-            <span class="size-chip" aria-label="Your size for this item">Small</span>
+            <span class="size" aria-label="Your size for this item">Small</span>
             <button class="proxy-badge" aria-label="2 proxies for this item in your size">
               <svg class="equiv-icon" viewBox="0 0 12 12" width="10" height="10" aria-hidden="true">
                 <rect x="0" y="1" width="12" height="2" rx="1"/>
@@ -202,7 +195,7 @@
           </article>
 
           <article class="card" data-category="bottoms" data-name="AYR The Secret Sauce" data-size="26S">
-            <span class="size-chip" aria-label="Your size for this item">26S</span>
+            <span class="size" aria-label="Your size for this item">26S</span>
             <button class="proxy-badge" aria-label="2 proxies for this item in your size">
               <svg class="equiv-icon" viewBox="0 0 12 12" width="10" height="10" aria-hidden="true">
                 <rect x="0" y="1" width="12" height="2" rx="1"/>
@@ -216,7 +209,7 @@
           </article>
 
           <article class="card" data-category="bottoms" data-name="ZARA Flare Pants" data-size="M">
-            <span class="size-chip" aria-label="Your size for this item">M</span>
+            <span class="size" aria-label="Your size for this item">M</span>
             <button class="proxy-badge" aria-label="2 proxies for this item in your size">
               <svg class="equiv-icon" viewBox="0 0 12 12" width="10" height="10" aria-hidden="true">
                 <rect x="0" y="1" width="12" height="2" rx="1"/>
@@ -230,7 +223,7 @@
           </article>
 
           <article class="card" data-category="tops" data-name="COS Shrunken T-shirt" data-size="XS">
-            <span class="size-chip" aria-label="Your size for this item">XS</span>
+            <span class="size" aria-label="Your size for this item">XS</span>
             <button class="proxy-badge" aria-label="2 proxies for this item in your size">
               <svg class="equiv-icon" viewBox="0 0 12 12" width="10" height="10" aria-hidden="true">
                 <rect x="0" y="1" width="12" height="2" rx="1"/>
@@ -244,7 +237,7 @@
           </article>
 
           <article class="card" data-category="dresses" data-name="ALEXIS Briette Satin Maxi Dress" data-size="S">
-            <span class="size-chip" aria-label="Your size for this item">S</span>
+            <span class="size" aria-label="Your size for this item">S</span>
             <button class="proxy-badge" aria-label="2 proxies for this item in your size">
               <svg class="equiv-icon" viewBox="0 0 12 12" width="10" height="10" aria-hidden="true">
                 <rect x="0" y="1" width="12" height="2" rx="1"/>
