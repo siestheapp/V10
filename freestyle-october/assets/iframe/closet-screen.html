@@ -63,19 +63,32 @@
     .overlay{position:absolute;inset:auto 0 0 0;padding:10px 10px 12px;background:linear-gradient(180deg,rgba(0,0,0,0) 0%,rgba(0,0,0,.55) 60%,rgba(0,0,0,.75) 100%);color:#fff}
     .brand{font:700 11px/1 Inter;letter-spacing:.04em;opacity:.95}
     .name{font:600 14px/1.2 Inter;margin-top:2px}
-    .size{position:absolute;top:10px;left:10px;padding:6px 10px;border-radius:999px;background:rgba(0,0,0,.45);backdrop-filter:blur(2px);color:#fff;font:700 12px/1 Inter}
+    /* legacy .size retained if referenced elsewhere, but not used on cards */
+    .size{display:none}
+    .size-chip{
+      position:absolute; top:10px; left:10px; z-index:3;
+      height:28px; padding:0 10px; border-radius:999px;
+      background:#fff; border:1px solid rgba(0,0,0,.08);
+      box-shadow:0 2px 6px rgba(0,0,0,.08);
+      font:800 12px/1 Inter; color:#1f1f1f; display:inline-flex; align-items:center;
+    }
 
     /* Legend and proxy elements */
-    .legend{margin:6px 0 8px; font:600 12px/1.2 Inter; color:#6F6F74}
-    .legend .equiv{font-weight:800; margin-right:6px; color:#1fada2}
+    .legend{margin:4px 0 10px; font:600 12px/1.2 Inter; color:#6F6F74}
+    .legend .equiv{font-weight:900; margin-right:6px; color:#10a6a0}
 
     .card{position:relative}
+    .card img{display:block; border-radius:14px}
     .proxy-badge{
-      position:absolute; top:10px; right:10px; z-index:2;
-      padding:6px 9px; border-radius:999px; border:1px solid rgba(0,0,0,.08);
-      background:#fff; font:800 12px/1 Inter; color:#1f1f1f; box-shadow:0 2px 6px rgba(0,0,0,.08);
+      position:absolute; top:10px; right:10px; z-index:3;
+      width:28px; height:28px; border-radius:999px; padding:0;
+      background:#fff; border:1px solid rgba(0,0,0,.08);
+      box-shadow:0 2px 6px rgba(0,0,0,.08);
+      font:800 12px/1 Inter; color:#1f1f1f; display:inline-flex; align-items:center; justify-content:center;
       cursor:pointer;
     }
+    .proxy-badge .count{margin-left:2px; font-weight:900}
+    .proxy-badge[aria-disabled="true"]{opacity:.5}
 
     /* bottom sheet */
     .sheet{position:fixed; inset:0; background:rgba(0,0,0,.3); display:flex; align-items:flex-end}
@@ -141,56 +154,56 @@
 
       <div class="content">
         <h1 class="title">Your Closet</h1>
-        <p class="legend"><span class="equiv">≡</span> Proxies — people who own this in your size</p>
+        <p class="legend"><span class="equiv">≡</span> Proxies: people who own this in your size</p>
 
         <div id="items" class="grid">
           <!-- Cards (use data-category for filtering) -->
           <article class="card" data-category="dresses" data-name="GEORGIA HARDINGE Relic Dress" data-size="UK 8">
-            <button class="proxy-badge" aria-label="2 proxies: people who own this in your size">≡2</button>
+            <span class="size-chip" aria-label="Your size for this item">UK 8</span>
+            <button class="proxy-badge" aria-label="2 proxies for this item in your size">≡<span class="count">2</span></button>
             <img class="img tall" src="https://cdn.modaoperandi.com/assets/images/products/1048452/695474/c2/large_georgia-hardinge-gold-relic-dress.jpg?_v=1755324586" alt="Georgia Hardinge Relic Pleated Metallic‑Knit Maxi Dress">
-            <span class="size">UK 8</span>
             <div class="overlay"><div class="brand">GEORGIA HARDINGE</div><div class="name">Relic Pleated Metallic‑Knit Maxi Dress</div></div>
           </article>
 
           <article class="card" data-category="tops" data-name="Reformation Taryn Two Piece" data-size="2">
-            <button class="proxy-badge" aria-label="2 proxies: people who own this in your size">≡2</button>
+            <span class="size-chip" aria-label="Your size for this item">2</span>
+            <button class="proxy-badge" aria-label="2 proxies for this item in your size">≡<span class="count">2</span></button>
             <img class="img" src="https://media.thereformation.com/image/upload/f_auto,q_auto:eco,dpr_2.0/w_500/PRD-SFCC/1314122/BLACK/1314122.1.BLACK?_s=RAABAB0" alt="Reformation Taryn Two Piece">
-            <span class="size">2</span>
             <div class="overlay"><div class="brand">REFORMATION</div><div class="name">Taryn Two Piece</div></div>
           </article>
 
           <article class="card" data-category="tops" data-name="ALFIE Open Back Cotton Poplin Top" data-size="Small">
-            <button class="proxy-badge" aria-label="2 proxies: people who own this in your size">≡2</button>
+            <span class="size-chip" aria-label="Your size for this item">Small</span>
+            <button class="proxy-badge" aria-label="2 proxies for this item in your size">≡<span class="count">2</span></button>
             <img class="img" src="https://cdn.modaoperandi.com/assets/images/products/1028958/674197/c/large_alfie-white-backless-top.jpg?_v=1755087491" alt="ALFIE Open Back Cotton Poplin Top">
-            <span class="size">Small</span>
             <div class="overlay"><div class="brand">ALFIE</div><div class="name">Open Back Cotton Poplin Top</div></div>
           </article>
 
           <article class="card" data-category="bottoms" data-name="AYR The Secret Sauce" data-size="26S">
-            <button class="proxy-badge" aria-label="2 proxies: people who own this in your size">≡2</button>
+            <span class="size-chip" aria-label="Your size for this item">26S</span>
+            <button class="proxy-badge" aria-label="2 proxies for this item in your size">≡<span class="count">2</span></button>
             <img class="img" src="https://www.ayr.com/cdn/shop/files/secretsauce-goodmood_CAT_d634f664-cb49-4e61-abef-5d94b707075e.jpg?crop=center&height=1440&v=1755036845&width=950" alt="AYR The Secret Sauce">
-            <span class="size">26S</span>
             <div class="overlay"><div class="brand">AYR</div><div class="name">The Secret Sauce</div></div>
           </article>
 
           <article class="card" data-category="bottoms" data-name="ZARA Flare Pants" data-size="M">
-            <button class="proxy-badge" aria-label="2 proxies: people who own this in your size">≡2</button>
+            <span class="size-chip" aria-label="Your size for this item">M</span>
+            <button class="proxy-badge" aria-label="2 proxies for this item in your size">≡<span class="count">2</span></button>
             <img class="img" src="https://static.zara.net/assets/public/a4e8/d8da/2c3b44728736/7e4b4c39762b/03152505800-a1/03152505800-a1.jpg?ts=1753971869534&w=1900" alt="ZARA Flare Pants">
-            <span class="size">M</span>
             <div class="overlay"><div class="brand">ZARA</div><div class="name">Flare Pants</div></div>
           </article>
 
           <article class="card" data-category="tops" data-name="COS Shrunken T-shirt" data-size="XS">
-            <button class="proxy-badge" aria-label="2 proxies: people who own this in your size">≡2</button>
+            <span class="size-chip" aria-label="Your size for this item">XS</span>
+            <button class="proxy-badge" aria-label="2 proxies for this item in your size">≡<span class="count">2</span></button>
             <img class="img" src="https://media.cos.com/assets/001/6e/d0/6ed0142c6e69ad42e826224d9a8d013f6d3f4685_xxl-1.jpg?imwidth=2160" alt="COS Shrunken T-shirt">
-            <span class="size">XS</span>
             <div class="overlay"><div class="brand">COS</div><div class="name">Shrunken T‑shirt</div></div>
           </article>
 
           <article class="card" data-category="dresses" data-name="ALEXIS Briette Satin Maxi Dress" data-size="S">
-            <button class="proxy-badge" aria-label="2 proxies: people who own this in your size">≡2</button>
+            <span class="size-chip" aria-label="Your size for this item">S</span>
+            <button class="proxy-badge" aria-label="2 proxies for this item in your size">≡<span class="count">2</span></button>
             <img class="img tall" src="https://cdn.modaoperandi.com/assets/images/products/1039207/685257/c/large_alexis-blue-briette-dress.jpg?_v=1755195214" alt="ALEXIS Briette Satin Maxi Dress">
-            <span class="size">S</span>
             <div class="overlay"><div class="brand">ALEXIS</div><div class="name">Briette Satin Maxi Dress</div></div>
           </article>
         </div>
