@@ -68,13 +68,10 @@
 
     /* Legend row under title */
     .legend-row{display:flex; align-items:center; gap:10px; margin-top:4px; margin-bottom:10px; color:#6F6F74; font:500 13px/1.25 Inter}
-    .legend-dot{width:8px; height:8px; border-radius:9999px; background:var(--petrol-400); box-shadow:0 0 0 2px rgba(0,163,163,.18); translate:0 1px}
-    .legend-icon{display:inline-flex; width:16px; height:16px; color:#4C4C50}
-    .legend-icon svg{width:100%; height:100%; display:block}
+    .legend-dot{width:18px; height:18px; border-radius:9999px; background:var(--petrol-400); box-shadow:0 0 0 2px rgba(0,163,163,.18); translate:0 1px; display:inline-grid; place-items:center}
+    .legend-dot svg{width:12px; height:12px; display:block}
     .legend-text strong{color:#1F1F1F; font-weight:700}
-    .legend-help{margin-left:6px; padding:4px 8px; border-radius:9999px; background:#F2F4F7; color:#344054; font-weight:600; font-size:12px; border:1px solid #ECEFF3; line-height:1; white-space:nowrap}
-    .legend-help:hover{background:#EEF2F6}
-    .legend-help:active{transform:translateY(.5px)}
+    
 
     .card{position:relative}
     .card img{display:block; border-radius:14px}
@@ -159,12 +156,12 @@
       <div class="content">
         <h1 class="title">Your Closet</h1>
         <div class="legend-row" role="note">
-          <span class="legend-dot" aria-hidden="true"></span>
-          <span class="legend-icon" aria-hidden="true">
-            <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 7h16M4 12h16M4 17h16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
+          <span class="legend-dot" aria-hidden="true">
+            <svg viewBox="0 0 24 24" aria-hidden="true">
+              <path d="M4 7h16M4 12h16M4 17h16" fill="none" stroke="#ffffff" stroke-width="2" stroke-linecap="round"/>
+            </svg>
           </span>
-          <span class="legend-text"><strong>Proxies</strong> — people who own this in your size</span>
-          <button class="legend-help" type="button">What’s a proxy?</button>
+          <span class="legend-text"><strong>Proxies</strong> – users who wear this item in your size</span>
         </div>
 
         <div id="items" class="grid">
@@ -368,12 +365,7 @@
       }
     });
 
-    // Legend help opens the same proxy sheet for quick education
-    document.addEventListener('click', (e)=>{
-      const help = e.target.closest('.legend-help');
-      if(!help) return;
-      document.querySelector('#proxy-sheet')?.removeAttribute('hidden');
-    });
+    // (legend help removed as requested)
   </script>
 </body>
 </html>
