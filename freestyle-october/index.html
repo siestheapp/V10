@@ -89,7 +89,7 @@
             <h1 class="section-heading">Try on clothes by <s>proxy</s> <span class="brand-text">proxi</span><span class="brand-text">.</span></h1>
             <p class="section-subheading">No&nbsp;measuring. No&nbsp;guesswork. No&nbsp;surprises.</p>
           </header>
-          <form class="form" method="POST" action="/thanks" name="waitlist" data-netlify="true" netlify-honeypot="bot-field" autocomplete="on">
+          <form class="form" method="POST" action="/thanks.html" name="waitlist" data-netlify="true" netlify-honeypot="bot-field" autocomplete="on">
             <input type="hidden" name="form-name" value="waitlist">
             <p class="hidden"><label>Don't fill this out: <input name="bot-field"></label></p>
             <div class="form-space">
@@ -236,7 +236,7 @@
         <h2 class="section-heading">Be first to try Proxi</h2>
         <p class="section-subheading">Join the waitlist for early access and updates.</p>
       </header>
-      <form class="form" method="POST" action="/thanks" name="waitlist" data-netlify="true" netlify-honeypot="bot-field" autocomplete="on">
+      <form class="form" method="POST" action="/thanks.html" name="waitlist" data-netlify="true" netlify-honeypot="bot-field" autocomplete="on">
         <input type="hidden" name="form-name" value="waitlist">
         <p class="hidden"><label>Don't fill this out: <input name="bot-field"></label></p>
         <div class="form-space">
@@ -317,7 +317,7 @@
           history.replaceState(null, '', location.pathname + '?joined=1'); // keeps a clean URL state
         } catch (err) {
           // Fallback to normal redirect if something fails
-          window.location.href = '/thanks';
+          window.location.href = '/thanks.html';
         }
       });
     });
