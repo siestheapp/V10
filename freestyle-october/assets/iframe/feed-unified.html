@@ -76,8 +76,8 @@ body::before{
 }
 
 /* Enhanced Chips */
-.chips{display:flex;gap:8px;padding-top:10px;overflow-x:auto;-webkit-overflow-scrolling:touch;scrollbar-width:none}
-.chips{margin-top:6px}
+.chips{display:flex;gap:8px;padding-top:4px;overflow-x:auto;-webkit-overflow-scrolling:touch;scrollbar-width:none}
+.chips{margin-top:2px}
 .chips::-webkit-scrollbar{display:none}
 .chip{border:1px solid #E8E4DE;background:#fff;color:var(--ink);border-radius:9999px;padding:10px 16px;font-size:13px;font-weight:500;white-space:nowrap;transition:all 0.2s ease}
 .chip.is-active{border-color:var(--petrol-400);background:var(--petrol-100);color:var(--petrol-600);font-weight:600;box-shadow:0 2px 8px rgba(0,163,163,.12)}
@@ -96,10 +96,14 @@ body::before{
 .explainer .sym{font-weight:800;}
  
  /* Closet-style legend (inline, compact) */
- .legend{display:flex;align-items:baseline;gap:.28rem;margin-top:6px;font:500 13px/1.35 Inter;color:#6A7A87}
- .legend-term{font-weight:600;display:inline-flex;align-items:baseline;gap:.28rem;color:#34424D}
- .legend .equiv{display:inline-block;width:.92em;height:.62em;vertical-align:-0.08em;color:#056B5D}
- .legend .equiv svg{display:block;width:100%;height:100%;fill:currentColor}
+ .legend{display:flex;align-items:baseline;gap:.1rem;margin-top:12px;margin-bottom:6px;font-size:clamp(13px,1.7vw,16px);line-height:1.35;color:#6A7A87}
+ .legend-term{font-weight:600;display:inline-flex;align-items:baseline;gap:.1rem;color:#34424D}
+ .legend .equiv{display:inline-block;position:relative;width:1.2em;height:.8em;vertical-align:baseline;margin:0 0.05em}
+ .legend .equiv .bar{position:absolute;left:0.1em;width:1em;height:0.12em;border-radius:0.06em;background:linear-gradient(135deg, #008888 0%, #34C3CC 46%, #9BFFCF 100%)}
+ .legend .equiv .bar:nth-child(1){top:0.15em}
+ .legend .equiv .bar:nth-child(2){top:0.39em}
+ .legend .equiv .bar:nth-child(3){top:0.63em}
+ .legend-def{color:#6A7A87;font-weight:500}
 
 /* Feed */
 /* Feed scroll + spacing between cards */
@@ -438,8 +442,10 @@ body::before{
 .pc-link{margin-top:6px;font:600 12px/1.2 Inter;color:#009090}
 .pc-link-inline{margin-top:0;margin-left:8px;display:none;font:600 13px/1.45 Inter;color:#009090;white-space:nowrap}
 .pc-look-actions{display:flex;gap:14px;margin:16px 0 6px}
-.pc-btn-primary{display:inline-flex;align-items:center;justify-content:center;gap:8px;padding:12px 18px;border-radius:999px;background:linear-gradient(135deg, var(--cta-start), var(--cta-mid) 46%, var(--cta-end)); color:#fff; font:700 15px/1.1 Inter; border:1px solid rgba(0,0,0,.04)}
-.pc-btn-secondary{display:inline-flex;align-items:center;justify-content:center;gap:8px;padding:12px 18px;border-radius:999px;background:#fff;border:1px solid rgba(0,0,0,.10); color:#1F1F1F; font:700 15px/1.1 Inter}
+.pc-btn-primary{display:inline-flex;align-items:center;justify-content:center;gap:8px;padding:12px 18px;border-radius:999px;background:linear-gradient(135deg, var(--cta-start), var(--cta-mid) 46%, var(--cta-end)); color:#fff; font:700 15px/1.1 Inter; border:1px solid rgba(0,0,0,.04); transition:transform 0.2s ease, box-shadow 0.2s ease; cursor:pointer}
+.pc-btn-primary:hover{transform:translateY(-2px); box-shadow:0 4px 12px rgba(0,0,0,.08)}
+.pc-btn-secondary{display:inline-flex;align-items:center;justify-content:center;gap:8px;padding:12px 18px;border-radius:999px;background:#fff;border:1px solid rgba(0,0,0,.10); color:#1F1F1F; font:700 15px/1.1 Inter; transition:transform 0.2s ease, box-shadow 0.2s ease; cursor:pointer}
+.pc-btn-secondary:hover{transform:translateY(-2px); box-shadow:0 4px 12px rgba(0,0,0,.08)}
 .proxy-card + .card{margin-top:8px}
 
 /* Proxy carousel mechanics (namespaced) */
@@ -530,7 +536,7 @@ body::before{
             <button class="chip">New in</button>
           </div>
           <div class="legend" role="note">
-            <span class="legend-term">Proxies <span class="equiv" aria-hidden="true"><svg viewBox="0 0 12 8" fill="none" aria-hidden="true"><rect x="0" y="0" width="12" height="1.5" rx="0.75"/><rect x="0" y="3.25" width="12" height="1.5" rx="0.75"/><rect x="0" y="6.5" width="12" height="1.5" rx="0.75"/></svg></span></span>
+            <span class="legend-term">Proxies <span class="equiv" aria-hidden="true"><div class="bar"></div><div class="bar"></div><div class="bar"></div></span></span>
             <span class="legend-def">users who share your size</span>
           </div>
         </div>
@@ -561,8 +567,8 @@ body::before{
 
             <div class="pc-hero-wrap">
               <div class="pc-carousel" data-index="0">
-                <div class="pc-slide pc-active" data-brand="Anthropologie" data-title="Somerset Maxi Dress" data-size="XS" data-comments="12" data-q="Is this petite or regular?" data-a="Regular!">
-                  <img class="pc-hero-img pc-hero-img--tight" src="../img/videoframe_6964.png" alt="Somerset Maxi Dress — XS">
+                <div class="pc-slide pc-active" data-brand="Anthropologie" data-title="Somerset Chiffon Maxi Dress" data-size="XS" data-comments="12" data-q="Is this petite or regular?" data-a="Regular!">
+                  <img class="pc-hero-img pc-hero-img--tight" src="../img/videoframe_6964.png" alt="Somerset Chiffon Maxi Dress — XS">
                   <span class="pill-proxi pill-proxi--mark pill-top-right"
                         aria-label="Shared proxi item (Same as yours: XS)">
                     <span class="glyph" aria-hidden="true">
@@ -585,7 +591,7 @@ body::before{
             </div>
 
             <div class="pc-look-caption">
-              <p><span class="pc-user"><strong id="pcBrand">Anthropologie</strong></span> <span id="pcTitle">Somerset Maxi Dress</span> — <span id="pcSize">XS</span></p>
+              <p><span class="pc-user"><strong id="pcBrand">Anthropologie</strong></span> <span id="pcTitle">Somerset Chiffon Maxi Dress</span> <span id="pcSize">(XS)</span></p>
             </div>
 
             <div class="pc-comment-teaser" role="button" aria-label="View comments">
@@ -600,7 +606,7 @@ body::before{
             </div>
 
             <div class="pc-look-actions">
-              <button class="pc-btn-primary">Shop this item</button>
+              <button class="pc-btn-primary" id="shopButton">Shop this item</button>
               <button class="pc-btn-secondary">See more from ellaa76</button>
             </div>
           </section>
@@ -784,7 +790,7 @@ body::before{
       const { brand, title, size, comments, q, a } = slide.dataset || {};
       if(brandEl) brandEl.textContent = brand || '';
       if(titleEl) titleEl.textContent = title || '';
-      if(sizeEl)  sizeEl.textContent  = size || '';
+      if(sizeEl)  sizeEl.textContent  = size ? `(${size})` : '';
       if(cCountEl) cCountEl.textContent = comments || '0';
       if(cQEl) cQEl.textContent = q || '';
       if(cAEl){
@@ -804,6 +810,16 @@ body::before{
           cAEl.style.display = '';
           if(linkInline) linkInline.style.display = 'none';
           if(linkBlock)  linkBlock.style.display  = '';
+        }
+      }
+      
+      // Update shop button URL based on current slide
+      const shopButton = document.getElementById('shopButton');
+      if(shopButton && title) {
+        if(title === 'Somerset Chiffon Maxi Dress') {
+          shopButton.onclick = () => window.open('https://www.anthropologie.com/shop/the-somerset-chiffon-maxi-dress2', '_blank');
+        } else if(title === 'Peregrine Midi Dress') {
+          shopButton.onclick = () => window.open('https://www.anthropologie.com/shop/the-peregrine-midi-dress8', '_blank');
         }
       }
     }
@@ -834,6 +850,25 @@ body::before{
 
     show(0);
   })();
+</script>
+
+<script>
+  // Click handler for proxy card image
+  document.addEventListener('click', (e) => {
+    // Check if clicking on the proxy card hero image
+    if (e.target.classList.contains('pc-hero-img')) {
+      // Get the current active slide to determine which URL to open
+      const activeSlide = document.querySelector('.pc-slide.pc-active');
+      if (activeSlide) {
+        const title = activeSlide.dataset.title;
+        if (title === 'Somerset Chiffon Maxi Dress') {
+          window.open('https://www.anthropologie.com/shop/the-somerset-chiffon-maxi-dress2', '_blank');
+        } else if (title === 'Peregrine Midi Dress') {
+          window.open('https://www.anthropologie.com/shop/the-peregrine-midi-dress8', '_blank');
+        }
+      }
+    }
+  });
 </script>
 
 <script>
