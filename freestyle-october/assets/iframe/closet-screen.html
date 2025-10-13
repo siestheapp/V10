@@ -76,38 +76,30 @@
 
     .card{position:relative}
     .card img{display:block; border-radius:14px}
-    /* --- Proxi Pill v2 (signature style) --- */
-    .proxy-pill {
-      position: absolute;
-      top: 10px; right: 10px; z-index: 3;
-      display: inline-flex; align-items: center; justify-content: center;
-      gap: 4px;
-      height: 24px; padding: 0 8px;
-      border-radius: 9999px;
-      background: linear-gradient(135deg, #A6FFCB 0%, #7FE1FF 100%);
-      border: 1px solid rgba(0,144,144,0.25);
-      color: #006C6C; /* petrol-700 */
-      font: 700 12px/1 Inter, sans-serif;
-      box-shadow: 0 2px 4px rgba(0,0,0,.08);
-      user-select: none; cursor: default;
+    /* --- Proxi Pill · signature (tight + high-contrast) v4 --- */
+    .proxy-pill{
+      position:absolute !important; top:10px !important; right:10px !important; z-index:3 !important;
+      display:inline-flex !important; align-items:center !important; justify-content:center !important; gap:2px !important;
+      height:18px !important; padding:0 4px !important;                /* ultra-tight: 18px tall, 4px sides */
+      border-radius:9999px !important;
+      background:#FFFFFF !important;                         /* strong contrast on imagery */
+      border:1px solid rgba(0,0,0,.16) !important;           /* neutral stroke for definition */
+      box-shadow:0 2px 6px rgba(0,0,0,.12) !important;
+      color:#0B3D3A !important;                              /* deep petrol ink */
+      font:700 10px/1 Inter, system-ui, -apple-system, "Segoe UI", Roboto, Helvetica, Arial !important;
+      user-select:none !important; cursor:default !important;
     }
 
-    /* Triple bar glyph */
-    .proxy-pill .icon {
-      display: flex; align-items: center; justify-content: center;
-      width: 12px; height: 12px;
+    /* Triple bar glyph - custom rectangles */
+    .proxy-pill .icon{
+      display:flex; flex-direction:column; align-items:center; justify-content:center; 
+      width:8px; height:8px; gap:0.8px;
     }
-    .proxy-pill .icon svg {
-      display: block; width: 100%; height: 100%;
-      fill: currentColor; stroke: none;
-      transform: translateY(-0.5px);
+    .proxy-pill .icon .bar{
+      width:6px; height:1.2px; border-radius:1px;
+      background:linear-gradient(135deg, #008888 0%, #34C3CC 46%, #9BFFCF 100%) !important;
     }
-
-    /* Count styling */
-    .proxy-pill .count {
-      font-weight: 700;
-      font-feature-settings: "tnum";
-    }
+    .proxy-pill .count{font-weight:800; font-feature-settings:"tnum" 1; background:linear-gradient(135deg,var(--cta-start),var(--cta-mid) 46%,var(--cta-end)); -webkit-background-clip:text; background-clip:text; -webkit-text-fill-color:transparent}
 
     /* Disabled (if needed) */
     .proxy-pill[aria-disabled="true"] { opacity: .45; }
@@ -153,6 +145,16 @@
   </style>
 </head>
 <body>
+  <!-- SVG gradient definition for Proxi blue -->
+  <svg style="position:absolute;width:0;height:0;" aria-hidden="true">
+    <defs>
+      <linearGradient id="proxi-gradient" x1="0%" y1="0%" x2="100%" y2="100%">
+        <stop offset="0%" style="stop-color:#008888;stop-opacity:1" />
+        <stop offset="46%" style="stop-color:#34C3CC;stop-opacity:1" />
+        <stop offset="100%" style="stop-color:#9BFFCF;stop-opacity:1" />
+      </linearGradient>
+    </defs>
+  </svg>
   <div class="phone">
     <div class="screen" data-view="list">
       <div class="island"></div>
@@ -190,9 +192,9 @@
             <span class="size" aria-label="Your size for this item">UK 8</span>
             <button class="proxy-pill" aria-label="2 proxies for this item in your size">
               <span class="icon" aria-hidden="true">
-                <svg viewBox="0 0 24 24" role="img" focusable="false" aria-hidden="true">
-                  <path d="M4 7h16M4 12h16M4 17h16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
-                </svg>
+                <div class="bar"></div>
+                <div class="bar"></div>
+                <div class="bar"></div>
               </span>
               <span class="count">2</span>
             </button>
@@ -204,9 +206,9 @@
             <span class="size" aria-label="Your size for this item">2</span>
             <button class="proxy-pill" aria-label="2 proxies for this item in your size">
               <span class="icon" aria-hidden="true">
-                <svg viewBox="0 0 24 24" role="img" focusable="false" aria-hidden="true">
-                  <path d="M4 7h16M4 12h16M4 17h16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
-                </svg>
+                <div class="bar"></div>
+                <div class="bar"></div>
+                <div class="bar"></div>
               </span>
               <span class="count">2</span>
             </button>
@@ -218,9 +220,9 @@
             <span class="size" aria-label="Your size for this item">Small</span>
             <button class="proxy-pill" aria-label="2 proxies for this item in your size">
               <span class="icon" aria-hidden="true">
-                <svg viewBox="0 0 24 24" role="img" focusable="false" aria-hidden="true">
-                  <path d="M4 7h16M4 12h16M4 17h16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
-                </svg>
+                <div class="bar"></div>
+                <div class="bar"></div>
+                <div class="bar"></div>
               </span>
               <span class="count">2</span>
             </button>
@@ -232,9 +234,9 @@
             <span class="size" aria-label="Your size for this item">26S</span>
             <button class="proxy-pill" aria-label="2 proxies for this item in your size">
               <span class="icon" aria-hidden="true">
-                <svg viewBox="0 0 24 24" role="img" focusable="false" aria-hidden="true">
-                  <path d="M4 7h16M4 12h16M4 17h16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
-                </svg>
+                <div class="bar"></div>
+                <div class="bar"></div>
+                <div class="bar"></div>
               </span>
               <span class="count">2</span>
             </button>
@@ -246,9 +248,9 @@
             <span class="size" aria-label="Your size for this item">M</span>
             <button class="proxy-pill" aria-label="2 proxies for this item in your size">
               <span class="icon" aria-hidden="true">
-                <svg viewBox="0 0 24 24" role="img" focusable="false" aria-hidden="true">
-                  <path d="M4 7h16M4 12h16M4 17h16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
-                </svg>
+                <div class="bar"></div>
+                <div class="bar"></div>
+                <div class="bar"></div>
               </span>
               <span class="count">2</span>
             </button>
@@ -260,9 +262,9 @@
             <span class="size" aria-label="Your size for this item">XS</span>
             <button class="proxy-pill" aria-label="2 proxies for this item in your size">
               <span class="icon" aria-hidden="true">
-                <svg viewBox="0 0 24 24" role="img" focusable="false" aria-hidden="true">
-                  <path d="M4 7h16M4 12h16M4 17h16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
-                </svg>
+                <div class="bar"></div>
+                <div class="bar"></div>
+                <div class="bar"></div>
               </span>
               <span class="count">2</span>
             </button>
@@ -274,9 +276,9 @@
             <span class="size" aria-label="Your size for this item">S</span>
             <button class="proxy-pill" aria-label="2 proxies for this item in your size">
               <span class="icon" aria-hidden="true">
-                <svg viewBox="0 0 24 24" role="img" focusable="false" aria-hidden="true">
-                  <path d="M4 7h16M4 12h16M4 17h16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
-                </svg>
+                <div class="bar"></div>
+                <div class="bar"></div>
+                <div class="bar"></div>
               </span>
               <span class="count">2</span>
             </button>
