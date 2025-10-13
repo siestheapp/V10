@@ -257,13 +257,21 @@
 </footer>
 
 <script>
-  // Simple analytics tracker for mockup clicks
+  // Simple analytics tracker for mockup clicks (sends to Formspree)
   (function () {
-    const COLLECT_URL = '/.netlify/functions/collect';
+    const COLLECT_URL = 'https://formspree.io/f/meorpayo';
 
     function track(eventName, detail) {
       try {
-        navigator.sendBeacon && navigator.sendBeacon(COLLECT_URL, new Blob([JSON.stringify({ event: eventName, detail, ts: Date.now(), path: location.pathname })], { type: 'application/json' }));
+        if(!navigator.sendBeacon) return;
+        const fd = new FormData();
+        fd.append('type', eventName);
+        fd.append('key', (detail && detail.key) || '');
+        fd.append('meta', JSON.stringify((detail && detail.meta) || {}));
+        fd.append('path', location.pathname);
+        fd.append('ts', String(Date.now()));
+        fd.append('_subject', 'Proxi click');
+        navigator.sendBeacon(COLLECT_URL, fd);
       } catch (e) {
         // no-op
       }
