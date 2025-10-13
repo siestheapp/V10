@@ -465,7 +465,7 @@
         </div>
 
           <form id="waitlist" class="cta"
-      name="waitlist" method="POST" action="/thanks"
+      name="waitlist" method="POST" action="/thanks.html"
       data-netlify="true" netlify-honeypot="bot-field" autocomplete="on">
   <!-- Required hidden fields for Netlify -->
   <input type="hidden" name="form-name" value="waitlist" />
@@ -626,7 +626,7 @@
         <h2>Be first to try Sies</h2>
         <p class="lede">Join the waitlist for early access and updates.</p>
         <form class="cta"
-      name="waitlist" method="POST" action="/thanks"
+      name="waitlist" method="POST" action="/thanks.html"
       data-netlify="true" netlify-honeypot="bot-field"
       style="justify-content:center;margin-top:10px" autocomplete="on">
   <!-- Required hidden fields for Netlify -->
@@ -709,7 +709,7 @@
         history.replaceState(null, '', location.pathname + '?joined=1'); // keeps a clean URL state
       } catch (err) {
         // Fallback to normal redirect if something fails
-        window.location.href = '/thanks';
+        window.location.href = '/thanks.html';
       }
     });
   });
