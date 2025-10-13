@@ -494,7 +494,13 @@ body::before{
 
 /* Mark variant: ≡ (no number) — on other user's photo when that image is the shared item */
 .pill-proxi--mark{ 
-  padding:0 8px !important; /* explicitly match count pill padding */
+  padding:0 6px !important; /* reduced left/right padding */
+}
+.pill-proxi--mark .glyph{
+  width:15px; height:15px; /* 50% larger than base 10px */
+}
+.pill-proxi--mark .glyph .bar{
+  width:11.4px; height:2.1px; /* 50% larger than base 7.6px × 1.4px */
 }
 
 /* Placement helpers for overlays */
