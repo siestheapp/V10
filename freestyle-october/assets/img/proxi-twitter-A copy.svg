@@ -12,8 +12,8 @@
   </defs>
 
   <!-- Warm, premium canvas -->
-  <rect width="400" height="400" rx="28" fill="#F7EFE7"/>
-  <rect width="400" height="400" rx="28" fill="#F7EFE7" filter="url(#shadow)"/>
+  <rect width="400" height="400" rx="28" fill="#FCFAF7"/>
+  <rect width="400" height="400" rx="28" fill="#FCFAF7" filter="url(#shadow)"/>
 
   <!-- Wordmark (no underline) -->
   <text x="200" y="210"
