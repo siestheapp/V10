@@ -400,7 +400,7 @@ body::before{
 <style>
 /* ===== Proxy card (namespaced from size-twin) ===== */
 .proxy-card{background:#fff;border:1px solid rgba(0,0,0,.06);border-radius:18px;padding:12px 12px 14px}
-.pc-look-h{display:flex;align-items:center;gap:10px;padding:6px 6px 10px}
+.pc-look-h{display:flex;align-items:center;gap:10px;padding:2px 6px 10px}
 .pc-avatar{width:34px;height:34px;border-radius:10px;object-fit:cover}
 .pc-avatar--circle{border-radius:999px}
 .pc-name{font:700 14px/1.2 Inter;color:#2F2F33}
@@ -418,7 +418,7 @@ body::before{
 .pc-hero-wrap{position:relative}
 .pc-carousel{position:relative}
 .pc-hero-img{display:block;width:100%;height:520px;object-fit:cover;border-radius:14px}
-.pc-hero-img--tight{object-position:center 22%}
+.pc-hero-img--tight{object-position:center 0% !important}
 .pc-chip{
   position:absolute;top:10px;left:10px;z-index:2;
   padding:6px 10px;border-radius:999px;
@@ -454,7 +454,7 @@ body::before{
 .proxy-card .pc-slide.pc-active{ opacity:1; }
 .proxy-card .pc-hero-img{
   display:block; width:100%; height:520px;
-  object-fit:cover; object-position:center 22%; border-radius:14px;
+  object-fit:cover; object-position:center 0% !important; border-radius:14px;
 }
 /* Proxy carousel nav controls (mirrors size-twin .carousel .nav) */
 .proxy-card .pc-carousel .pc-nav{position:absolute;top:50%;transform:translateY(-50%);width:32px;height:32px;border-radius:999px;background:rgba(0,0,0,.35);color:#fff;display:flex;align-items:center;justify-content:center;border:none;cursor:pointer;font-size:0}
@@ -481,11 +481,11 @@ body::before{
 /* Triple bar glyph - custom rectangles */
 .pill-proxi .glyph{
   display:flex; flex-direction:column; align-items:center; justify-content:center; 
-  width:10px; height:10px; gap:1px;
+  width:11px; height:11px; gap:1px;
 }
 .pill-proxi .glyph .bar{
-  width:7.6px; height:1.4px; border-radius:1px;
-  background:linear-gradient(135deg, #008888 0%, #34C3CC 46%, #9BFFCF 100%) !important;
+  width:8.4px; height:1.5px; border-radius:1px;
+  background:linear-gradient(135deg, #008888 0%, #34C3CC 46%, #7FE1FF 100%) !important;
 }
 
 /* Count styling */
@@ -669,7 +669,7 @@ body::before{
                   <span class="badge">≈</span>
                 </div>
                 <p class="advice-inline advice-next">Prefer a slimmer look? XS will match the bust but feel snug at waist and hips (1–2″ smaller)</p>
-                <a class="shop-inline" href="#" aria-label="Shop size S">Shop S →</a>
+                <a class="shop-inline" href="https://www.anthropologie.com/shop/the-jocelyn-sleeveless-slip-midi-dress-by-maeve?category=top-rated-dresses&color=256&type=STANDARD&quantity=1" target="_blank" aria-label="Shop size S">Shop S →</a>
               </div>
 
               <!-- 3) Fit blurb -->
@@ -679,7 +679,7 @@ body::before{
 
               <!-- 4) Shop CTA -->
               <div class="shop-row">
-                <a class="shop-link" href="#shop-s">Shop S</a>
+                <a class="shop-link" href="https://www.anthropologie.com/shop/the-jocelyn-sleeveless-slip-midi-dress-by-maeve?category=top-rated-dresses&color=256&type=STANDARD&quantity=1" target="_blank">Shop S</a>
               </div>
             </div>
           </div>
@@ -867,6 +867,11 @@ body::before{
           window.open('https://www.anthropologie.com/shop/the-peregrine-midi-dress8', '_blank');
         }
       }
+    }
+    
+    // Check if clicking on the second card image
+    if (e.target.classList.contains('img') && e.target.closest('.card:not(.proxy-card)')) {
+      window.open('https://www.anthropologie.com/shop/the-jocelyn-sleeveless-slip-midi-dress-by-maeve?category=top-rated-dresses&color=256&type=STANDARD&quantity=1', '_blank');
     }
   });
 </script>
