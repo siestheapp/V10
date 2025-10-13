@@ -465,7 +465,7 @@
         </div>
 
           <form id="waitlist" class="cta"
-      name="waitlist" method="POST" action="/thanks.html"
+      name="waitlist" method="POST" action="https://formspree.io/f/meorpayo"
       data-netlify="true" netlify-honeypot="bot-field" autocomplete="on">
   <!-- Required hidden fields for Netlify -->
   <input type="hidden" name="form-name" value="waitlist" />
@@ -626,7 +626,7 @@
         <h2>Be first to try Sies</h2>
         <p class="lede">Join the waitlist for early access and updates.</p>
         <form class="cta"
-      name="waitlist" method="POST" action="/thanks.html"
+      name="waitlist" method="POST" action="https://formspree.io/f/meorpayo"
       data-netlify="true" netlify-honeypot="bot-field"
       style="justify-content:center;margin-top:10px" autocomplete="on">
   <!-- Required hidden fields for Netlify -->
@@ -684,31 +684,24 @@
   </script>
 
   <script>
-(function () {
+  (function () {
+  const FORMSPREE_ENDPOINT = 'https://formspree.io/f/meorpayo';
   const forms = document.querySelectorAll('form[name="waitlist"][data-netlify="true"]');
-  function encode(data) {
-    return Object.keys(data).map(k => encodeURIComponent(k) + "=" + encodeURIComponent(data[k])).join("&");
-  }
+
   forms.forEach(form => {
     form.addEventListener('submit', async (e) => {
       e.preventDefault();
-      const data = Object.fromEntries(new FormData(form));
-      data['form-name'] = form.getAttribute('name');
       try {
-        const res = await fetch('/', {
+        const res = await fetch(FORMSPREE_ENDPOINT, {
           method: 'POST',
-          headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
-          body: encode(data)
+          headers: { 'Accept': 'application/json' },
+          body: new FormData(form)
         });
         if (!res.ok) throw new Error('Network');
-        // Optional: fire analytics here
-        // window.gtag?.('event','waitlist_signup');
-        // fbq?.('track','Lead');
 
         form.innerHTML = `<p style="margin:0.5rem 0 0; font-weight:600">You're in 🎉 We'll email you soon.</p>`;
-        history.replaceState(null, '', location.pathname + '?joined=1'); // keeps a clean URL state
+        history.replaceState(null, '', location.pathname + '?joined=1');
       } catch (err) {
-        // Fallback to normal redirect if something fails
         window.location.href = '/thanks.html';
       }
     });

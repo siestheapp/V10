@@ -89,7 +89,7 @@
             <h1 class="section-heading">Try on clothes by <s>proxy</s> <span class="brand-text">proxi</span><span class="brand-text">.</span></h1>
             <p class="section-subheading">No&nbsp;measuring. No&nbsp;guesswork. No&nbsp;surprises.</p>
           </header>
-          <form class="form" method="POST" action="/thanks.html" name="waitlist" data-netlify="true" netlify-honeypot="bot-field" autocomplete="on">
+          <form class="form" method="POST" action="https://formspree.io/f/meorpayo" name="waitlist" data-netlify="true" netlify-honeypot="bot-field" autocomplete="on">
             <input type="hidden" name="form-name" value="waitlist">
             <p class="hidden"><label>Don't fill this out: <input name="bot-field"></label></p>
             <div class="form-space">
@@ -236,7 +236,7 @@
         <h2 class="section-heading">Be first to try Proxi</h2>
         <p class="section-subheading">Join the waitlist for early access and updates.</p>
       </header>
-      <form class="form" method="POST" action="/thanks.html" name="waitlist" data-netlify="true" netlify-honeypot="bot-field" autocomplete="on">
+      <form class="form" method="POST" action="https://formspree.io/f/meorpayo" name="waitlist" data-netlify="true" netlify-honeypot="bot-field" autocomplete="on">
         <input type="hidden" name="form-name" value="waitlist">
         <p class="hidden"><label>Don't fill this out: <input name="bot-field"></label></p>
         <div class="form-space">
@@ -291,32 +291,23 @@
 
 <script>
   (function () {
+    const FORMSPREE_ENDPOINT = 'https://formspree.io/f/meorpayo';
     const forms = document.querySelectorAll('form[name="waitlist"][data-netlify="true"]');
-
-    function encode(data) {
-      return Object.keys(data).map(k => encodeURIComponent(k) + "=" + encodeURIComponent(data[k])).join("&");
-    }
 
     forms.forEach(form => {
       form.addEventListener('submit', async (e) => {
         e.preventDefault();
-        const data = Object.fromEntries(new FormData(form));
-        data['form-name'] = form.getAttribute('name');
         try {
-          const res = await fetch('/', {
+          const res = await fetch(FORMSPREE_ENDPOINT, {
             method: 'POST',
-            headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
-            body: encode(data)
+            headers: { 'Accept': 'application/json' },
+            body: new FormData(form)
           });
           if (!res.ok) throw new Error('Network');
-          // Optional: fire analytics here
-          // window.gtag?.('event','waitlist_signup');
-          // fbq?.('track','Lead');
 
-          form.innerHTML = `<p style="margin:0.5rem 0 0; font-weight:600">You're in 🎉 We'll email you soon.</p>`;
-          history.replaceState(null, '', location.pathname + '?joined=1'); // keeps a clean URL state
+          form.innerHTML = `<p style=\"margin:0.5rem 0 0; font-weight:600\">You're in 🎉 We'll email you soon.</p>`;
+          history.replaceState(null, '', location.pathname + '?joined=1');
         } catch (err) {
-          // Fallback to normal redirect if something fails
           window.location.href = '/thanks.html';
         }
       });
