@@ -456,6 +456,53 @@ body::before{
 .proxy-card .pc-carousel .pc-nav.right{right:10px}
 .proxy-card .pc-carousel .pc-nav.left::before{content:"\2039";font-size:18px;line-height:1;transform:translateX(-1px)}
 .proxy-card .pc-carousel .pc-nav.right::before{content:"\203A";font-size:18px;line-height:1;transform:translateX(1px)}
+
+/* === Proxi pills (≡ system) - Updated with custom CSS rectangles === */
+
+/* Base pill */
+.pill-proxi{
+  display:inline-flex !important; align-items:center !important; justify-content:center !important; gap:4px !important;
+  height:24px !important; padding:0 8px !important;                /* larger: 24px tall, 8px sides */
+  border-radius:9999px !important;
+  background:#FFFFFF !important;                         /* strong contrast on imagery */
+  border:1px solid rgba(0,0,0,.16) !important;           /* neutral stroke for definition */
+  box-shadow:0 2px 6px rgba(0,0,0,.12) !important;
+  color:#0B3D3A !important;                              /* deep petrol ink */
+  font:700 12px/1 Inter, system-ui, -apple-system, "Segoe UI", Roboto, Helvetica, Arial !important;
+  user-select:none !important; cursor:default !important;
+}
+
+/* Triple bar glyph - custom rectangles */
+.pill-proxi .glyph{
+  display:flex; flex-direction:column; align-items:center; justify-content:center; 
+  width:10px; height:10px; gap:1px;
+}
+.pill-proxi .glyph .bar{
+  width:7.6px; height:1.4px; border-radius:1px;
+  background:linear-gradient(135deg, #008888 0%, #34C3CC 46%, #9BFFCF 100%) !important;
+}
+
+/* Count styling */
+.pill-proxi .count{
+  font-weight:800; font-feature-settings:"tnum" 1;
+  background:linear-gradient(135deg,var(--cta-start),var(--cta-mid) 46%,var(--cta-end));
+  -webkit-background-clip:text; background-clip:text; -webkit-text-fill-color:transparent;
+}
+
+/* Count variant: ≡ n (username header or your closet items) */
+.pill-proxi--count{ background:#FFFFFF; }
+
+/* Mark variant: ≡ (no number) — on other user's photo when that image is the shared item */
+.pill-proxi--mark{ 
+  padding:0 8px !important; /* explicitly match count pill padding */
+}
+
+/* Placement helpers for overlays */
+.pill-top-right{ position:absolute; top:12px; right:12px; z-index:2; }
+.pill-top-left { position:absolute; top:12px; left:12px;  z-index:2; }
+
+/* Cap very large counts visually */
+.pill-proxi[data-count="99plus"] .count{ letter-spacing:-.5px; }
 </style>
 </head>
 <body class="view-feed">
@@ -489,7 +536,17 @@ body::before{
             <header class="pc-look-h">
               <img class="pc-avatar pc-avatar--circle" src="../img/videoframe_611.png" alt="ellaa76 profile photo">
               <div class="pc-name">ellaa76</div>
-              <div class="pc-bads"><span class="pc-badge">Size Twin</span></div>
+              <div class="pc-bads">
+                <span class="pill-proxi pill-proxi--count"
+                      aria-label="You and ellaa76 share 2 items in the same size">
+                  <span class="glyph" aria-hidden="true">
+                    <div class="bar"></div>
+                    <div class="bar"></div>
+                    <div class="bar"></div>
+                  </span>
+                  <span class="count">2</span>
+                </span>
+              </div>
             </header>
 
             <div class="pc-match micro">
@@ -500,7 +557,14 @@ body::before{
               <div class="pc-carousel" data-index="0">
                 <div class="pc-slide pc-active" data-brand="Anthropologie" data-title="Somerset Maxi Dress" data-size="XS" data-comments="12" data-q="Is this petite or regular?" data-a="Regular!">
                   <img class="pc-hero-img pc-hero-img--tight" src="../img/videoframe_6964.png" alt="Somerset Maxi Dress — XS">
-                  <div class="pc-chip">Same as yours (XS)</div>
+                  <span class="pill-proxi pill-proxi--mark pill-top-right"
+                        aria-label="Shared proxi item (Same as yours: XS)">
+                    <span class="glyph" aria-hidden="true">
+                      <div class="bar"></div>
+                      <div class="bar"></div>
+                      <div class="bar"></div>
+                    </span>
+                  </span>
                 </div>
                 <div class="pc-slide" data-brand="Anthropologie" data-title="Peregrine Midi Dress" data-size="XS Petite" data-comments="7" data-q="How long is the skirt?">
                   <img class="pc-hero-img pc-hero-img--tight" src="../img/videoframe_33023.png" alt="Alternate look">
