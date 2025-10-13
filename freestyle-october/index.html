@@ -89,9 +89,10 @@
             <h1 class="section-heading">Try on clothes by <s>proxy</s> <span class="brand-text">proxi</span><span class="brand-text">.</span></h1>
             <p class="section-subheading">No&nbsp;measuring. No&nbsp;guesswork. No&nbsp;surprises.</p>
           </header>
-          <form class="form" method="POST" action="https://formspree.io/f/meorpayo" name="waitlist" data-netlify="true" netlify-honeypot="bot-field" autocomplete="on">
-            <input type="hidden" name="form-name" value="waitlist">
-            <p class="hidden"><label>Don't fill this out: <input name="bot-field"></label></p>
+          <form class="form" method="POST" action="https://api.web3forms.com/submit" name="waitlist" autocomplete="on">
+            <input type="hidden" name="access_key" value="df754075-e1ca-4095-91e4-2ec448dbeb17">
+            <input type="hidden" name="subject" value="Proxi Waitlist Signup">
+            <input type="checkbox" name="botcheck" class="hidden" style="display: none;">
             <div class="form-space">
               <input class="form-input" type="email" name="email" placeholder="Enter your email" required inputmode="email" autocomplete="email" autocapitalize="off" spellcheck="false">
               <button class="btn" type="submit">Join the waitlist &rarr;</button>
@@ -236,9 +237,10 @@
         <h2 class="section-heading">Be first to try Proxi</h2>
         <p class="section-subheading">Join the waitlist for early access and updates.</p>
       </header>
-      <form class="form" method="POST" action="https://formspree.io/f/meorpayo" name="waitlist" data-netlify="true" netlify-honeypot="bot-field" autocomplete="on">
-        <input type="hidden" name="form-name" value="waitlist">
-        <p class="hidden"><label>Don't fill this out: <input name="bot-field"></label></p>
+      <form class="form" method="POST" action="https://api.web3forms.com/submit" name="waitlist" autocomplete="on">
+        <input type="hidden" name="access_key" value="df754075-e1ca-4095-91e4-2ec448dbeb17">
+        <input type="hidden" name="subject" value="Proxi Waitlist Signup">
+        <input type="checkbox" name="botcheck" class="hidden" style="display: none;">
         <div class="form-space">
           <input class="form-input" type="email" name="email" placeholder="Enter your email" required inputmode="email" autocomplete="email" autocapitalize="off" spellcheck="false">
           <button class="btn" type="submit">Join the waitlist &rarr;</button>
@@ -299,14 +301,14 @@
 
 <script>
   (function () {
-    const FORMSPREE_ENDPOINT = 'https://formspree.io/f/meorpayo';
-    const forms = document.querySelectorAll('form[name="waitlist"][data-netlify="true"]');
+    const WEB3FORMS_ENDPOINT = 'https://api.web3forms.com/submit';
+    const forms = document.querySelectorAll('form[name="waitlist"]');
 
     forms.forEach(form => {
       form.addEventListener('submit', async (e) => {
         e.preventDefault();
         try {
-          const res = await fetch(FORMSPREE_ENDPOINT, {
+          const res = await fetch(WEB3FORMS_ENDPOINT, {
             method: 'POST',
             headers: { 'Accept': 'application/json' },
             body: new FormData(form)
