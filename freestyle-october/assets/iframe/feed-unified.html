@@ -518,8 +518,53 @@ body::before{
 
 /* Second slide specific positioning - Peregrine Midi Dress */
 .pc-slide[data-title="Peregrine Midi Dress"] .pc-hero-img{
-  object-position:center 1% !important;
+  transform:translateY(-40px) !important;
+  border-radius:14px !important;
 }
+
+/* Hide carousel dots on second slide */
+.pc-slide[data-title="Peregrine Midi Dress"] .pc-dots,
+.pc-carousel .pc-dots,
+.pc-dot{
+  display:none !important;
+}
+
+/* Move product info up */
+.pc-slide[data-title="Peregrine Midi Dress"] .pc-look-h{
+  padding:2px 6px 0px !important;
+}
+
+/* Reduce space between image and product info on slide 2 */
+.pc-slide[data-title="Peregrine Midi Dress"] .pc-look-caption{
+  margin-top:0px !important;
+}
+
+/* Reduce space from match line on slide 2 only */
+.proxy-card:has(.pc-slide[data-title="Peregrine Midi Dress"].pc-active) .pc-match{
+  margin:0px 6px 0px 56px !important;
+}
+
+/* Reduce space after carousel on slide 2 */
+.pc-slide[data-title="Peregrine Midi Dress"] .pc-hero-wrap{
+  margin-bottom:-20px !important;
+}
+
+/* More aggressive spacing reduction for slide 2 */
+.proxy-card:has(.pc-slide[data-title="Peregrine Midi Dress"].pc-active) .pc-look-caption{
+  margin-top:-10px !important;
+}
+
+/* Alternative approach - target when slide 2 is active */
+.pc-slide[data-title="Peregrine Midi Dress"].pc-active ~ * .pc-look-caption,
+.pc-slide[data-title="Peregrine Midi Dress"].pc-active + * + * .pc-look-caption{
+  margin-top:-15px !important;
+}
+
+/* Simple class-based approach */
+.slide-2-active .pc-look-caption{
+  margin-top:-15px !important;
+}
+
 </style>
 </head>
 <body class="view-feed">
@@ -834,6 +879,10 @@ body::before{
       idx = (n + slides.length) % slides.length;
       slides.forEach((s,i)=> s.classList.toggle('pc-active', i===idx));
       dots.forEach((d,i)=> d.classList.toggle('pc-active',  i===idx));
+      
+      // Toggle class for slide 2 spacing
+      card.classList.toggle('slide-2-active', idx === 1);
+      
       applyFromSlide(slides[idx]);
     }
     dots.forEach((d,i)=> d.addEventListener('click', ()=> show(i)));
