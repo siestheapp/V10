@@ -60,6 +60,8 @@
 
     /* Slightly reduce hero video mock size for extra breathing room */
     .hero .mock.video .mock-inner{transform:scale(0.985);transform-origin:top right}
+    /* Slightly enlarge unified feed mock to match prior hero video presence */
+    .hero .mock.unified .mock-inner{transform:scale(1.00);transform-origin:top right}
     /* Slightly reduce large closet mock in HOW section (same proportions) */
     .how .mock .mock-inner{transform:scale(0.985);transform-origin:top right}
   </style>
@@ -98,14 +100,10 @@
           </form>
         </div>
         <div class="col">
-          <div class="mock video" aria-hidden="true">
-            <a class="mock-inner" href="https://www.anthropologie.com/shop/the-jocelyn-sleeveless-slip-midi-dress-by-maeve?category=top-rated-dresses&color=256&type=STANDARD&quantity=1" target="_blank" rel="noopener noreferrer" data-track="hero-mock">
-              <video preload="metadata" autoplay muted loop playsinline poster="assets/video/mockup.jpg">
-                <source src="assets/video/mockup.mp4" type="video/mp4">
-                Your browser does not support the video tag.
-              </video>
-              <div class="click-overlay" data-track="hero-mock"></div>
-            </a>
+          <div class="mock unified" aria-hidden="true">
+            <div class="mock-inner" data-track="hero-mock">
+              <iframe src="assets/iframe/feed-unified.html?embed=1&v=2" title="Unified feed mockup" loading="lazy"></iframe>
+            </div>
           </div>
         </div>
       </div>
