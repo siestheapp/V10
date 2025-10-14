@@ -33,6 +33,12 @@ body::before{
 /* iPhone Frame (Finy Style) */
 .phone{width:430px;height:932px;border-radius:55px;background:transparent;border:2px solid #000;position:relative;box-shadow:none}
 .screen{position:absolute;inset:2px;background:#fff;border-radius:53px;overflow:hidden;display:flex;flex-direction:column}
+.screen,
+.phone,
+.device,
+.feed-viewport{
+  overflow-x:hidden;
+}
 
 /* Dynamic Island */
 .island{position:absolute;top:11px;left:50%;transform:translateX(-50%);width:126px;height:37px;background:#000;border-radius:19px;z-index:5}
@@ -107,7 +113,16 @@ body::before{
 
 /* Feed */
 /* Feed scroll + spacing between cards */
-.feed{padding:0 24px 96px; overflow-y:auto; display:flex; flex-direction:column; gap:24px}
+.feed{
+  padding:0 24px 96px;
+  overflow-y:auto;
+  display:flex;
+  flex-direction:column;
+  gap:24px;
+  scrollbar-width:none;
+  -ms-overflow-style:none;
+}
+.feed::-webkit-scrollbar{display:none;}
 
 /* Enhanced Card */
 .card{background:#fff;border:1px solid #eee6;border-radius:18px;overflow:visible;transition:transform 0.2s ease;position:relative}
@@ -449,8 +464,23 @@ body::before{
 .proxy-card + .card{margin-top:8px}
 
 /* Proxy carousel mechanics (namespaced) */
-.proxy-card .pc-carousel{ position:relative; height:520px; overflow:hidden; border-radius:14px; }
-.proxy-card .pc-slide{ position:absolute; inset:0; opacity:0; transition:opacity .25s ease; }
+.proxy-card .pc-carousel{
+  position:relative;
+  display:grid;
+  height:520px;
+  overflow:hidden;
+  border-radius:14px;
+}
+.proxy-card .pc-slide{
+  position:relative;
+  grid-area:1 / 1 / -1 / -1;
+  width:100%;
+  height:100%;
+  box-sizing:border-box;
+  overflow:hidden;
+  opacity:0;
+  transition:opacity .25s ease;
+}
 .proxy-card .pc-slide.pc-active{ opacity:1; }
 .proxy-card .pc-hero-img{
   display:block; width:100%; height:520px;
@@ -567,9 +597,9 @@ body::before{
 /* Proxi badge + tooltip */
 .proxi-badge-wrap{
   position:absolute;
-  top:12px;
-  right:12px;
-  z-index:10;
+  top:10px;
+  right:10px;
+  z-index:3;
 }
 
 .proxi-badge{
@@ -587,43 +617,56 @@ body::before{
   outline-offset:2px;
 }
 
-.tooltip{
+.proxi-tip{
   position:absolute;
-  top:50%;
-  right:calc(100% + 8px);
-  transform:translate(-4px, -50%);
+  display:inline-block;
+  width:max-content;
+  white-space:nowrap;
+  padding:8px 12px;
+  border-radius:999px;
   background:#111;
   color:#fff;
-  font:600 12px/1.3 Inter, system-ui;
-  padding:8px 10px;
-  border-radius:8px;
-  box-shadow:0 4px 16px rgba(0,0,0,.18);
-  display:inline-block;
-  text-align:left;
-  min-width:180px;
-  max-width:clamp(180px, 40vw, 260px);
-  white-space:normal;
-  overflow-wrap:break-word;
+  font:700 12px/1.1 Inter, system-ui, -apple-system, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+  box-shadow:0 8px 24px rgba(11,15,20,.08);
   opacity:0;
   pointer-events:none;
-  transition:opacity .15s ease, transform .15s ease;
-  z-index:10;
+  transform:translateY(-50%) scale(.96);
+  transition:opacity .2s ease, transform .2s ease;
+  z-index:3;
 }
 
-.tooltip::after{
+.proxi-tip::after{
   content:"";
   position:absolute;
-  top:50%;
-  left:100%;
-  transform:translateY(-50%);
   border:6px solid transparent;
+  top:50%;
+  transform:translateY(-50%);
+}
+
+.proxi-tip--left{
+  right:calc(100% + 8px);
+  top:50%;
+}
+
+.proxi-tip--left::after{
+  right:-12px;
   border-left-color:#111;
 }
 
-.proxi-badge:where(:hover, :focus-visible)+.tooltip{
+.proxi-tip--right{
+  left:calc(100% + 8px);
+  top:50%;
+}
+
+.proxi-tip--right::after{
+  left:-12px;
+  border-right-color:#111;
+}
+
+.proxi-badge:where(:hover, :focus-visible)+.proxi-tip{
   opacity:1;
-  transform:translate(0, -50%);
   pointer-events:auto;
+  transform:translateY(-50%) scale(1);
 }
 
 </style>
@@ -679,16 +722,16 @@ body::before{
             <div class="pc-hero-wrap">
               <div class="proxi-badge-wrap">
                 <button type="button"
-                      class="pill-proxi pill-proxi--mark proxi-badge"
-                      aria-label="Size twin info"
-                      aria-describedby="tip-proxi-hero">
+                        class="pill-proxi pill-proxi--mark proxi-badge"
+                        aria-label="Size twin info"
+                        aria-describedby="tip-proxi-hero">
                   <span class="glyph" aria-hidden="true">
                     <div class="bar"></div>
                     <div class="bar"></div>
                     <div class="bar"></div>
                   </span>
                 </button>
-                <div class="tooltip" role="tooltip" id="tip-proxi-hero">Same as yours – XS</div>
+                <div class="proxi-tip proxi-tip--left" role="tooltip" id="tip-proxi-hero">Same as yours – XS</div>
               </div>
               <div class="pc-carousel" data-index="0">
                 <div class="pc-slide pc-active" data-brand="Anthropologie" data-title="Somerset Chiffon Maxi Dress" data-size="XS" data-comments="12" data-q="Is this petite or regular?" data-a="Regular!">
