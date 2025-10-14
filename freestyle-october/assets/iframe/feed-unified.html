@@ -506,6 +506,28 @@ body::before{
 .proxy-card .pc-carousel .pc-nav.left::before{content:"\2039";font-size:18px;line-height:1;transform:translateX(-1px)}
 .proxy-card .pc-carousel .pc-nav.right::before{content:"\203A";font-size:18px;line-height:1;transform:translateX(1px)}
 
+/* === Proxi SVG icon (solid) === */
+.icon-proxi{
+  --size: 16px;             /* scale control */
+  width: var(--size);
+  height: var(--size);
+  display:inline-block;
+  color: currentColor;      /* inherits text color */
+  vertical-align:-0.1em;
+}
+.icon-proxi use{fill:currentColor;}
+
+/* === Proxi SVG icon (gradient via mask) === */
+.icon-proxi-gradient{
+  --size: 16px;
+  width: var(--size);
+  height: var(--size);
+  display:inline-block;
+  -webkit-mask:url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox=\'0 0 24 24\'><rect x=\'0\' y=\'4\' width=\'24\' height=\'2\' rx=\'1\'/><rect x=\'0\' y=\'11\' width=\'24\' height=\'2\' rx=\'1\'/><rect x=\'0\' y=\'18\' width=\'24\' height=\'2\' rx=\'1\'/></svg>') no-repeat center / contain;
+          mask:url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox=\'0 0 24 24\'><rect x=\'0\' y=\'4\' width=\'24\' height=\'2\' rx=\'1\'/><rect x=\'0\' y=\'11\' width=\'24\' height=\'2\' rx=\'1\'/><rect x=\'0\' y=\'18\' width=\'24\' height=\'2\' rx=\'1\'/></svg>') no-repeat center / contain;
+  background:linear-gradient(135deg, #005a5c 0%, #008a90 55%, #2fb8bf 100%);
+}
+
 /* === Proxi pills (≡ system) - Updated with custom CSS rectangles === */
 
 /* Base pill */
@@ -729,6 +751,14 @@ body::before{
 </style>
 </head>
 <body class="view-feed">
+  <!-- Proxi icon sprite (include once) -->
+  <svg style="position:absolute;width:0;height:0;overflow:hidden" aria-hidden="true">
+    <symbol id="proxi" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+      <rect x="0" y="4" width="24" height="2" rx="1"></rect>
+      <rect x="0" y="11" width="24" height="2" rx="1"></rect>
+      <rect x="0" y="18" width="24" height="2" rx="1"></rect>
+    </symbol>
+  </svg>
   <div class="phone">
       <div class="screen">
         <div class="island"></div>
@@ -747,7 +777,11 @@ body::before{
             <button class="chip">New in</button>
           </div>
           <div class="legend" role="note">
-            <span class="legend-term">Proxies <span class="equiv" aria-hidden="true"><div class="bar"></div><div class="bar"></div><div class="bar"></div></span></span>
+            <span class="legend-term">Proxies <span class="equiv" aria-hidden="true" style="display:inline-flex;align-items:center">
+                <svg class="icon-proxi" style="--size:1em;">
+                  <use href="#proxi" xlink:href="#proxi"></use>
+                </svg>
+              </span></span>
             <span class="legend-def">users who share your size</span>
           </div>
         </div>
@@ -766,9 +800,9 @@ body::before{
                           aria-label="Shared Proxi items"
                           aria-describedby="tip-proxi-count">
                     <span class="glyph" aria-hidden="true">
-                      <div class="bar"></div>
-                      <div class="bar"></div>
-                      <div class="bar"></div>
+                      <svg class="icon-proxi" style="--size: var(--glyph); color: currentColor">
+                        <use href="#proxi" xlink:href="#proxi"></use>
+                      </svg>
                     </span>
                     <span class="count">2</span>
                   </button>
@@ -788,9 +822,9 @@ body::before{
                         aria-label="Size twin info"
                         aria-describedby="tip-proxi-hero">
                   <span class="glyph" aria-hidden="true">
-                    <div class="bar"></div>
-                    <div class="bar"></div>
-                    <div class="bar"></div>
+                    <svg class="icon-proxi" style="--size: var(--glyph); color: currentColor">
+                      <use href="#proxi" xlink:href="#proxi"></use>
+                    </svg>
                   </span>
                 </button>
                 <div class="proxi-tip proxi-tip--left" role="tooltip" id="tip-proxi-hero">Same as yours (XS)</div>
@@ -843,9 +877,9 @@ body::before{
                           aria-label="Shared Proxi items"
                           aria-describedby="tip-proxi-count">
                     <span class="glyph" aria-hidden="true">
-                      <div class="bar"></div>
-                      <div class="bar"></div>
-                      <div class="bar"></div>
+                      <svg class="icon-proxi" style="--size: var(--glyph); color: currentColor">
+                        <use href="#proxi" xlink:href="#proxi"></use>
+                      </svg>
                     </span>
                     <span class="count">1</span>
                   </button>
@@ -865,9 +899,9 @@ body::before{
                         aria-label="Size twin info"
                         aria-describedby="tip-proxi-hero">
                   <span class="glyph" aria-hidden="true">
-                    <div class="bar"></div>
-                    <div class="bar"></div>
-                    <div class="bar"></div>
+                    <svg class="icon-proxi" style="--size: var(--glyph); color: currentColor">
+                      <use href="#proxi" xlink:href="#proxi"></use>
+                    </svg>
                   </span>
                 </button>
                 <div class="proxi-tip proxi-tip--left" role="tooltip" id="tip-proxi-hero">Same as yours (XS)</div>
