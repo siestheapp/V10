@@ -1,0 +1,37 @@
+{
+  "name": "ingest-playwright",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Reformation dresses ingestion worker (Playwright + Supabase + Postgres).",
+  "main": "dist/index.js",
+  "scripts": {
+    "build": "tsc -p .",
+    "dev": "ts-node src/index.ts",
+    "preflight": "ts-node scripts/preflight-db.ts",
+    "init-job": "ts-node src/index.ts init-job",
+    "seed-tasks": "ts-node src/index.ts seed-tasks",
+    "run-worker": "ts-node src/index.ts run-worker",
+    "pw-install": "playwright install chromium",
+    "migrate": "dotenv -e .env -- psql \"$DATABASE_URL\" -f sql/001_jobs_and_images.sql",
+    "ingest": "ts-node src/jobs/run.ts",
+    "typecheck": "tsc -p . --noEmit"
+  },
+  "dependencies": {
+    "@supabase/supabase-js": "^2.45.0",
+    "dotenv": "^16.4.5",
+    "node-fetch": "2.7.0",
+    "p-limit": "^5.0.0",
+    "p-queue": "^8.0.1",
+    "pg": "^8.12.0",
+    "zod": "^3.23.8"
+  },
+  "devDependencies": {
+    "@types/node": "^20.11.30",
+    "@types/node-fetch": "^2.6.11",
+    "@types/pg": "^8.10.2",
+    "dotenv-cli": "^10.0.0",
+    "playwright": "^1.48.0",
+    "ts-node": "^10.9.2",
+    "typescript": "^5.5.4"
+  }
+}

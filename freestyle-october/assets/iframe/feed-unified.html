@@ -3,15 +3,15 @@
 <head>
 <meta charset="utf-8"/>
 <meta name="viewport" content="width=device-width, initial-scale=1"/>
-<title>Freestyle — Your Fit Feed</title>
+<title>Proxi — Your Fit Feed</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
 <style>
 :root{
   /* Neutrals */
-  --bg:#F7F9FB; --ink:#1F1F1F; --muted:#6F6F74;
-  /* Freestyle brand */
+  --bg:#FFFFFF; --ink:#1F1F1F; --muted:#6F6F74;
+  /* Proxi brand */
   --petrol-600:#009090; --petrol-500:#00A3A3; --petrol-400:#16B5B5; --petrol-100:#E0F7F7;
   --mint-400:#A6FFCB; --ice-300:#7FE1FF;
   /* Adaptive CTA ramp (deepened default for contrast) */
@@ -31,20 +31,26 @@ body::before{
 }
 
 /* iPhone Frame (Finy Style) */
-.phone{width:430px;height:932px;border-radius:55px;background:#000;padding:2px;box-shadow:none}
-.screen{height:100%;background:#FAF8F6;border-radius:53px;overflow:hidden;position:relative;display:flex;flex-direction:column}
+.phone{width:430px;height:932px;border-radius:55px;background:transparent;border:2px solid #000;position:relative;box-shadow:none}
+.screen{position:absolute;inset:2px;background:#fff;border-radius:53px;overflow:hidden;display:flex;flex-direction:column}
+.screen,
+.phone,
+.device,
+.feed-viewport{
+  overflow-x:hidden;
+}
 
 /* Dynamic Island */
-.island{position:absolute;top:11px;left:50%;transform:translateX(-50%);width:126px;height:30px;background:#000;border-radius:16px;z-index:2}
+.island{position:absolute;top:11px;left:50%;transform:translateX(-50%);width:126px;height:37px;background:#000;border-radius:19px;z-index:5}
 
 /* Status Bar */
-.status{height:44px;margin-top:12px;display:flex;align-items:center;justify-content:space-between;padding:0 26px;font-weight:600;color:#000;font-size:16px;letter-spacing:-.02em}
+.status{height:54px;margin-top:20px;display:flex;align-items:center;justify-content:space-between;padding:0 30px;font-weight:600;color:#000;font-size:17px;letter-spacing:-.02em}
 .status .right{display:flex;align-items:center;gap:6px}
 .status .right img{height:13px;width:auto;display:block}
 
 /* App Content */
-.header{padding:12px 24px 2px;display:flex;justify-content:space-between;align-items:center}
-.logo{font-weight:600;font-size:28px;letter-spacing:-.01em;background:linear-gradient(135deg,var(--cta-start),var(--cta-mid) 46%,var(--cta-end));
+.header{padding:20px 0px 0px;display:flex;align-items:center;justify-content:center;position:relative}
+.logo{font-weight:600;font-size:32px;letter-spacing:-.01em;background:linear-gradient(135deg,var(--cta-start),var(--cta-mid) 46%,var(--cta-end));
   -webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent}
 .section{
   padding:4px 24px 6px;
@@ -76,16 +82,47 @@ body::before{
 }
 
 /* Enhanced Chips */
-.chips{display:flex;gap:8px;padding-top:10px;overflow-x:auto;-webkit-overflow-scrolling:touch;scrollbar-width:none}
-.chips{margin-top:6px}
+.chips{display:flex;gap:8px;padding-top:4px;overflow-x:auto;-webkit-overflow-scrolling:touch;scrollbar-width:none}
+.chips{margin-top:2px}
 .chips::-webkit-scrollbar{display:none}
 .chip{border:1px solid #E8E4DE;background:#fff;color:var(--ink);border-radius:9999px;padding:10px 16px;font-size:13px;font-weight:500;white-space:nowrap;transition:all 0.2s ease}
 .chip.is-active{border-color:var(--petrol-400);background:var(--petrol-100);color:var(--petrol-600);font-weight:600;box-shadow:0 2px 8px rgba(0,163,163,.12)}
 .chip:not(.is-active):hover{background:#f8f8f8;border-color:#d0d0d0}
 
+.explainer{
+  display:inline-flex;align-items:center;gap:8px;
+  margin-top:6px;
+  padding:8px 12px;
+  border-radius:999px;
+  background:var(--petrol-100);
+  border:1px solid var(--petrol-400);
+  color:#0B0F14;
+  font:600 12px/1.2 Inter, system-ui;
+}
+.explainer .sym{font-weight:800;}
+ 
+ /* Closet-style legend (inline, compact) */
+ .legend{display:flex;align-items:baseline;gap:.1rem;margin-top:12px;margin-bottom:6px;font-size:clamp(13px,1.7vw,16px);line-height:1.35;color:#6A7A87}
+ .legend-term{font-weight:600;display:inline-flex;align-items:baseline;gap:.1rem;color:#34424D}
+ .legend .equiv{display:inline-block;position:relative;width:1.2em;height:.8em;vertical-align:baseline;margin:0 0.05em}
+ .legend .equiv .bar{position:absolute;left:0.1em;width:1em;height:0.12em;border-radius:0.06em;background:linear-gradient(135deg, #008888 0%, #34C3CC 46%, #9BFFCF 100%)}
+ .legend .equiv .bar:nth-child(1){top:0.15em}
+ .legend .equiv .bar:nth-child(2){top:0.39em}
+ .legend .equiv .bar:nth-child(3){top:0.63em}
+ .legend-def{color:#6A7A87;font-weight:500}
+
 /* Feed */
 /* Feed scroll + spacing between cards */
-.feed{padding:0 24px 96px; overflow-y:auto; display:flex; flex-direction:column; gap:24px}
+.feed{
+  padding:0 24px 96px;
+  overflow-y:auto;
+  display:flex;
+  flex-direction:column;
+  gap:24px;
+  scrollbar-width:none;
+  -ms-overflow-style:none;
+}
+.feed::-webkit-scrollbar{display:none;}
 
 /* Enhanced Card */
 .card{background:#fff;border:1px solid #eee6;border-radius:18px;overflow:visible;transition:transform 0.2s ease;position:relative}
@@ -420,13 +457,30 @@ body::before{
 .pc-link{margin-top:6px;font:600 12px/1.2 Inter;color:#009090}
 .pc-link-inline{margin-top:0;margin-left:8px;display:none;font:600 13px/1.45 Inter;color:#009090;white-space:nowrap}
 .pc-look-actions{display:flex;gap:14px;margin:16px 0 6px}
-.pc-btn-primary{display:inline-flex;align-items:center;justify-content:center;gap:8px;padding:12px 18px;border-radius:999px;background:linear-gradient(135deg, var(--cta-start), var(--cta-mid) 46%, var(--cta-end)); color:#fff; font:700 15px/1.1 Inter; border:1px solid rgba(0,0,0,.04)}
-.pc-btn-secondary{display:inline-flex;align-items:center;justify-content:center;gap:8px;padding:12px 18px;border-radius:999px;background:#fff;border:1px solid rgba(0,0,0,.10); color:#1F1F1F; font:700 15px/1.1 Inter}
+.pc-btn-primary{display:inline-flex;align-items:center;justify-content:center;gap:8px;padding:12px 18px;border-radius:999px;background:linear-gradient(135deg, var(--cta-start), var(--cta-mid) 46%, var(--cta-end)); color:#fff; font:700 15px/1.1 Inter; border:1px solid rgba(0,0,0,.04); transition:transform 0.2s ease, box-shadow 0.2s ease; cursor:pointer}
+.pc-btn-primary:hover{transform:translateY(-2px); box-shadow:0 4px 12px rgba(0,0,0,.08)}
+.pc-btn-secondary{display:inline-flex;align-items:center;justify-content:center;gap:8px;padding:12px 18px;border-radius:999px;background:#fff;border:1px solid rgba(0,0,0,.10); color:#1F1F1F; font:700 15px/1.1 Inter; transition:transform 0.2s ease, box-shadow 0.2s ease; cursor:pointer}
+.pc-btn-secondary:hover{transform:translateY(-2px); box-shadow:0 4px 12px rgba(0,0,0,.08)}
 .proxy-card + .card{margin-top:8px}
 
 /* Proxy carousel mechanics (namespaced) */
-.proxy-card .pc-carousel{ position:relative; height:520px; overflow:hidden; border-radius:14px; }
-.proxy-card .pc-slide{ position:absolute; inset:0; opacity:0; transition:opacity .25s ease; }
+.proxy-card .pc-carousel{
+  position:relative;
+  display:grid;
+  height:520px;
+  overflow:hidden;
+  border-radius:14px;
+}
+.proxy-card .pc-slide{
+  position:relative;
+  grid-area:1 / 1 / -1 / -1;
+  width:100%;
+  height:100%;
+  box-sizing:border-box;
+  overflow:hidden;
+  opacity:0;
+  transition:opacity .25s ease;
+}
 .proxy-card .pc-slide.pc-active{ opacity:1; }
 .proxy-card .pc-hero-img{
   display:block; width:100%; height:520px;
@@ -438,6 +492,217 @@ body::before{
 .proxy-card .pc-carousel .pc-nav.right{right:10px}
 .proxy-card .pc-carousel .pc-nav.left::before{content:"\2039";font-size:18px;line-height:1;transform:translateX(-1px)}
 .proxy-card .pc-carousel .pc-nav.right::before{content:"\203A";font-size:18px;line-height:1;transform:translateX(1px)}
+
+/* === Proxi pills (≡ system) - Updated with custom CSS rectangles === */
+
+/* Base pill */
+.pill-proxi{
+  display:inline-flex !important; align-items:center !important; justify-content:center !important; gap:4px !important;
+  height:24px !important; padding:0 8px !important;                /* larger: 24px tall, 8px sides */
+  border-radius:9999px !important;
+  background:#FFFFFF !important;                         /* strong contrast on imagery */
+  border:1px solid rgba(0,0,0,.16) !important;           /* neutral stroke for definition */
+  box-shadow:0 2px 6px rgba(0,0,0,.12) !important;
+  color:#0B3D3A !important;                              /* deep petrol ink */
+  font:700 12px/1 Inter, system-ui, -apple-system, "Segoe UI", Roboto, Helvetica, Arial !important;
+  user-select:none !important; cursor:default !important;
+}
+
+/* Triple bar glyph - custom rectangles */
+.pill-proxi .glyph{
+  display:flex; flex-direction:column; align-items:center; justify-content:center; 
+  width:10px; height:10px; gap:1px;
+}
+.pill-proxi .glyph .bar{
+  width:7.6px; height:1.4px; border-radius:1px;
+  background:linear-gradient(135deg, #008888 0%, #34C3CC 46%, #9BFFCF 100%) !important;
+}
+
+/* Count styling */
+.pill-proxi .count{
+  font-weight:800; font-feature-settings:"tnum" 1;
+  background:linear-gradient(135deg,var(--cta-start),var(--cta-mid) 46%,var(--cta-end));
+  -webkit-background-clip:text; background-clip:text; -webkit-text-fill-color:transparent;
+}
+
+/* Count variant: ≡ n (username header or your closet items) */
+.pill-proxi--count{ background:#FFFFFF; }
+
+/* Mark variant: ≡ (no number) — on other user's photo when that image is the shared item */
+.pill-proxi--mark{ 
+  padding:0 6px !important; /* reduced left/right padding */
+}
+.pill-proxi--mark .glyph{
+  width:15px; height:15px; /* 50% larger than base 10px */
+}
+.pill-proxi--mark .glyph .bar{
+  width:11.4px; height:2.1px; /* 50% larger than base 7.6px × 1.4px */
+}
+
+/* Placement helpers for overlays */
+.pill-top-left { position:absolute; top:12px; left:12px;  z-index:2; }
+
+/* Cap very large counts visually */
+.pill-proxi[data-count="99plus"] .count{ letter-spacing:-.5px; }
+
+/* Second slide specific positioning - Peregrine Midi Dress */
+.pc-slide[data-title="Peregrine Midi Dress"] .pc-hero-img{
+  transform:translateY(-40px) !important;
+  border-radius:14px !important;
+}
+
+/* Hide carousel dots on second slide */
+.pc-slide[data-title="Peregrine Midi Dress"] .pc-dots,
+.pc-carousel .pc-dots,
+.pc-dot{
+  display:none !important;
+}
+
+/* Move product info up */
+.pc-slide[data-title="Peregrine Midi Dress"] .pc-look-h{
+  padding:2px 6px 0px !important;
+}
+
+/* Reduce space between image and product info on slide 2 */
+.pc-slide[data-title="Peregrine Midi Dress"] .pc-look-caption{
+  margin-top:0px !important;
+}
+
+/* Reduce space from match line on slide 2 only */
+.proxy-card:has(.pc-slide[data-title="Peregrine Midi Dress"].pc-active) .pc-match{
+  margin:0px 6px 0px 56px !important;
+}
+
+/* Reduce space after carousel on slide 2 */
+.pc-slide[data-title="Peregrine Midi Dress"] .pc-hero-wrap{
+  margin-bottom:-20px !important;
+}
+
+/* More aggressive spacing reduction for slide 2 */
+.proxy-card:has(.pc-slide[data-title="Peregrine Midi Dress"].pc-active) .pc-look-caption{
+  margin-top:-10px !important;
+}
+
+/* Alternative approach - target when slide 2 is active */
+.pc-slide[data-title="Peregrine Midi Dress"].pc-active ~ * .pc-look-caption,
+.pc-slide[data-title="Peregrine Midi Dress"].pc-active + * + * .pc-look-caption{
+  margin-top:-15px !important;
+}
+
+/* Simple class-based approach */
+.slide-2-active .pc-look-caption{
+  margin-top:-15px !important;
+}
+
+/* Proxi badge + tooltip */
+.proxi-badge-wrap{
+  position:absolute;
+  top:10px;
+  right:10px;
+  z-index:3;
+}
+
+.proxi-inline-wrap{
+  position:relative;
+  display:inline-flex;
+  align-items:center;
+}
+
+.proxi-trigger{
+  border:0;
+  background:transparent;
+  padding:0;
+  cursor:help !important;
+}
+
+.proxi-trigger:focus-visible{
+  outline:2px solid rgba(0,163,163,.55);
+  outline-offset:2px;
+}
+
+.proxi-trigger--badge{
+  display:inline-flex;
+  align-items:center;
+  justify-content:center;
+  background:transparent;
+  padding:0;
+}
+
+.proxi-tip{
+  position:absolute;
+  display:inline-block;
+  width:max-content;
+  white-space:nowrap;
+  padding:8px 12px;
+  border-radius:12px;
+  background:rgba(0,0,0,0.9);
+  color:#fff;
+  border:1px solid rgba(31,174,217,0.65);
+  font-family:'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+  font-weight:var(--weight-medium, 500);
+  font-size:13px;
+  letter-spacing:.1px;
+  line-height:1.2;
+  box-shadow:0 8px 24px rgba(11,15,20,.08);
+  opacity:0;
+  pointer-events:none;
+  transform:translateY(-50%) scale(.96);
+  transition:opacity .2s ease, transform .2s ease;
+  z-index:3;
+}
+
+.proxi-tip::before,
+.proxi-tip::after{
+  content:"";
+  position:absolute;
+  top:50%;
+  transform:translateY(-50%);
+}
+
+.proxi-tip::before{
+  border:7px solid transparent;
+}
+
+.proxi-tip::after{
+  border:6px solid transparent;
+}
+
+.proxi-tip--left{
+  right:calc(100% + 8px);
+  top:50%;
+}
+
+.proxi-tip--left::before{
+  right:-14px;
+  border-left-color:rgba(31,174,217,0.65);
+}
+
+.proxi-tip--left::after{
+  right:-12px;
+  border-left-color:rgba(0,0,0,0.9);
+}
+
+.proxi-tip--right{
+  left:calc(100% + 8px);
+  top:50%;
+}
+
+.proxi-tip--right::before{
+  left:-14px;
+  border-right-color:rgba(31,174,217,0.65);
+}
+
+.proxi-tip--right::after{
+  left:-12px;
+  border-right-color:rgba(0,0,0,0.9);
+}
+
+.proxi-trigger:where(:hover, :focus-visible)+.proxi-tip{
+  opacity:1;
+  pointer-events:auto;
+  transform:translateY(-50%) scale(1);
+}
+
 </style>
 </head>
 <body class="view-feed">
@@ -447,21 +712,20 @@ body::before{
         <div class="status"><div>9:41</div><div class="right"><img src="../img/cellular-connection.svg" alt="cell"/><img src="../img/wifi.svg" alt="wifi"/><img src="../img/battery.svg" alt="battery"/></div></div>
 
         <div class="header">
-          <div class="logo">freestyle</div>
+          <div class="logo">proxi</div>
         </div>
 
         <div class="section">
-          <div class="heading-inline">
-            <h1 class="heading-main">Explore</h1>
-            <span class="heading-sub-inline">Curated based on your sizes.</span>
-          </div>
-
           <div class="chips">
             <button class="chip is-active">Wedding guest</button>
             <button class="chip">Midi</button>
             <button class="chip">Under $250</button>
             <button class="chip">Quick ship</button>
             <button class="chip">New in</button>
+          </div>
+          <div class="legend" role="note">
+            <span class="legend-term">Proxies <span class="equiv" aria-hidden="true"><div class="bar"></div><div class="bar"></div><div class="bar"></div></span></span>
+            <span class="legend-def">users who share your size</span>
           </div>
         </div>
 
@@ -472,7 +736,22 @@ body::before{
             <header class="pc-look-h">
               <img class="pc-avatar pc-avatar--circle" src="../img/videoframe_611.png" alt="ellaa76 profile photo">
               <div class="pc-name">ellaa76</div>
-              <div class="pc-bads"><span class="pc-badge">Size Twin</span></div>
+              <div class="pc-bads">
+                <span class="proxi-inline-wrap">
+                  <button type="button"
+                          class="pill-proxi pill-proxi--count proxi-trigger"
+                          aria-label="Shared Proxi items"
+                          aria-describedby="tip-proxi-count">
+                    <span class="glyph" aria-hidden="true">
+                      <div class="bar"></div>
+                      <div class="bar"></div>
+                      <div class="bar"></div>
+                    </span>
+                    <span class="count">2</span>
+                  </button>
+                  <span class="proxi-tip proxi-tip--right" role="tooltip" id="tip-proxi-count">You share two Proxi Pieces<br>– same item, same size</span>
+                </span>
+              </div>
             </header>
 
             <div class="pc-match micro">
@@ -480,10 +759,22 @@ body::before{
             </div>
 
             <div class="pc-hero-wrap">
+              <div class="proxi-badge-wrap">
+                <button type="button"
+                        class="pill-proxi pill-proxi--mark proxi-trigger proxi-trigger--badge"
+                        aria-label="Size twin info"
+                        aria-describedby="tip-proxi-hero">
+                  <span class="glyph" aria-hidden="true">
+                    <div class="bar"></div>
+                    <div class="bar"></div>
+                    <div class="bar"></div>
+                  </span>
+                </button>
+                <div class="proxi-tip proxi-tip--left" role="tooltip" id="tip-proxi-hero">Same as yours (XS)</div>
+              </div>
               <div class="pc-carousel" data-index="0">
-                <div class="pc-slide pc-active" data-brand="Anthropologie" data-title="Somerset Maxi Dress" data-size="XS" data-comments="12" data-q="Is this petite or regular?" data-a="Regular!">
-                  <img class="pc-hero-img pc-hero-img--tight" src="../img/videoframe_6964.png" alt="Somerset Maxi Dress — XS">
-                  <div class="pc-chip">Same as yours (XS)</div>
+                <div class="pc-slide pc-active" data-brand="Anthropologie" data-title="Somerset Chiffon Maxi Dress" data-size="XS" data-comments="12" data-q="Is this petite or regular?" data-a="Regular!">
+                  <img class="pc-hero-img pc-hero-img--tight" src="../img/videoframe_35967__1_-1760420352907__user1__Anthropologie__Somerset_Chiffon_Maxi_Dress__XXS-proxy-hero@3x.png" alt="Somerset Chiffon Maxi Dress — XS">
                 </div>
                 <div class="pc-slide" data-brand="Anthropologie" data-title="Peregrine Midi Dress" data-size="XS Petite" data-comments="7" data-q="How long is the skirt?">
                   <img class="pc-hero-img pc-hero-img--tight" src="../img/videoframe_33023.png" alt="Alternate look">
@@ -498,7 +789,7 @@ body::before{
             </div>
 
             <div class="pc-look-caption">
-              <p><span class="pc-user"><strong id="pcBrand">Anthropologie</strong></span> <span id="pcTitle">Somerset Maxi Dress</span> — <span id="pcSize">XS</span></p>
+              <p><span class="pc-user"><strong id="pcBrand">Anthropologie</strong></span> <span id="pcTitle">Somerset Chiffon Maxi Dress</span> <span id="pcSize">(XS)</span></p>
             </div>
 
             <div class="pc-comment-teaser" role="button" aria-label="View comments">
@@ -513,7 +804,80 @@ body::before{
             </div>
 
             <div class="pc-look-actions">
-              <button class="pc-btn-primary">Shop this item</button>
+              <button class="pc-btn-primary" id="shopButton">Shop this item</button>
+              <button class="pc-btn-secondary">See more from ellaa76</button>
+            </div>
+          </section>
+
+          <!-- ===== DUPLICATED PROXY CARD (placed below the first) ===== -->
+          <section class="proxy-card">
+            <header class="pc-look-h">
+              <div class="pc-name">srd24</div>
+              <div class="pc-bads">
+                <span class="proxi-inline-wrap">
+                  <button type="button"
+                          class="pill-proxi pill-proxi--count proxi-trigger"
+                          aria-label="Shared Proxi items"
+                          aria-describedby="tip-proxi-count">
+                    <span class="glyph" aria-hidden="true">
+                      <div class="bar"></div>
+                      <div class="bar"></div>
+                      <div class="bar"></div>
+                    </span>
+                    <span class="count">1</span>
+                  </button>
+                  <span class="proxi-tip proxi-tip--right" role="tooltip" id="tip-proxi-count">You share two Proxi Pieces<br>– same item, same size</span>
+                </span>
+              </div>
+            </header>
+
+            <div class="pc-match micro">
+              Matches your <button class="pc-match-link" data-open="match">Somerset (XS)</button>
+            </div>
+
+            <div class="pc-hero-wrap">
+              <div class="proxi-badge-wrap">
+                <button type="button"
+                        class="pill-proxi pill-proxi--mark proxi-trigger proxi-trigger--badge"
+                        aria-label="Size twin info"
+                        aria-describedby="tip-proxi-hero">
+                  <span class="glyph" aria-hidden="true">
+                    <div class="bar"></div>
+                    <div class="bar"></div>
+                    <div class="bar"></div>
+                  </span>
+                </button>
+                <div class="proxi-tip proxi-tip--left" role="tooltip" id="tip-proxi-hero">Same as yours (XS)</div>
+              </div>
+              <div class="pc-carousel" data-index="0">
+                <div class="pc-slide pc-active" data-brand="Anthropologie" data-title="Somerset Chiffon Maxi Dress" data-size="XS" data-comments="12" data-q="Is this petite or regular?" data-a="Regular!">
+                  <img class="pc-hero-img pc-hero-img--tight" src="../img/videoframe_2906__1_-1760417574510-proxy-hero@3x.png" alt="Green satin dress">
+                </div>
+                <button class="pc-nav left" type="button" aria-label="Previous slide"></button>
+                <button class="pc-nav right" type="button" aria-label="Next slide"></button>
+                <div class="pc-dots" aria-label="Slide position">
+                  <button class="pc-dot pc-active" type="button" aria-label="Slide 1"></button>
+                </div>
+              </div>
+            </div>
+
+            <div class="pc-look-caption">
+              <p><span class="pc-user"><strong id="pcBrand">Anthropologie</strong></span> <span id="pcTitle">Somerset Chiffon Maxi Dress</span> <span id="pcSize">(XS)</span></p>
+            </div>
+
+            <div class="pc-comment-teaser" role="button" aria-label="View comments">
+              <div class="pc-k">Comments · <span id="pcCCount">12</span></div>
+              <div class="pc-row">
+                <span class="pc-q">Q:</span> <span id="pcCQ">Is this petite or regular?</span>
+                <span class="pc-sep">·</span>
+                <span class="pc-a">A:</span> <span id="pcCA">Regular!</span>
+                <span class="pc-link-inline" id="pcLinkInline" aria-hidden="true">See full thread &gt;</span>
+              </div>
+              <div class="pc-link" id="pcLinkBlock">See full thread &gt;</div>
+            </div>
+
+            <div class="pc-look-actions">
+              <button class="pc-btn-primary" id="shopButton">Shop this item</button>
               <button class="pc-btn-secondary">See more from ellaa76</button>
             </div>
           </section>
@@ -576,7 +940,7 @@ body::before{
                   <span class="badge">≈</span>
                 </div>
                 <p class="advice-inline advice-next">Prefer a slimmer look? XS will match the bust but feel snug at waist and hips (1–2″ smaller)</p>
-                <a class="shop-inline" href="#" aria-label="Shop size S">Shop S →</a>
+                <a class="shop-inline" href="https://www.anthropologie.com/shop/the-jocelyn-sleeveless-slip-midi-dress-by-maeve?category=top-rated-dresses&color=256&type=STANDARD&quantity=1" target="_blank" aria-label="Shop size S">Shop S →</a>
               </div>
 
               <!-- 3) Fit blurb -->
@@ -586,7 +950,7 @@ body::before{
 
               <!-- 4) Shop CTA -->
               <div class="shop-row">
-                <a class="shop-link" href="#shop-s">Shop S</a>
+                <a class="shop-link" href="https://www.anthropologie.com/shop/the-jocelyn-sleeveless-slip-midi-dress-by-maeve?category=top-rated-dresses&color=256&type=STANDARD&quantity=1" target="_blank">Shop S</a>
               </div>
             </div>
           </div>
@@ -697,7 +1061,7 @@ body::before{
       const { brand, title, size, comments, q, a } = slide.dataset || {};
       if(brandEl) brandEl.textContent = brand || '';
       if(titleEl) titleEl.textContent = title || '';
-      if(sizeEl)  sizeEl.textContent  = size || '';
+      if(sizeEl)  sizeEl.textContent  = size ? `(${size})` : '';
       if(cCountEl) cCountEl.textContent = comments || '0';
       if(cQEl) cQEl.textContent = q || '';
       if(cAEl){
@@ -719,6 +1083,16 @@ body::before{
           if(linkBlock)  linkBlock.style.display  = '';
         }
       }
+      
+      // Update shop button URL based on current slide
+      const shopButton = document.getElementById('shopButton');
+      if(shopButton && title) {
+        if(title === 'Somerset Chiffon Maxi Dress') {
+          shopButton.onclick = () => window.open('https://www.anthropologie.com/shop/the-somerset-chiffon-maxi-dress2', '_blank');
+        } else if(title === 'Peregrine Midi Dress') {
+          shopButton.onclick = () => window.open('https://www.anthropologie.com/shop/the-peregrine-midi-dress8', '_blank');
+        }
+      }
     }
 
     let idx = 0;
@@ -726,6 +1100,10 @@ body::before{
       idx = (n + slides.length) % slides.length;
       slides.forEach((s,i)=> s.classList.toggle('pc-active', i===idx));
       dots.forEach((d,i)=> d.classList.toggle('pc-active',  i===idx));
+      
+      // Toggle class for slide 2 spacing
+      card.classList.toggle('slide-2-active', idx === 1);
+      
       applyFromSlide(slides[idx]);
     }
     dots.forEach((d,i)=> d.addEventListener('click', ()=> show(i)));
@@ -747,6 +1125,25 @@ body::before{
 
     show(0);
   })();
+</script>
+
+<script>
+  // Click handler for proxy card image
+  document.addEventListener('click', (e) => {
+    // Check if clicking on the proxy card hero image
+    if (e.target.classList.contains('pc-hero-img')) {
+      // Get the current active slide to determine which URL to open
+      const activeSlide = document.querySelector('.pc-slide.pc-active');
+      if (activeSlide) {
+        const title = activeSlide.dataset.title;
+        if (title === 'Somerset Chiffon Maxi Dress') {
+          window.open('https://www.anthropologie.com/shop/the-somerset-chiffon-maxi-dress2', '_blank');
+        } else if (title === 'Peregrine Midi Dress') {
+          window.open('https://www.anthropologie.com/shop/the-peregrine-midi-dress8', '_blank');
+        }
+      }
+    }
+  });
 </script>
 
 <script>
@@ -793,6 +1190,24 @@ body::before{
     probe.src = localSrc;
   });
 </script>
+
+<script>
+  (function(){
+    try{
+      const params = new URLSearchParams(location.search);
+      const embed = params.get('embed');
+      if(embed){
+        // Make background transparent and remove page glow when embedded
+        document.documentElement.style.background = 'transparent';
+        document.body.style.background = 'transparent';
+        document.body.style.padding = '0';
+        const styleEl = document.createElement('style');
+        styleEl.textContent = `body::before{display:none !important}`;
+        document.head.appendChild(styleEl);
+      }
+    }catch(err){}
+  })();
+  </script>
 
 </body>
 </html>

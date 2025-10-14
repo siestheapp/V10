@@ -1,0 +1,21 @@
+<svg width="400" height="400" viewBox="0 0 400 400" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <linearGradient id="bgRamp" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#008888"/>
+      <stop offset="45%" stop-color="#34C3CC"/>
+      <stop offset="100%" stop-color="#9BFFCF"/>
+    </linearGradient>
+  </defs>
+
+  <!-- Bold gradient tile -->
+  <rect width="400" height="400" rx="28" fill="url(#bgRamp)"/>
+
+  <!-- White wordmark -->
+  <text x="200" y="210"
+        font-family="Inter, system-ui, -apple-system, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif"
+        font-size="96" font-weight="800" text-anchor="middle" dominant-baseline="middle"
+        letter-spacing="-0.02em" fill="#FFFFFF">
+    proxi
+  </text>
+</svg>
+

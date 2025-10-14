@@ -5,29 +5,30 @@
   <meta http-equiv="X-UA-Compatible" content="IE=edge">
   <meta name="viewport" content="width=device-width, initial-scale=1">
 
-  <title>Freestyle — Find Your Size • Join the Waitlist</title>
-  <meta name="description" content="Freestyle predicts your best-fitting size across brands using the clothes you already own. Join the waitlist to get early access.">
+  <title>Proxi — Find Your Size • Join the Waitlist</title>
+  <meta name="description" content="Proxi predicts your best-fitting size across brands using the clothes you already own. Join the waitlist to get early access.">
   <meta name="copyright" content="Copyright © 2025 Sean Davey. All rights reserved.">
   <meta name="author" content="Sean Davey">
 
-  <meta property="og:site_name" content="Freestyle by Sean Davey">
+  <meta property="og:site_name" content="Proxi by Sean Davey">
 
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
 
-  <link rel="stylesheet" href="../freestyle-tokens.css">
+  <link rel="stylesheet" href="freestyle-tokens.css">
   <link rel="stylesheet" href="assets/css/style.css">
   <style>
     /* Fallback tokens in case the external tokens file fails to load */
     :root{
       --petrol-600:#009090; --petrol-500:#00A3A3; --petrol-400:#16B5B5;
       --canvas-100:#E9EEF1; --ink-900:#0B0F14; --ink-500:#2A3642;
-      --brand-sheen: linear-gradient(135deg,#00A3A3 0%,#7FE1FF 50%,#A6FFCB 100%);
+      --brand-sheen: linear-gradient(135deg,#009090 0%,#1FAED9 42%,#00A3A3 62%,#35D1AE 100%);
     }
     /* Freestyle overrides for branding without rebuilding CSS */
     .header .logo a,
     .header .logo{background:var(--brand-sheen);-webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent;text-decoration:none}
+    .brand-text{background:var(--brand-sheen);-webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent}
     .btn{background:var(--petrol-500, #00A3A3);color:#fff;border:1px solid var(--petrol-400, #16B5B5)}
     .btn:hover{background:var(--petrol-600, #009090)}
     .section-title{border-bottom-color:var(--canvas-100, #E9EEF1)}
@@ -46,16 +47,21 @@
     /* FAQ details */
     #faq summary{color:var(--ink-900)}
     #faq details:hover summary{color:var(--petrol-500)}
+    /* Override the purple bullet to match teal numbers */
+    #faq .faq-list details summary::before{background:linear-gradient(135deg, var(--petrol-600, #009090), #35D1AE); box-shadow:0 4px 12px rgba(0,163,163,.22)}
 
     /* Tighten site header height and reduce top spacing */
     .header{padding:.5em 0}
     @media (min-width:1280px){ .header{padding-top:.75em} }
-    .header .logo{font-size:1.6em;line-height:1}
+    .header .logo{font-size:1.6em;line-height:1;font-weight:800}
     @media (min-width:1280px){ .header .logo{font-size:1.8em} }
+    @media (prefers-contrast: more){ .header .logo a, .header .logo{background:none;-webkit-text-fill-color:#0B0F14;-webkit-text-stroke:0;text-shadow:none;color:#0B0F14} }
     .page{padding-top:36px}
 
     /* Slightly reduce hero video mock size for extra breathing room */
     .hero .mock.video .mock-inner{transform:scale(0.985);transform-origin:top right}
+    /* Slightly enlarge unified feed mock to match prior hero video presence */
+    .hero .mock.unified .mock-inner{transform:scale(1.00);transform-origin:top right}
     /* Slightly reduce large closet mock in HOW section (same proportions) */
     .how .mock .mock-inner{transform:scale(0.985);transform-origin:top right}
   </style>
@@ -64,7 +70,7 @@
 
 <header class="header">
   <div class="container">
-    <div class="logo"><a href="#top">freestyle</a></div>
+    <div class="logo"><a href="#top">proxi</a></div>
     <ul class="nav">
       <li><a href="#how">How it works</a></li>
       <li><a href="#faq">FAQ</a></li>
@@ -80,28 +86,25 @@
       <div class="cols">
         <div class="col">
           <header class="section-header">
-            <h1 class="section-heading">Find clothes that fit &mdash; every time.</h1>
+            <h1 class="section-heading">Try on clothes by <s>proxy</s> <span class="brand-text">proxi</span><span class="brand-text">.</span></h1>
             <p class="section-subheading">No&nbsp;measuring. No&nbsp;guesswork. No&nbsp;surprises.</p>
           </header>
-          <form class="form" method="POST" action="/thanks" name="waitlist" data-netlify="true" netlify-honeypot="bot-field" autocomplete="on">
-            <input type="hidden" name="form-name" value="waitlist">
-            <p class="hidden"><label>Don't fill this out: <input name="bot-field"></label></p>
+          <form class="form" method="POST" action="https://api.web3forms.com/submit" name="waitlist" autocomplete="on">
+            <input type="hidden" name="access_key" value="df754075-e1ca-4095-91e4-2ec448dbeb17">
+            <input type="hidden" name="subject" value="Proxi Waitlist Signup">
+            <input type="checkbox" name="botcheck" class="hidden" style="display: none;">
             <div class="form-space">
               <input class="form-input" type="email" name="email" placeholder="Enter your email" required inputmode="email" autocomplete="email" autocapitalize="off" spellcheck="false">
               <button class="btn" type="submit">Join the waitlist &rarr;</button>
             </div>
-            <small class="form-note">Join 1000+ early users. No spam, ever.</small>
+            <small class="form-note">Join early users. No spam, ever.</small>
           </form>
         </div>
         <div class="col">
-          <div class="mock video" aria-hidden="true">
-            <a class="mock-inner" href="https://www.anthropologie.com/shop/the-jocelyn-sleeveless-slip-midi-dress-by-maeve?category=top-rated-dresses&color=256&type=STANDARD&quantity=1" target="_blank" rel="noopener noreferrer" data-track="hero-mock">
-              <video preload="metadata" autoplay muted loop playsinline poster="assets/video/mockup.jpg">
-                <source src="assets/video/mockup.mp4" type="video/mp4">
-                Your browser does not support the video tag.
-              </video>
-              <div class="click-overlay" data-track="hero-mock"></div>
-            </a>
+          <div class="mock unified" aria-hidden="true">
+            <div class="mock-inner" data-track="hero-mock">
+              <iframe src="assets/iframe/feed-unified.html?embed=1&v=2" title="Unified feed mockup" loading="lazy"></iframe>
+            </div>
           </div>
         </div>
       </div>
@@ -113,20 +116,20 @@
         <div class="col">
           <header class="section-header">
             <p class="section-title">How it works</p>
-            <h2 id="section-heading">Your sizes &rarr; your measurements</h2>
+            <h2 id="section-heading">Your closet &rarr; your proxies</h2>
           </header>
           <ol class="steps">
             <li>
-              <p class="step-title"><strong>Add a few favorites</strong></p>
-              <p>Add 1–3 pieces you already own. Sies pulls the exact measurements automatically.</p>
+              <p class="step-title"><strong>Add a few pieces</strong></p>
+              <p>Save 1–3 items you already own to Your Closet. We use the exact size and brand to anchor your fit.</p>
             </li>
             <li>
-              <p class="step-title"><strong>Sit back while Sies does the math</strong></p>
-              <p>Sies builds your fit profile from size guides and spec sheets — no measuring tape needed.</p>
+              <p class="step-title"><strong>Meet your proxies</strong></p>
+              <p>Proxi finds people who own the same piece (and size) and maps what they wear across other brands and styles.</p>
             </li>
             <li>
               <p class="step-title"><strong>Shop with confidence</strong></p>
-              <p>See your recommended size and a short "why it fits" note. No guesswork, just clothes that feel made for you.</p>
+              <p>See your recommended size and real-world fit notes&mdash;backed by people who fit like you.</p>
             </li>
           </ol>
         </div>
@@ -166,7 +169,7 @@
           <div class="mockup-label">Your Closet</div>
           <div class="mock">
             <div class="mock-inner" data-track="gallery-closet">
-              <iframe src="assets/iframe/closet-gallery.html?v=4" title="Closet mockup" loading="lazy"></iframe>
+              <iframe src="assets/iframe/closet-screen.html?v=1" title="Closet mockup" loading="lazy"></iframe>
             </div>
           </div>
         </div>
@@ -190,7 +193,7 @@
 
       <div class="testimonial">
         <blockquote>
-          <p>“I used to order two sizes every time I shopped for a dress online. With Sies, I have a much better idea of how each size will fit.”</p>
+          <p>"I used to order two sizes every time I shopped for a dress online. With Proxi, I have a much better idea of how each size will fit."</p>
           <cite>&mdash; Emily, NYC</cite>
         </blockquote>
       </div>
@@ -204,24 +207,25 @@
         </header>
         <div class="faq-list">
           <details>
-            <summary>Do I need to measure myself?</summary>
-            <div>No. Sies learns your fit from the clothes you already own. Snap a couple tag photos or paste product links and we’ll extract measurements automatically.</div>
+            <summary>What is a "proxi"?</summary>
+            <div>A proxi is a real person who owns the same item in the same size as you. We surface their photos and sizes so you can shop "by proxi" with confidence.</div>
           </details>
           <details>
-            <summary>Are my sizes public?</summary>
-            <div>No. Sizes and measurements are private by default. You can share with Close Friends; creators can opt-in to share.</div>
+            <summary>Do I have to upload photos?</summary>
+            <div>No. Photos help others, but they’re optional. Adding items + sizes is enough to get proxi matches and size guidance.</div>
           </details>
           <details>
-            <summary>Will this work across different brands?</summary>
-            <div>Yes. We standardize brand size guides and map them to your fit profile, so an XS in one brand can be compared to an S in another.</div>
+            <summary>How many items do I need to start?</summary>
+            <div>Just one. Add a single piece you already own and you’ll see proxi matches and recommended sizes on similar items right away. More items = better matches.</div>
           </details>
-          <details>
-            <summary>What if I like different fits?</summary>
-            <div>Choose a fit zone – sleek, perfect, or relaxed – and Sies adapts by garment type. You’ll also see a short “why it fits” explanation on each item.</div>
-          </details>
+          
           <details>
             <summary>How is my data used?</summary>
-            <div>Only to improve your recommendations. We don’t sell personal data. You can remove your info anytime from Settings.</div>
+            <div>Only to match you with proxies and improve recommendations. We don’t sell personal data. You can delete your Closet and account at any time.</div>
+          </details>
+          <details>
+            <summary>Is Proxi free?</summary>
+            <div>Yes. Proxi is free for shoppers. Brands may participate to feature items, but your experience stays community-first.</div>
           </details>
         </div>
       </div>
@@ -230,12 +234,13 @@
     <!-- JOIN -->
     <section id="join" class="section join">
       <header class="section-header">
-        <h2 class="section-heading">Be first to try Sies</h2>
+        <h2 class="section-heading">Be first to try Proxi</h2>
         <p class="section-subheading">Join the waitlist for early access and updates.</p>
       </header>
-      <form class="form" method="POST" action="/thanks" name="waitlist" data-netlify="true" netlify-honeypot="bot-field" autocomplete="on">
-        <input type="hidden" name="form-name" value="waitlist">
-        <p class="hidden"><label>Don't fill this out: <input name="bot-field"></label></p>
+      <form class="form" method="POST" action="https://api.web3forms.com/submit" name="waitlist" autocomplete="on">
+        <input type="hidden" name="access_key" value="df754075-e1ca-4095-91e4-2ec448dbeb17">
+        <input type="hidden" name="subject" value="Proxi Waitlist Signup">
+        <input type="checkbox" name="botcheck" class="hidden" style="display: none;">
         <div class="form-space">
           <input class="form-input" type="email" name="email" placeholder="Enter your email" required inputmode="email" autocomplete="email" autocapitalize="off" spellcheck="false">
           <button class="btn" type="submit">Join the waitlist &rarr;</button>
@@ -249,18 +254,26 @@
 
 <footer class="footer">
   <div class="container">
-    <p class="copyright">&copy; 2025 Sies by Oona Holdings LLC. <br>All rights reserved.</p>
+    <p class="copyright">&copy; 2025 Proxi by Oona Holdings LLC. <br>All rights reserved.</p>
   </div>
 </footer>
 
 <script>
-  // Simple analytics tracker for mockup clicks
+  // Simple analytics tracker for mockup clicks (sends to Formspree)
   (function () {
-    const COLLECT_URL = '/.netlify/functions/collect';
+    const COLLECT_URL = 'https://formspree.io/f/meorpayo';
 
     function track(eventName, detail) {
       try {
-        navigator.sendBeacon && navigator.sendBeacon(COLLECT_URL, new Blob([JSON.stringify({ event: eventName, detail, ts: Date.now(), path: location.pathname })], { type: 'application/json' }));
+        if(!navigator.sendBeacon) return;
+        const fd = new FormData();
+        fd.append('type', eventName);
+        fd.append('key', (detail && detail.key) || '');
+        fd.append('meta', JSON.stringify((detail && detail.meta) || {}));
+        fd.append('path', location.pathname);
+        fd.append('ts', String(Date.now()));
+        fd.append('_subject', 'Proxi click');
+        navigator.sendBeacon(COLLECT_URL, fd);
       } catch (e) {
         // no-op
       }
@@ -288,33 +301,24 @@
 
 <script>
   (function () {
-    const forms = document.querySelectorAll('form[name="waitlist"][data-netlify="true"]');
-
-    function encode(data) {
-      return Object.keys(data).map(k => encodeURIComponent(k) + "=" + encodeURIComponent(data[k])).join("&");
-    }
+    const WEB3FORMS_ENDPOINT = 'https://api.web3forms.com/submit';
+    const forms = document.querySelectorAll('form[name="waitlist"]');
 
     forms.forEach(form => {
       form.addEventListener('submit', async (e) => {
         e.preventDefault();
-        const data = Object.fromEntries(new FormData(form));
-        data['form-name'] = form.getAttribute('name');
         try {
-          const res = await fetch('/', {
+          const res = await fetch(WEB3FORMS_ENDPOINT, {
             method: 'POST',
-            headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
-            body: encode(data)
+            headers: { 'Accept': 'application/json' },
+            body: new FormData(form)
           });
           if (!res.ok) throw new Error('Network');
-          // Optional: fire analytics here
-          // window.gtag?.('event','waitlist_signup');
-          // fbq?.('track','Lead');
 
-          form.innerHTML = `<p style="margin:0.5rem 0 0; font-weight:600">You're in 🎉 We'll email you soon.</p>`;
-          history.replaceState(null, '', location.pathname + '?joined=1'); // keeps a clean URL state
+          form.innerHTML = `<p style=\"margin:0.5rem 0 0; font-weight:600; text-align:center\">You're in 🎉 We'll email you soon.</p>`;
+          history.replaceState(null, '', location.pathname + '?joined=1');
         } catch (err) {
-          // Fallback to normal redirect if something fails
-          window.location.href = '/thanks';
+          window.location.href = '/thanks.html';
         }
       });
     });
@@ -332,5 +336,7 @@
     }
   })();
 </script>
+<script defer src="/_vercel/insights/script.js"></script>
+<script>window.va = window.va || function(){(window.vaq = window.vaq || []).push(arguments)}</script>
 </body>
 </html>

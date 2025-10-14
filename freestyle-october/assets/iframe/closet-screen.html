@@ -3,14 +3,14 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>Freestyle — Your Closet (Visual‑First)</title>
+  <title>Proxi — Your Closet (Visual‑First)</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
   <style>
     :root{
-      --bg:#FAF8F6; --ink:#1F1F1F; --muted:#6F6F74;
-      /* Freestyle brand */
+      --bg:#FFFFFF; --ink:#1F1F1F; --muted:#6F6F74;
+      /* Proxi brand */
       --petrol-600:#009090; --petrol-500:#00A3A3; --petrol-400:#16B5B5; --petrol-100:#E0F7F7;
       --mint-400:#A6FFCB; --ice-300:#7FE1FF;
       /* Adaptive CTA ramp (deepened default for contrast) */
@@ -22,21 +22,21 @@
     body{font-family:Inter,system-ui,-apple-system,"Segoe UI",Roboto,Helvetica,Arial;background:var(--bg);color:var(--ink);min-height:100vh;display:flex;align-items:center;justify-content:center;padding:0}
 
     /* Phone shell */
-    .phone{width:430px;height:932px;border-radius:55px;background:#000;padding:2px}
-    .screen{height:100%;background:#fff;border-radius:53px;overflow:hidden;position:relative;display:flex;flex-direction:column}
+    .phone{width:430px;height:932px;border-radius:55px;background:transparent;border:2px solid #000;position:relative}
+    .screen{position:absolute;inset:2px;background:var(--bg);border-radius:53px;overflow:hidden;display:flex;flex-direction:column}
     .island{position:absolute;top:11px;left:50%;transform:translateX(-50%);width:126px;height:37px;background:#000;border-radius:19px;z-index:5}
     .status{height:54px;margin-top:5px;display:flex;align-items:center;justify-content:space-between;padding:0 30px;font-weight:600;color:#000;font-size:17px;letter-spacing:-.02em}
     .status .right{display:flex;align-items:center;gap:6px}
     .status .right img{height:13px;width:auto;display:block}
 
     /* Header */
-    .header{padding:16px 24px 6px;display:flex;align-items:center;justify-content:center;position:relative}
+    .header{padding:4px 24px 2px;display:flex;align-items:center;justify-content:center;position:relative}
     .logo{font-weight:600;font-size:32px;letter-spacing:-.01em;background:linear-gradient(135deg,var(--cta-start),var(--cta-mid) 46%,var(--cta-end));
       -webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent}
 
 
     /* Top chips / filters */
-    .filters{position:sticky;top:54px;z-index:4;background:#fff;padding:10px 20px;border-bottom:1px solid rgba(0,0,0,.06)}
+    .filters{position:sticky;top:54px;z-index:4;background:var(--bg);padding:8px 20px 6px;border-bottom:1px solid rgba(0,0,0,.06)}
     .chips{display:flex;gap:8px;overflow-x:auto;-webkit-overflow-scrolling:touch;scrollbar-width:none}
     .chips::-webkit-scrollbar{display:none}
     .chip{border:1px solid var(--border);background:#fff;color:#1F1F1F;border-radius:999px;padding:8px 12px;font-size:12px;white-space:nowrap}
@@ -48,7 +48,7 @@
     .switch.active{color:var(--petrol-600);border-color:rgba(0,163,163,.25);background:rgba(0,163,163,.08)}
 
     /* Content */
-    .content{flex:1;overflow:auto;padding:0 24px 96px}
+    .content{flex:1;overflow:auto;padding:2px 24px 96px}
     .title{font:800 26px/1.1 Inter;margin:6px 0 8px}
     .section{margin-top:14px}
 
@@ -63,7 +63,62 @@
     .overlay{position:absolute;inset:auto 0 0 0;padding:10px 10px 12px;background:linear-gradient(180deg,rgba(0,0,0,0) 0%,rgba(0,0,0,.55) 60%,rgba(0,0,0,.75) 100%);color:#fff}
     .brand{font:700 11px/1 Inter;letter-spacing:.04em;opacity:.95}
     .name{font:600 14px/1.2 Inter;margin-top:2px}
-    .size{position:absolute;top:10px;left:10px;padding:6px 10px;border-radius:999px;background:rgba(0,0,0,.45);backdrop-filter:blur(2px);color:#fff;font:700 12px/1 Inter}
+    /* Size chip (original dark translucent badge at top-left) */
+    .size{position:absolute;top:10px;left:10px;padding:6px 10px;border-radius:999px;background:rgba(0,0,0,.45);backdrop-filter:blur(2px);color:#fff;font:700 12px/1 Inter;z-index:3}
+
+    /* Legend under title (Option A) */
+    .legend{display:flex; align-items:baseline; gap:.1rem; margin-top:6px; margin-bottom:10px; font-size:clamp(13px,1.7vw,16px); line-height:1.35; color:#6A7A87}
+    .legend-term{font-weight:600; display:inline-flex; align-items:baseline; gap:.1rem; color:#34424D}
+    .legend .equiv{display:inline-block; position:relative; width:1.2em; height:.8em; vertical-align:baseline; margin:0 0.05em}
+    .legend .equiv .bar{position:absolute; left:0.1em; width:1em; height:0.12em; border-radius:0.06em; background:linear-gradient(135deg, #008888 0%, #34C3CC 46%, #9BFFCF 100%)}
+    .legend .equiv .bar:nth-child(1){top:0.15em}
+    .legend .equiv .bar:nth-child(2){top:0.39em}
+    .legend .equiv .bar:nth-child(3){top:0.63em}
+    .legend-def{color:#6A7A87; font-weight:500}
+    
+
+    .card{position:relative}
+    .card img{display:block; border-radius:14px}
+    /* --- Proxi Pill · signature (tight + high-contrast) v4 --- */
+    .proxy-pill{
+      position:absolute !important; top:10px !important; right:10px !important; z-index:3 !important;
+      display:inline-flex !important; align-items:center !important; justify-content:center !important; gap:2px !important;
+      height:18px !important; padding:0 4px !important;                /* ultra-tight: 18px tall, 4px sides */
+      border-radius:9999px !important;
+      background:#FFFFFF !important;                         /* strong contrast on imagery */
+      border:1px solid rgba(0,0,0,.16) !important;           /* neutral stroke for definition */
+      box-shadow:0 2px 6px rgba(0,0,0,.12) !important;
+      color:#0B3D3A !important;                              /* deep petrol ink */
+      font:700 10px/1 Inter, system-ui, -apple-system, "Segoe UI", Roboto, Helvetica, Arial !important;
+      user-select:none !important; cursor:default !important;
+    }
+
+    /* Triple bar glyph - custom rectangles */
+    .proxy-pill .icon{
+      display:flex; flex-direction:column; align-items:center; justify-content:center; 
+      width:8px; height:8px; gap:0.8px;
+    }
+    .proxy-pill .icon .bar{
+      width:6px; height:1.2px; border-radius:1px;
+      background:linear-gradient(135deg, #008888 0%, #34C3CC 46%, #9BFFCF 100%) !important;
+    }
+    .proxy-pill .count{font-weight:800; font-feature-settings:"tnum" 1; background:linear-gradient(135deg,var(--cta-start),var(--cta-mid) 46%,var(--cta-end)); -webkit-background-clip:text; background-clip:text; -webkit-text-fill-color:transparent}
+
+    /* Disabled (if needed) */
+    .proxy-pill[aria-disabled="true"] { opacity: .45; }
+
+    /* Optional hover for web demo */
+    .proxy-pill:hover { filter: brightness(.95); }
+
+    /* bottom sheet */
+    .sheet{position:fixed; inset:0; background:rgba(0,0,0,.3); display:flex; align-items:flex-end}
+    .sheet[hidden]{display:none}
+    .sheet-card{width:100%; background:#fff; border-radius:16px 16px 0 0; padding:16px 18px; box-shadow:0 -4px 24px rgba(0,0,0,.12)}
+    .sheet-card h3{margin:4px 0 12px; font:800 16px/1.2 Inter}
+    .proxy-list{list-style:none; margin:0; padding:0}
+    .proxy-list li{display:flex; align-items:center; gap:10px; padding:10px 0; border-top:1px solid #eee}
+    .proxy-list li:first-child{border-top:0}
+    .sheet-close{margin-top:12px; padding:10px 14px; border-radius:10px; border:1px solid #e7e7ea; background:#fff; font:700 14px}
 
     /* Tab bar */
     .tabs{position:absolute;left:0;right:0;bottom:0;height:83px;background:#fff;border-top:1px solid rgba(0,0,0,.06);display:flex;justify-content:space-around;align-items:flex-start;padding-top:8px;padding-bottom:34px}
@@ -71,20 +126,7 @@
     .tab.active{color:var(--petrol-600)}
     .ico{width:28px;height:28px}
 
-    /* Modal preview */
-    .modal{position:fixed;inset:0;background:rgba(0,0,0,.58);display:none;align-items:center;justify-content:center;z-index:50}
-    .modal.open{display:flex}
-    .sheet{width:92%;max-width:420px;background:#fff;border-radius:22px;overflow:hidden;box-shadow:0 30px 80px rgba(0,0,0,.35)}
-    .sheet .hero{position:relative}
-    .sheet img{width:100%;height:420px;object-fit:cover}
-    .sheet .pill{position:absolute;top:12px;left:12px;background:rgba(0,0,0,.5);color:#fff;padding:6px 10px;border-radius:999px;font:700 12px/1 Inter}
-    .sheet .body{padding:14px 16px}
-    .sheet h3{font:700 18px/1.2 Inter}
-    .meta{margin-top:2px;color:#6F6F74;font-size:12px}
-    .why{margin-top:10px;background:#fff;border:1px solid #eee6;border-radius:14px;padding:12px}
-    .cta{margin-top:12px;display:flex;gap:8px}
-    .btn{flex:1;display:inline-flex;align-items:center;justify-content:center;padding:12px 14px;border-radius:16px;border:1px solid var(--border);font:700 14px/1 Inter;cursor:pointer}
-    .btn.primary{color:#fff;border:none;background:linear-gradient(135deg,var(--cta-start),var(--cta-mid) 40%,var(--cta-end));box-shadow:0 10px 24px rgba(0,163,163,.25)}
+    /* Modal popup CSS removed */
 
     /* Accessibility focus */
     .chip:focus-visible,
@@ -93,13 +135,23 @@
   </style>
 </head>
 <body>
+  <!-- SVG gradient definition for Proxi blue -->
+  <svg style="position:absolute;width:0;height:0;" aria-hidden="true">
+    <defs>
+      <linearGradient id="proxi-gradient" x1="0%" y1="0%" x2="100%" y2="100%">
+        <stop offset="0%" style="stop-color:#008888;stop-opacity:1" />
+        <stop offset="46%" style="stop-color:#34C3CC;stop-opacity:1" />
+        <stop offset="100%" style="stop-color:#9BFFCF;stop-opacity:1" />
+      </linearGradient>
+    </defs>
+  </svg>
   <div class="phone">
     <div class="screen" data-view="list">
       <div class="island"></div>
       <div class="status"><div>9:41</div><div class="right"><img src="../img/cellular-connection.svg" alt="cell"/><img src="../img/wifi.svg" alt="wifi"/><img src="../img/battery.svg" alt="battery"/></div></div>
 
       <div class="header">
-        <div class="logo">freestyle</div>
+        <div class="logo">proxi</div>
       </div>
 
       <div class="filters">
@@ -119,48 +171,108 @@
 
       <div class="content">
         <h1 class="title">Your Closet</h1>
+        <div class="legend" role="note">
+          <span class="legend-term">Proxies <span class="equiv" aria-hidden="true"><div class="bar"></div><div class="bar"></div><div class="bar"></div></span></span>
+          <span class="legend-def">users who share your size</span>
+        </div>
 
         <div id="items" class="grid">
           <!-- Cards (use data-category for filtering) -->
           <article class="card" data-category="dresses" data-name="GEORGIA HARDINGE Relic Dress" data-size="UK 8">
+            <span class="size" aria-label="Your size for this item">UK 8</span>
+            <button class="proxy-pill" aria-label="2 proxies for this item in your size">
+              <span class="icon" aria-hidden="true">
+                <div class="bar"></div>
+                <div class="bar"></div>
+                <div class="bar"></div>
+              </span>
+              <span class="count">2</span>
+            </button>
             <img class="img tall" src="https://cdn.modaoperandi.com/assets/images/products/1048452/695474/c2/large_georgia-hardinge-gold-relic-dress.jpg?_v=1755324586" alt="Georgia Hardinge Relic Pleated Metallic‑Knit Maxi Dress">
-            <span class="size">UK 8</span>
             <div class="overlay"><div class="brand">GEORGIA HARDINGE</div><div class="name">Relic Pleated Metallic‑Knit Maxi Dress</div></div>
           </article>
 
           <article class="card" data-category="tops" data-name="Reformation Taryn Two Piece" data-size="2">
+            <span class="size" aria-label="Your size for this item">2</span>
+            <button class="proxy-pill" aria-label="2 proxies for this item in your size">
+              <span class="icon" aria-hidden="true">
+                <div class="bar"></div>
+                <div class="bar"></div>
+                <div class="bar"></div>
+              </span>
+              <span class="count">2</span>
+            </button>
             <img class="img" src="https://media.thereformation.com/image/upload/f_auto,q_auto:eco,dpr_2.0/w_500/PRD-SFCC/1314122/BLACK/1314122.1.BLACK?_s=RAABAB0" alt="Reformation Taryn Two Piece">
-            <span class="size">2</span>
             <div class="overlay"><div class="brand">REFORMATION</div><div class="name">Taryn Two Piece</div></div>
           </article>
 
           <article class="card" data-category="tops" data-name="ALFIE Open Back Cotton Poplin Top" data-size="Small">
+            <span class="size" aria-label="Your size for this item">Small</span>
+            <button class="proxy-pill" aria-label="2 proxies for this item in your size">
+              <span class="icon" aria-hidden="true">
+                <div class="bar"></div>
+                <div class="bar"></div>
+                <div class="bar"></div>
+              </span>
+              <span class="count">2</span>
+            </button>
             <img class="img" src="https://cdn.modaoperandi.com/assets/images/products/1028958/674197/c/large_alfie-white-backless-top.jpg?_v=1755087491" alt="ALFIE Open Back Cotton Poplin Top">
-            <span class="size">Small</span>
             <div class="overlay"><div class="brand">ALFIE</div><div class="name">Open Back Cotton Poplin Top</div></div>
           </article>
 
           <article class="card" data-category="bottoms" data-name="AYR The Secret Sauce" data-size="26S">
+            <span class="size" aria-label="Your size for this item">26S</span>
+            <button class="proxy-pill" aria-label="2 proxies for this item in your size">
+              <span class="icon" aria-hidden="true">
+                <div class="bar"></div>
+                <div class="bar"></div>
+                <div class="bar"></div>
+              </span>
+              <span class="count">2</span>
+            </button>
             <img class="img" src="https://www.ayr.com/cdn/shop/files/secretsauce-goodmood_CAT_d634f664-cb49-4e61-abef-5d94b707075e.jpg?crop=center&height=1440&v=1755036845&width=950" alt="AYR The Secret Sauce">
-            <span class="size">26S</span>
             <div class="overlay"><div class="brand">AYR</div><div class="name">The Secret Sauce</div></div>
           </article>
 
           <article class="card" data-category="bottoms" data-name="ZARA Flare Pants" data-size="M">
+            <span class="size" aria-label="Your size for this item">M</span>
+            <button class="proxy-pill" aria-label="2 proxies for this item in your size">
+              <span class="icon" aria-hidden="true">
+                <div class="bar"></div>
+                <div class="bar"></div>
+                <div class="bar"></div>
+              </span>
+              <span class="count">2</span>
+            </button>
             <img class="img" src="https://static.zara.net/assets/public/a4e8/d8da/2c3b44728736/7e4b4c39762b/03152505800-a1/03152505800-a1.jpg?ts=1753971869534&w=1900" alt="ZARA Flare Pants">
-            <span class="size">M</span>
             <div class="overlay"><div class="brand">ZARA</div><div class="name">Flare Pants</div></div>
           </article>
 
           <article class="card" data-category="tops" data-name="COS Shrunken T-shirt" data-size="XS">
+            <span class="size" aria-label="Your size for this item">XS</span>
+            <button class="proxy-pill" aria-label="2 proxies for this item in your size">
+              <span class="icon" aria-hidden="true">
+                <div class="bar"></div>
+                <div class="bar"></div>
+                <div class="bar"></div>
+              </span>
+              <span class="count">2</span>
+            </button>
             <img class="img" src="https://media.cos.com/assets/001/6e/d0/6ed0142c6e69ad42e826224d9a8d013f6d3f4685_xxl-1.jpg?imwidth=2160" alt="COS Shrunken T-shirt">
-            <span class="size">XS</span>
             <div class="overlay"><div class="brand">COS</div><div class="name">Shrunken T‑shirt</div></div>
           </article>
 
           <article class="card" data-category="dresses" data-name="ALEXIS Briette Satin Maxi Dress" data-size="S">
+            <span class="size" aria-label="Your size for this item">S</span>
+            <button class="proxy-pill" aria-label="2 proxies for this item in your size">
+              <span class="icon" aria-hidden="true">
+                <div class="bar"></div>
+                <div class="bar"></div>
+                <div class="bar"></div>
+              </span>
+              <span class="count">2</span>
+            </button>
             <img class="img tall" src="https://cdn.modaoperandi.com/assets/images/products/1039207/685257/c/large_alexis-blue-briette-dress.jpg?_v=1755195214" alt="ALEXIS Briette Satin Maxi Dress">
-            <span class="size">S</span>
             <div class="overlay"><div class="brand">ALEXIS</div><div class="name">Briette Satin Maxi Dress</div></div>
           </article>
         </div>
@@ -175,22 +287,17 @@
     </div>
   </div>
 
-  <!-- Modal preview -->
-  <div id="modal" class="modal" role="dialog" aria-modal="true" aria-label="Garment details">
-    <div class="sheet">
-      <div class="hero"><img id="mImg" alt=""><span id="mSize" class="pill"></span></div>
-      <div class="body">
-        <h3 id="mTitle">Title</h3>
-        <div id="mBrand" class="meta">Brand</div>
-        <div class="why">
-          <strong>Why it fits:</strong>
-          <div id="mWhy" style="font-size:14px;color:#1F1F1F;margin-top:6px">We’ll compare this to similar items in your closet and show chest/waist/hips context here.</div>
-        </div>
-        <div class="cta">
-          <button class="btn" id="closeBtn">Close</button>
-          <button class="btn primary">View item</button>
-        </div>
-      </div>
+  <!-- Modal popup removed -->
+
+  <!-- Proxies bottom sheet -->
+  <div id="proxy-sheet" class="sheet" hidden>
+    <div class="sheet-card">
+      <h3>Proxies for Somerset (XS)</h3>
+      <ul class="proxy-list">
+        <li><img src="https://i.pravatar.cc/40?img=12" alt="" width="28" height="28" style="border-radius:50%"><b>@ellaa76</b> • XS • “Regular fits best”</li>
+        <li><img src="https://i.pravatar.cc/40?img=15" alt="" width="28" height="28" style="border-radius:50%"><b>@vera</b> • XS • “Roomier bust”</li>
+      </ul>
+      <button class="sheet-close">Done</button>
     </div>
   </div>
 
@@ -226,18 +333,65 @@
     const mSize = document.getElementById('mSize');
     const closeBtn = document.getElementById('closeBtn');
 
+    // Card click handlers for product links
     document.getElementById('items').addEventListener('click',(e)=>{
       const card = e.target.closest('.card');
       if(!card) return;
-      const imgEl = card.querySelector('img');
-      mImg.src = imgEl.src; mImg.alt = imgEl.alt;
-      mTitle.textContent = card.dataset.name;
-      mBrand.textContent = card.querySelector('.brand').textContent;
-      mSize.textContent = card.dataset.size;
-      modal.classList.add('open');
+      
+      // Don't trigger if clicking on proxy pill
+      if(e.target.closest('.proxy-pill')) return;
+      
+      // Georgia Hardinge dress - open Moda Operandi
+      if(card.dataset.name === 'GEORGIA HARDINGE Relic Dress') {
+        window.open('https://www.modaoperandi.com/women/p/georgia-hardinge/relic-dress/695474', '_blank');
+      }
+      
+      // Reformation Taryn Two Piece - open Reformation
+      if(card.dataset.name === 'Reformation Taryn Two Piece') {
+        window.open('https://www.thereformation.com/products/taryn-two-piece/1314122.html?dwvar_1314122_color=BLK&quantity=1', '_blank');
+      }
+      
+      // ALFIE Open Back Cotton Poplin Top - open Moda Operandi
+      if(card.dataset.name === 'ALFIE Open Back Cotton Poplin Top') {
+        window.open('https://www.modaoperandi.com/women/p/alfie/backless-top/674197?srsltid=AfmBOor2o2fACKUC-rvNvAPHdYfEGt5BCRt7dyRQDL8yekooCQfzU2KI', '_blank');
+      }
+      
+      // AYR The Secret Sauce - open AYR
+      if(card.dataset.name === 'AYR The Secret Sauce') {
+        window.open('https://www.ayr.com/products/the-secret-sauce-1?srsltid=AfmBOopbH7Jolz4AXmkr1SaY59bvHkQVGsxe9cmGF8XcELel1suOl0nh&variant=42367379669071', '_blank');
+      }
+      
+      // ZARA Flare Pants - open ZARA
+      if(card.dataset.name === 'ZARA Flare Pants') {
+        window.open('https://www.zara.com/us/en/flare-pants-p03152436.html?v1=483702966&v2=2420795', '_blank');
+      }
+      
+      // COS Shrunken T-shirt - open COS
+      if(card.dataset.name === 'COS Shrunken T-shirt') {
+        window.open('https://www.cos.com/en-us/women/womenswear/tshirts/slim/product/shrunken-t-shirt-white-1292180003', '_blank');
+      }
+      
+      // ALEXIS Briette Satin Maxi Dress - open Moda Operandi
+      if(card.dataset.name === 'ALEXIS Briette Satin Maxi Dress') {
+        window.open('https://www.modaoperandi.com/women/p/alexis/briette-dress/685257', '_blank');
+      }
     });
-    modal.addEventListener('click',(e)=>{ if(e.target===modal) modal.classList.remove('open'); });
-    closeBtn.addEventListener('click',()=> modal.classList.remove('open'));
+
+    // Tiny JS to open/close proxy sheet
+    document.addEventListener('click', (e)=>{
+      const btn = e.target.closest('.proxy-pill');
+      if(btn){
+        document.querySelector('#proxy-sheet')?.removeAttribute('hidden');
+      }
+      if(e.target.matches('.sheet, .sheet-close')){
+        const isBackdrop = e.target.classList.contains('sheet');
+        if(isBackdrop || e.target.classList.contains('sheet-close')){
+          document.querySelector('#proxy-sheet')?.setAttribute('hidden','');
+        }
+      }
+    });
+
+    // (legend help removed as requested)
   </script>
 </body>
 </html>

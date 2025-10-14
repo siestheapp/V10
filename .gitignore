@@ -1,7 +1,5 @@
 .DS_Store
 *.log
 
-
-.DS_Store
-node_modules/
 .specstory/
+node_modules/
