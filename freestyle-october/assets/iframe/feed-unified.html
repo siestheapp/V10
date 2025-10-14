@@ -104,11 +104,24 @@ body::before{
  /* Closet-style legend (inline, compact) */
  .legend{display:flex;align-items:baseline;gap:.1rem;margin-top:12px;margin-bottom:6px;font-size:clamp(13px,1.7vw,16px);line-height:1.35;color:#6A7A87}
  .legend-term{font-weight:600;display:inline-flex;align-items:baseline;gap:.1rem;color:#34424D}
- .legend .equiv{display:inline-block;position:relative;width:1.2em;height:.8em;vertical-align:baseline;margin:0 0.05em}
- .legend .equiv .bar{position:absolute;left:0.1em;width:1em;height:0.12em;border-radius:0.06em;background:linear-gradient(135deg, #008888 0%, #3ECFD5 46%, #9BFFCF 100%)}
- .legend .equiv .bar:nth-child(1){top:0.15em}
- .legend .equiv .bar:nth-child(2){top:0.39em}
- .legend .equiv .bar:nth-child(3){top:0.63em}
+ /* Scalable triple-bar glyph in legend using absolute positioning for consistency */
+ .legend .equiv{
+   /* default size relative to adjacent text */
+   --glyph: 1em;
+   --bar-h: 0.12; /* thickness factor */
+   position:relative; display:inline-block;
+   width:var(--glyph); height:calc(var(--glyph) * 0.8);
+   vertical-align:middle; margin:0 0.05em;
+ }
+ .legend .equiv .bar{
+   position:absolute; left:0; right:0;
+   height:calc(var(--glyph) * var(--bar-h));
+   border-radius:calc(var(--glyph) * 0.08);
+   background:linear-gradient(135deg, #008888 0%, #3ECFD5 46%, #9BFFCF 100%);
+ }
+ .legend .equiv .bar:nth-child(1){ top:0; }
+ .legend .equiv .bar:nth-child(2){ top:50%; transform:translateY(-50%); }
+ .legend .equiv .bar:nth-child(3){ bottom:0; }
  .legend-def{color:#6A7A87;font-weight:500}
 
 /* Feed */
