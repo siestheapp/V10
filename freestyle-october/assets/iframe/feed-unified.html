@@ -602,19 +602,30 @@ body::before{
   z-index:3;
 }
 
-.proxi-badge{
+.proxi-inline-wrap{
+  position:relative;
   display:inline-flex;
   align-items:center;
-  justify-content:center;
+}
+
+.proxi-trigger{
   border:0;
   background:transparent;
   padding:0;
-  cursor:help;
+  cursor:help !important;
 }
 
-.proxi-badge:focus-visible{
+.proxi-trigger:focus-visible{
   outline:2px solid rgba(0,163,163,.55);
   outline-offset:2px;
+}
+
+.proxi-trigger--badge{
+  display:inline-flex;
+  align-items:center;
+  justify-content:center;
+  background:transparent;
+  padding:0;
 }
 
 .proxi-tip{
@@ -623,10 +634,15 @@ body::before{
   width:max-content;
   white-space:nowrap;
   padding:8px 12px;
-  border-radius:999px;
-  background:#111;
+  border-radius:12px;
+  background:rgba(0,0,0,0.9);
   color:#fff;
-  font:700 12px/1.1 Inter, system-ui, -apple-system, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+  border:1px solid rgba(31,174,217,0.65);
+  font-family:'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+  font-weight:var(--weight-medium, 500);
+  font-size:13px;
+  letter-spacing:.1px;
+  line-height:1.2;
   box-shadow:0 8px 24px rgba(11,15,20,.08);
   opacity:0;
   pointer-events:none;
@@ -635,12 +651,20 @@ body::before{
   z-index:3;
 }
 
+.proxi-tip::before,
 .proxi-tip::after{
   content:"";
   position:absolute;
-  border:6px solid transparent;
   top:50%;
   transform:translateY(-50%);
+}
+
+.proxi-tip::before{
+  border:7px solid transparent;
+}
+
+.proxi-tip::after{
+  border:6px solid transparent;
 }
 
 .proxi-tip--left{
@@ -648,9 +672,14 @@ body::before{
   top:50%;
 }
 
+.proxi-tip--left::before{
+  right:-14px;
+  border-left-color:rgba(31,174,217,0.65);
+}
+
 .proxi-tip--left::after{
   right:-12px;
-  border-left-color:#111;
+  border-left-color:rgba(0,0,0,0.9);
 }
 
 .proxi-tip--right{
@@ -658,12 +687,17 @@ body::before{
   top:50%;
 }
 
-.proxi-tip--right::after{
-  left:-12px;
-  border-right-color:#111;
+.proxi-tip--right::before{
+  left:-14px;
+  border-right-color:rgba(31,174,217,0.65);
 }
 
-.proxi-badge:where(:hover, :focus-visible)+.proxi-tip{
+.proxi-tip--right::after{
+  left:-12px;
+  border-right-color:rgba(0,0,0,0.9);
+}
+
+.proxi-trigger:where(:hover, :focus-visible)+.proxi-tip{
   opacity:1;
   pointer-events:auto;
   transform:translateY(-50%) scale(1);
@@ -703,14 +737,19 @@ body::before{
               <img class="pc-avatar pc-avatar--circle" src="../img/videoframe_611.png" alt="ellaa76 profile photo">
               <div class="pc-name">ellaa76</div>
               <div class="pc-bads">
-                <span class="pill-proxi pill-proxi--count"
-                      aria-label="You and ellaa76 share 2 items in the same size">
-                  <span class="glyph" aria-hidden="true">
-                    <div class="bar"></div>
-                    <div class="bar"></div>
-                    <div class="bar"></div>
-                  </span>
-                  <span class="count">2</span>
+                <span class="proxi-inline-wrap">
+                  <button type="button"
+                          class="pill-proxi pill-proxi--count proxi-trigger"
+                          aria-label="Shared Proxi items"
+                          aria-describedby="tip-proxi-count">
+                    <span class="glyph" aria-hidden="true">
+                      <div class="bar"></div>
+                      <div class="bar"></div>
+                      <div class="bar"></div>
+                    </span>
+                    <span class="count">2</span>
+                  </button>
+                  <span class="proxi-tip proxi-tip--right" role="tooltip" id="tip-proxi-count">You share two Proxi Pieces<br>– same item, same size</span>
                 </span>
               </div>
             </header>
@@ -722,7 +761,7 @@ body::before{
             <div class="pc-hero-wrap">
               <div class="proxi-badge-wrap">
                 <button type="button"
-                        class="pill-proxi pill-proxi--mark proxi-badge"
+                        class="pill-proxi pill-proxi--mark proxi-trigger proxi-trigger--badge"
                         aria-label="Size twin info"
                         aria-describedby="tip-proxi-hero">
                   <span class="glyph" aria-hidden="true">
