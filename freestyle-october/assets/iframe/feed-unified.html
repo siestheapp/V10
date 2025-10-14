@@ -509,12 +509,24 @@ body::before{
 }
 
 /* Triple bar glyph - custom rectangles */
+/* === Proxi symbol (≡) — scalable version === */
+.pill-proxi{
+  /* add a default glyph size (10px at 16px root) */
+  --glyph: 0.625rem;
+  --bar-w: 0.76;   /* width factor of glyph */
+  --bar-h: 0.14;   /* height factor of glyph */
+  --gap:   0.10;   /* inter-bar gap factor */
+}
+
 .pill-proxi .glyph{
-  display:flex; flex-direction:column; align-items:center; justify-content:center; 
-  width:10px; height:10px; gap:1px;
+  display:flex; flex-direction:column; align-items:center; justify-content:center;
+  width:var(--glyph); height:var(--glyph);
+  gap:calc(var(--glyph) * var(--gap));
 }
 .pill-proxi .glyph .bar{
-  width:7.6px; height:1.4px; border-radius:1px;
+  width: calc(var(--glyph) * var(--bar-w));
+  height:calc(var(--glyph) * var(--bar-h));
+  border-radius:calc(var(--glyph) * 0.10);
   background:linear-gradient(135deg, #005a5c 0%, #008a90 55%, #2fb8bf 100%) !important;
 }
 
@@ -529,15 +541,13 @@ body::before{
 .pill-proxi--count{ background:#FFFFFF; }
 
 /* Mark variant: ≡ (no number) — on other user's photo when that image is the shared item */
-.pill-proxi--mark{ 
-  padding:0 6px !important; /* reduced left/right padding */
-}
-.pill-proxi--mark .glyph{
-  width:15px; height:15px; /* 50% larger than base 10px */
-}
-.pill-proxi--mark .glyph .bar{
-  width:11.4px; height:2.1px; /* 50% larger than base 7.6px × 1.4px */
-}
+.pill-proxi--mark{ padding:0 6px !important; }
+.pill-proxi--mark{ --glyph: 0.9375rem; } /* 15px */
+
+/* Quick size presets */
+.pill-proxi.--sm{ --glyph: 0.5rem; }    /* ~8px */
+.pill-proxi.--md{ --glyph: 0.625rem; }  /* ~10px (default) */
+.pill-proxi.--lg{ --glyph: 0.875rem; }  /* ~14px */
 
 /* Placement helpers for overlays */
 .pill-top-left { position:absolute; top:12px; left:12px;  z-index:2; }
