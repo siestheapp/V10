@@ -8,50 +8,18 @@
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
 <style>
-/* Light theme (default fallback) */
-:root {
-  --bg:#F7F8FA;
-  --surface:#FFFFFF;
-  --card:#F5F5F7;
-  --ink:#1F1F1F;
-  --muted:#6F6F74;
-  --border:rgba(0,0,0,.08);
-  --elev-shadow:0 6px 16px rgba(0,0,0,.10);
-  --overlay:rgba(255,255,255,.85);
-  --overlay-strong:#FFFFFF;
-  
-  /* Keep existing brand colors */
-  --petrol-600:#009090;
-  --petrol-500:#00A3A3;
-  --petrol-400:#16B5B5;
-  --petrol-100:#E0F7F7;
-  --mint-400:#A6FFCB;
-  --ice-300:#7FE1FF;
-  --cta-start:#008888;
-  --cta-mid:#34C3CC;
-  --cta-end:#9BFFCF;
-  --track:#ECECEC;
-}
-
-/* Dark theme - only affects mockup content */
-html[data-theme="dark"] {
-  --bg:#0F1318;
-  --surface:#181C22;
-  --card:#181C22;
-  --ink:#EDEFF3;
-  --muted:#A2ABB6;
-  --border:rgba(255,255,255,.08);
-  --elev-shadow:0 8px 24px rgba(0,0,0,.35);
-  --overlay:rgba(255,255,255,.65);
-  --overlay-strong:rgba(255,255,255,.78);
-  
-  /* Slightly darker gradients for OLED */
-  --cta-start:#007a7a;
-  --cta-mid:#2db5be;
-  --cta-end:#9BFFCF;
+:root{
+  /* Neutrals */
+  --bg:#FFFFFF; --ink:#1F1F1F; --muted:#6F6F74;
+  /* Proxi brand */
+  --petrol-600:#009090; --petrol-500:#00A3A3; --petrol-400:#16B5B5; --petrol-100:#E0F7F7;
+  --mint-400:#A6FFCB; --ice-300:#7FE1FF;
+  /* Adaptive CTA ramp (deepened default for contrast) */
+  --cta-start:#008888; --cta-mid:#34C3CC; --cta-end:#9BFFCF;
+  --card:#FFFFFF; --track:#ECECEC; --shadow:0 10px 30px rgba(0,0,0,.06);
 }
 *{margin:0;padding:0;box-sizing:border-box}
-body{font-family:Inter,system-ui,-apple-system,"Segoe UI",Roboto,Helvetica,Arial;background:#F7F8FA;color:#1F1F1F;
+body{font-family:Inter,system-ui,-apple-system,"Segoe UI",Roboto,Helvetica,Arial;background:var(--bg);color:var(--ink);
   min-height:100vh;display:flex;align-items:center;justify-content:center;padding:0;position:relative}
 /* Warm page glow behind app content */
 body::before{
@@ -63,8 +31,8 @@ body::before{
 }
 
 /* iPhone Frame (Finy Style) */
-.phone{width:430px;height:932px;border-radius:55px;background:transparent;border:3px solid #1A1D23;position:relative;box-shadow:none}
-.screen{position:absolute;inset:0px;background:#1A1F28;border-radius:53px;overflow:hidden;display:flex;flex-direction:column}
+.phone{width:430px;height:932px;border-radius:55px;background:transparent;border:3px solid #C7C7CC;position:relative;box-shadow:none}
+.screen{position:absolute;inset:0px;background:#0B0F14;border-radius:53px;overflow:hidden;display:flex;flex-direction:column}
 .screen,
 .phone,
 .device,
@@ -86,7 +54,7 @@ body::before{
 /* App Content */
 .header{padding:20px 0px 0px;display:flex;align-items:center;justify-content:center;position:relative}
 .logo{font-weight:600;font-size:32px;letter-spacing:-.01em;background:linear-gradient(135deg,var(--cta-start),var(--cta-mid) 46%,var(--cta-end));
-  -webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent;position:relative;top:-2px}
+  -webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent}
 .section{
   padding:4px 24px 6px;
 }
@@ -120,7 +88,7 @@ body::before{
 .chips{display:flex;gap:8px;padding-top:4px;overflow-x:auto;-webkit-overflow-scrolling:touch;scrollbar-width:none}
 .chips{margin-top:2px}
 .chips::-webkit-scrollbar{display:none}
-.chip{border:1px solid var(--border);background:var(--surface);color:var(--ink);border-radius:9999px;padding:10px 16px;font-size:13px;font-weight:500;white-space:nowrap;transition:all 0.2s ease}
+.chip{border:1px solid #E8E4DE;background:#fff;color:var(--ink);border-radius:9999px;padding:10px 16px;font-size:13px;font-weight:500;white-space:nowrap;transition:all 0.2s ease}
 .chip.is-active{border-color:var(--petrol-400);background:var(--petrol-100);color:var(--petrol-600);font-weight:600;box-shadow:0 2px 8px rgba(0,163,163,.12)}
 .chip:not(.is-active):hover{background:#f8f8f8;border-color:#d0d0d0}
 
@@ -137,14 +105,14 @@ body::before{
 .explainer .sym{font-weight:800;}
  
  /* Closet-style legend (inline, compact) */
- .legend{display:flex;align-items:baseline;gap:.1rem;margin-top:12px;margin-bottom:6px;margin-left:3px;font-size:clamp(13px,1.7vw,16px);line-height:1.35;color:#B8C5D0}
- .legend-term{font-weight:600;display:inline-flex;align-items:baseline;gap:.1rem;color:#E8EEF3}
+ .legend{display:flex;align-items:baseline;gap:.1rem;margin-top:12px;margin-bottom:6px;font-size:clamp(13px,1.7vw,16px);line-height:1.35;color:#6A7A87}
+ .legend-term{font-weight:600;display:inline-flex;align-items:baseline;gap:.1rem;color:#34424D}
  .legend .equiv{display:inline-block;position:relative;width:1.2em;height:.8em;vertical-align:baseline;margin:0 0.05em}
  .legend .equiv .bar{position:absolute;left:0.1em;width:1em;height:0.12em;border-radius:0.06em;background:linear-gradient(135deg, #008888 0%, #34C3CC 46%, #9BFFCF 100%)}
  .legend .equiv .bar:nth-child(1){top:0.15em}
  .legend .equiv .bar:nth-child(2){top:0.39em}
  .legend .equiv .bar:nth-child(3){top:0.63em}
- .legend-def{color:#B8C5D0;font-weight:500}
+ .legend-def{color:#6A7A87;font-weight:500}
 
 /* Feed */
 /* Feed scroll + spacing between cards */
@@ -153,18 +121,18 @@ body::before{
   overflow-y:auto;
   display:flex;
   flex-direction:column;
-  gap:28px;
+  gap:24px;
   scrollbar-width:none;
   -ms-overflow-style:none;
 }
 .feed::-webkit-scrollbar{display:none;}
 
 /* Enhanced Card */
-.card{background:var(--card);border:1px solid var(--border);border-radius:18px;overflow:visible;transition:transform 0.2s ease;position:relative;box-shadow:var(--elev-shadow)}
+.card{background:#fff;border:none;border-radius:18px;overflow:visible;transition:transform 0.2s ease;position:relative}
 .card:hover{transform:translateY(-2px)}
 .card + .card{margin-top:6px}
 
-.fit-toggle{padding:10px 16px;border-radius:999px;border:1px solid var(--border);background:var(--surface);font:700 14px/1.1 Inter;color:var(--ink);cursor:pointer;transition:background .2s ease}
+.fit-toggle{padding:10px 16px;border-radius:999px;border:1px solid rgba(0,0,0,.08);background:#fff;font:700 14px/1.1 Inter;color:#1F1F1F;cursor:pointer;transition:background .2s ease}
 .fit-toggle:hover{background:#f7f7f7}
 
 .imgbox{position:relative;overflow:hidden;border-radius:18px}
@@ -182,8 +150,8 @@ body::before{
 
 /* Evidence pill */
 .size-pill{position:absolute;left:16px;bottom:16px;display:inline-flex;align-items:center;gap:6px;padding:6px 10px;
-  border:1px solid var(--border);border-radius:999px;background:var(--overlay-strong);backdrop-filter:blur(8px);
-  font:600 12px/1 Inter;color:var(--ink);z-index:2}
+  border:1px solid #E8E4DE;border-radius:999px;background:rgba(255,255,255,.88);backdrop-filter:blur(8px);
+  font:600 12px/1 Inter;color:#4C4C50;z-index:2}
 .size-pill .dot{width:4px;height:4px;border-radius:50%;background:#C9C5C0;display:inline-block}
 .size-pill .conf{color:var(--petrol-600);font-weight:700;font-size:12px}
 
@@ -250,7 +218,7 @@ body::before{
 .cta-b .btn--ghost{width:100%;max-width:260px;font-weight:700}
 
 /* Details */
-.details{background:var(--surface);border:1px solid var(--border);border-radius:16px;padding:12px 16px 8px;transition:max-height .35s ease,opacity .25s ease}
+.details{background:#fff;border:1px solid #eee6;border-radius:16px;padding:12px 16px 8px;transition:max-height .35s ease,opacity .25s ease}
 .item{padding:8px 0}
 .item+ .item{border-top:1px solid #e9e9ef}
 .measure{font-size:14px;line-height:1.55;color:#1F1F1F}
@@ -264,18 +232,18 @@ body::before{
 .look-h{display:flex;align-items:center;gap:10px;padding:10px 14px 0}
 .avatar{width:34px;height:34px;border-radius:10px;object-fit:cover}
 .avatar--circle{border-radius:999px}
-.name{font:700 14px/1.2 Inter;color:var(--ink)}
+.name{font:700 14px/1.2 Inter;color:#2F2F33}
 .bads{display:flex;gap:8px;flex-wrap:wrap}
 .badge{display:inline-flex;align-items:center;gap:8px;padding:8px 12px;
-  border-radius:999px;border:1px solid var(--border);background:var(--surface);
-  font:700 12px/1.1 Inter;color:var(--ink);white-space:nowrap}
+  border-radius:999px;border:1px solid rgba(0,0,0,.08);background:#fff;
+  font:700 12px/1.1 Inter;color:#2F2F33;white-space:nowrap}
 .details .badge{display:inline-flex;align-items:center;justify-content:center;gap:0;min-width:68px;font-size:14px;line-height:1;padding:8px 10px;border-radius:999px;background:var(--petrol-100);color:var(--petrol-600);font-weight:700;border:1px solid var(--petrol-400)}
 .details .divider{height:1px;background:#ececec;margin:6px 0;border-radius:1px}
 
 /* Proxy card elements */
 .hero-wrap{position:relative;border-radius:18px;overflow:hidden;border:none;background:#f5f6f8}
 .carousel{position:relative;height:440px}
-.hero-img{display:block;width:100%;height:440px;object-fit:cover;border-radius:18px;cursor:pointer}
+.hero-img{display:block;width:100%;height:440px;object-fit:cover;border-radius:18px}
 .hero-img--tight{object-position:center 22%}
 .carousel .slide{position:absolute;inset:0;opacity:0;transition:opacity .35s ease}
 .carousel .slide.active{opacity:1}
@@ -283,11 +251,11 @@ body::before{
 .dot{width:8px;height:8px;border-radius:50%;background:#e6e6ea;opacity:.9}
 .dot.active{background:#c9c5c0}
 .look-caption{margin-top:14px}
-.look-caption p{font:600 14px/1.45 Inter;color:var(--ink)}
+.look-caption p{font:600 14px/1.45 Inter;color:#2F2F33}
 .look-caption .sub{margin-top:6px;font:500 13px/1.4 Inter;color:#6F6F74}
 .look-caption .user{margin-right:8px}
 .comment-teaser{display:block;width:100%;text-align:left;margin-top:12px;border-radius:16px;
-  border:1px solid var(--border);background:var(--surface);padding:10px 12px;box-shadow:0 2px 6px rgba(0,0,0,.03);
+  border:1px solid rgba(0,0,0,.08);background:#fff;padding:10px 12px;box-shadow:0 2px 6px rgba(0,0,0,.03);
   cursor:pointer;transition:background .2s ease, box-shadow .2s ease}
 .comment-teaser:hover{background:#f7f9fb;box-shadow:0 6px 16px rgba(0,0,0,.06)}
 .comment-teaser .k{font:600 11px/1.2 Inter;color:var(--muted);margin-bottom:6px}
@@ -336,7 +304,7 @@ body::before{
 }
 .shop-row{display:flex;justify-content:center;margin-top:10px;padding:0 18px}
 .shop-link{display:flex;align-items:center;justify-content:center;width:100%;min-height:44px;padding:12px 16px;
-  background:var(--surface);border:1px solid var(--border);border-radius:12px;
+  background:#FFFFFF;border:1px solid var(--petrol-400);border-radius:12px;
   color:var(--petrol-600);text-decoration:none;font-weight:700;letter-spacing:-.01em;font-size:15px}
 .shop-link:hover{background:var(--petrol-100);text-decoration:none}
 .shop-link:active{background:var(--petrol-400);color:#fff}
@@ -382,7 +350,7 @@ body::before{
 .fit-details.open{display:block}
 
 /* SG fit-details block */
-.card .fit-details{padding:18px;border-radius:16px;background:var(--surface);border:1px solid var(--border);margin-top:16px}
+.card .fit-details{padding:18px;border-radius:16px;background:#fff;border:1px solid rgba(0,0,0,.06);margin-top:16px}
 .card .fit-details .micro{margin:0 0 12px;font:600 14px/1.35 Inter;color:#2F2F33}
 .card .fit-details .micro .link{color:var(--petrol-600);text-decoration:none}
 .card .fit-row{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:12px 0;border-top:1px solid rgba(0,0,0,.06)}
@@ -421,7 +389,7 @@ body::before{
 .info .details:not(.hidden) ~ .shop-row{display:none}
 
 /* Tab bar */
-.tabs{position:absolute;left:0;right:0;bottom:0;height:83px;background:rgba(0,0,0,.85);border-top:1px solid var(--border);backdrop-filter:blur(16px);-webkit-backdrop-filter:blur(16px);
+.tabs{position:absolute;left:0;right:0;bottom:0;height:83px;background:rgba(11,15,20,.75);border-top:1px solid rgba(255,255,255,.08);backdrop-filter:blur(16px);-webkit-backdrop-filter:blur(16px);
   display:flex;justify-content:space-around;align-items:flex-start;padding-top:8px;padding-bottom:34px}
 .tab{display:flex;flex-direction:column;align-items:center;gap:6px;text-decoration:none;color:#6A7683;font-size:11px;font-weight:500;transition:color 0.2s ease}
 .tab.active{color:var(--petrol-600);font-weight:600}
@@ -437,7 +405,7 @@ body::before{
 }
 /* Comment teaser – match size-twin */
 .comment-teaser{display:block;width:100%;text-align:left;margin-top:12px;border-radius:16px;
-  border:1px solid var(--border);background:var(--surface);padding:10px 12px;box-shadow:0 2px 6px rgba(0,0,0,.03);
+  border:1px solid rgba(0,0,0,.08);background:#fff;padding:10px 12px;box-shadow:0 2px 6px rgba(0,0,0,.03);
   cursor:pointer;transition:background .2s ease, box-shadow .2s ease}
 .comment-teaser:hover{background:#f7f9fb;box-shadow:0 6px 16px rgba(0,0,0,.06)}
 .comment-teaser .k{font:600 11px/1.2 Inter;color:var(--muted);margin-bottom:6px}
@@ -449,11 +417,11 @@ body::before{
 </style>
 <style>
 /* ===== Proxy card (namespaced from size-twin) ===== */
-.proxy-card{background:var(--card);border:1px solid var(--border);border-radius:18px;padding:12px 12px 14px;box-shadow:var(--elev-shadow)}
-.pc-look-h{display:flex;align-items:center;gap:10px;padding:4px 6px 8px}
+.proxy-card{background:#fff;border:none;border-radius:18px;padding:12px 12px 14px}
+.pc-look-h{display:flex;align-items:center;gap:10px;padding:6px 6px 10px}
 .pc-avatar{width:34px;height:34px;border-radius:10px;object-fit:cover}
 .pc-avatar--circle{border-radius:999px}
-.pc-name{font:700 14px/1.2 Inter;color:var(--ink)}
+.pc-name{font:700 14px/1.2 Inter;color:#2F2F33}
 .pc-bads{display:flex;gap:8px;flex-wrap:wrap}
 .pc-badge{
   display:inline-flex;align-items:center;justify-content:center;padding:6px 12px;
@@ -467,7 +435,7 @@ body::before{
 .pc-match-link:focus-visible{outline:2px solid #0a8;border-radius:4px}
 .pc-hero-wrap{position:relative}
 .pc-carousel{position:relative}
-.pc-hero-img{display:block;width:100%;height:520px;object-fit:cover;border-radius:14px;cursor:pointer}
+.pc-hero-img{display:block;width:100%;height:520px;object-fit:cover;border-radius:14px}
 .pc-hero-img--tight{object-position:center 22%}
 .pc-chip{
   position:absolute;top:10px;left:10px;z-index:2;
@@ -482,8 +450,8 @@ body::before{
 .pc-look-caption{margin-top:14px}
 .pc-look-caption p{font:600 14px/1.45 Inter;color:#2F2F33}
 .pc-sub{margin-top:6px;font:500 13px/1.4 Inter;color:#6F6F74}
-.pc-user{margin-right:6px;margin-left:8px}
-.pc-comment-teaser{display:block;width:100%;text-align:left;margin-top:12px;border-radius:16px;border:1px solid var(--border);background:var(--surface);padding:10px 12px;box-shadow:0 2px 6px rgba(0,0,0,.03)}
+.pc-user{margin-right:8px}
+.pc-comment-teaser{display:block;width:100%;text-align:left;margin-top:12px;border-radius:16px;border:1px solid rgba(0,0,0,.08);background:#fff;padding:10px 12px;box-shadow:0 2px 6px rgba(0,0,0,.03)}
 .pc-comment-teaser:hover{background:#f7f9fb;box-shadow:0 6px 16px rgba(0,0,0,.06)}
 .pc-k{font:600 11px/1.2 Inter;color:#6F6F74;margin-bottom:6px}
 .pc-row{font:600 13px/1.45 Inter;color:#2F2F33}
@@ -492,9 +460,9 @@ body::before{
 .pc-link{margin-top:6px;font:600 12px/1.2 Inter;color:#009090}
 .pc-link-inline{margin-top:0;margin-left:8px;display:none;font:600 13px/1.45 Inter;color:#009090;white-space:nowrap}
 .pc-look-actions{display:flex;gap:14px;margin:16px 0 6px}
-.pc-btn-primary{display:inline-flex;align-items:center;justify-content:center;gap:8px;padding:12px 18px;border-radius:999px;background:linear-gradient(135deg, var(--cta-start), var(--cta-mid) 46%, var(--cta-end)); color:#fff; font:700 15px/1.1 Inter; border:none; transition:transform 0.2s ease, box-shadow 0.2s ease; cursor:pointer}
+.pc-btn-primary{display:inline-flex;align-items:center;justify-content:center;gap:8px;padding:12px 18px;border-radius:999px;background:linear-gradient(135deg, var(--cta-start), var(--cta-mid) 46%, var(--cta-end)); color:#fff; font:700 15px/1.1 Inter; border:1px solid rgba(0,0,0,.04); transition:transform 0.2s ease, box-shadow 0.2s ease; cursor:pointer}
 .pc-btn-primary:hover{transform:translateY(-2px); box-shadow:0 4px 12px rgba(0,0,0,.08)}
-.pc-btn-secondary{display:inline-flex;align-items:center;justify-content:center;gap:8px;padding:12px 18px;border-radius:999px;background:var(--surface);border:1px solid var(--border); color:var(--ink); font:700 15px/1.1 Inter; transition:transform 0.2s ease, box-shadow 0.2s ease; cursor:pointer}
+.pc-btn-secondary{display:inline-flex;align-items:center;justify-content:center;gap:8px;padding:12px 18px;border-radius:999px;background:#fff;border:1px solid rgba(0,0,0,.10); color:#1F1F1F; font:700 15px/1.1 Inter; transition:transform 0.2s ease, box-shadow 0.2s ease; cursor:pointer}
 .pc-btn-secondary:hover{transform:translateY(-2px); box-shadow:0 4px 12px rgba(0,0,0,.08)}
 .proxy-card + .card{margin-top:8px}
 
@@ -520,7 +488,6 @@ body::before{
 .proxy-card .pc-hero-img{
   display:block; width:100%; height:520px;
   object-fit:cover; object-position:center 22%; border-radius:14px;
-  cursor:pointer;
 }
 /* Proxy carousel nav controls (mirrors size-twin .carousel .nav) */
 .proxy-card .pc-carousel .pc-nav{position:absolute;top:50%;transform:translateY(-50%);width:32px;height:32px;border-radius:999px;background:rgba(0,0,0,.35);color:#fff;display:flex;align-items:center;justify-content:center;border:none;cursor:pointer;font-size:0}
@@ -536,10 +503,10 @@ body::before{
   display:inline-flex !important; align-items:center !important; justify-content:center !important; gap:4px !important;
   height:24px !important; padding:0 8px !important;                /* larger: 24px tall, 8px sides */
   border-radius:9999px !important;
-  background:var(--overlay-strong) !important;                         /* strong contrast on imagery */
-  border:1px solid var(--border) !important;           /* neutral stroke for definition */
+  background:#FFFFFF !important;                         /* strong contrast on imagery */
+  border:1px solid rgba(0,0,0,.16) !important;           /* neutral stroke for definition */
   box-shadow:0 2px 6px rgba(0,0,0,.12) !important;
-  color:var(--ink) !important;                              /* deep petrol ink */
+  color:#0B3D3A !important;                              /* deep petrol ink */
   font:700 12px/1 Inter, system-ui, -apple-system, "Segoe UI", Roboto, Helvetica, Arial !important;
   user-select:none !important; cursor:default !important;
 }
@@ -562,7 +529,7 @@ body::before{
 }
 
 /* Count variant: ≡ n (username header or your closet items) */
-.pill-proxi--count{ background:var(--overlay-strong); }
+.pill-proxi--count{ background:#FFFFFF; }
 
 /* Mark variant: ≡ (no number) — on other user's photo when that image is the shared item */
 .pill-proxi--mark{ 
@@ -648,7 +615,7 @@ body::before{
   border:0;
   background:transparent;
   padding:0;
-  cursor:pointer;
+  cursor:help !important;
 }
 
 .proxi-trigger:focus-visible{
@@ -739,68 +706,9 @@ body::before{
   transform:translateY(-50%) scale(1);
 }
 
-/* Theme toggle (outside mockup) */
-.theme-toggle {
-  position:fixed;
-  top:50%;
-  right:calc(50% + 430px/2 + 40px);
-  transform:translateY(-50%);
-  width:48px;
-  height:48px;
-  border-radius:999px;
-  border:1px solid rgba(0,0,0,.08);
-  background:#FFFFFF;
-  box-shadow:0 6px 16px rgba(0,0,0,.10);
-  cursor:pointer;
-  display:flex;
-  align-items:center;
-  justify-content:center;
-  transition:all 0.2s ease;
-  z-index:100;
-}
-.theme-toggle:hover {
-  transform:translateY(-50%) scale(1.05);
-  box-shadow:0 8px 20px rgba(0,0,0,.2);
-}
-.theme-icon {
-  width:22px;
-  height:22px;
-  color:#1F1F1F;
-  transition:opacity 0.2s ease;
-}
-.theme-icon-sun {
-  position:absolute;
-  opacity:0;
-}
-.theme-icon-moon {
-  opacity:1;
-}
-html[data-theme="light"] .theme-icon-sun {
-  opacity:1;
-}
-html[data-theme="light"] .theme-icon-moon {
-  opacity:0;
-}
-
 </style>
 </head>
 <body class="view-feed">
-  <button id="themeToggle" class="theme-toggle" aria-label="Switch to light mode" title="Switch to light mode">
-    <svg class="theme-icon theme-icon-moon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-      <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path>
-    </svg>
-    <svg class="theme-icon theme-icon-sun" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-      <circle cx="12" cy="12" r="5"></circle>
-      <line x1="12" y1="1" x2="12" y2="3"></line>
-      <line x1="12" y1="21" x2="12" y2="23"></line>
-      <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line>
-      <line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line>
-      <line x1="1" y1="12" x2="3" y2="12"></line>
-      <line x1="21" y1="12" x2="23" y2="12"></line>
-      <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line>
-      <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line>
-    </svg>
-  </button>
   <div class="phone">
       <div class="screen">
         <div class="island"></div>
@@ -931,10 +839,25 @@ html[data-theme="light"] .theme-icon-moon {
             </div>
 
             <div class="pc-hero-wrap">
+              <div class="proxi-badge-wrap">
+                <button type="button"
+                        class="pill-proxi pill-proxi--mark proxi-trigger proxi-trigger--badge"
+                        aria-label="Size twin info"
+                        aria-describedby="tip-proxi-hero">
+                  <span class="glyph" aria-hidden="true">
+                    <div class="bar"></div>
+                    <div class="bar"></div>
+                    <div class="bar"></div>
+                  </span>
+                </button>
+                <div class="proxi-tip proxi-tip--left" role="tooltip" id="tip-proxi-hero">Same as yours (XS)</div>
+              </div>
               <div class="pc-carousel" data-index="0">
-                <div class="pc-slide pc-active" data-brand="Lulus" data-title="Signature Elegance Maxi Dress" data-size="XS" data-comments="12" data-q="Is this petite or regular?" data-a="Regular!">
+                <div class="pc-slide pc-active" data-brand="Anthropologie" data-title="Somerset Chiffon Maxi Dress" data-size="XS" data-comments="12" data-q="Is this petite or regular?" data-a="Regular!">
                   <img class="pc-hero-img pc-hero-img--tight" src="../../../_autocrop/out/videoframe_2906__1_-1760417574510-proxy-hero@3x.png" alt="Green satin dress">
                 </div>
+                <button class="pc-nav left" type="button" aria-label="Previous slide"></button>
+                <button class="pc-nav right" type="button" aria-label="Next slide"></button>
                 <div class="pc-dots" aria-label="Slide position">
                   <button class="pc-dot pc-active" type="button" aria-label="Slide 1"></button>
                 </div>
@@ -942,12 +865,23 @@ html[data-theme="light"] .theme-icon-moon {
             </div>
 
             <div class="pc-look-caption">
-              <p><span class="pc-user"><strong>Lulus</strong></span> <span>Signature Elegance Maxi Dress</span> <span>(XS)</span></p>
+              <p><span class="pc-user"><strong id="pcBrand">Anthropologie</strong></span> <span id="pcTitle">Somerset Chiffon Maxi Dress</span> <span id="pcSize">(XS)</span></p>
+            </div>
+
+            <div class="pc-comment-teaser" role="button" aria-label="View comments">
+              <div class="pc-k">Comments · <span id="pcCCount">12</span></div>
+              <div class="pc-row">
+                <span class="pc-q">Q:</span> <span id="pcCQ">Is this petite or regular?</span>
+                <span class="pc-sep">·</span>
+                <span class="pc-a">A:</span> <span id="pcCA">Regular!</span>
+                <span class="pc-link-inline" id="pcLinkInline" aria-hidden="true">See full thread &gt;</span>
+              </div>
+              <div class="pc-link" id="pcLinkBlock">See full thread &gt;</div>
             </div>
 
             <div class="pc-look-actions">
               <button class="pc-btn-primary" id="shopButton">Shop this item</button>
-              <button class="pc-btn-secondary">See more from srd24</button>
+              <button class="pc-btn-secondary">See more from ellaa76</button>
             </div>
           </section>
 
@@ -1048,7 +982,7 @@ html[data-theme="light"] .theme-icon-moon {
 <style>
 .pc-sheet{position:fixed;inset:0;background:rgba(0,0,0,.3);display:flex;align-items:flex-end}
 .pc-sheet[hidden]{display:none}
-.pc-sheet__card{width:100%;background:var(--surface);border-radius:16px 16px 0 0;padding:16px 18px;box-shadow:0 -4px 24px rgba(0,0,0,.12)}
+.pc-sheet__card{width:100%;background:#fff;border-radius:16px 16px 0 0;padding:16px 18px;box-shadow:0 -4px 24px rgba(0,0,0,.12)}
 .pc-sheet__card h3{margin:4px 0 8px;font:800 16px/1.2 Inter}
 .pc-sheet__card p{margin:0 0 12px;font:600 14px/1.45 Inter;color:#2F2F33}
 .pc-sheet__close{display:inline-flex;align-items:center;justify-content:center;padding:10px 14px;
@@ -1277,33 +1211,6 @@ html[data-theme="light"] .theme-icon-moon {
     }catch(err){}
   })();
   </script>
-
-<script>
-  // Theme toggle functionality
-  (function() {
-    const toggle = document.getElementById('themeToggle');
-    const html = document.documentElement;
-    
-    // Load saved theme or default to dark
-    const savedTheme = localStorage.getItem('theme') || 'dark';
-    html.dataset.theme = savedTheme;
-    updateToggleLabel(savedTheme);
-    
-    toggle.addEventListener('click', () => {
-      const currentTheme = html.dataset.theme;
-      const newTheme = currentTheme === 'dark' ? 'light' : 'dark';
-      html.dataset.theme = newTheme;
-      localStorage.setItem('theme', newTheme);
-      updateToggleLabel(newTheme);
-    });
-    
-    function updateToggleLabel(theme) {
-      const label = theme === 'dark' ? 'Switch to light mode' : 'Switch to dark mode';
-      toggle.setAttribute('aria-label', label);
-      toggle.setAttribute('title', label);
-    }
-  })();
-</script>
 
 </body>
 </html>

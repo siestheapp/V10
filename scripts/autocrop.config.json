@@ -23,8 +23,6 @@
     "trimTopRatio": 0.18
   },
   "targets": [
-    { "name": "proxy-hero@1x", "width": 354, "height": 520, "fit": "cover" },
-    { "name": "proxy-hero@2x", "width": 708, "height": 1040, "fit": "cover" },
     { "name": "proxy-hero@3x", "width": 1062, "height": 1560, "fit": "cover" }
   ],
   "acceptableExtensions": [".jpg", ".jpeg", ".png", ".webp"],

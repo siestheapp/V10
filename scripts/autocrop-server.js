@@ -38,6 +38,16 @@ function sanitizeFilename(name) {
   return name.replace(/[^a-zA-Z0-9._-]/g, '_');
 }
 
+function timestampEST(){
+  const d = new Date();
+  const parts = new Intl.DateTimeFormat('en-US', {
+    timeZone: 'America/New_York',
+    year: 'numeric', month: '2-digit', day: '2-digit',
+    hour: '2-digit', minute: '2-digit', second: '2-digit', hour12: false
+  }).formatToParts(d).reduce((acc,p)=>{ acc[p.type] = p.value; return acc; }, {});
+  return `${parts.year}${parts.month}${parts.day}_${parts.hour}${parts.minute}${parts.second}`;
+}
+
 async function processOne(inputAbs, cfg, outBaseName) {
   const strategy = mapStrategy(cfg.strategy);
   const outputs = [];
@@ -100,6 +110,7 @@ async function start() {
 
   const app = express();
   app.use(cors());
+  app.use(express.json());
 
   // Static
   app.use('/out', express.static(path.resolve(root, cfg.outputDir)));
@@ -140,30 +151,48 @@ async function start() {
     }
   });
 
+  // Upload originals only (no processing)
+  app.post('/upload-original', upload.array('files', 20), async (req, res) => {
+    try{
+      const files = req.files || [];
+      const results = files.map(f => ({
+        original: `/originals/${path.basename(f.path)}`,
+        base: baseNameNoExt(path.basename(f.path))
+      }));
+      res.json({ ok:true, results });
+    }catch(e){
+      console.error(e);
+      res.status(500).json({ ok:false, error:'UPLOAD_FAILED' });
+    }
+  });
+
   async function listAll() {
     const originalsAbs = path.resolve(root, cfg.originalsDir);
     const outAbs = path.resolve(root, cfg.outputDir);
     if (!fs.existsSync(originalsAbs)) return [];
     const files = await fse.readdir(originalsAbs);
     const imageFiles = files.filter(f => cfg.acceptableExtensions.includes(path.extname(f).toLowerCase()));
+    const meta = await Promise.all(imageFiles.map(async f => {
+      const fp = path.join(originalsAbs, f);
+      const st = await fse.stat(fp);
+      return { f, mtimeMs: st.mtimeMs };
+    }));
+    meta.sort((a,b) => b.mtimeMs - a.mtimeMs); // newest first
     const results = [];
-    for (const f of imageFiles) {
+    const allOutFiles = await fse.readdir(outAbs).catch(()=>[]);
+    for (const { f } of meta) {
       const base = baseNameNoExt(f);
       const outputs = [];
       for (const t of cfg.targets) {
         const ext = (cfg.outputFormat || 'png').toLowerCase();
-        const p = path.join(outAbs, `${base}-${t.name}.${ext}`);
-        if (fs.existsSync(p)) {
-          outputs.push({ target: t.name, width: t.width, height: t.height, url: `/out/${base}-${t.name}.${ext}` });
-        }
+        const match = allOutFiles.find(fn => fn.startsWith(base) && fn.endsWith(`-${t.name}.${ext}`));
+        if (match) outputs.push({ target: t.name, width: t.width, height: t.height, url: `/out/${match}` });
       }
       results.push({
         original: `/originals/${f}`,
         outputs
       });
     }
-    // Newest first
-    results.sort((a, b) => (a.original < b.original ? 1 : -1));
     return results;
   }
 
@@ -174,6 +203,79 @@ async function start() {
     } catch (e) {
       console.error(e);
       res.status(500).json({ ok: false, error: 'LIST_FAILED' });
+    }
+  });
+
+  // Manual crop: { base, rect: { x,y,width,height } } in original pixel coords
+  app.post('/crop', async (req, res) => {
+    try{
+      const { base, rect, meta } = req.body || {};
+      if(!base || !rect) return res.status(400).json({ ok:false, error:'MISSING_PARAMS' });
+      const originalsAbs = path.resolve(root, cfg.originalsDir);
+      const extIn = (await fse.readdir(originalsAbs)).find(f => baseNameNoExt(f) === base);
+      if(!extIn) return res.status(404).json({ ok:false, error:'ORIGINAL_NOT_FOUND' });
+      const inputAbs = path.join(originalsAbs, extIn);
+
+      const md = await sharp(inputAbs).metadata();
+      const clamp = (v, min, max)=> Math.max(min, Math.min(max, v));
+      const left   = clamp(Math.round(rect.x), 0, Math.max(0, (md.width||0)-1));
+      const top    = clamp(Math.round(rect.y), 0, Math.max(0, (md.height||0)-1));
+      const width  = clamp(Math.round(rect.width), 1, Math.max(1, (md.width||1)-left));
+      const height = clamp(Math.round(rect.height), 1, Math.max(1, (md.height||1)-top));
+
+      const cropped = await sharp(inputAbs).extract({ left, top, width, height }).toBuffer();
+
+      const outAbs = path.resolve(root, cfg.outputDir);
+      const extOut = (cfg.outputFormat || 'png').toLowerCase();
+      const urls = [];
+      const segs = [];
+      if (meta) {
+        const { user, brand, item, size } = meta;
+        if (user) segs.push(sanitizeFilename(String(user)));
+        if (brand) segs.push(sanitizeFilename(String(brand)));
+        if (item) segs.push(sanitizeFilename(String(item)));
+        if (size) segs.push(sanitizeFilename(String(size)));
+      }
+      const metaPart = segs.length ? `${segs.join('__')}` : '';
+      const stamp = timestampEST();
+      for (const t of (cfg.targets||[])) {
+        const nameCore = metaPart || baseNameNoExt(inputAbs);
+        const outPath = path.join(outAbs, `${nameCore}-${t.name}_${stamp}.${extOut}`);
+        let p = sharp(cropped).resize(t.width, t.height);
+        if (extOut === 'webp') p = p.toFormat('webp', { quality: cfg.webpQuality ?? 90 });
+        else if (extOut === 'jpg' || extOut === 'jpeg') p = p.toFormat('jpeg', { quality: cfg.jpgQuality ?? 95, mozjpeg: true });
+        else if (extOut === 'png') p = p.png({ compressionLevel: cfg.pngCompressionLevel ?? 9 });
+        await p.toFile(outPath);
+        const st = await fse.stat(outPath);
+        urls.push(`/out/${path.basename(outPath)}?v=${st.mtimeMs}`);
+      }
+      res.json({ ok:true, urls, original:`/originals/${extIn}` });
+    }catch(e){
+      console.error(e);
+      res.status(500).json({ ok:false, error:'CROP_FAILED' });
+    }
+  });
+
+  // Delete by base name (without extension); removes original and all outputs
+  app.delete('/delete/:base', async (req, res) => {
+    try{
+      const base = req.params.base;
+      if(!base) return res.status(400).json({ ok:false, error:'MISSING_BASE' });
+      const originalsAbs = path.resolve(root, cfg.originalsDir);
+      const outAbs = path.resolve(root, cfg.outputDir);
+
+      // Remove original(s) matching base.*
+      const originals = (await fse.readdir(originalsAbs)).filter(f => baseNameNoExt(f) === base);
+      await Promise.all(originals.map(f => fse.remove(path.join(originalsAbs, f))));
+
+      // Remove outputs for each target
+      const ext = (cfg.outputFormat || 'png').toLowerCase();
+      await Promise.all((cfg.targets||[]).map(t => fse.remove(path.join(outAbs, `${base}-${t.name}.${ext}`))));
+
+      res.json({ ok:true });
+    }catch(e){
+      console.error(e);
+      res.status(500).json({ ok:false, error:'DELETE_FAILED' });
     }
   });
 
