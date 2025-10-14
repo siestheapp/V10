@@ -128,7 +128,7 @@ body::before{
 .feed::-webkit-scrollbar{display:none;}
 
 /* Enhanced Card */
-.card{background:#fff;border:none;border-radius:18px;overflow:visible;transition:transform 0.2s ease;position:relative}
+.card{background:#FFFFFF;border:none;border-radius:18px;overflow:visible;transition:transform 0.2s ease;position:relative}
 .card:hover{transform:translateY(-2px)}
 .card + .card{margin-top:6px}
 
@@ -417,8 +417,8 @@ body::before{
 </style>
 <style>
 /* ===== Proxy card (namespaced from size-twin) ===== */
-.proxy-card{background:#fff;border:none;border-radius:18px;padding:12px 12px 14px}
-.pc-look-h{display:flex;align-items:center;gap:10px;padding:6px 6px 10px}
+.proxy-card{background:#F2F2F2;border:none;border-radius:18px;padding:12px 12px 14px}
+.pc-look-h{display:flex;align-items:center;gap:10px;padding:4px 6px 8px}
 .pc-avatar{width:34px;height:34px;border-radius:10px;object-fit:cover}
 .pc-avatar--circle{border-radius:999px}
 .pc-name{font:700 14px/1.2 Inter;color:#2F2F33}
@@ -450,7 +450,7 @@ body::before{
 .pc-look-caption{margin-top:14px}
 .pc-look-caption p{font:600 14px/1.45 Inter;color:#2F2F33}
 .pc-sub{margin-top:6px;font:500 13px/1.4 Inter;color:#6F6F74}
-.pc-user{margin-right:8px}
+.pc-user{margin-right:6px;margin-left:8px}
 .pc-comment-teaser{display:block;width:100%;text-align:left;margin-top:12px;border-radius:16px;border:1px solid rgba(0,0,0,.08);background:#fff;padding:10px 12px;box-shadow:0 2px 6px rgba(0,0,0,.03)}
 .pc-comment-teaser:hover{background:#f7f9fb;box-shadow:0 6px 16px rgba(0,0,0,.06)}
 .pc-k{font:600 11px/1.2 Inter;color:#6F6F74;margin-bottom:6px}
@@ -460,7 +460,7 @@ body::before{
 .pc-link{margin-top:6px;font:600 12px/1.2 Inter;color:#009090}
 .pc-link-inline{margin-top:0;margin-left:8px;display:none;font:600 13px/1.45 Inter;color:#009090;white-space:nowrap}
 .pc-look-actions{display:flex;gap:14px;margin:16px 0 6px}
-.pc-btn-primary{display:inline-flex;align-items:center;justify-content:center;gap:8px;padding:12px 18px;border-radius:999px;background:linear-gradient(135deg, var(--cta-start), var(--cta-mid) 46%, var(--cta-end)); color:#fff; font:700 15px/1.1 Inter; border:1px solid rgba(0,0,0,.04); transition:transform 0.2s ease, box-shadow 0.2s ease; cursor:pointer}
+.pc-btn-primary{display:inline-flex;align-items:center;justify-content:center;gap:8px;padding:12px 18px;border-radius:999px;background:linear-gradient(135deg, var(--cta-start), var(--cta-mid) 46%, var(--cta-end)); color:#fff; font:700 15px/1.1 Inter; border:none; transition:transform 0.2s ease, box-shadow 0.2s ease; cursor:pointer}
 .pc-btn-primary:hover{transform:translateY(-2px); box-shadow:0 4px 12px rgba(0,0,0,.08)}
 .pc-btn-secondary{display:inline-flex;align-items:center;justify-content:center;gap:8px;padding:12px 18px;border-radius:999px;background:#fff;border:1px solid rgba(0,0,0,.10); color:#1F1F1F; font:700 15px/1.1 Inter; transition:transform 0.2s ease, box-shadow 0.2s ease; cursor:pointer}
 .pc-btn-secondary:hover{transform:translateY(-2px); box-shadow:0 4px 12px rgba(0,0,0,.08)}
@@ -839,25 +839,10 @@ body::before{
             </div>
 
             <div class="pc-hero-wrap">
-              <div class="proxi-badge-wrap">
-                <button type="button"
-                        class="pill-proxi pill-proxi--mark proxi-trigger proxi-trigger--badge"
-                        aria-label="Size twin info"
-                        aria-describedby="tip-proxi-hero">
-                  <span class="glyph" aria-hidden="true">
-                    <div class="bar"></div>
-                    <div class="bar"></div>
-                    <div class="bar"></div>
-                  </span>
-                </button>
-                <div class="proxi-tip proxi-tip--left" role="tooltip" id="tip-proxi-hero">Same as yours (XS)</div>
-              </div>
               <div class="pc-carousel" data-index="0">
-                <div class="pc-slide pc-active" data-brand="Anthropologie" data-title="Somerset Chiffon Maxi Dress" data-size="XS" data-comments="12" data-q="Is this petite or regular?" data-a="Regular!">
+                <div class="pc-slide pc-active" data-brand="Lulus" data-title="Signature Elegance Maxi Dress" data-size="XS" data-comments="12" data-q="Is this petite or regular?" data-a="Regular!">
                   <img class="pc-hero-img pc-hero-img--tight" src="../../../_autocrop/out/videoframe_2906__1_-1760417574510-proxy-hero@3x.png" alt="Green satin dress">
                 </div>
-                <button class="pc-nav left" type="button" aria-label="Previous slide"></button>
-                <button class="pc-nav right" type="button" aria-label="Next slide"></button>
                 <div class="pc-dots" aria-label="Slide position">
                   <button class="pc-dot pc-active" type="button" aria-label="Slide 1"></button>
                 </div>
@@ -865,23 +850,12 @@ body::before{
             </div>
 
             <div class="pc-look-caption">
-              <p><span class="pc-user"><strong id="pcBrand">Anthropologie</strong></span> <span id="pcTitle">Somerset Chiffon Maxi Dress</span> <span id="pcSize">(XS)</span></p>
-            </div>
-
-            <div class="pc-comment-teaser" role="button" aria-label="View comments">
-              <div class="pc-k">Comments · <span id="pcCCount">12</span></div>
-              <div class="pc-row">
-                <span class="pc-q">Q:</span> <span id="pcCQ">Is this petite or regular?</span>
-                <span class="pc-sep">·</span>
-                <span class="pc-a">A:</span> <span id="pcCA">Regular!</span>
-                <span class="pc-link-inline" id="pcLinkInline" aria-hidden="true">See full thread &gt;</span>
-              </div>
-              <div class="pc-link" id="pcLinkBlock">See full thread &gt;</div>
+              <p><span class="pc-user"><strong>Lulus</strong></span> <span>Signature Elegance Maxi Dress</span> <span>(XS)</span></p>
             </div>
 
             <div class="pc-look-actions">
               <button class="pc-btn-primary" id="shopButton">Shop this item</button>
-              <button class="pc-btn-secondary">See more from ellaa76</button>
+              <button class="pc-btn-secondary">See more from srd24</button>
             </div>
           </section>
 
