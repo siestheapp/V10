@@ -43,10 +43,13 @@ body::before{
 /* Dynamic Island */
 .island{position:absolute;top:11px;left:50%;transform:translateX(-50%);width:126px;height:37px;background:#000;border-radius:19px;z-index:5}
 
+/* Dynamic Island subtle highlight */
+.island::before{content:"";position:absolute;inset:2px;border-radius:17px;background:linear-gradient(180deg, rgba(255,255,255,.12), rgba(255,255,255,0));opacity:.35}
+
 /* Status Bar */
-.status{height:54px;margin-top:20px;display:flex;align-items:center;justify-content:space-between;padding:0 30px;font-weight:600;color:#000;font-size:17px;letter-spacing:-.02em}
+.status{height:54px;margin-top:20px;display:flex;align-items:center;justify-content:space-between;padding:0 30px;font-weight:600;color:#fff;font-size:17px;letter-spacing:-.02em}
 .status .right{display:flex;align-items:center;gap:6px}
-.status .right img{height:13px;width:auto;display:block}
+.status .right img{height:13px;width:auto;display:block;filter:invert(1)}
 
 /* App Content */
 .header{padding:20px 0px 0px;display:flex;align-items:center;justify-content:center;position:relative}
@@ -386,9 +389,9 @@ body::before{
 .info .details:not(.hidden) ~ .shop-row{display:none}
 
 /* Tab bar */
-.tabs{position:absolute;left:0;right:0;bottom:0;height:83px;background:#fff;border-top:1px solid rgba(0,0,0,.08);
+.tabs{position:absolute;left:0;right:0;bottom:0;height:83px;background:rgba(11,15,20,.75);border-top:1px solid rgba(255,255,255,.08);backdrop-filter:blur(16px);-webkit-backdrop-filter:blur(16px);
   display:flex;justify-content:space-around;align-items:flex-start;padding-top:8px;padding-bottom:34px}
-.tab{display:flex;flex-direction:column;align-items:center;gap:6px;text-decoration:none;color:#8e8e93;font-size:11px;font-weight:500;transition:color 0.2s ease}
+.tab{display:flex;flex-direction:column;align-items:center;gap:6px;text-decoration:none;color:#6A7683;font-size:11px;font-weight:500;transition:color 0.2s ease}
 .tab.active{color:var(--petrol-600);font-weight:600}
 .ico{width:28px;height:28px;display:block}
 
