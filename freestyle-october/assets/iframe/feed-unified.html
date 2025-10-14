@@ -104,24 +104,15 @@ body::before{
  /* Closet-style legend (inline, compact) */
  .legend{display:flex;align-items:baseline;gap:.1rem;margin-top:12px;margin-bottom:6px;font-size:clamp(13px,1.7vw,16px);line-height:1.35;color:#6A7A87}
  .legend-term{font-weight:600;display:inline-flex;align-items:baseline;gap:.1rem;color:#34424D}
- /* Scalable triple-bar glyph in legend using absolute positioning for consistency */
+ /* Legend Proxi glyph (SVG) — baseline aligned like an equals sign */
  .legend .equiv{
-   /* default size relative to adjacent text */
-   --glyph: 1em;
-   --bar-h: 0.12; /* thickness factor */
-   position:relative; display:inline-block;
-   width:var(--glyph); height:calc(var(--glyph) * 0.8);
-   vertical-align:middle; margin:0 0.05em;
+   display:inline-flex; align-items:baseline; justify-content:center; margin:0 .25ch;
  }
- .legend .equiv .bar{
-   position:absolute; left:0; right:0;
-   height:calc(var(--glyph) * var(--bar-h));
-   border-radius:calc(var(--glyph) * 0.08);
-   background:linear-gradient(135deg, #008888 0%, #3ECFD5 46%, #9BFFCF 100%);
+ .legend .equiv .icon-proxi{
+   --size:0.88em !important;            /* 1% smaller than text */
+   vertical-align:baseline !important; /* align to text baseline */
+   position:relative; top:0.14em;      /* nudge downward */
  }
- .legend .equiv .bar:nth-child(1){ top:0; }
- .legend .equiv .bar:nth-child(2){ top:50%; transform:translateY(-50%); }
- .legend .equiv .bar:nth-child(3){ bottom:0; }
  .legend-def{color:#6A7A87;font-weight:500}
 
 /* Feed */
@@ -513,7 +504,7 @@ body::before{
   height: var(--size);
   display:inline-block;
   color: currentColor;      /* inherits text color */
-  vertical-align:-0.1em;
+  vertical-align:-0.05em;
 }
 .icon-proxi use{fill:currentColor;}
 
@@ -523,8 +514,8 @@ body::before{
   width: var(--size);
   height: var(--size);
   display:inline-block;
-  -webkit-mask:url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox=\'0 0 24 24\'><rect x=\'0\' y=\'4\' width=\'24\' height=\'2\' rx=\'1\'/><rect x=\'0\' y=\'11\' width=\'24\' height=\'2\' rx=\'1\'/><rect x=\'0\' y=\'18\' width=\'24\' height=\'2\' rx=\'1\'/></svg>') no-repeat center / contain;
-          mask:url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox=\'0 0 24 24\'><rect x=\'0\' y=\'4\' width=\'24\' height=\'2\' rx=\'1\'/><rect x=\'0\' y=\'11\' width=\'24\' height=\'2\' rx=\'1\'/><rect x=\'0\' y=\'18\' width=\'24\' height=\'2\' rx=\'1\'/></svg>') no-repeat center / contain;
+  -webkit-mask:url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox=\'0 0 24 24\'><rect x=\'0.96\' y=\'4\' width=\'22.08\' height=\'2.48\' rx=\'1\'/><rect x=\'0.96\' y=\'11\' width=\'22.08\' height=\'2.48\' rx=\'1\'/><rect x=\'0.96\' y=\'18\' width=\'22.08\' height=\'2.48\' rx=\'1\'/></svg>') no-repeat center / contain;
+          mask:url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox=\'0 0 24 24\'><rect x=\'0.96\' y=\'4\' width=\'22.08\' height=\'2.48\' rx=\'1\'/><rect x=\'0.96\' y=\'11\' width=\'22.08\' height=\'2.48\' rx=\'1\'/><rect x=\'0.96\' y=\'18\' width=\'22.08\' height=\'2.48\' rx=\'1\'/></svg>') no-repeat center / contain;
   background:linear-gradient(135deg, #005a5c 0%, #008a90 55%, #2fb8bf 100%);
 }
 
@@ -751,12 +742,12 @@ body::before{
 </style>
 </head>
 <body class="view-feed">
-  <!-- Proxi icon sprite (include once) -->
+  <!-- Proxi icon sprite (8% shorter bars, centered) -->
   <svg style="position:absolute;width:0;height:0;overflow:hidden" aria-hidden="true">
     <symbol id="proxi" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-      <rect x="0" y="4" width="24" height="2" rx="1"></rect>
-      <rect x="0" y="11" width="24" height="2" rx="1"></rect>
-      <rect x="0" y="18" width="24" height="2" rx="1"></rect>
+      <rect x="0.96" y="4" width="22.08" height="2.48" rx="1"></rect>
+      <rect x="0.96" y="11" width="22.08" height="2.48" rx="1"></rect>
+      <rect x="0.96" y="18" width="22.08" height="2.48" rx="1"></rect>
     </symbol>
   </svg>
   <div class="phone">
@@ -777,7 +768,7 @@ body::before{
             <button class="chip">New in</button>
           </div>
           <div class="legend" role="note">
-            <span class="legend-term">Proxies <span class="equiv" aria-hidden="true" style="display:inline-flex;align-items:center">
+            <span class="legend-term">Proxies <span class="equiv" aria-hidden="true">
                 <svg class="icon-proxi" style="--size:1em;">
                   <use href="#proxi" xlink:href="#proxi"></use>
                 </svg>
