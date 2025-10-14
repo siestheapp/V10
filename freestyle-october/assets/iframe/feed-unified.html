@@ -113,7 +113,7 @@ body::before{
    vertical-align:baseline !important; /* align to text baseline */
    position:relative; top:0.14em;      /* nudge downward */
  }
- .legend-def{color:#6A7A87;font-weight:500}
+ .legend-def{color:#34424D;font-weight:500}
 
 /* Feed */
 /* Feed scroll + spacing between cards */
@@ -590,7 +590,8 @@ body::before{
 
 /* Second slide specific positioning - Peregrine Midi Dress */
 .pc-slide[data-title="Peregrine Midi Dress"] .pc-hero-img{
-  transform:translateY(-40px) !important;
+  transform:none !important;
+  object-position:center !important;
   border-radius:14px !important;
 }
 
@@ -608,7 +609,7 @@ body::before{
 
 /* Reduce space between image and product info on slide 2 */
 .pc-slide[data-title="Peregrine Midi Dress"] .pc-look-caption{
-  margin-top:0px !important;
+  margin-top:14px !important;
 }
 
 /* Reduce space from match line on slide 2 only */
@@ -623,18 +624,18 @@ body::before{
 
 /* More aggressive spacing reduction for slide 2 */
 .proxy-card:has(.pc-slide[data-title="Peregrine Midi Dress"].pc-active) .pc-look-caption{
-  margin-top:-10px !important;
+  margin-top:14px !important;
 }
 
 /* Alternative approach - target when slide 2 is active */
 .pc-slide[data-title="Peregrine Midi Dress"].pc-active ~ * .pc-look-caption,
 .pc-slide[data-title="Peregrine Midi Dress"].pc-active + * + * .pc-look-caption{
-  margin-top:-15px !important;
+  margin-top:14px !important;
 }
 
 /* Simple class-based approach */
 .slide-2-active .pc-look-caption{
-  margin-top:-15px !important;
+  margin-top:14px !important;
 }
 
 /* Proxi badge + tooltip */
@@ -832,7 +833,7 @@ body::before{
                   <img class="pc-hero-img pc-hero-img--tight" src="../img/videoframe_35967__1_-1760420352907__user1__Anthropologie__Somerset_Chiffon_Maxi_Dress__XXS-proxy-hero@3x.png" alt="Somerset Chiffon Maxi Dress — XS">
                 </div>
                 <div class="pc-slide" data-brand="Anthropologie" data-title="Peregrine Midi Dress" data-size="XS Petite" data-comments="7" data-q="How long is the skirt?">
-                  <img class="pc-hero-img pc-hero-img--tight" src="../img/videoframe_33023.png" alt="Alternate look">
+                  <img class="pc-hero-img" src="../img/user1__Anthropologie__Peregrine_Midi_Dress__XS_Petite-proxy-hero@3x_20251014_172344.png" alt="Peregrine Midi Dress — XS Petite">
                 </div>
                 <button class="pc-nav left" type="button" aria-label="Previous slide"></button>
                 <button class="pc-nav right" type="button" aria-label="Next slide"></button>
