@@ -1,0 +1,34 @@
+{
+  "inputDir": "./_autocrop/in",
+  "outputDir": "./_autocrop/out",
+  "archiveDir": "./_autocrop/archive",
+  "originalsDir": "./_autocrop/originals",
+  "concurrency": 4,
+  "outputFormat": "png",
+  "jpgQuality": 95,
+  "webpQuality": 90,
+  "pngCompressionLevel": 9,
+  "strategy": "smartcrop",
+  "smartcrop": {
+    "minScale": 1.0,
+    "ruleOfThirds": true,
+    "facePriority": false,
+    "skinBias": 0.65,
+    "detailWeight": 0.25,
+    "outsideImportance": 0.35,
+    "yBias": 0.15
+  },
+  "headless": {
+    "enabled": true,
+    "trimTopRatio": 0.18
+  },
+  "targets": [
+    { "name": "proxy-hero@1x", "width": 354, "height": 520, "fit": "cover" },
+    { "name": "proxy-hero@2x", "width": 708, "height": 1040, "fit": "cover" },
+    { "name": "proxy-hero@3x", "width": 1062, "height": 1560, "fit": "cover" }
+  ],
+  "acceptableExtensions": [".jpg", ".jpeg", ".png", ".webp"],
+  "dedupeByHash": true,
+  "cleanArchiveDays": 30
+}
+

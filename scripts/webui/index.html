@@ -1,0 +1,138 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Autocrop — Proxi Hero</title>
+    <style>
+      :root{ --ink-900:#0B0F14; --ink-500:#2A3642; --canvas:#fff; --border: rgba(11,15,20,.08); }
+      body{ margin:0; font-family: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial, "Apple Color Emoji", "Segoe UI Emoji"; color:var(--ink-900); background:var(--canvas); }
+      .wrap{ max-width:960px; margin:0 auto; padding:24px; }
+      h1{ font-size:22px; margin:0 0 12px; }
+      .meta{ color:var(--ink-500); margin-bottom:16px; }
+      .drop{ border:2px dashed var(--border); border-radius:12px; padding:28px; text-align:center; background:#fafbfc; transition:background .15s ease; min-height:220px; display:flex; align-items:center; justify-content:center; }
+      .drop.dragover{ background:#f0f4f8; }
+      .drop input{ display:none; }
+      .btn{ display:inline-block; padding:10px 14px; border-radius:10px; background:#0b0f14; color:#fff; text-decoration:none; font-weight:600; }
+      .section{ margin-top:18px; }
+      .pairs{ display:flex; flex-direction:column; gap:16px; }
+      .pair{ border:1px solid var(--border); border-radius:12px; padding:12px; background:#fff; }
+      .pair-grid{ display:grid; grid-template-columns: 1fr 1fr; gap:12px; align-items:start; }
+      .hero{ width:354px; height:520px; object-fit:cover; border-radius:10px; display:block; background:#eee; }
+      .original{ width:auto; height:auto; max-width:100%; border-radius:10px; display:block; background:#eee; }
+      .notes{ margin-top:10px; display:flex; gap:8px; align-items:center; }
+      .notes label{ font-size:12px; color:var(--ink-500); }
+      .notes input{ flex:1; padding:10px 12px; border:1px solid var(--border); border-radius:10px; font-size:14px; }
+    </style>
+  </head>
+  <body>
+    <div class="wrap">
+      <h1>Autocrop — Proxi Hero</h1>
+      <div class="meta">Drag images here to generate 2:3 crops (1x/2x/3x). Originals are kept.</div>
+      <div id="drop" class="drop">
+        <p>Drop images here or <label class="btn"><input id="file" type="file" accept="image/*" multiple />Choose files</label></p>
+      </div>
+
+      <div class="section">
+        <div id="pairs" class="pairs" aria-label="Uploads"></div>
+      </div>
+    </div>
+
+    <script>
+      const drop = document.getElementById('drop');
+      const input = document.getElementById('file');
+      const pairs = document.getElementById('pairs');
+
+      function preventDefaults(e){ e.preventDefault(); e.stopPropagation(); }
+      ['dragenter','dragover','dragleave','drop'].forEach(evt => {
+        drop.addEventListener(evt, preventDefaults, false);
+      });
+      drop.addEventListener('dragover', () => drop.classList.add('dragover'));
+      drop.addEventListener('dragleave', () => drop.classList.remove('dragover'));
+      drop.addEventListener('drop', (e) => { drop.classList.remove('dragover'); handleFiles(e.dataTransfer.files); });
+      input.addEventListener('change', () => handleFiles(input.files));
+
+      // Load persisted items on start
+      window.addEventListener('DOMContentLoaded', async () => {
+        try {
+          const res = await fetch('/list');
+          const data = await res.json();
+          if (data.ok && Array.isArray(data.results)) {
+            data.results.forEach(addPair);
+          }
+        } catch (e) { /* noop */ }
+      });
+
+      async function handleFiles(files){
+        if(!files || !files.length) return;
+        const fd = new FormData();
+        [...files].forEach(f => fd.append('files', f));
+        const res = await fetch('/upload', { method:'POST', body: fd });
+        const data = await res.json();
+        if(!data.ok){ alert('Upload failed'); return; }
+        data.results.forEach(addPair);
+      }
+      function addPair(result){
+        const pair = document.createElement('div');
+        pair.className = 'pair';
+
+        // Determine app-sized output
+        const byName = Object.fromEntries((result.outputs||[]).map(o => [o.target, o]));
+        const o1 = byName['proxy-hero@1x'] || (result.outputs||[]).find(o => o.width===354 && o.height===520);
+        const o2 = byName['proxy-hero@2x'] || (result.outputs||[]).find(o => o.width===708 && o.height===1040);
+        const o3 = byName['proxy-hero@3x'] || (result.outputs||[]).find(o => o.width===1062 && o.height===1560);
+        const src = (o1 && (o1.url)) || result.original;
+        const srcset = [
+          o1 ? `${o1.url} 354w` : null,
+          o2 ? `${o2.url} 708w` : null,
+          o3 ? `${o3.url} 1062w` : null
+        ].filter(Boolean).join(', ');
+
+        const grid = document.createElement('div');
+        grid.className = 'pair-grid';
+
+        const left = document.createElement('div');
+        const limg = document.createElement('img');
+        limg.className = 'hero';
+        limg.width = 354; limg.height = 520;
+        limg.alt = 'app output';
+        limg.src = src;
+        if (srcset) { limg.setAttribute('srcset', srcset); limg.setAttribute('sizes', '354px'); }
+        left.appendChild(limg);
+
+        const right = document.createElement('div');
+        const rimg = document.createElement('img');
+        rimg.className = 'original';
+        rimg.alt = 'original (natural size)';
+        rimg.src = result.original; // natural size image; browser may scale down to fit width
+        right.appendChild(rimg);
+
+        grid.appendChild(left);
+        grid.appendChild(right);
+        pair.appendChild(grid);
+
+        // Notes field (persist to localStorage)
+        const notes = document.createElement('div');
+        notes.className = 'notes';
+        const label = document.createElement('label');
+        label.textContent = 'Notes';
+        label.htmlFor = `notes-${Date.now()}`;
+        const inputNotes = document.createElement('input');
+        inputNotes.type = 'text';
+        inputNotes.placeholder = 'Product name and size';
+        const key = `autocrop:notes:${result.original}`;
+        try { inputNotes.value = localStorage.getItem(key) || ''; } catch {}
+        inputNotes.addEventListener('input', () => {
+          try { localStorage.setItem(key, inputNotes.value || ''); } catch {}
+        });
+        notes.appendChild(label);
+        notes.appendChild(inputNotes);
+        pair.appendChild(notes);
+
+        pairs.prepend(pair);
+      }
+    </script>
+  </body>
+  </html>
+
+

@@ -22,11 +22,15 @@
   --petrol-100:#E0F7F7; /* light pills/backgrounds */
 
   --mint-400:#A6FFCB; /* sub-accent */
-  --ice-300:#7FE1FF;  /* cool complement */
+  --ice-300:#BFE7EF;  /* cool complement */
   --coral-500:#FF6B5A; /* alerts / "tight" state */
+  --aqua-500:#1FAED9; /* gradient stop */
+  --mint-500:#35D1AE; /* gradient stop */
+  --petrol-500-a22:rgba(0,163,163,.22); /* alpha utility */
 
   /* --- Gradient --- */
-  --brand-sheen: linear-gradient(135deg,#00A3A3 0%,#7FE1FF 50%,#A6FFCB 100%);
+  --brand-sheen: linear-gradient(135deg, var(--petrol-600) 0%, var(--aqua-500) 42%, var(--petrol-500) 62%, var(--mint-500) 100%);
+  --brand-bullet: linear-gradient(135deg, var(--petrol-600), var(--mint-500));
 
   /* --- Radii --- */
   --radius-card:16px;
