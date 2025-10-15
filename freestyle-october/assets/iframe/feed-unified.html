@@ -19,7 +19,8 @@
   --card:#FFFFFF; --track:#ECECEC; --shadow:0 10px 30px rgba(0,0,0,.06);
 }
 *{margin:0;padding:0;box-sizing:border-box}
-body{font-family:Inter,system-ui,-apple-system,"Segoe UI",Roboto,Helvetica,Arial;background:var(--bg);color:var(--ink);
+html{background:#f5f5f5}
+body{font-family:Inter,system-ui,-apple-system,"Segoe UI",Roboto,Helvetica,Arial;background:#f5f5f5;color:var(--ink);
   min-height:100vh;display:flex;align-items:center;justify-content:center;padding:0;position:relative}
 /* Warm page glow behind app content */
 body::before{
@@ -468,6 +469,7 @@ body::before{
 .pc-link-inline{margin-top:0;margin-left:8px;display:none;font:600 13px/1.45 Inter;color:#009090;white-space:nowrap}
 .pc-look-actions{display:flex;gap:14px;margin:16px 0 6px}
 .pc-btn-primary{display:inline-flex;align-items:center;justify-content:center;gap:8px;padding:12px 18px;border-radius:999px;background:linear-gradient(135deg, var(--cta-start), var(--cta-mid) 46%, var(--cta-end)); color:#fff; font:700 15px/1.1 Inter; border:1px solid rgba(0,0,0,.04); transition:transform 0.2s ease, box-shadow 0.2s ease; cursor:pointer}
+.pc-btn-primary:first-child{font-size:14px;padding:12px 16px}
 .pc-btn-primary:hover{transform:translateY(-2px); box-shadow:0 4px 12px rgba(0,0,0,.08)}
 .pc-btn-secondary{display:inline-flex;align-items:center;justify-content:center;gap:8px;padding:12px 18px;border-radius:999px;background:#fff;border:1px solid rgba(0,0,0,.10); color:var(--ink); font:700 15px/1.1 Inter; transition:transform 0.2s ease, box-shadow 0.2s ease; cursor:pointer}
 .pc-btn-secondary:hover{transform:translateY(-2px); box-shadow:0 4px 12px rgba(0,0,0,.08)}
@@ -1160,7 +1162,7 @@ body::before{
         <div class="tabs">
           <a class="tab" href="#"><svg class="ico" viewBox="0 0 256 256" aria-hidden="true"><path fill="currentColor" d="M241,150.65s0,0,0-.05a51.33,51.33,0,0,0-2.53-5.9L196.93,50.18a12,12,0,0,0-2.5-3.65,36,36,0,0,0-50.92,0A12,12,0,0,0,140,55V76H116V55a12,12,0,0,0-3.51-8.48,36,36,0,0,0-50.92,0,12,12,0,0,0-2.5,3.65L17.53,144.7A51.33,51.33,0,0,0,15,150.6s0,0,0,.05A52,52,0,1,0,116,168V100h24v68a52,52,0,1,0,101-17.35ZM80,62.28a12,12,0,0,1,12-1.22v63.15a51.9,51.9,0,0,0-35.9-7.62ZM64,196a28,28,0,1,1,28-28A28,28,0,0,1,64,196ZM164,61.06a12.06,12.06,0,0,1,12,1.22l23.87,54.31a51.9,51.9,0,0,0-35.9,7.62ZM192,196a28,28,0,1,1,28-28A28,28,0,0,1,192,196Z"/></svg><span>Find</span></a>
           <a class="tab active" href="#"><svg class="ico" viewBox="0 0 256 256" aria-hidden="true"><path fill="currentColor" d="M225.24,174.74a12,12,0,0,1-1.58,16.89C205.49,206.71,189.06,212,174.15,212c-19.76,0-36.86-9.29-51.88-17.44-25.06-13.62-44.86-24.37-74.61.3a12,12,0,1,1-15.32-18.48c42.25-35,75-17.23,101.39-2.92,25.06,13.61,44.86,24.37,74.61-.3A12,12,0,0,1,225.24,174.74Zm-16.9-57.59c-29.75,24.67-49.55,13.91-74.61.3-26.35-14.3-59.14-32.11-101.39,2.92a12,12,0,0,0,15.32,18.48c29.75-24.67,49.55-13.92,74.61-.3,15,8.15,32.12,17.44,51.88,17.44,14.91,0,31.34-5.29,49.51-20.36a12,12,0,0,0-15.32-18.48ZM47.66,82.84c29.75-24.67,49.55-13.92,74.61-.3,15,8.15,32.12,17.44,51.88,17.44,14.91,0,31.34-5.29,49.51-20.36a12,12,0,0,0-15.32-18.48c-29.75,24.67-49.55,13.92-74.61.3-26.35-14.3-59.14-32.11-101.39,2.93A12,12,0,1,0,47.66,82.84Z"/></svg><span>Feed</span></a>
-          <a class="tab" href="#"><svg class="ico" viewBox="0 0 256 256" aria-hidden="true"><path fill="currentColor" d="M244,168,148,96l19.2-14.4A12,12,0,0,0,172,72a44,44,0,0,0-87.66-5.48,12,12,0,1,0,23.82,3,20,20,0,0,1,39.09-2.92L121,86.24c-.15.1-.29.21-.43.32L12,168a20,20,0,0,0,12,36H232a20,20,0,0,0,12-36ZM36,180l92-69,92,69Z"/></svg><span>Closet</span></a>
+          <a class="tab" href="closet-screen.html"><svg class="ico" viewBox="0 0 256 256" aria-hidden="true"><path fill="currentColor" d="M244,168,148,96l19.2-14.4A12,12,0,0,0,172,72a44,44,0,0,0-87.66-5.48,12,12,0,1,0,23.82,3,20,20,0,0,1,39.09-2.92L121,86.24c-.15.1-.29.21-.43.32L12,168a20,20,0,0,0,12,36H232a20,20,0,0,0,12-36ZM36,180l92-69,92,69Z"/></svg><span>Closet</span></a>
           <a class="tab" href="#"><svg class="ico" viewBox="0 0 256 256" aria-hidden="true"><path fill="currentColor" d="M234.38,210a123.36,123.36,0,0,0-60.78-53.23,76,76,0,1,0-91.2,0A123.36,123.36,0,0,0,21.62,210a12,12,0,1,0,20.77,12c18.12-31.32,50.12-50,85.61-50s67.49,18.69,85.61,50a12,12,0,0,0,20.77-12ZM76,96a52,52,0,1,1,52,52A52.06,52.06,0,0,1,76,96Z"/></svg><span>Profile</span></a>
         </div>
       </div>
@@ -1426,6 +1428,100 @@ body::before{
     body.classList.remove('has-ftux');
     if (ftux) ftux.remove();
   });
+})();
+</script>
+
+<script>
+// PJAX fragment swap with prefetch + cache for near-instant transitions
+(function(){
+  const SCREEN_SELECTOR = '.screen';
+  const CACHE = (window.__pjaxCache = window.__pjaxCache || new Map());
+  history.scrollRestoration = 'manual';
+
+  function absUrl(url){ return new URL(url, location.href).href; }
+
+  function mergeHead(fromDoc){
+    const head = document.head;
+    const nodes = fromDoc.querySelectorAll('head style, head link[rel="stylesheet"]');
+    nodes.forEach(node=>{
+      const key = node.tagName + ':' + (node.getAttribute('href') || (node.textContent||'').length);
+      if(!head.querySelector(`[data-pjax-key="${key}"]`)){
+        const clone = node.cloneNode(true);
+        clone.setAttribute('data-pjax-key', key);
+        head.appendChild(clone);
+      }
+    });
+  }
+
+  function preloadImages(doc){
+    doc.querySelectorAll('.pc-hero-img, .img').forEach(img=>{
+      const src = img.getAttribute('src');
+      if(src){ const im = new Image(); im.src = src; }
+    });
+  }
+
+  async function fetchDoc(url){
+    const key = absUrl(url);
+    if(CACHE.has(key)) return CACHE.get(key);
+    const res = await fetch(key, { credentials:'same-origin', cache:'force-cache' });
+    const html = await res.text();
+    const doc = new DOMParser().parseFromString(html, 'text/html');
+    CACHE.set(key, doc);
+    return doc;
+  }
+
+  async function pjaxNavigate(url, replace){
+    const screen = document.querySelector(SCREEN_SELECTOR);
+    if(!screen){ window.location.href = url; return; }
+    screen.style.transition = 'opacity .12s ease';
+    try{
+      const doc = await fetchDoc(url);
+      mergeHead(doc);
+      preloadImages(doc);
+      screen.style.opacity = '0';
+      requestAnimationFrame(()=>{
+        const next = doc.querySelector(SCREEN_SELECTOR);
+        if(next){ screen.innerHTML = next.innerHTML; }
+        doc.querySelectorAll('body script').forEach(s=>{
+          const ns = document.createElement('script');
+          if(s.src) ns.src = s.src; else ns.textContent = s.textContent;
+          document.body.appendChild(ns);
+        });
+        const method = replace ? 'replaceState' : 'pushState';
+        history[method]({}, '', absUrl(url));
+        requestAnimationFrame(()=>{ screen.style.opacity = '1'; });
+      });
+    }catch(err){
+      window.location.href = url;
+    }
+  }
+
+  function prefetch(url){ fetchDoc(url).then(preloadImages).catch(()=>{}); }
+
+  // Preload the counterpart page eagerly and on intent
+  prefetch('closet-screen.html');
+  document.addEventListener('pointerenter', (e)=>{
+    const a = e.target.closest('.tabs a[href]');
+    if(a) prefetch(a.href);
+  }, {passive:true});
+  document.addEventListener('touchstart', (e)=>{
+    const a = e.target.closest('.tabs a[href]');
+    if(a) prefetch(a.href);
+  }, {passive:true});
+
+  // Intercept tab clicks
+  document.addEventListener('click', (e)=>{
+    const a = e.target.closest('.tabs a[href]');
+    if(!a) return;
+    const href = a.getAttribute('href');
+    if(!href || href==='#') return;
+    if(/closet-screen\.html|feed-unified\.html/.test(href)){
+      e.preventDefault();
+      pjaxNavigate(href, false);
+    }
+  });
+
+  window.addEventListener('popstate', ()=> pjaxNavigate(location.href, true));
 })();
 </script>
 
