@@ -71,11 +71,21 @@
     .legend{display:flex; align-items:baseline; gap:.1rem; margin-top:6px; margin-bottom:10px; font-size:clamp(13px,1.7vw,16px); line-height:1.35; color:#6A7A87}
     .legend-term{font-weight:600; display:inline-flex; align-items:baseline; gap:.1rem; color:#34424D}
     .legend .equiv{display:inline-block; position:relative; width:1.2em; height:.8em; vertical-align:baseline; margin:0 0.05em}
-    .legend .equiv .bar{position:absolute; left:0.1em; width:1em; height:0.12em; border-radius:0.06em; background:linear-gradient(135deg, #008888 0%, #34C3CC 46%, #9BFFCF 100%)}
+    .legend .equiv .bar{position:absolute; left:0.1em; width:0.95em; height:0.11em; border-radius:0.055em; background:linear-gradient(135deg, #008888 0%, #34C3CC 46%, #5DDFD5 100%)}
     .legend .equiv .bar:nth-child(1){top:0.15em}
     .legend .equiv .bar:nth-child(2){top:0.39em}
     .legend .equiv .bar:nth-child(3){top:0.63em}
     .legend-def{color:#6A7A87; font-weight:500}
+
+    .icon-proxi{
+      --size: 16px;
+      width: var(--size);
+      height: var(--size);
+      display:inline-block;
+      color: #009090 !important;
+      vertical-align:-0.05em;
+    }
+    .icon-proxi use{fill:currentColor;}
     
 
     .card{position:relative}
@@ -83,27 +93,23 @@
     /* --- Proxi Pill · signature (tight + high-contrast) v4 --- */
     .proxy-pill{
       position:absolute !important; top:10px !important; right:10px !important; z-index:3 !important;
-      display:inline-flex !important; align-items:center !important; justify-content:center !important; gap:2px !important;
-      height:18px !important; padding:0 4px !important;                /* ultra-tight: 18px tall, 4px sides */
+      display:inline-flex !important; align-items:center !important; justify-content:center !important; gap:4px !important;
+      padding:4px 8px !important;                /* reduced by 2px from size badge */
       border-radius:9999px !important;
       background:#FFFFFF !important;                         /* strong contrast on imagery */
       border:1px solid rgba(0,0,0,.16) !important;           /* neutral stroke for definition */
       box-shadow:0 2px 6px rgba(0,0,0,.12) !important;
       color:#0B3D3A !important;                              /* deep petrol ink */
-      font:700 10px/1 Inter, system-ui, -apple-system, "Segoe UI", Roboto, Helvetica, Arial !important;
+      font:700 12px/1 Inter, system-ui, -apple-system, "Segoe UI", Roboto, Helvetica, Arial !important;
       user-select:none !important; cursor:default !important;
     }
 
-    /* Triple bar glyph - custom rectangles */
-    .proxy-pill .icon{
-      display:flex; flex-direction:column; align-items:center; justify-content:center; 
-      width:8px; height:8px; gap:0.8px;
+    /* Triple bar SVG icon in proxy pill */
+    .proxy-pill .icon-proxi{
+      --size: 12px;
+      color: #009090 !important;
     }
-    .proxy-pill .icon .bar{
-      width:6px; height:1.2px; border-radius:1px;
-      background:linear-gradient(135deg, #008888 0%, #34C3CC 46%, #9BFFCF 100%) !important;
-    }
-    .proxy-pill .count{font-weight:800; font-feature-settings:"tnum" 1; background:linear-gradient(135deg,var(--cta-start),var(--cta-mid) 46%,var(--cta-end)); -webkit-background-clip:text; background-clip:text; -webkit-text-fill-color:transparent}
+    .proxy-pill .count{font-weight:700; font-size:12px; font-feature-settings:"tnum" 1; color:#34424D !important}
 
     /* Disabled (if needed) */
     .proxy-pill[aria-disabled="true"] { opacity: .45; }
@@ -145,6 +151,11 @@
         <stop offset="100%" style="stop-color:#9BFFCF;stop-opacity:1" />
       </linearGradient>
     </defs>
+    <symbol id="proxi" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+      <rect x="0.96" y="4" width="22.08" height="2.48" rx="1"></rect>
+      <rect x="0.96" y="11" width="22.08" height="2.48" rx="1"></rect>
+      <rect x="0.96" y="18" width="22.08" height="2.48" rx="1"></rect>
+    </symbol>
   </svg>
   <div class="phone">
     <div class="screen" data-view="list">
@@ -182,11 +193,9 @@
           <article class="card" data-category="dresses" data-name="GEORGIA HARDINGE Relic Dress" data-size="UK 8">
             <span class="size" aria-label="Your size for this item">UK 8</span>
             <button class="proxy-pill" aria-label="2 proxies for this item in your size">
-              <span class="icon" aria-hidden="true">
-                <div class="bar"></div>
-                <div class="bar"></div>
-                <div class="bar"></div>
-              </span>
+              <svg class="icon-proxi" aria-hidden="true">
+                <use href="#proxi" xlink:href="#proxi"></use>
+              </svg>
               <span class="count">2</span>
             </button>
             <img class="img tall" src="https://cdn.modaoperandi.com/assets/images/products/1048452/695474/c2/large_georgia-hardinge-gold-relic-dress.jpg?_v=1755324586" alt="Georgia Hardinge Relic Pleated Metallic‑Knit Maxi Dress">
@@ -196,11 +205,9 @@
           <article class="card" data-category="tops" data-name="Reformation Taryn Two Piece" data-size="2">
             <span class="size" aria-label="Your size for this item">2</span>
             <button class="proxy-pill" aria-label="2 proxies for this item in your size">
-              <span class="icon" aria-hidden="true">
-                <div class="bar"></div>
-                <div class="bar"></div>
-                <div class="bar"></div>
-              </span>
+              <svg class="icon-proxi" aria-hidden="true">
+                <use href="#proxi" xlink:href="#proxi"></use>
+              </svg>
               <span class="count">2</span>
             </button>
             <img class="img" src="https://media.thereformation.com/image/upload/f_auto,q_auto:eco,dpr_2.0/w_500/PRD-SFCC/1314122/BLACK/1314122.1.BLACK?_s=RAABAB0" alt="Reformation Taryn Two Piece">
@@ -210,11 +217,9 @@
           <article class="card" data-category="tops" data-name="ALFIE Open Back Cotton Poplin Top" data-size="Small">
             <span class="size" aria-label="Your size for this item">Small</span>
             <button class="proxy-pill" aria-label="2 proxies for this item in your size">
-              <span class="icon" aria-hidden="true">
-                <div class="bar"></div>
-                <div class="bar"></div>
-                <div class="bar"></div>
-              </span>
+              <svg class="icon-proxi" aria-hidden="true">
+                <use href="#proxi" xlink:href="#proxi"></use>
+              </svg>
               <span class="count">2</span>
             </button>
             <img class="img" src="https://cdn.modaoperandi.com/assets/images/products/1028958/674197/c/large_alfie-white-backless-top.jpg?_v=1755087491" alt="ALFIE Open Back Cotton Poplin Top">
@@ -224,11 +229,9 @@
           <article class="card" data-category="bottoms" data-name="AYR The Secret Sauce" data-size="26S">
             <span class="size" aria-label="Your size for this item">26S</span>
             <button class="proxy-pill" aria-label="2 proxies for this item in your size">
-              <span class="icon" aria-hidden="true">
-                <div class="bar"></div>
-                <div class="bar"></div>
-                <div class="bar"></div>
-              </span>
+              <svg class="icon-proxi" aria-hidden="true">
+                <use href="#proxi" xlink:href="#proxi"></use>
+              </svg>
               <span class="count">2</span>
             </button>
             <img class="img" src="https://www.ayr.com/cdn/shop/files/secretsauce-goodmood_CAT_d634f664-cb49-4e61-abef-5d94b707075e.jpg?crop=center&height=1440&v=1755036845&width=950" alt="AYR The Secret Sauce">
@@ -238,11 +241,9 @@
           <article class="card" data-category="bottoms" data-name="ZARA Flare Pants" data-size="M">
             <span class="size" aria-label="Your size for this item">M</span>
             <button class="proxy-pill" aria-label="2 proxies for this item in your size">
-              <span class="icon" aria-hidden="true">
-                <div class="bar"></div>
-                <div class="bar"></div>
-                <div class="bar"></div>
-              </span>
+              <svg class="icon-proxi" aria-hidden="true">
+                <use href="#proxi" xlink:href="#proxi"></use>
+              </svg>
               <span class="count">2</span>
             </button>
             <img class="img" src="https://static.zara.net/assets/public/a4e8/d8da/2c3b44728736/7e4b4c39762b/03152505800-a1/03152505800-a1.jpg?ts=1753971869534&w=1900" alt="ZARA Flare Pants">
@@ -252,11 +253,9 @@
           <article class="card" data-category="tops" data-name="COS Shrunken T-shirt" data-size="XS">
             <span class="size" aria-label="Your size for this item">XS</span>
             <button class="proxy-pill" aria-label="2 proxies for this item in your size">
-              <span class="icon" aria-hidden="true">
-                <div class="bar"></div>
-                <div class="bar"></div>
-                <div class="bar"></div>
-              </span>
+              <svg class="icon-proxi" aria-hidden="true">
+                <use href="#proxi" xlink:href="#proxi"></use>
+              </svg>
               <span class="count">2</span>
             </button>
             <img class="img" src="https://media.cos.com/assets/001/6e/d0/6ed0142c6e69ad42e826224d9a8d013f6d3f4685_xxl-1.jpg?imwidth=2160" alt="COS Shrunken T-shirt">
@@ -266,11 +265,9 @@
           <article class="card" data-category="dresses" data-name="ALEXIS Briette Satin Maxi Dress" data-size="S">
             <span class="size" aria-label="Your size for this item">S</span>
             <button class="proxy-pill" aria-label="2 proxies for this item in your size">
-              <span class="icon" aria-hidden="true">
-                <div class="bar"></div>
-                <div class="bar"></div>
-                <div class="bar"></div>
-              </span>
+              <svg class="icon-proxi" aria-hidden="true">
+                <use href="#proxi" xlink:href="#proxi"></use>
+              </svg>
               <span class="count">2</span>
             </button>
             <img class="img tall" src="https://cdn.modaoperandi.com/assets/images/products/1039207/685257/c/large_alexis-blue-briette-dress.jpg?_v=1755195214" alt="ALEXIS Briette Satin Maxi Dress">
