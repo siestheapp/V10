@@ -121,6 +121,7 @@ body::before{
 .feed{
   padding:0 24px 96px;
   overflow-y:auto;
+  overflow-x:visible;
   display:flex;
   flex-direction:column;
   gap:16px;
@@ -425,12 +426,12 @@ body::before{
 </style>
 <style>
 /* ===== Proxy card (namespaced from size-twin) ===== */
-.proxy-card{background:#fff;border:1px solid rgba(0,0,0,.06);border-radius:18px;padding:8px 12px 10px}
-.pc-look-h{display:flex;align-items:center;gap:10px;padding:6px 6px 10px}
+.proxy-card{background:#fff;border:1px solid rgba(0,0,0,.06);border-radius:18px;padding:8px 12px 10px;overflow:visible;position:relative}
+.pc-look-h{display:flex;align-items:center;gap:10px;padding:6px 6px 10px;overflow:visible;position:relative}
 .pc-avatar{width:34px;height:34px;border-radius:10px;object-fit:cover}
 .pc-avatar--circle{border-radius:999px}
 .pc-name{font:700 14px/1.2 Inter;color:#2F2F33}
-.pc-bads{display:flex;gap:8px;flex-wrap:wrap}
+.pc-bads{display:flex;gap:8px;flex-wrap:wrap;overflow:visible;position:relative}
 .pc-badge{
   display:inline-flex;align-items:center;justify-content:center;padding:6px 12px;
   border-radius:999px;border:1px solid rgba(0,136,128,.22);
@@ -443,7 +444,7 @@ body::before{
 .pc-match-link:focus-visible{outline:2px solid #0a8;border-radius:4px}
 .pc-hero-wrap{position:relative}
 .pc-carousel{position:relative}
-.pc-hero-img{display:block;width:100%;height:520px;object-fit:cover;border-radius:14px}
+.pc-hero-img{display:block;width:100%;height:520px;object-fit:cover;border-radius:14px;cursor:pointer}
 .pc-hero-img--tight{object-position:center 22%}
 .pc-chip{
   position:absolute;top:10px;left:10px;z-index:2;
@@ -685,8 +686,9 @@ body::before{
   display:none !important;
 }
 
-/* Move size bullet up on slide 2 of ellaa76 card (no proxi badge) */
-.pc-slide[data-title="Peregrine Midi Dress"] .size-bullet{
+/* Move size bullet up on slide 2 and 3 of ellaa76 card (no proxi badge) */
+.pc-slide[data-title="Peregrine Midi Dress"] .size-bullet,
+.pc-slide[data-title="Draped Midi Dress"] .size-bullet{
   top:10px !important;
 }
 
@@ -725,20 +727,21 @@ body::before{
   position:absolute;
   top:10px;
   right:10px;
-  z-index:3;
+  z-index:9999;
 }
 
 .proxi-inline-wrap{
   position:relative;
   display:inline-flex;
   align-items:center;
+  z-index:9999;
 }
 
 .proxi-trigger{
   border:0;
   background:transparent;
   padding:0;
-  cursor:help !important;
+  cursor:default;
 }
 
 .proxi-trigger:focus-visible{
@@ -774,7 +777,7 @@ body::before{
   pointer-events:none;
   transform:translateY(-50%) scale(.96);
   transition:opacity .2s ease, transform .2s ease;
-  z-index:3;
+  z-index:9999;
 }
 
 .proxi-tip::before,
@@ -809,24 +812,38 @@ body::before{
 }
 
 .proxi-tip--right{
-  left:calc(100% + 8px);
-  top:50%;
+  top:calc(100% + 8px);
+  left:50%;
+  transform:translateX(-50%) scale(.96);
 }
 
 .proxi-tip--right::before{
-  left:-14px;
-  border-right-color:rgba(31,174,217,0.65);
+  bottom:auto;
+  top:-14px;
+  left:50%;
+  transform:translateX(-50%);
+  border-bottom-color:rgba(31,174,217,0.65);
+  border-right-color:transparent;
+  border-top-color:transparent;
 }
 
 .proxi-tip--right::after{
-  left:-12px;
-  border-right-color:rgba(0,0,0,0.9);
+  bottom:auto;
+  top:-12px;
+  left:50%;
+  transform:translateX(-50%);
+  border-bottom-color:rgba(0,0,0,0.9);
+  border-right-color:transparent;
+  border-top-color:transparent;
 }
 
 .proxi-trigger:where(:hover, :focus-visible)+.proxi-tip{
   opacity:1;
   pointer-events:auto;
-  transform:translateY(-50%) scale(1);
+}
+
+.proxi-trigger:where(:hover, :focus-visible)+.proxi-tip--right{
+  transform:translateX(-50%) scale(1);
 }
 
 /* FTUX: heading + split pill */
@@ -965,7 +982,6 @@ body::before{
                     </span>
                     <span class="count">2 shared sizes</span>
                   </button>
-                  <span class="proxi-tip proxi-tip--right" role="tooltip" id="tip-proxi-count">You share two Proxi Pieces<br>– same item, same size</span>
                 </span>
               </div>
             </header>
@@ -978,32 +994,35 @@ body::before{
               <div class="proxi-badge-wrap">
                 <button type="button"
                         class="pill-proxi pill-proxi--text proxi-trigger proxi-trigger--badge"
-                        aria-label="Size twin info"
-                        aria-describedby="tip-proxi-hero">
+                        aria-label="Size twin info">
                   <span class="text-content">Same as yours</span>
                 </button>
-                <div class="proxi-tip proxi-tip--left" role="tooltip" id="tip-proxi-hero">Same as yours (XS)</div>
               </div>
               <div class="pc-carousel" data-index="0">
-                <div class="pc-slide pc-active" data-brand="Anthropologie" data-title="Somerset Chiffon Maxi Dress" data-size="XS" data-comments="12" data-q="Is this petite or regular?" data-a="Regular!">
-                  <img class="pc-hero-img pc-hero-img--tight" src="../img/videoframe_35967__1_-1760420352907__user1__Anthropologie__Somerset_Chiffon_Maxi_Dress__XXS-proxy-hero@3x.png" alt="Somerset Chiffon Maxi Dress — XS">
-                  <span class="size-bullet" aria-label="Size for this item">XS</span>
+                <div class="pc-slide pc-active" data-brand="Anthropologie" data-title="Somerset Chiffon Maxi Dress" data-size="S" data-comments="12" data-q="Is this petite or regular?" data-a="Regular!">
+                  <img class="pc-hero-img pc-hero-img--tight" src="../img/videoframe_35967__1_-1760420352907__user1__Anthropologie__Somerset_Chiffon_Maxi_Dress__XXS-proxy-hero@3x.png" alt="Somerset Chiffon Maxi Dress — S">
+                  <span class="size-bullet" aria-label="Size for this item">S</span>
                 </div>
-                <div class="pc-slide" data-brand="Anthropologie" data-title="Peregrine Midi Dress" data-size="XS Petite" data-comments="7" data-q="How long is the skirt?">
-                  <img class="pc-hero-img" src="../img/user1__Anthropologie__Peregrine_Midi_Dress__XS_Petite-proxy-hero@3x_20251014_172344.png" alt="Peregrine Midi Dress — XS Petite">
-                  <span class="size-bullet" aria-label="Size for this item">XS Petite</span>
+                <div class="pc-slide" data-brand="Anthropologie" data-title="Peregrine Midi Dress" data-size="M Petite" data-comments="7" data-q="How long is the skirt?">
+                  <img class="pc-hero-img" src="../img/user1__Anthropologie__Peregrine_Midi_Dress__XS_Petite-proxy-hero@3x_20251014_172344.png" alt="Peregrine Midi Dress — M Petite">
+                  <span class="size-bullet" aria-label="Size for this item">M Petite</span>
+                </div>
+                <div class="pc-slide" data-brand="Zara" data-title="Draped Midi Dress" data-size="S Petite" data-comments="5" data-q="Does this run small?" data-a="True to size!">
+                  <img class="pc-hero-img" src="../img/user1__zara__drapedmididress__spetite-proxy-hero@3x_20251015_170628.png" alt="Draped Midi Dress — S Petite">
+                  <span class="size-bullet" aria-label="Size for this item">S Petite</span>
                 </div>
                 <button class="pc-nav left" type="button" aria-label="Previous slide"></button>
                 <button class="pc-nav right" type="button" aria-label="Next slide"></button>
                 <div class="pc-dots" aria-label="Slide position">
                   <button class="pc-dot pc-active" type="button" aria-label="Slide 1"></button>
                   <button class="pc-dot" type="button" aria-label="Slide 2"></button>
+                  <button class="pc-dot" type="button" aria-label="Slide 3"></button>
                 </div>
               </div>
             </div>
 
             <div class="pc-look-caption">
-              <p><span class="pc-user"><strong id="pcBrand">Anthropologie</strong></span> <span id="pcTitle">Somerset Chiffon Maxi Dress</span> <span id="pcSize">(XS)</span></p>
+              <p><a href="https://www.anthropologie.com/shop/hybrid/the-somerset-chiffon-maxi-dress2" target="_blank" rel="noopener noreferrer" style="text-decoration:none;color:inherit;cursor:pointer"><span class="pc-user"><strong id="pcBrand">Anthropologie</strong></span> <span id="pcTitle">Somerset Chiffon Maxi Dress</span> <span id="pcSize">(S)</span></a></p>
             </div>
 
             <div class="pc-comment-teaser" role="button" aria-label="View comments">
@@ -1040,7 +1059,6 @@ body::before{
                     </span>
                     <span class="count">1 shared size</span>
                   </button>
-                  <span class="proxi-tip proxi-tip--right" role="tooltip" id="tip-proxi-count">You share two Proxi Pieces<br>– same item, same size</span>
                 </span>
               </div>
             </header>
@@ -1050,15 +1068,6 @@ body::before{
             </div>
 
             <div class="pc-hero-wrap">
-              <div class="proxi-badge-wrap">
-                <button type="button"
-                        class="pill-proxi pill-proxi--text proxi-trigger proxi-trigger--badge"
-                        aria-label="Size twin info"
-                        aria-describedby="tip-proxi-hero">
-                  <span class="text-content">Same as yours</span>
-                </button>
-                <div class="proxi-tip proxi-tip--left" role="tooltip" id="tip-proxi-hero">Same as yours (XS)</div>
-              </div>
               <div class="pc-carousel" data-index="0">
                 <div class="pc-slide pc-active" data-brand="Anthropologie" data-title="Somerset Chiffon Maxi Dress" data-size="XS" data-comments="12" data-q="Is this petite or regular?" data-a="Regular!">
                   <img class="pc-hero-img pc-hero-img--tight" src="../img/videoframe_2906__1_-1760417574510-proxy-hero@3x.png" alt="Green satin dress">
@@ -1073,7 +1082,7 @@ body::before{
             </div>
 
             <div class="pc-look-caption">
-              <p><span class="pc-user"><strong id="pcBrand">Anthropologie</strong></span> <span id="pcTitle">Somerset Chiffon Maxi Dress</span> <span id="pcSize">(XS)</span></p>
+              <p><a href="https://www.anthropologie.com/shop/hybrid/the-somerset-chiffon-maxi-dress2" target="_blank" rel="noopener noreferrer" style="text-decoration:none;color:inherit;cursor:pointer"><span class="pc-user"><strong id="pcBrand">Anthropologie</strong></span> <span id="pcTitle">Somerset Chiffon Maxi Dress</span> <span id="pcSize">(S)</span></a></p>
             </div>
 
             <div class="pc-look-actions">
@@ -1292,6 +1301,8 @@ body::before{
           shopButton.onclick = () => window.open('https://www.anthropologie.com/shop/the-somerset-chiffon-maxi-dress2', '_blank');
         } else if(title === 'Peregrine Midi Dress') {
           shopButton.onclick = () => window.open('https://www.anthropologie.com/shop/the-peregrine-midi-dress8', '_blank');
+        } else if(title === 'Draped Midi Dress') {
+          shopButton.onclick = () => window.open('https://www.zara.com/us/en/draped-midi-dress-p04772305.html', '_blank');
         }
       }
     }
@@ -1301,10 +1312,17 @@ body::before{
       idx = (n + slides.length) % slides.length;
       slides.forEach((s,i)=> s.classList.toggle('pc-active', i===idx));
       dots.forEach((d,i)=> d.classList.toggle('pc-active',  i===idx));
-      
+
       // Toggle class for slide 2 spacing
       card.classList.toggle('slide-2-active', idx === 1);
-      
+
+      // Show/hide "Same as yours" pill based on slide
+      const badgeWrap = card.querySelector('.proxi-badge-wrap');
+      if (badgeWrap) {
+        // Show only on first slide (Somerset)
+        badgeWrap.style.display = idx === 0 ? '' : 'none';
+      }
+
       applyFromSlide(slides[idx]);
     }
     dots.forEach((d,i)=> d.addEventListener('click', ()=> show(i)));
@@ -1341,6 +1359,8 @@ body::before{
           window.open('https://www.anthropologie.com/shop/the-somerset-chiffon-maxi-dress2', '_blank');
         } else if (title === 'Peregrine Midi Dress') {
           window.open('https://www.anthropologie.com/shop/the-peregrine-midi-dress8', '_blank');
+        } else if (title === 'Draped Midi Dress') {
+          window.open('https://www.zara.com/us/en/draped-midi-dress-p04772305.html', '_blank');
         }
       }
     }
