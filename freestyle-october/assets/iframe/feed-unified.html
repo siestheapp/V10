@@ -584,6 +584,13 @@ body::before{
   -webkit-background-clip:text; background-clip:text; -webkit-text-fill-color:transparent;
 }
 
+/* Text variant: Shows text instead of symbol */
+.pill-proxi--text{ padding:0 8px !important; }
+.pill-proxi--text .text-content{
+  font-weight:500; font-size:12px;
+  color:#34424D;
+}
+
 /* Quick size presets */
 .pill-proxi.--sm{ --glyph: 0.5rem; }    /* ~8px */
 .pill-proxi.--md{ --glyph: 0.625rem; }  /* ~10px (default) */
@@ -594,6 +601,11 @@ body::before{
 
 /* Cap very large counts visually */
 .pill-proxi[data-count="99plus"] .count{ letter-spacing:-.5px; }
+
+/* First slide specific positioning - shift image content left */
+.pc-slide[data-title="Somerset Chiffon Maxi Dress"] .pc-hero-img--tight{
+  object-position: 100% 22% !important;
+}
 
 /* Second slide specific positioning - Peregrine Midi Dress */
 .pc-slide[data-title="Peregrine Midi Dress"] .pc-hero-img{
@@ -645,11 +657,6 @@ body::before{
   margin-top:14px !important;
 }
 
-/* Hide proxi badge on second slide since it's a recommendation, not shared size */
-.proxy-card:has(.pc-slide[data-title="Peregrine Midi Dress"].pc-active) .proxi-badge-wrap{
-  display:none !important;
-}
-
 /* Proxi badge + tooltip */
 .proxi-badge-wrap{
   position:absolute;
@@ -668,7 +675,7 @@ body::before{
   border:0;
   background:transparent;
   padding:0;
-  cursor:pointer !important;
+  cursor:help !important;
 }
 
 .proxi-trigger:focus-visible{
@@ -817,6 +824,7 @@ body::before{
                     </span>
                     <span class="count">2 shared sizes</span>
                   </button>
+                  <span class="proxi-tip proxi-tip--right" role="tooltip" id="tip-proxi-count">You share two Proxi Pieces<br>– same item, same size</span>
                 </span>
               </div>
             </header>
@@ -828,14 +836,10 @@ body::before{
             <div class="pc-hero-wrap">
               <div class="proxi-badge-wrap">
                 <button type="button"
-                        class="pill-proxi pill-proxi--mark proxi-trigger proxi-trigger--badge"
+                        class="pill-proxi pill-proxi--text proxi-trigger proxi-trigger--badge"
                         aria-label="Size twin info"
                         aria-describedby="tip-proxi-hero">
-                  <span class="glyph" aria-hidden="true">
-                    <svg class="icon-proxi" style="--size: var(--glyph); color: currentColor">
-                      <use href="#proxi" xlink:href="#proxi"></use>
-                    </svg>
-                  </span>
+                  <span class="text-content">Same as yours</span>
                 </button>
                 <div class="proxi-tip proxi-tip--left" role="tooltip" id="tip-proxi-hero">Same as yours (XS)</div>
               </div>
@@ -880,6 +884,22 @@ body::before{
           <section class="proxy-card">
             <header class="pc-look-h">
               <div class="pc-name">srd24</div>
+              <div class="pc-bads">
+                <span class="proxi-inline-wrap">
+                  <button type="button"
+                          class="pill-proxi pill-proxi--count proxi-trigger"
+                          aria-label="Shared Proxi items"
+                          aria-describedby="tip-proxi-count">
+                    <span class="glyph" aria-hidden="true">
+                      <svg class="icon-proxi" style="--size: var(--glyph); color: currentColor">
+                        <use href="#proxi" xlink:href="#proxi"></use>
+                      </svg>
+                    </span>
+                    <span class="count">1</span>
+                  </button>
+                  <span class="proxi-tip proxi-tip--right" role="tooltip" id="tip-proxi-count">You share two Proxi Pieces<br>– same item, same size</span>
+                </span>
+              </div>
             </header>
 
             <div class="pc-match micro">
@@ -887,6 +907,15 @@ body::before{
             </div>
 
             <div class="pc-hero-wrap">
+              <div class="proxi-badge-wrap">
+                <button type="button"
+                        class="pill-proxi pill-proxi--text proxi-trigger proxi-trigger--badge"
+                        aria-label="Size twin info"
+                        aria-describedby="tip-proxi-hero">
+                  <span class="text-content">Same as yours</span>
+                </button>
+                <div class="proxi-tip proxi-tip--left" role="tooltip" id="tip-proxi-hero">Same as yours (XS)</div>
+              </div>
               <div class="pc-carousel" data-index="0">
                 <div class="pc-slide pc-active" data-brand="Anthropologie" data-title="Somerset Chiffon Maxi Dress" data-size="XS" data-comments="12" data-q="Is this petite or regular?" data-a="Regular!">
                   <img class="pc-hero-img pc-hero-img--tight" src="../img/videoframe_2906__1_-1760417574510-proxy-hero@3x.png" alt="Green satin dress">
