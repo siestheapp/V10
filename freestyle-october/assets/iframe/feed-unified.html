@@ -282,8 +282,14 @@ body::before{
 .card > .look-h .avatar{box-shadow:0 1px 3px rgba(0,0,0,.08)}
 .card > .look-h + .hero-wrap{border-top-left-radius:0;border-top-right-radius:0}
 
+/* Tighter header for srd24 card (no avatar) */
+.proxy-card:nth-of-type(2) .pc-look-h{
+  padding:8px 16px;
+}
 
-.brandprice{align-items:center;gap:10px}
+
+
+.brandprice{align-items:center;gap:2px}
 .brandprice .brand{font-size:12px;letter-spacing:.3px;color:#555;font-weight:600;text-transform:uppercase}
 .brandprice .price{font-weight:700;font-size:17px;color:#2d2d2d}
 .brandprice .perk{margin-left:auto;font-size:13px;color:#4C4C50;font-weight:600;display:flex;align-items:center;gap:6px}
@@ -1066,17 +1072,6 @@ body::before{
 
             <div class="pc-look-caption">
               <p><span class="pc-user"><strong id="pcBrand">Anthropologie</strong></span> <span id="pcTitle">Somerset Chiffon Maxi Dress</span> <span id="pcSize">(XS)</span></p>
-            </div>
-
-            <div class="pc-comment-teaser" role="button" aria-label="View comments">
-              <div class="pc-k">Comments · <span id="pcCCount">12</span></div>
-              <div class="pc-row">
-                <span class="pc-q">Q:</span> <span id="pcCQ">Is this petite or regular?</span>
-                <span class="pc-sep">·</span>
-                <span class="pc-a">A:</span> <span id="pcCA">Regular!</span>
-                <span class="pc-link-inline" id="pcLinkInline" aria-hidden="true">See full thread &gt;</span>
-              </div>
-              <div class="pc-link" id="pcLinkBlock">See full thread &gt;</div>
             </div>
 
             <div class="pc-look-actions">
