@@ -657,6 +657,50 @@ body::before{
   margin-top:14px !important;
 }
 
+/* Hide proxi badge on second slide since it's a recommendation, not shared size */
+.proxy-card:has(.pc-slide[data-title="Peregrine Midi Dress"].pc-active) .proxi-badge-wrap{
+  display:none !important;
+}
+
+/* Hide proxi badge on srd24 card (second proxy card) since it's a recommendation */
+.proxy-card:nth-of-type(2) .proxi-badge-wrap{
+  display:none !important;
+}
+
+/* Hide arrows on srd24 card (single image) */
+.proxy-card:nth-of-type(2) .pc-nav{
+  display:none !important;
+}
+
+/* Move size bullet up on slide 2 of ellaa76 card (no proxi badge) */
+.pc-slide[data-title="Peregrine Midi Dress"] .size-bullet{
+  top:10px !important;
+}
+
+/* Move size bullet up on srd24 card (no proxi badge) */
+.proxy-card:nth-of-type(2) .size-bullet{
+  top:10px !important;
+}
+
+/* Size bullet (from closet screen) */
+.size-bullet{
+  position:absolute;
+  top:40px;
+  right:10px;
+  padding:6px 10px;
+  border-radius:999px;
+  background:rgba(0,0,0,.45);
+  backdrop-filter:blur(2px);
+  color:#fff;
+  font:700 12px/1 Inter;
+  z-index:3;
+}
+
+/* When no proxi badge, move size bullet up */
+.pc-hero-wrap:not(:has(.proxi-badge-wrap)) .size-bullet{
+  top:10px;
+}
+
 /* Proxi badge + tooltip */
 .proxi-badge-wrap{
   position:absolute;
@@ -846,9 +890,11 @@ body::before{
               <div class="pc-carousel" data-index="0">
                 <div class="pc-slide pc-active" data-brand="Anthropologie" data-title="Somerset Chiffon Maxi Dress" data-size="XS" data-comments="12" data-q="Is this petite or regular?" data-a="Regular!">
                   <img class="pc-hero-img pc-hero-img--tight" src="../img/videoframe_35967__1_-1760420352907__user1__Anthropologie__Somerset_Chiffon_Maxi_Dress__XXS-proxy-hero@3x.png" alt="Somerset Chiffon Maxi Dress — XS">
+                  <span class="size-bullet" aria-label="Size for this item">XS</span>
                 </div>
                 <div class="pc-slide" data-brand="Anthropologie" data-title="Peregrine Midi Dress" data-size="XS Petite" data-comments="7" data-q="How long is the skirt?">
                   <img class="pc-hero-img" src="../img/user1__Anthropologie__Peregrine_Midi_Dress__XS_Petite-proxy-hero@3x_20251014_172344.png" alt="Peregrine Midi Dress — XS Petite">
+                  <span class="size-bullet" aria-label="Size for this item">XS Petite</span>
                 </div>
                 <button class="pc-nav left" type="button" aria-label="Previous slide"></button>
                 <button class="pc-nav right" type="button" aria-label="Next slide"></button>
@@ -895,7 +941,7 @@ body::before{
                         <use href="#proxi" xlink:href="#proxi"></use>
                       </svg>
                     </span>
-                    <span class="count">1</span>
+                    <span class="count">1 shared size</span>
                   </button>
                   <span class="proxi-tip proxi-tip--right" role="tooltip" id="tip-proxi-count">You share two Proxi Pieces<br>– same item, same size</span>
                 </span>
@@ -919,6 +965,7 @@ body::before{
               <div class="pc-carousel" data-index="0">
                 <div class="pc-slide pc-active" data-brand="Anthropologie" data-title="Somerset Chiffon Maxi Dress" data-size="XS" data-comments="12" data-q="Is this petite or regular?" data-a="Regular!">
                   <img class="pc-hero-img pc-hero-img--tight" src="../img/videoframe_2906__1_-1760417574510-proxy-hero@3x.png" alt="Green satin dress">
+                  <span class="size-bullet" aria-label="Size for this item">XS</span>
                 </div>
                 <button class="pc-nav left" type="button" aria-label="Previous slide"></button>
                 <button class="pc-nav right" type="button" aria-label="Next slide"></button>
@@ -945,7 +992,7 @@ body::before{
 
             <div class="pc-look-actions">
               <button class="pc-btn-primary" id="shopButton">Shop this item</button>
-              <button class="pc-btn-secondary">See more from ellaa76</button>
+              <button class="pc-btn-secondary">See more from srd24</button>
             </div>
           </section>
 
@@ -953,6 +1000,7 @@ body::before{
           <div class="card">
             <div class="imgbox">
               <img class="img" src="https://images.urbndata.com/is/image/Anthropologie/4130652010091_256_b?$redesign-zoom-5x$" alt="Anthropologie slip dress"/>
+              <span class="size-bullet" aria-label="Size for this item">S</span>
             </div>
 
             <div class="info">
