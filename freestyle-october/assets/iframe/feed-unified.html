@@ -527,8 +527,8 @@ body::before{
   height:24px !important; padding:0 8px !important;                /* larger: 24px tall, 8px sides */
   border-radius:9999px !important;
   background:#FFFFFF !important;                         /* strong contrast on imagery */
-  border:1px solid rgba(0,0,0,.16) !important;           /* neutral stroke for definition */
-  box-shadow:0 2px 6px rgba(0,0,0,.12) !important;
+  border:1px solid rgba(0,0,0,.14) !important;           /* firmer edge for hardware quality */
+  box-shadow:0 2px 8px rgba(0,0,0,.10) !important;
   color:#0B3D3A !important;                              /* deep petrol ink */
   font:700 12px/1 Inter, system-ui, -apple-system, "Segoe UI", Roboto, Helvetica, Arial !important;
   user-select:none !important; cursor:default !important;
@@ -585,7 +585,12 @@ body::before{
 }
 
 /* Text variant: Shows text instead of symbol */
-.pill-proxi--text{ padding:0 8px !important; }
+.pill-proxi--text{ 
+  padding:0 8px !important; 
+  background:rgba(255,255,255,.94) !important;
+  backdrop-filter:blur(8px) !important;
+  border:1px solid rgba(0,0,0,.12) !important;
+}
 .pill-proxi--text .text-content{
   font-weight:500; font-size:12px;
   color:#34424D;
@@ -696,6 +701,7 @@ body::before{
   border-radius:999px;
   background:rgba(0,0,0,.45);
   backdrop-filter:blur(2px);
+  border:1px solid rgba(255,255,255,.35);
   color:#fff;
   font:700 12px/1 Inter;
   z-index:3;
@@ -815,9 +821,75 @@ body::before{
   transform:translateY(-50%) scale(1);
 }
 
+/* FTUX: heading + split pill */
+.ftux--note{
+  margin:10px 0 8px; padding:14px 16px;
+  border:1px solid rgba(0,0,0,.12); border-radius:18px; background:#fff;
+  box-shadow:0 6px 24px rgba(17,25,40,.08);
+}
+.ftux-head h3{ margin:0 0 8px; font:700 15.5px/1.2 Inter; color:#2f2f33; }
+.ftux-row{ display:flex; align-items:center; }
+/* make the inner row behave like one capsule */
+.ftux-pill{
+  display:flex;
+  align-items:stretch;      /* <-- was center */
+  overflow:hidden;          /* masks the right capsule curve */
+  border-radius:9999px;
+  width:100%; border:1px solid rgba(0,0,0,.12); background:#fff;
+  min-height:44px;          /* ensure minimum height */
+}
+/* message stays as-is (optionally a touch more padding) */
+.ftux-msg{ 
+  padding:10px 14px;        /* was 12px - tighter vertical balance */
+  font:500 13.5px/1.35 Inter; 
+  color:#3d444b; 
+  flex:1;                   /* take up remaining space */
+}
+/* CTA becomes the right segment, not a mini-pill */
+.ftux-cta{
+  -webkit-appearance:none;
+  appearance:none;
+  border:0;
+  margin:0;
+  padding:0 18px;           /* slightly wider */
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  white-space:nowrap;
+  border-radius:0;          /* <-- remove its own rounding */
+  background:linear-gradient(90deg,#35d0b0,#1aa1b4);
+  mask-image:linear-gradient(to left, black 98%, transparent 100%);
+  -webkit-mask-image:linear-gradient(to left, black 98%, transparent 100%);
+  color:#fff;
+  font:700 13px/1 Inter;
+  cursor:pointer;
+  flex-shrink:0;            /* don't shrink */
+  position:relative;
+}
+.ftux-cta::before{
+  content:"";
+  position:absolute; left:-1px; top:0; bottom:0; width:1px;
+  background: linear-gradient(
+    to bottom,
+    rgba(0,0,0,.00),
+    rgba(0,0,0,.10) 18%,
+    rgba(0,0,0,.10) 82%,
+    rgba(0,0,0,.00)
+  );
+}
+.ftux-cta:hover{ filter:brightness(1.05); }
+.ftux-cta:focus-visible{ outline:2px solid #7FE1FF; outline-offset:2px; }
+
+/* While FTUX is showing, hide filters & legend */
+.has-ftux .chips,
+.has-ftux .legend{ display:none; }
+
+/* Hide legend entirely (confusing with text-only pills) */
+.legend{ display:none !important; }
+
 </style>
 </head>
-<body class="view-feed">
+<body class="view-feed has-ftux">
   <!-- Proxi icon sprite (8% shorter bars, centered) -->
   <svg style="position:absolute;width:0;height:0;overflow:hidden" aria-hidden="true">
     <symbol id="proxi" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
@@ -836,6 +908,18 @@ body::before{
         </div>
 
         <div class="section">
+          <!-- FTUX: heading + split pill dismiss -->
+          <div class="ftux ftux--note" id="ftux">
+            <div class="ftux-head"><h3>Your Proxi feed</h3></div>
+
+            <div class="ftux-row">
+              <div class="ftux-pill">
+                <div class="ftux-msg">Your size twins are here. See what else fits them — and might fit you.</div>
+                <button type="button" class="ftux-cta" id="ftuxDismiss">Got it →</button>
+              </div>
+            </div>
+          </div>
+
           <div class="chips">
             <button class="chip is-active">Wedding guest</button>
             <button class="chip">Midi</button>
@@ -1328,6 +1412,27 @@ body::before{
     }catch(err){}
   })();
   </script>
+
+<script>
+(function(){
+  var ftux = document.getElementById('ftux');
+  var btn  = document.getElementById('ftuxDismiss');
+  var body = document.body;
+
+  // If seen before, remove FTUX immediately
+  if (localStorage.getItem('proxiFtuxSeen') === '1') {
+    body.classList.remove('has-ftux');
+    if (ftux) ftux.remove();
+    return;
+  }
+
+  if (btn) btn.addEventListener('click', function(){
+    localStorage.setItem('proxiFtuxSeen', '1');
+    body.classList.remove('has-ftux');
+    if (ftux) ftux.remove();
+  });
+})();
+</script>
 
 </body>
 </html>
