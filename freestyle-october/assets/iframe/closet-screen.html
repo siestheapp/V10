@@ -153,6 +153,12 @@
     .chip:focus-visible,
     .switch:focus-visible,
     .btn:focus-visible{outline:2px solid var(--petrol-500);outline-offset:2px}
+
+    /* Floating Action Button (FAB) */
+    .fab{position:absolute;bottom:100px;right:24px;width:60px;height:60px;border-radius:50%;background:linear-gradient(135deg,#009090 0%,#1FAED9 42%,#00A3A3 62%,#35D1AE 100%);border:none;box-shadow:0 8px 24px rgba(0,163,163,.4), 0 4px 12px rgba(0,0,0,.12);cursor:pointer;display:flex;align-items:center;justify-content:center;transition:all .3s cubic-bezier(.34,1.56,.64,1);z-index:100}
+    .fab:hover{transform:scale(1.1) rotate(90deg);box-shadow:0 12px 32px rgba(0,163,163,.5), 0 6px 16px rgba(0,0,0,.15)}
+    .fab:active{transform:scale(0.95) rotate(90deg)}
+    .fab svg{width:28px;height:28px;stroke:#fff;stroke-width:2.5;stroke-linecap:round;stroke-linejoin:round}
   </style>
 </head>
 <body>
@@ -353,6 +359,15 @@
     </div>
   </div>
 
+      <!-- FAB to add item -->
+      <button class="fab" id="addItemFab" aria-label="Add item">
+        <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+          <line x1="12" y1="5" x2="12" y2="19"/>
+          <line x1="5" y1="12" x2="19" y2="12"/>
+        </svg>
+      </button>
+    </div>
+
   <script>
     // View toggle (list vs grid)
     const screen = document.querySelector('.screen');
@@ -438,6 +453,11 @@
       if(e.target.closest('.proxy-modal__close') || e.target.classList.contains('proxy-modal__overlay')){
         document.querySelector('#proxy-sheet')?.setAttribute('hidden','');
       }
+    });
+
+    // FAB click handler - navigate to log-fit-step1
+    document.getElementById('addItemFab')?.addEventListener('click', () => {
+      window.location.href = 'log-fit-step1.html';
     });
 
     // (legend help removed as requested)

@@ -178,10 +178,9 @@
       });
     });
 
-    // Back button
+    // Back button - return to step 1
     document.querySelector('.back-btn').addEventListener('click', () => {
-      console.log('Go back to step 1');
-      // In production: navigate back
+      window.location.href = 'log-fit-step1.html';
     });
 
     // Skip button - save and exit
@@ -197,7 +196,7 @@
       const intent = document.querySelector('.intent-btn.active').dataset.intent;
       const size = document.querySelector('.size-btn.active').textContent;
       console.log('Add fit details with:', { intent, size });
-      // In production: navigate to step 3 (fit feedback)
+      window.location.href = 'log-fit-step3.html';
     });
   </script>
 </body>

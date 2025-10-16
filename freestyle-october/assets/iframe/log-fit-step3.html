@@ -236,13 +236,12 @@
       });
     });
 
-    // Back button
+    // Back button - return to step 2
     document.querySelector('.back-btn').addEventListener('click', () => {
-      console.log('Go back to step 2');
-      // In production: navigate back
+      window.location.href = 'log-fit-step2.html';
     });
 
-    // Save button
+    // Save button - return to closet
     document.querySelector('.cta-btn').addEventListener('click', () => {
       const overallFit = document.querySelector('.fit-btn.active').dataset.fit;
       const details = {};
@@ -253,7 +252,7 @@
       });
 
       console.log('Save fit:', { overallFit, details });
-      // In production: save to database and navigate to success/closet
+      window.location.href = 'closet-screen.html';
     });
   </script>
 </body>
