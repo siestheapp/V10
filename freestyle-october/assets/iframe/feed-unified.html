@@ -444,6 +444,7 @@ body::before{
 .pc-match-link:focus-visible{outline:2px solid #0a8;border-radius:4px}
 .pc-hero-wrap{position:relative}
 .pc-carousel{position:relative}
+.pc-carousel a{display:block;position:relative;z-index:1}
 .pc-hero-img{display:block;width:100%;height:520px;object-fit:cover;border-radius:14px;cursor:pointer}
 .pc-hero-img--tight{object-position:center 22%}
 .pc-chip{
@@ -460,14 +461,13 @@ body::before{
 .pc-look-caption p{font:600 14px/1.45 Inter;color:#2F2F33}
 .pc-sub{margin-top:6px;font:500 13px/1.4 Inter;color:var(--muted)}
 .pc-user{margin-right:8px}
-.pc-comment-teaser{display:block;width:100%;text-align:left;margin-top:12px;border-radius:16px;border:1px solid rgba(0,0,0,.08);background:#fff;padding:10px 12px;box-shadow:0 2px 6px rgba(0,0,0,.03)}
+.pc-comment-teaser{display:block;width:100%;text-align:left;margin-top:12px;border-radius:16px;border:1px solid rgba(0,0,0,.08);background:#fff;padding:10px 12px;box-shadow:0 2px 6px rgba(0,0,0,.03);cursor:pointer !important}
 .pc-comment-teaser:hover{background:#f7f9fb;box-shadow:0 6px 16px rgba(0,0,0,.06)}
 .pc-k{font:600 11px/1.2 Inter;color:var(--muted);margin-bottom:6px}
-.pc-row{font:600 13px/1.45 Inter;color:#2F2F33}
-.pc-q,.pc-a{font-weight:700}
-.pc-sep{margin:0 8px;color:#c4c7cc}
-.pc-link{margin-top:6px;font:600 12px/1.2 Inter;color:#009090}
-.pc-link-inline{margin-top:0;margin-left:8px;display:none;font:600 13px/1.45 Inter;color:#009090;white-space:nowrap}
+.pc-row{font:500 14px/1.45 Inter;color:#374151}
+.pc-username{font-weight:700;color:#111827}
+.pc-colon{margin-right:4px;color:#6B7280}
+.pc-link{margin-top:8px;font:600 13px/1.2 Inter;color:#009090}
 .pc-look-actions{display:flex;gap:14px;margin:16px 0 6px}
 .pc-btn-primary{display:inline-flex;align-items:center;justify-content:center;gap:8px;padding:12px 18px;border-radius:999px;background:linear-gradient(135deg, var(--cta-start), var(--cta-mid) 46%, var(--cta-end)); color:#fff; font:700 15px/1.1 Inter; border:1px solid rgba(0,0,0,.04); transition:transform 0.2s ease, box-shadow 0.2s ease; cursor:pointer}
 .pc-btn-primary:first-child{font-size:14px;padding:12px 16px}
@@ -500,11 +500,11 @@ body::before{
   object-fit:cover; object-position:center 22%; border-radius:14px;
 }
 /* Proxy carousel nav controls (mirrors size-twin .carousel .nav) */
-.proxy-card .pc-carousel .pc-nav{position:absolute;top:50%;transform:translateY(-50%);width:32px;height:32px;border-radius:999px;background:rgba(0,0,0,.35);color:#fff;display:flex;align-items:center;justify-content:center;border:none;cursor:pointer;font-size:0}
+.proxy-card .pc-carousel .pc-nav{position:absolute;top:50%;transform:translateY(-50%);width:32px;height:32px;border-radius:999px;background:rgba(0,0,0,.35);color:#fff;display:flex;align-items:center;justify-content:center;border:none;cursor:pointer;font-size:0;z-index:10}
 .proxy-card .pc-carousel .pc-nav.left{left:10px}
 .proxy-card .pc-carousel .pc-nav.right{right:10px}
-.proxy-card .pc-carousel .pc-nav.left::before{content:"\2039";font-size:18px;line-height:1;transform:translateX(-1px)}
-.proxy-card .pc-carousel .pc-nav.right::before{content:"\203A";font-size:18px;line-height:1;transform:translateX(1px)}
+.proxy-card .pc-carousel .pc-nav.left::before{content:"\2039";font-size:20px;line-height:1;transform:translate(-0.5px, -1px);display:block}
+.proxy-card .pc-carousel .pc-nav.right::before{content:"\203A";font-size:20px;line-height:1;transform:translate(0.5px, -1px);display:block}
 
 /* === Proxi SVG icon (solid) === */
 .icon-proxi{
@@ -579,6 +579,10 @@ body::before{
   height: calc(24px * 1.2) !important;
   padding: 0 calc(8px * 1.1) !important;
   font-size: calc(12px * 1.2) !important;
+}
+.pill-proxi--count:hover{
+  background:#f7f9fb !important;
+  box-shadow:0 6px 16px rgba(0,0,0,.06) !important;
 }
 
 /* Mark variant: ≡ (no number) — on other user's photo when that image is the shared item */
@@ -999,15 +1003,17 @@ body::before{
                 </button>
               </div>
               <div class="pc-carousel" data-index="0">
-                <div class="pc-slide pc-active" data-brand="Anthropologie" data-title="Somerset Chiffon Maxi Dress" data-size="S" data-comments="12" data-q="Is this petite or regular?" data-a="Regular!">
-                  <img class="pc-hero-img pc-hero-img--tight" src="../img/videoframe_35967__1_-1760420352907__user1__Anthropologie__Somerset_Chiffon_Maxi_Dress__XXS-proxy-hero@3x.png" alt="Somerset Chiffon Maxi Dress — S">
+                <div class="pc-slide pc-active" data-brand="J.Crew" data-title="Halter Mixy Dress" data-size="S" data-comments="4" data-user="cottagecore28" data-q="Is this petite or regular?">
+                  <a href="https://www.jcrew.com/p/womens/categories/clothing/dresses-and-jumpsuits/halter-mixy-dress/CL648?srsltid=AfmBOorYMAVYnJLhcm2oe3NyDuwMiBQTsxaAhV39sLde4Eo0to2OK1JR&color_name=vintage-garnet&colorProductCode=CL648" target="_blank" rel="noopener noreferrer">
+                    <img class="pc-hero-img pc-hero-img--tight" src="../img/1__1__1__1-proxy-hero@3x_20251016_003318.png" alt="Halter Mixy Dress — S">
+                  </a>
                   <span class="size-bullet" aria-label="Size for this item">S</span>
                 </div>
-                <div class="pc-slide" data-brand="Anthropologie" data-title="Peregrine Midi Dress" data-size="M Petite" data-comments="7" data-q="How long is the skirt?">
+                <div class="pc-slide" data-brand="Anthropologie" data-title="Peregrine Midi Dress" data-size="M Petite" data-comments="1" data-user="user882" data-q="How long is the skirt?">
                   <img class="pc-hero-img" src="../img/user1__Anthropologie__Peregrine_Midi_Dress__XS_Petite-proxy-hero@3x_20251014_172344.png" alt="Peregrine Midi Dress — M Petite">
                   <span class="size-bullet" aria-label="Size for this item">M Petite</span>
                 </div>
-                <div class="pc-slide" data-brand="Zara" data-title="Draped Midi Dress" data-size="S Petite" data-comments="5" data-q="Does this run small?" data-a="True to size!">
+                <div class="pc-slide" data-brand="Zara" data-title="Draped Midi Dress" data-size="S Petite" data-comments="2" data-user="gbell" data-q="I think this sold out :(">
                   <img class="pc-hero-img" src="../img/user1__zara__drapedmididress__spetite-proxy-hero@3x_20251015_170628.png" alt="Draped Midi Dress — S Petite">
                   <span class="size-bullet" aria-label="Size for this item">S Petite</span>
                 </div>
@@ -1022,16 +1028,13 @@ body::before{
             </div>
 
             <div class="pc-look-caption">
-              <p><a href="https://www.anthropologie.com/shop/hybrid/the-somerset-chiffon-maxi-dress2" target="_blank" rel="noopener noreferrer" style="text-decoration:none;color:inherit;cursor:pointer"><span class="pc-user"><strong id="pcBrand">Anthropologie</strong></span> <span id="pcTitle">Somerset Chiffon Maxi Dress</span> <span id="pcSize">(S)</span></a></p>
+              <p><a href="https://www.jcrew.com/p/womens/categories/clothing/dresses-and-jumpsuits/halter-mixy-dress/CL648?srsltid=AfmBOorYMAVYnJLhcm2oe3NyDuwMiBQTsxaAhV39sLde4Eo0to2OK1JR&color_name=vintage-garnet&colorProductCode=CL648" target="_blank" rel="noopener noreferrer" style="text-decoration:none;color:inherit;cursor:pointer"><span class="pc-user"><strong id="pcBrand">J.Crew</strong></span> <span id="pcTitle">Halter Mixy Dress</span> <span id="pcSize">(S)</span></a></p>
             </div>
 
             <div class="pc-comment-teaser" role="button" aria-label="View comments">
-              <div class="pc-k">Comments · <span id="pcCCount">12</span></div>
+              <div class="pc-k">Comments · <span id="pcCCount">4</span></div>
               <div class="pc-row">
-                <span class="pc-q">Q:</span> <span id="pcCQ">Is this petite or regular?</span>
-                <span class="pc-sep">·</span>
-                <span class="pc-a">A:</span> <span id="pcCA">Regular!</span>
-                <span class="pc-link-inline" id="pcLinkInline" aria-hidden="true">See full thread &gt;</span>
+                <span class="pc-username" id="pcCUser">cottagecore28</span><span class="pc-colon">:</span> <span id="pcCQ">Is this petite or regular?</span>
               </div>
               <div class="pc-link" id="pcLinkBlock">See full thread &gt;</div>
             </div>
@@ -1069,7 +1072,7 @@ body::before{
 
             <div class="pc-hero-wrap">
               <div class="pc-carousel" data-index="0">
-                <div class="pc-slide pc-active" data-brand="Anthropologie" data-title="Somerset Chiffon Maxi Dress" data-size="XS" data-comments="12" data-q="Is this petite or regular?" data-a="Regular!">
+                <div class="pc-slide pc-active" data-brand="Anthropologie" data-title="Somerset Chiffon Maxi Dress" data-size="XS" data-comments="4" data-q="Is this petite or regular?" data-a="Regular!">
                   <img class="pc-hero-img pc-hero-img--tight" src="../img/videoframe_2906__1_-1760417574510-proxy-hero@3x.png" alt="Green satin dress">
                   <span class="size-bullet" aria-label="Size for this item">XS</span>
                 </div>
@@ -1201,20 +1204,20 @@ body::before{
 
             <!-- Simple list of shared items -->
             <div class="shared-items-list">
-              <!-- Item 1: Somerset Dress -->
-              <div class="shared-list-item">
+              <!-- Item 1: J.Crew Halter Mixy Dress -->
+              <div class="shared-list-item" role="button" tabindex="0">
                 <div class="shared-list-thumb">
-                  <img src="../img/anthropologie-somerset-chiffon-maxi-dress.jpg" alt="Somerset Dress">
+                  <img src="../img/CL648_RD0165_1.png" alt="Halter Mixy Dress">
                 </div>
                 <div class="shared-list-content">
-                  <div class="shared-list-brand">Anthropologie</div>
-                  <div class="shared-list-name">Somerset Chiffon Maxi Dress</div>
+                  <div class="shared-list-brand">J.Crew</div>
+                  <div class="shared-list-name">Halter Mixy Dress</div>
                   <div class="shared-list-match">Both own in <strong>S</strong></div>
                 </div>
               </div>
 
               <!-- Item 2: AYR Jeans -->
-              <div class="shared-list-item">
+              <div class="shared-list-item" role="button" tabindex="0">
                 <div class="shared-list-thumb">
                   <img src="https://www.ayr.com/cdn/shop/files/secretsauce-goodmood_CAT_d634f664-cb49-4e61-abef-5d94b707075e.jpg?crop=center&height=1440&v=1755036845&width=950" alt="AYR The Secret Sauce">
                 </div>
@@ -1233,8 +1236,28 @@ body::before{
                   <circle cx="11" cy="11" r="8"/>
                   <path d="M21 21l-4.35-4.35"/>
                 </svg>
-                Find more size twins
+                Find more proxies
               </button>
+            </div>
+          </div>
+        </div>
+
+        <!-- Comments Thread Modal -->
+        <div id="comments-modal" class="comments-modal" hidden role="dialog" aria-modal="true" aria-labelledby="commentsTitle">
+          <div class="comments-modal__overlay"></div>
+          <div class="comments-modal__card">
+            <button class="comments-modal__close" aria-label="Close comments">
+              <svg width="20" height="20" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round">
+                <path d="M5 5L15 15M5 15L15 5"/>
+              </svg>
+            </button>
+
+            <header class="comments-modal__header">
+              <h2 id="commentsTitle" class="comments-modal__title">Comments · 4</h2>
+            </header>
+
+            <div class="comments-list" id="commentsList">
+              <!-- Comments will be populated dynamically by JavaScript -->
             </div>
           </div>
         </div>
@@ -1254,30 +1277,30 @@ body::before{
 .shared-modal{position:absolute;inset:0;z-index:9999;display:flex;align-items:center;justify-content:center;padding:20px}
 .shared-modal[hidden]{display:none}
 .shared-modal__overlay{position:absolute;inset:0;background:rgba(0,0,0,.6);backdrop-filter:blur(8px);animation:fadeIn .3s ease}
-.shared-modal__card{position:relative;width:100%;max-width:420px;background:#fff;border-radius:24px;padding:32px 24px 24px;box-shadow:0 20px 60px rgba(0,0,0,.3);animation:slideUp .4s cubic-bezier(.34,1.56,.64,1)}
+.shared-modal__card{position:relative;width:100%;max-width:420px;background:#fff;border-radius:24px;padding:36px 28px 28px;box-shadow:0 20px 60px rgba(0,0,0,.3);animation:slideUp .4s cubic-bezier(.34,1.56,.64,1)}
 .shared-modal__close{position:absolute;top:14px;right:14px;width:32px;height:32px;border:none;background:rgba(0,0,0,.05);border-radius:50%;color:#666;cursor:pointer;display:flex;align-items:center;justify-content:center;transition:all .2s}
 .shared-modal__close:hover{background:rgba(0,0,0,.1);transform:scale(1.05)}
 
 /* Header */
-.shared-modal__header{text-align:center;margin-bottom:24px}
+.shared-modal__header{text-align:center;margin-bottom:28px}
 .shared-modal__title{font:800 20px/1.3 Inter;color:#0B0F14;margin:0}
 
 /* Items List */
-.shared-items-list{display:flex;flex-direction:column;gap:12px;margin-bottom:24px}
+.shared-items-list{display:flex;flex-direction:column;gap:16px;margin-bottom:28px}
 
 /* List Item */
-.shared-list-item{display:flex;gap:12px;align-items:center;padding:12px;background:#F9FAFB;border-radius:12px;border:1px solid #E5E7EB;transition:all .2s}
-.shared-list-item:hover{background:#F3F4F6;border-color:#D1D5DB}
+.shared-list-item{display:flex;gap:16px;align-items:center;padding:16px;background:#fff;border-radius:14px;border:1px solid #E5E7EB;transition:all .2s;cursor:pointer;-webkit-tap-highlight-color:transparent}
+.shared-list-item:hover,.shared-list-item:active{background:#f7f9fb !important;box-shadow:0 6px 16px rgba(0,0,0,.06) !important}
 
 /* Thumbnail */
-.shared-list-thumb{flex-shrink:0;width:72px;height:72px;border-radius:8px;overflow:hidden;background:#E5E7EB}
+.shared-list-thumb{flex-shrink:0;width:96px;height:96px;border-radius:10px;overflow:hidden;background:#E5E7EB}
 .shared-list-thumb img{width:100%;height:100%;object-fit:cover}
 
 /* Content */
-.shared-list-content{flex:1;min-width:0;display:flex;flex-direction:column;gap:2px}
-.shared-list-brand{font:700 11px/1.2 Inter;text-transform:uppercase;letter-spacing:.5px;color:#6B7280}
-.shared-list-name{font:600 15px/1.3 Inter;color:#111827;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
-.shared-list-match{font:600 13px/1.3 Inter;color:#00857A;margin-top:2px}
+.shared-list-content{flex:1;min-width:0;display:flex;flex-direction:column;gap:5px}
+.shared-list-brand{font:700 12px/1.2 Inter;text-transform:uppercase;letter-spacing:.5px;color:#6B7280}
+.shared-list-name{font:600 17px/1.3 Inter;color:#111827;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.shared-list-match{font:600 15px/1.3 Inter;color:#00857A;margin-top:0}
 .shared-list-match strong{font-weight:700;color:#00A3A3}
 
 /* Modal Footer */
@@ -1287,9 +1310,9 @@ body::before{
 .shared-modal__cta:active{transform:translateY(0)}
 
 /* Ghost Button */
-.shared-modal__link{display:flex;align-items:center;justify-content:center;gap:8px;width:100%;padding:12px 24px;background:transparent;border:1.5px solid rgba(83,224,207,.4);color:#53E0CF;border-radius:12px;font:600 15px/1 Inter;cursor:pointer;transition:all .2s}
+.shared-modal__link{display:flex;align-items:center;justify-content:center;gap:8px;width:100%;padding:12px 24px;background:transparent;border:1px solid #B8C5D0;color:#374151;border-radius:12px;font:600 15px/1 Inter;cursor:pointer;transition:all .2s}
 .shared-modal__link svg{transition:transform .2s}
-.shared-modal__link:hover{border-color:#53E0CF;background:rgba(83,224,207,.05)}
+.shared-modal__link:hover{border-color:#8B98A5;background:#F9FAFB;color:#111827}
 .shared-modal__link:hover svg{transform:scale(1.1)}
 
 /* Animations */
@@ -1297,6 +1320,34 @@ body::before{
 @keyframes slideUp{from{opacity:0;transform:translateY(40px)}to{opacity:1;transform:translateY(0)}}
 @keyframes popIn{from{opacity:0;transform:scale(.5)}to{opacity:1;transform:scale(1)}}
 @keyframes scaleIn{from{opacity:0;transform:scale(.8)}to{opacity:1;transform:scale(1)}}
+
+/* Comments Modal */
+.comments-modal{position:absolute;inset:0;z-index:9999;display:flex;align-items:flex-end;justify-content:center}
+.comments-modal[hidden]{display:none}
+.comments-modal__overlay{position:absolute;inset:0;background:rgba(0,0,0,.6);backdrop-filter:blur(8px);animation:fadeIn .3s ease}
+.comments-modal__card{position:relative;width:100%;background:#fff;border-radius:24px 24px 0 0;padding:24px 20px 34px;box-shadow:0 -20px 60px rgba(0,0,0,.3);animation:slideUp .4s cubic-bezier(.34,1.56,.64,1);max-height:75vh;overflow-y:auto}
+.comments-modal__close{position:absolute;top:14px;right:14px;width:32px;height:32px;border:none;background:rgba(0,0,0,.05);border-radius:50%;color:#666;cursor:pointer;display:flex;align-items:center;justify-content:center;transition:all .2s}
+.comments-modal__close:hover{background:rgba(0,0,0,.1);transform:scale(1.05)}
+
+/* Header */
+.comments-modal__header{text-align:left;margin-bottom:20px;padding-right:40px}
+.comments-modal__title{font:800 20px/1.3 Inter;color:#0B0F14;margin:0}
+
+/* Comments List */
+.comments-list{display:flex;flex-direction:column;gap:20px}
+
+/* Individual Comment */
+.comment{display:flex;flex-direction:column;gap:6px}
+.comment--reply{padding-left:16px;border-left:2px solid #E5E7EB}
+
+/* Comment Header */
+.comment-header{display:flex;align-items:center;gap:8px;flex-wrap:wrap}
+.comment-username{font:700 14px/1 Inter;color:#111827}
+.comment-badge{padding:3px 8px;background:#E0F7F7;color:#009090;border-radius:6px;font:700 11px/1 Inter;text-transform:uppercase;letter-spacing:.3px}
+.comment-time{font:600 13px/1 Inter;color:#9CA3AF}
+
+/* Comment Body */
+.comment-body{font:500 15px/1.4 Inter;color:#374151}
 </style>
 
 <script>
@@ -1319,6 +1370,97 @@ body::before{
     const trigger = document.querySelector('.pill-proxi--count'); // "2 shared sizes" pill
 
     function openModal() {
+      if(modal) modal.hidden = false;
+    }
+
+    function closeModal() {
+      if(modal) modal.hidden = true;
+    }
+
+    // Event listeners
+    trigger?.addEventListener('click', openModal);
+    closeBtn?.addEventListener('click', closeModal);
+    overlay?.addEventListener('click', closeModal);
+  })();
+</script>
+
+<script>
+  // Comments Modal (Dynamic)
+  (function(){
+    const modal = document.querySelector('#comments-modal');
+    const closeBtn = modal?.querySelector('.comments-modal__close');
+    const overlay = modal?.querySelector('.comments-modal__overlay');
+    const trigger = document.querySelector('.pc-comment-teaser');
+    const commentsList = document.getElementById('commentsList');
+    const commentsTitle = document.getElementById('commentsTitle');
+
+    // Comment data for each slide
+    const commentsData = {
+      'Halter Mixy Dress': [
+        { username: 'cottagecore28', time: '2d ago', body: 'Is this petite or regular?' },
+        { username: 'ellaa76', time: '2d ago', body: 'Regular!', isOwner: true, isReply: true },
+        { username: 'kb_2847', time: '1d ago', body: 'Would you say it runs true to size?' },
+        { username: 'ellaa76', time: '1d ago', body: 'I would say it runs small, esp at the waist', isOwner: true, isReply: true }
+      ],
+      'Peregrine Midi Dress': [
+        { username: 'user882', time: '3d ago', body: 'How long is the skirt?' }
+      ],
+      'Draped Midi Dress': [
+        { username: 'gbell', time: '1d ago', body: 'I think this sold out :(' },
+        { username: 'ellaa76', time: '1d ago', body: 'They had it in my store in nyc', isOwner: true, isReply: true }
+      ]
+    };
+
+    function renderComments(productTitle) {
+      if(!commentsList) return;
+
+      const comments = commentsData[productTitle] || [];
+      commentsList.innerHTML = '';
+
+      if(commentsTitle) {
+        commentsTitle.textContent = `Comments · ${comments.length}`;
+      }
+
+      comments.forEach(comment => {
+        const commentDiv = document.createElement('div');
+        commentDiv.className = comment.isReply ? 'comment comment--reply' : 'comment';
+
+        const headerDiv = document.createElement('div');
+        headerDiv.className = 'comment-header';
+
+        const username = document.createElement('span');
+        username.className = 'comment-username';
+        username.textContent = comment.username;
+        headerDiv.appendChild(username);
+
+        if(comment.isOwner) {
+          const badge = document.createElement('span');
+          badge.className = 'comment-badge';
+          badge.textContent = 'Owner';
+          headerDiv.appendChild(badge);
+        }
+
+        const time = document.createElement('span');
+        time.className = 'comment-time';
+        time.textContent = comment.time;
+        headerDiv.appendChild(time);
+
+        const bodyDiv = document.createElement('div');
+        bodyDiv.className = 'comment-body';
+        bodyDiv.textContent = comment.body;
+
+        commentDiv.appendChild(headerDiv);
+        commentDiv.appendChild(bodyDiv);
+        commentsList.appendChild(commentDiv);
+      });
+    }
+
+    function openModal() {
+      // Get current slide title to determine which comments to show
+      const activeSlide = document.querySelector('.pc-slide.pc-active');
+      const productTitle = activeSlide?.dataset.title || 'Halter Mixy Dress';
+
+      renderComments(productTitle);
       if(modal) modal.hidden = false;
     }
 
@@ -1387,38 +1529,18 @@ body::before{
     const titleEl = document.getElementById('pcTitle');
     const sizeEl  = document.getElementById('pcSize');
     const cCountEl = document.getElementById('pcCCount');
+    const cUserEl = document.getElementById('pcCUser');
     const cQEl = document.getElementById('pcCQ');
-    const cAEl = document.getElementById('pcCA');
-    const linkInline = document.getElementById('pcLinkInline');
-    const linkBlock  = document.getElementById('pcLinkBlock');
 
     function applyFromSlide(slide){
       if(!slide) return;
-      const { brand, title, size, comments, q, a } = slide.dataset || {};
+      const { brand, title, size, comments, user, q } = slide.dataset || {};
       if(brandEl) brandEl.textContent = brand || '';
       if(titleEl) titleEl.textContent = title || '';
       if(sizeEl)  sizeEl.textContent  = size ? `(${size})` : '';
       if(cCountEl) cCountEl.textContent = comments || '0';
+      if(cUserEl) cUserEl.textContent = user || 'user';
       if(cQEl) cQEl.textContent = q || '';
-      if(cAEl){
-        cAEl.textContent = a || '';
-        // Show/hide A and separator when no answer
-        const aLabel = cAEl.previousElementSibling; // spans .pc-a label 'A:'
-        const sep = aLabel ? aLabel.previousElementSibling : null; // '·'
-        if(!a){
-          if(aLabel && aLabel.classList.contains('pc-a')) aLabel.style.display = 'none';
-          if(sep && sep.classList.contains('pc-sep')) sep.style.display = 'none';
-          cAEl.style.display = 'none';
-          if(linkInline) linkInline.style.display = 'inline';
-          if(linkBlock)  linkBlock.style.display  = 'none';
-        }else{
-          if(aLabel && aLabel.classList.contains('pc-a')) aLabel.style.display = '';
-          if(sep && sep.classList.contains('pc-sep')) sep.style.display = '';
-          cAEl.style.display = '';
-          if(linkInline) linkInline.style.display = 'none';
-          if(linkBlock)  linkBlock.style.display  = '';
-        }
-      }
       
       // Update shop button URL based on current slide
       const shopButton = document.getElementById('shopButton');
