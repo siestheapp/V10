@@ -94,7 +94,7 @@
     .proxy-pill{
       position:absolute !important; top:10px !important; right:10px !important; z-index:3 !important;
       display:inline-flex !important; align-items:center !important; justify-content:center !important; gap:4px !important;
-      padding:4px 8px !important;                /* reduced by 2px from size badge */
+      padding:3px 7px !important;                /* reduced by 1px from previous */
       border-radius:9999px !important;
       background:#FFFFFF !important;                         /* strong contrast on imagery */
       border:1px solid rgba(0,0,0,.16) !important;           /* neutral stroke for definition */
@@ -106,7 +106,7 @@
 
     /* Triple bar SVG icon in proxy pill */
     .proxy-pill .icon-proxi{
-      --size: 12px;
+      --size: 14px;
       color: #009090 !important;
     }
     .proxy-pill .count{font-weight:700; font-size:12px; font-feature-settings:"tnum" 1; color:#34424D !important}
@@ -118,14 +118,26 @@
     .proxy-pill:hover { filter: brightness(.95); }
 
     /* bottom sheet */
-    .sheet{position:fixed; inset:0; background:rgba(0,0,0,.3); display:flex; align-items:flex-end}
-    .sheet[hidden]{display:none}
-    .sheet-card{width:100%; background:#fff; border-radius:16px 16px 0 0; padding:16px 18px; box-shadow:0 -4px 24px rgba(0,0,0,.12)}
-    .sheet-card h3{margin:4px 0 12px; font:800 16px/1.2 Inter}
-    .proxy-list{list-style:none; margin:0; padding:0}
-    .proxy-list li{display:flex; align-items:center; gap:10px; padding:10px 0; border-top:1px solid #eee}
-    .proxy-list li:first-child{border-top:0}
-    .sheet-close{margin-top:12px; padding:10px 14px; border-radius:10px; border:1px solid #e7e7ea; background:#fff; font:700 14px}
+    /* Proxies Modal */
+    .proxy-modal{position:absolute;inset:0;z-index:9999;display:flex;align-items:center;justify-content:center;padding:20px}
+    .proxy-modal[hidden]{display:none}
+    .proxy-modal__overlay{position:absolute;inset:0;background:rgba(0,0,0,.6);backdrop-filter:blur(8px);animation:fadeIn .3s ease}
+    .proxy-modal__card{position:relative;width:100%;max-width:420px;background:#fff;border-radius:24px;padding:36px 28px 28px;box-shadow:0 20px 60px rgba(0,0,0,.3);animation:slideUp .4s cubic-bezier(.34,1.56,.64,1)}
+    .proxy-modal__close{position:absolute;top:12px;right:14px;width:24px;height:24px;border:none;background:rgba(0,0,0,.05);border-radius:50%;color:#666;cursor:pointer;display:flex;align-items:center;justify-content:center;transition:all .2s}
+    .proxy-modal__close:hover{background:rgba(0,0,0,.1);transform:scale(1.05)}
+    .proxy-modal__header{text-align:center;margin-bottom:23px;padding-top:5px}
+    .proxy-modal__title{font:800 20px/1.3 Inter;color:#0B0F14;margin:0}
+    .proxy-list{display:flex;flex-direction:column;gap:16px;margin-bottom:28px}
+    .proxy-item{display:flex;align-items:center;padding:16px;background:#fff;border-radius:14px;border:1px solid #E5E7EB;transition:all .2s;cursor:pointer}
+    .proxy-item:hover{background:#f7f9fb;box-shadow:0 6px 16px rgba(0,0,0,.06)}
+    .proxy-content{flex:1;display:flex;align-items:center;gap:8px}
+    .proxy-username{font:600 15px/1.3 Inter;color:#0B0F14}
+    .proxy-details{font:400 14px/1.3 Inter;color:#6B7280}
+    .proxy-modal__footer{display:flex;flex-direction:column;gap:14px;align-items:stretch}
+    .proxy-modal__cta{width:100%;padding:15px 24px;background:linear-gradient(135deg,#00A3A3,#5ECED7);color:#fff;border:none;border-radius:12px;font:700 16px/1 Inter;cursor:pointer;transition:all .2s;box-shadow:0 4px 14px rgba(83,224,207,.35)}
+    .proxy-modal__cta:hover{transform:translateY(-2px);box-shadow:0 6px 20px rgba(83,224,207,.45)}
+    @keyframes fadeIn{from{opacity:0}to{opacity:1}}
+    @keyframes slideUp{from{opacity:0;transform:translateY(40px)}to{opacity:1;transform:translateY(0)}}
 
     /* Tab bar */
     .tabs{position:absolute;left:0;right:0;bottom:0;height:83px;background:#fff;border-top:1px solid rgba(0,0,0,.06);display:flex;justify-content:space-around;align-items:flex-start;padding-top:8px;padding-bottom:34px}
@@ -195,8 +207,8 @@
           <article class="card" data-category="dresses" data-name="J.CREW Halter Mixy Dress" data-size="S">
             <span class="size" aria-label="Your size for this item">S</span>
             <button class="proxy-pill" aria-label="4 proxies for this item in your size">
-              <svg class="icon-proxi" aria-hidden="true">
-                <use href="#proxi" xlink:href="#proxi"></use>
+              <svg class="icon-proxi" viewBox="0 0 256 256" aria-hidden="true">
+                <path fill="currentColor" d="M225.24,174.74a12,12,0,0,1-1.58,16.89C205.49,206.71,189.06,212,174.15,212c-19.76,0-36.86-9.29-51.88-17.44-25.06-13.62-44.86-24.37-74.61.3a12,12,0,1,1-15.32-18.48c42.25-35,75-17.23,101.39-2.92,25.06,13.61,44.86,24.37,74.61-.3A12,12,0,0,1,225.24,174.74Zm-16.9-57.59c-29.75,24.67-49.55,13.91-74.61.3-26.35-14.3-59.14-32.11-101.39,2.92a12,12,0,0,0,15.32,18.48c29.75-24.67,49.55-13.92,74.61-.3,15,8.15,32.12,17.44,51.88,17.44,14.91,0,31.34-5.29,49.51-20.36a12,12,0,0,0-15.32-18.48ZM47.66,82.84c29.75-24.67,49.55-13.92,74.61-.3,15,8.15,32.12,17.44,51.88,17.44,14.91,0,31.34-5.29,49.51-20.36a12,12,0,0,0-15.32-18.48c-29.75,24.67-49.55,13.92-74.61.3-26.35-14.3-59.14-32.11-101.39,2.93A12,12,0,1,0,47.66,82.84Z"/>
               </svg>
               <span class="count">4</span>
             </button>
@@ -215,8 +227,8 @@
           <article class="card" data-category="tops" data-name="Reformation Taryn Two Piece" data-size="2">
             <span class="size" aria-label="Your size for this item">2</span>
             <button class="proxy-pill" aria-label="2 proxies for this item in your size">
-              <svg class="icon-proxi" aria-hidden="true">
-                <use href="#proxi" xlink:href="#proxi"></use>
+              <svg class="icon-proxi" viewBox="0 0 256 256" aria-hidden="true">
+                <path fill="currentColor" d="M225.24,174.74a12,12,0,0,1-1.58,16.89C205.49,206.71,189.06,212,174.15,212c-19.76,0-36.86-9.29-51.88-17.44-25.06-13.62-44.86-24.37-74.61.3a12,12,0,1,1-15.32-18.48c42.25-35,75-17.23,101.39-2.92,25.06,13.61,44.86,24.37,74.61-.3A12,12,0,0,1,225.24,174.74Zm-16.9-57.59c-29.75,24.67-49.55,13.91-74.61.3-26.35-14.3-59.14-32.11-101.39,2.92a12,12,0,0,0,15.32,18.48c29.75-24.67,49.55-13.92,74.61-.3,15,8.15,32.12,17.44,51.88,17.44,14.91,0,31.34-5.29,49.51-20.36a12,12,0,0,0-15.32-18.48ZM47.66,82.84c29.75-24.67,49.55-13.92,74.61-.3,15,8.15,32.12,17.44,51.88,17.44,14.91,0,31.34-5.29,49.51-20.36a12,12,0,0,0-15.32-18.48c-29.75,24.67-49.55,13.92-74.61.3-26.35-14.3-59.14-32.11-101.39,2.93A12,12,0,1,0,47.66,82.84Z"/>
               </svg>
               <span class="count">2</span>
             </button>
@@ -227,8 +239,8 @@
           <article class="card" data-category="tops" data-name="ALFIE Open Back Cotton Poplin Top" data-size="Small">
             <span class="size" aria-label="Your size for this item">Small</span>
             <button class="proxy-pill" aria-label="1 proxy for this item in your size">
-              <svg class="icon-proxi" aria-hidden="true">
-                <use href="#proxi" xlink:href="#proxi"></use>
+              <svg class="icon-proxi" viewBox="0 0 256 256" aria-hidden="true">
+                <path fill="currentColor" d="M225.24,174.74a12,12,0,0,1-1.58,16.89C205.49,206.71,189.06,212,174.15,212c-19.76,0-36.86-9.29-51.88-17.44-25.06-13.62-44.86-24.37-74.61.3a12,12,0,1,1-15.32-18.48c42.25-35,75-17.23,101.39-2.92,25.06,13.61,44.86,24.37,74.61-.3A12,12,0,0,1,225.24,174.74Zm-16.9-57.59c-29.75,24.67-49.55,13.91-74.61.3-26.35-14.3-59.14-32.11-101.39,2.92a12,12,0,0,0,15.32,18.48c29.75-24.67,49.55-13.92,74.61-.3,15,8.15,32.12,17.44,51.88,17.44,14.91,0,31.34-5.29,49.51-20.36a12,12,0,0,0-15.32-18.48ZM47.66,82.84c29.75-24.67,49.55-13.92,74.61-.3,15,8.15,32.12,17.44,51.88,17.44,14.91,0,31.34-5.29,49.51-20.36a12,12,0,0,0-15.32-18.48c-29.75,24.67-49.55,13.92-74.61.3-26.35-14.3-59.14-32.11-101.39,2.93A12,12,0,1,0,47.66,82.84Z"/>
               </svg>
               <span class="count">1</span>
             </button>
@@ -239,8 +251,8 @@
           <article class="card" data-category="bottoms" data-name="AYR The Secret Sauce" data-size="26S">
             <span class="size" aria-label="Your size for this item">26S</span>
             <button class="proxy-pill" aria-label="1 proxy for this item in your size">
-              <svg class="icon-proxi" aria-hidden="true">
-                <use href="#proxi" xlink:href="#proxi"></use>
+              <svg class="icon-proxi" viewBox="0 0 256 256" aria-hidden="true">
+                <path fill="currentColor" d="M225.24,174.74a12,12,0,0,1-1.58,16.89C205.49,206.71,189.06,212,174.15,212c-19.76,0-36.86-9.29-51.88-17.44-25.06-13.62-44.86-24.37-74.61.3a12,12,0,1,1-15.32-18.48c42.25-35,75-17.23,101.39-2.92,25.06,13.61,44.86,24.37,74.61-.3A12,12,0,0,1,225.24,174.74Zm-16.9-57.59c-29.75,24.67-49.55,13.91-74.61.3-26.35-14.3-59.14-32.11-101.39,2.92a12,12,0,0,0,15.32,18.48c29.75-24.67,49.55-13.92,74.61-.3,15,8.15,32.12,17.44,51.88,17.44,14.91,0,31.34-5.29,49.51-20.36a12,12,0,0,0-15.32-18.48ZM47.66,82.84c29.75-24.67,49.55-13.92,74.61-.3,15,8.15,32.12,17.44,51.88,17.44,14.91,0,31.34-5.29,49.51-20.36a12,12,0,0,0-15.32-18.48c-29.75,24.67-49.55,13.92-74.61.3-26.35-14.3-59.14-32.11-101.39,2.93A12,12,0,1,0,47.66,82.84Z"/>
               </svg>
               <span class="count">1</span>
             </button>
@@ -251,8 +263,8 @@
           <article class="card" data-category="bottoms" data-name="ZARA Flare Pants" data-size="M">
             <span class="size" aria-label="Your size for this item">M</span>
             <button class="proxy-pill" aria-label="5 proxies for this item in your size">
-              <svg class="icon-proxi" aria-hidden="true">
-                <use href="#proxi" xlink:href="#proxi"></use>
+              <svg class="icon-proxi" viewBox="0 0 256 256" aria-hidden="true">
+                <path fill="currentColor" d="M225.24,174.74a12,12,0,0,1-1.58,16.89C205.49,206.71,189.06,212,174.15,212c-19.76,0-36.86-9.29-51.88-17.44-25.06-13.62-44.86-24.37-74.61.3a12,12,0,1,1-15.32-18.48c42.25-35,75-17.23,101.39-2.92,25.06,13.61,44.86,24.37,74.61-.3A12,12,0,0,1,225.24,174.74Zm-16.9-57.59c-29.75,24.67-49.55,13.91-74.61.3-26.35-14.3-59.14-32.11-101.39,2.92a12,12,0,0,0,15.32,18.48c29.75-24.67,49.55-13.92,74.61-.3,15,8.15,32.12,17.44,51.88,17.44,14.91,0,31.34-5.29,49.51-20.36a12,12,0,0,0-15.32-18.48ZM47.66,82.84c29.75-24.67,49.55-13.92,74.61-.3,15,8.15,32.12,17.44,51.88,17.44,14.91,0,31.34-5.29,49.51-20.36a12,12,0,0,0-15.32-18.48c-29.75,24.67-49.55,13.92-74.61.3-26.35-14.3-59.14-32.11-101.39,2.93A12,12,0,1,0,47.66,82.84Z"/>
               </svg>
               <span class="count">5</span>
             </button>
@@ -263,8 +275,8 @@
           <article class="card" data-category="tops" data-name="COS Shrunken T-shirt" data-size="XS">
             <span class="size" aria-label="Your size for this item">XS</span>
             <button class="proxy-pill" aria-label="3 proxies for this item in your size">
-              <svg class="icon-proxi" aria-hidden="true">
-                <use href="#proxi" xlink:href="#proxi"></use>
+              <svg class="icon-proxi" viewBox="0 0 256 256" aria-hidden="true">
+                <path fill="currentColor" d="M225.24,174.74a12,12,0,0,1-1.58,16.89C205.49,206.71,189.06,212,174.15,212c-19.76,0-36.86-9.29-51.88-17.44-25.06-13.62-44.86-24.37-74.61.3a12,12,0,1,1-15.32-18.48c42.25-35,75-17.23,101.39-2.92,25.06,13.61,44.86,24.37,74.61-.3A12,12,0,0,1,225.24,174.74Zm-16.9-57.59c-29.75,24.67-49.55,13.91-74.61.3-26.35-14.3-59.14-32.11-101.39,2.92a12,12,0,0,0,15.32,18.48c29.75-24.67,49.55-13.92,74.61-.3,15,8.15,32.12,17.44,51.88,17.44,14.91,0,31.34-5.29,49.51-20.36a12,12,0,0,0-15.32-18.48ZM47.66,82.84c29.75-24.67,49.55-13.92,74.61-.3,15,8.15,32.12,17.44,51.88,17.44,14.91,0,31.34-5.29,49.51-20.36a12,12,0,0,0-15.32-18.48c-29.75,24.67-49.55,13.92-74.61.3-26.35-14.3-59.14-32.11-101.39,2.93A12,12,0,1,0,47.66,82.84Z"/>
               </svg>
               <span class="count">3</span>
             </button>
@@ -275,8 +287,8 @@
           <article class="card" data-category="dresses" data-name="ALEXIS Briette Satin Maxi Dress" data-size="S">
             <span class="size" aria-label="Your size for this item">S</span>
             <button class="proxy-pill" aria-label="1 proxy for this item in your size">
-              <svg class="icon-proxi" aria-hidden="true">
-                <use href="#proxi" xlink:href="#proxi"></use>
+              <svg class="icon-proxi" viewBox="0 0 256 256" aria-hidden="true">
+                <path fill="currentColor" d="M225.24,174.74a12,12,0,0,1-1.58,16.89C205.49,206.71,189.06,212,174.15,212c-19.76,0-36.86-9.29-51.88-17.44-25.06-13.62-44.86-24.37-74.61.3a12,12,0,1,1-15.32-18.48c42.25-35,75-17.23,101.39-2.92,25.06,13.61,44.86,24.37,74.61-.3A12,12,0,0,1,225.24,174.74Zm-16.9-57.59c-29.75,24.67-49.55,13.91-74.61.3-26.35-14.3-59.14-32.11-101.39,2.92a12,12,0,0,0,15.32,18.48c29.75-24.67,49.55-13.92,74.61-.3,15,8.15,32.12,17.44,51.88,17.44,14.91,0,31.34-5.29,49.51-20.36a12,12,0,0,0-15.32-18.48ZM47.66,82.84c29.75-24.67,49.55-13.92,74.61-.3,15,8.15,32.12,17.44,51.88,17.44,14.91,0,31.34-5.29,49.51-20.36a12,12,0,0,0-15.32-18.48c-29.75,24.67-49.55,13.92-74.61.3-26.35-14.3-59.14-32.11-101.39,2.93A12,12,0,1,0,47.66,82.84Z"/>
               </svg>
               <span class="count">1</span>
             </button>
@@ -286,26 +298,58 @@
         </div>
       </div>
 
+      <!-- Bottom tabs navigation -->
       <div class="tabs">
         <a class="tab" href="#"><svg class="ico" viewBox="0 0 256 256" aria-hidden="true"><path fill="currentColor" d="M241,150.65s0,0,0-.05a51.33,51.33,0,0,0-2.53-5.9L196.93,50.18a12,12,0,0,0-2.5-3.65,36,36,0,0,0-50.92,0A12,12,0,0,0,140,55V76H116V55a12,12,0,0,0-3.51-8.48,36,36,0,0,0-50.92,0,12,12,0,0,0-2.5,3.65L17.53,144.7A51.33,51.33,0,0,0,15,150.6s0,0,0,.05A52,52,0,1,0,116,168V100h24v68a52,52,0,1,0,101-17.35ZM80,62.28a12,12,0,0,1,12-1.22v63.15a51.9,51.9,0,0,0-35.9-7.62ZM64,196a28,28,0,1,1,28-28A28,28,0,0,1,64,196ZM164,61.06a12.06,12.06,0,0,1,12,1.22l23.87,54.31a51.9,51.9,0,0,0-35.9,7.62ZM192,196a28,28,0,1,1,28-28A28,28,0,0,1,192,196Z"/></svg><span>Find</span></a>
-        <a class="tab" href="feed-unified.html"><svg class="ico" viewBox="0 0 24 24" aria-hidden="true"><use href="#proxi" xlink:href="#proxi"></use></svg><span>Feed</span></a>
-        <a class="tab active" href="#"><svg class="ico" viewBox="0 0 256 256" aria-hidden="true"><path fill="currentColor" d="M244,168,148,96l19.2-14.4A12,12,0,0,0,172,72a44,44,0,0,0-87.66-5.48,12,12,0,1,0,23.82,3,20,20,0,0,1,39.09-2.92L121,86.24c-.15.10-.29.21-.43.32L12,168a20,20,0,0,0,12,36H232a20,20,0,0,0,12-36ZM36,180l92-69,92,69Z"/></svg><span>Closet</span></a>
+        <a class="tab" href="feed-unified.html"><svg class="ico" viewBox="0 0 256 256" aria-hidden="true"><path fill="currentColor" d="M225.24,174.74a12,12,0,0,1-1.58,16.89C205.49,206.71,189.06,212,174.15,212c-19.76,0-36.86-9.29-51.88-17.44-25.06-13.62-44.86-24.37-74.61.3a12,12,0,1,1-15.32-18.48c42.25-35,75-17.23,101.39-2.92,25.06,13.61,44.86,24.37,74.61-.3A12,12,0,0,1,225.24,174.74Zm-16.9-57.59c-29.75,24.67-49.55,13.91-74.61.3-26.35-14.3-59.14-32.11-101.39,2.92a12,12,0,0,0,15.32,18.48c29.75-24.67,49.55-13.92,74.61-.3,15,8.15,32.12,17.44,51.88,17.44,14.91,0,31.34-5.29,49.51-20.36a12,12,0,0,0-15.32-18.48ZM47.66,82.84c29.75-24.67,49.55-13.92,74.61-.3,15,8.15,32.12,17.44,51.88,17.44,14.91,0,31.34-5.29,49.51-20.36a12,12,0,0,0-15.32-18.48c-29.75,24.67-49.55,13.92-74.61.3-26.35-14.3-59.14-32.11-101.39,2.93A12,12,0,1,0,47.66,82.84Z"/></svg><span>Feed</span></a>
+        <a class="tab active" href="#"><svg class="ico" viewBox="0 0 256 256" aria-hidden="true"><path fill="currentColor" d="M244,168,148,96l19.2-14.4A12,12,0,0,0,172,72a44,44,0,0,0-87.66-5.48,12,12,0,1,0,23.82,3,20,20,0,0,1,39.09-2.92L121,86.24c-.15.1-.29.21-.43.32L12,168a20,20,0,0,0,12,36H232a20,20,0,0,0,12-36ZM36,180l92-69,92,69Z"/></svg><span>Closet</span></a>
         <a class="tab" href="#"><svg class="ico" viewBox="0 0 256 256" aria-hidden="true"><path fill="currentColor" d="M234.38,210a123.36,123.36,0,0,0-60.78-53.23,76,76,0,1,0-91.2,0A123.36,123.36,0,0,0,21.62,210a12,12,0,1,0,20.77,12c18.12-31.32,50.12-50,85.61-50s67.49,18.69,85.61,50a12,12,0,0,0,20.77-12ZM76,96a52,52,0,1,1,52,52A52.06,52.06,0,0,1,76,96Z"/></svg><span>Profile</span></a>
       </div>
-    </div>
-  </div>
 
-  <!-- Modal popup removed -->
+      <!-- Proxies Modal (inside .screen) -->
+      <div id="proxy-sheet" class="proxy-modal" hidden role="dialog" aria-modal="true">
+    <div class="proxy-modal__overlay"></div>
+    <div class="proxy-modal__card">
+      <button class="proxy-modal__close" aria-label="Close modal">
+        <svg width="14" height="14" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round">
+          <path d="M5 5L15 15M5 15L15 5"/>
+        </svg>
+      </button>
 
-  <!-- Proxies bottom sheet -->
-  <div id="proxy-sheet" class="sheet" hidden>
-    <div class="sheet-card">
-      <h3>Proxies for Halter Mixy Dress (S)</h3>
-      <ul class="proxy-list">
-        <li><img src="https://i.pravatar.cc/40?img=12" alt="" width="28" height="28" style="border-radius:50%"><b>@ellaa76</b> • S • "Regular fits best"</li>
-        <li><img src="https://i.pravatar.cc/40?img=15" alt="" width="28" height="28" style="border-radius:50%"><b>@vera</b> • S • "Roomier bust"</li>
-      </ul>
-      <button class="sheet-close">Done</button>
+      <header class="proxy-modal__header">
+        <h2 class="proxy-modal__title">Proxies for Halter Mixy Dress (S)</h2>
+      </header>
+
+      <div class="proxy-list">
+        <div class="proxy-item">
+          <div class="proxy-content">
+            <div class="proxy-username">@ellaa76</div>
+            <div class="proxy-details">12 pieces • 3 in common</div>
+          </div>
+        </div>
+        <div class="proxy-item">
+          <div class="proxy-content">
+            <div class="proxy-username">@vera</div>
+            <div class="proxy-details">6 pieces • 1 in common</div>
+          </div>
+        </div>
+        <div class="proxy-item">
+          <div class="proxy-content">
+            <div class="proxy-username">@may_98</div>
+            <div class="proxy-details">3 pieces • 2 in common</div>
+          </div>
+        </div>
+        <div class="proxy-item">
+          <div class="proxy-content">
+            <div class="proxy-username">@srd24</div>
+            <div class="proxy-details">1 piece • 1 in common</div>
+          </div>
+        </div>
+      </div>
+
+      <footer class="proxy-modal__footer">
+        <button class="proxy-modal__cta">See all sizes</button>
+      </footer>
     </div>
   </div>
 
@@ -385,17 +429,14 @@
       }
     });
 
-    // Tiny JS to open/close proxy sheet
+    // Tiny JS to open/close proxy modal
     document.addEventListener('click', (e)=>{
       const btn = e.target.closest('.proxy-pill');
       if(btn){
         document.querySelector('#proxy-sheet')?.removeAttribute('hidden');
       }
-      if(e.target.matches('.sheet, .sheet-close')){
-        const isBackdrop = e.target.classList.contains('sheet');
-        if(isBackdrop || e.target.classList.contains('sheet-close')){
-          document.querySelector('#proxy-sheet')?.setAttribute('hidden','');
-        }
+      if(e.target.closest('.proxy-modal__close') || e.target.classList.contains('proxy-modal__overlay')){
+        document.querySelector('#proxy-sheet')?.setAttribute('hidden','');
       }
     });
 
