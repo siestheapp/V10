@@ -1,0 +1,193 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Proxi — Log Fit</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <style>
+    :root{
+      --bg:#FFFFFF; --ink:#1F1F1F; --muted:#6F6F74;
+      /* Proxi brand */
+      --petrol-600:#009090; --petrol-500:#00A3A3; --petrol-400:#16B5B5; --petrol-100:#E0F7F7;
+      --mint-400:#A6FFCB; --ice-300:#7FE1FF;
+      /* Adaptive CTA ramp */
+      --cta-start:#008888; --cta-mid:#3ECFD5; --cta-end:#9BFFCF;
+      --card:#fff; --border:#E8E4DE; --shadow:0 12px 30px rgba(0,0,0,.08);
+      --r:16px; --r-lg:22px; --r-xl:28px;
+    }
+    *{box-sizing:border-box;margin:0;padding:0}
+    html{background:#f5f5f5}
+    body{font-family:Inter,system-ui,-apple-system,"Segoe UI",Roboto,Helvetica,Arial;background:#f5f5f5;color:var(--ink);min-height:100vh;display:flex;align-items:center;justify-content:center;padding:0}
+
+    /* Phone shell */
+    .phone{width:430px;height:932px;border-radius:55px;background:transparent;border:2px solid #000;position:relative}
+    .screen{position:absolute;inset:2px;background:#fff;border-radius:53px;overflow:hidden;display:flex;flex-direction:column}
+    .island{position:absolute;top:11px;left:50%;transform:translateX(-50%);width:126px;height:37px;background:#000;border-radius:19px;z-index:5}
+    .status{height:54px;margin-top:3px;display:flex;align-items:center;justify-content:space-between;padding:0 30px;font-weight:600;color:#000;font-size:17px;letter-spacing:-.02em}
+    .status .right{display:flex;align-items:center;gap:6px}
+    .status .right img{height:13px;width:auto;display:block}
+
+    /* Header with back button */
+    .header{padding:16px 24px;display:flex;align-items:center;justify-content:space-between;border-bottom:1px solid rgba(0,0,0,.06);margin-top:-16px}
+    .back-btn{width:36px;height:36px;border:none;background:transparent;cursor:pointer;display:flex;align-items:center;justify-content:center;border-radius:50%;transition:background .2s}
+    .back-btn:hover{background:rgba(0,0,0,.05)}
+    .header-title{font:700 18px/1.2 Inter;color:#0B0F14;flex:1;text-align:center;margin-right:36px}
+
+    /* Content area */
+    .content{flex:1;overflow-y:auto;padding:20px 24px 120px;display:flex;flex-direction:column;gap:20px}
+
+    /* Product card - HERO */
+    .product-card{display:flex;flex-direction:column;align-items:center;gap:18px;padding:24px 20px 24px;background:#FAFBFC;border-radius:24px}
+    .product-image{width:320px;height:320px;border-radius:24px;object-fit:cover;box-shadow:0 8px 32px rgba(0,0,0,.12)}
+    .product-info{text-align:center}
+    .product-title{font:700 18px/1.3 Inter;color:#0B0F14}
+    .product-title .brand{color:#6B7280}
+
+    /* Intent section */
+    .section{display:flex;flex-direction:column;gap:12px}
+    .section-label{font:700 16px/1.3 Inter;color:#0B0F14;margin-bottom:2px}
+    .intent-buttons{display:flex;gap:12px}
+    .intent-btn{flex:1;padding:18px 20px;border:2px solid #E5E7EB;background:#fff;border-radius:14px;font:700 16px/1.2 Inter;color:#374151;cursor:pointer;transition:all .2s;display:flex;align-items:center;justify-content:center;gap:8px}
+    .intent-btn:hover{border-color:#B8C5D0;background:#F9FAFB}
+    .intent-btn.active{border-color:var(--petrol-500);background:var(--petrol-100);color:var(--petrol-600);box-shadow:0 0 0 1px var(--petrol-500) inset}
+    .intent-icon{width:20px;height:20px}
+
+    /* Size selector */
+    .size-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:8px}
+    .size-btn{padding:14px 12px;border:2px solid #E5E7EB;background:#fff;border-radius:12px;font:700 15px/1 Inter;color:#374151;cursor:pointer;transition:all .2s;text-align:center}
+    .size-btn:hover{border-color:#B8C5D0;background:#F9FAFB}
+    .size-btn.active{border-color:var(--petrol-500);background:var(--petrol-100);color:var(--petrol-600);box-shadow:0 0 0 1px var(--petrol-500) inset}
+
+    /* Bottom CTA */
+    .bottom-cta{position:absolute;bottom:0;left:0;right:0;padding:16px 24px 40px;background:linear-gradient(to top,#fff 80%,rgba(255,255,255,0));border-top:1px solid rgba(0,0,0,.04)}
+    .cta-buttons{display:flex;gap:12px;align-items:center}
+    .cta-skip{padding:18px 20px;background:transparent;border:2px solid #E5E7EB;color:#6B7280;border-radius:14px;font:600 16px/1 Inter;cursor:pointer;transition:all .2s;flex-shrink:0}
+    .cta-skip:hover{border-color:#B8C5D0;background:#F9FAFB;color:#374151}
+    .cta-primary{flex:1;padding:18px 24px;background:linear-gradient(135deg,var(--cta-start),var(--cta-mid));color:#fff;border:none;border-radius:14px;font:700 17px/1 Inter;cursor:pointer;transition:all .3s;box-shadow:0 4px 14px rgba(0,163,163,.3)}
+    .cta-primary:hover{transform:translateY(-2px);box-shadow:0 6px 20px rgba(0,163,163,.4)}
+    .cta-primary:disabled{opacity:.4;cursor:not-allowed;transform:none}
+  </style>
+</head>
+<body>
+  <div class="phone">
+    <div class="island"></div>
+    <div class="screen">
+      <!-- Status bar -->
+      <div class="status"><div>9:41</div><div class="right"><img src="../img/cellular-connection.svg" alt="cell"/><img src="../img/wifi.svg" alt="wifi"/><img src="../img/battery.svg" alt="battery"/></div></div>
+
+      <!-- Header -->
+      <div class="header">
+        <button class="back-btn" aria-label="Go back">
+          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M15 18l-6-6 6-6"/>
+          </svg>
+        </button>
+        <h1 class="header-title">Log fit</h1>
+      </div>
+
+      <!-- Content -->
+      <div class="content">
+        <!-- Product Card -->
+        <div class="product-card">
+          <img src="../img/CL648_RD0165_m.png" alt="J.Crew Halter Mixy Dress" class="product-image">
+          <div class="product-info">
+            <div class="product-title"><span class="brand">J.Crew</span> • Halter Mixy Dress</div>
+          </div>
+        </div>
+
+        <!-- Intent Section -->
+        <div class="section">
+          <label class="section-label">Did you buy this?</label>
+          <div class="intent-buttons">
+            <button class="intent-btn" data-intent="bought">
+              <svg class="intent-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M20.59 13.41l-7.17 7.17a2 2 0 0 1-2.83 0L2 12V2h10l8.59 8.59a2 2 0 0 1 0 2.82z"/>
+                <line x1="7" y1="7" x2="7.01" y2="7"/>
+              </svg>
+              Bought it
+            </button>
+            <button class="intent-btn active" data-intent="tried">
+              <svg class="intent-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <circle cx="12" cy="12" r="10"/>
+                <path d="M12 16v-4"/>
+                <path d="M12 8h.01"/>
+              </svg>
+              Tried it
+            </button>
+          </div>
+        </div>
+
+        <!-- Size Section -->
+        <div class="section">
+          <label class="section-label">What size?</label>
+          <div class="size-grid">
+            <button class="size-btn">XXS</button>
+            <button class="size-btn">XS</button>
+            <button class="size-btn active">S</button>
+            <button class="size-btn">M</button>
+            <button class="size-btn">L</button>
+            <button class="size-btn">XL</button>
+            <button class="size-btn">XXL</button>
+            <button class="size-btn">XXXL</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Bottom CTA -->
+      <div class="bottom-cta">
+        <div class="cta-buttons">
+          <button class="cta-skip" id="skipBtn">Save</button>
+          <button class="cta-primary" id="addFitBtn">Add fit details</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    // Intent toggle
+    const intentButtons = document.querySelectorAll('.intent-btn');
+    intentButtons.forEach(btn => {
+      btn.addEventListener('click', () => {
+        intentButtons.forEach(b => b.classList.remove('active'));
+        btn.classList.add('active');
+        console.log('Intent:', btn.dataset.intent);
+      });
+    });
+
+    // Size toggle
+    const sizeButtons = document.querySelectorAll('.size-btn');
+    sizeButtons.forEach(btn => {
+      btn.addEventListener('click', () => {
+        sizeButtons.forEach(b => b.classList.remove('active'));
+        btn.classList.add('active');
+        console.log('Size:', btn.textContent);
+      });
+    });
+
+    // Back button
+    document.querySelector('.back-btn').addEventListener('click', () => {
+      console.log('Go back to step 1');
+      // In production: navigate back
+    });
+
+    // Skip button - save and exit
+    document.getElementById('skipBtn').addEventListener('click', () => {
+      const intent = document.querySelector('.intent-btn.active').dataset.intent;
+      const size = document.querySelector('.size-btn.active').textContent;
+      console.log('Skip fit details - saving:', { intent, size });
+      // In production: save to database and navigate to closet/confirmation
+    });
+
+    // Add fit details button - go to step 3
+    document.getElementById('addFitBtn').addEventListener('click', () => {
+      const intent = document.querySelector('.intent-btn.active').dataset.intent;
+      const size = document.querySelector('.size-btn.active').textContent;
+      console.log('Add fit details with:', { intent, size });
+      // In production: navigate to step 3 (fit feedback)
+    });
+  </script>
+</body>
+</html>
