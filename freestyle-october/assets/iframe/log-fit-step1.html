@@ -248,9 +248,19 @@
       }
     });
 
-    // Back button - return to closet
+    // Back button - return to previous state
     document.querySelector('.back-btn').addEventListener('click', () => {
-      window.location.href = 'closet-screen.html';
+      // If URL input is visible, hide it and show buttons again
+      if (urlInputContainer.classList.contains('visible')) {
+        urlInputContainer.classList.remove('visible');
+        actions.style.display = 'flex';
+        heroText.style.display = 'block';
+        dataGraphic.style.display = 'block';
+        document.getElementById('urlInput').value = ''; // Clear input
+      } else {
+        // Otherwise, navigate back to closet
+        window.location.href = 'closet-screen.html';
+      }
     });
 
     // Enable submit button only when URL is entered
