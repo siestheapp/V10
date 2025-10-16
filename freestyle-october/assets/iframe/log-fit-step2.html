@@ -158,6 +158,38 @@
   </div>
 
   <script>
+    // Load product data from localStorage
+    (function loadProductData() {
+      const pendingProduct = localStorage.getItem('pendingProduct');
+
+      if (pendingProduct) {
+        try {
+          const product = JSON.parse(pendingProduct);
+
+          // Update product image
+          const productImage = document.querySelector('.product-image');
+          if (product.image && productImage) {
+            productImage.src = product.image;
+            productImage.alt = product.title;
+          }
+
+          // Update product title (brand • name format)
+          const productTitle = document.querySelector('.product-title');
+          if (productTitle) {
+            let productName = product.title;
+            if (product.brand && productName.toLowerCase().startsWith(product.brand.toLowerCase())) {
+              productName = productName.substring(product.brand.length).trim();
+              productName = productName.replace(/^[-|•:]/, '').trim();
+            }
+            productTitle.innerHTML = `<span class="brand">${product.brand}</span> • ${productName}`;
+          }
+
+        } catch (error) {
+          console.error('Error loading product data:', error);
+        }
+      }
+    })();
+
     // Intent toggle
     const intentButtons = document.querySelectorAll('.intent-btn');
     intentButtons.forEach(btn => {

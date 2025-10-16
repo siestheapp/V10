@@ -238,15 +238,59 @@
       document.getElementById('urlInput').focus();
     });
 
-    // URL submit - navigate to confirmation
-    document.getElementById('urlSubmit').addEventListener('click', () => {
+    // URL submit - fetch product data and navigate to confirmation
+    document.getElementById('urlSubmit').addEventListener('click', async () => {
       const url = document.getElementById('urlInput').value;
-      if (url) {
-        console.log('Submit URL:', url);
-        // In production: validate URL and navigate to confirmation
-        window.location.href = 'log-fit-confirm.html';
+      if (!url) return;
+
+      const submitBtn = document.getElementById('urlSubmit');
+      submitBtn.disabled = true;
+      submitBtn.textContent = 'Loading...';
+
+      try {
+        // Call Microlink API to extract product metadata
+        const apiUrl = `https://api.microlink.io?url=${encodeURIComponent(url)}`;
+        const response = await fetch(apiUrl);
+        const data = await response.json();
+
+        if (data.status === 'success' && data.data) {
+          // Extract product information from metadata
+          const productData = {
+            url: url,
+            title: data.data.title || 'Unknown Product',
+            image: data.data.image?.url || data.data.logo?.url || '',
+            brand: data.data.publisher || extractBrandFromUrl(url),
+            description: data.data.description || ''
+          };
+
+          // Store in localStorage to pass to confirmation screen
+          localStorage.setItem('pendingProduct', JSON.stringify(productData));
+
+          // Navigate to confirmation
+          window.location.href = 'log-fit-confirm.html';
+        } else {
+          alert('Could not fetch product details. Please try another URL.');
+          submitBtn.disabled = false;
+          submitBtn.textContent = 'Continue';
+        }
+      } catch (error) {
+        console.error('Error fetching product:', error);
+        alert('Error loading product. Please try again.');
+        submitBtn.disabled = false;
+        submitBtn.textContent = 'Continue';
       }
     });
+
+    // Helper function to extract brand from URL
+    function extractBrandFromUrl(url) {
+      try {
+        const hostname = new URL(url).hostname.replace('www.', '');
+        const brandName = hostname.split('.')[0];
+        return brandName.charAt(0).toUpperCase() + brandName.slice(1);
+      } catch {
+        return 'Unknown Brand';
+      }
+    }
 
     // Back button - return to previous state
     document.querySelector('.back-btn').addEventListener('click', () => {

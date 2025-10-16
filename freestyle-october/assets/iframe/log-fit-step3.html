@@ -203,6 +203,44 @@
   </div>
 
   <script>
+    // Load product data from localStorage
+    (function loadProductData() {
+      const pendingProduct = localStorage.getItem('pendingProduct');
+
+      if (pendingProduct) {
+        try {
+          const product = JSON.parse(pendingProduct);
+
+          // Update product thumbnail
+          const productThumb = document.querySelector('.product-thumb');
+          if (product.image && productThumb) {
+            productThumb.src = product.image;
+            productThumb.alt = product.title;
+          }
+
+          // Update brand name
+          const brandElement = document.querySelector('.product-brand');
+          if (product.brand && brandElement) {
+            brandElement.textContent = product.brand;
+          }
+
+          // Update product name
+          const titleElement = document.querySelector('.product-title-sm');
+          if (titleElement) {
+            let productName = product.title;
+            if (product.brand && productName.toLowerCase().startsWith(product.brand.toLowerCase())) {
+              productName = productName.substring(product.brand.length).trim();
+              productName = productName.replace(/^[-|•:]/, '').trim();
+            }
+            titleElement.textContent = productName;
+          }
+
+        } catch (error) {
+          console.error('Error loading product data:', error);
+        }
+      }
+    })();
+
     // Overall fit toggle
     const fitButtons = document.querySelectorAll('.fit-btn');
     fitButtons.forEach(btn => {

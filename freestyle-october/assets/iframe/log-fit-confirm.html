@@ -118,6 +118,46 @@
   </div>
 
   <script>
+    // Load product data from localStorage
+    (function loadProductData() {
+      const pendingProduct = localStorage.getItem('pendingProduct');
+
+      if (pendingProduct) {
+        try {
+          const product = JSON.parse(pendingProduct);
+
+          // Update product image
+          const productImage = document.querySelector('.product-image');
+          if (product.image && productImage) {
+            productImage.src = product.image;
+            productImage.alt = product.title;
+          }
+
+          // Update brand name
+          const brandElement = document.querySelector('.product-brand');
+          if (product.brand && brandElement) {
+            brandElement.textContent = product.brand;
+          }
+
+          // Update product name
+          const nameElement = document.querySelector('.product-name');
+          if (product.title && nameElement) {
+            // Try to extract product name without brand
+            let productName = product.title;
+            if (product.brand && productName.toLowerCase().startsWith(product.brand.toLowerCase())) {
+              productName = productName.substring(product.brand.length).trim();
+              // Remove common separators
+              productName = productName.replace(/^[-|•:]/, '').trim();
+            }
+            nameElement.textContent = productName;
+          }
+
+        } catch (error) {
+          console.error('Error loading product data:', error);
+        }
+      }
+    })();
+
     // Back button - return to step 1
     document.querySelector('.back-btn').addEventListener('click', () => {
       window.location.href = 'log-fit-step1.html';
