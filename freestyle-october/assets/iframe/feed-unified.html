@@ -572,7 +572,7 @@ body::before{
 }
 
 /* Count variant: ≡ n (username header or your closet items) */
-.pill-proxi--count{ background:#FFFFFF; }
+.pill-proxi--count{ background:#FFFFFF; cursor:url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 32 32"><path fill="white" stroke="black" stroke-width="1" d="M12 2 L12 12 L2 12 L8 18 L4 26 L10 22 L14 28 L18 18 L28 18 Z"/></svg>') 4 4, pointer; }
 /* Slightly larger count pill (2%): glyph, font-size, height, padding */
 .pill-proxi--count{
   --glyph: calc(0.625rem * 1.3);
@@ -1174,17 +1174,72 @@ body::before{
           <a class="tab" href="closet-screen.html"><svg class="ico" viewBox="0 0 256 256" aria-hidden="true"><path fill="currentColor" d="M244,168,148,96l19.2-14.4A12,12,0,0,0,172,72a44,44,0,0,0-87.66-5.48,12,12,0,1,0,23.82,3,20,20,0,0,1,39.09-2.92L121,86.24c-.15.1-.29.21-.43.32L12,168a20,20,0,0,0,12,36H232a20,20,0,0,0,12-36ZM36,180l92-69,92,69Z"/></svg><span>Closet</span></a>
           <a class="tab" href="#"><svg class="ico" viewBox="0 0 256 256" aria-hidden="true"><path fill="currentColor" d="M234.38,210a123.36,123.36,0,0,0-60.78-53.23,76,76,0,1,0-91.2,0A123.36,123.36,0,0,0,21.62,210a12,12,0,1,0,20.77,12c18.12-31.32,50.12-50,85.61-50s67.49,18.69,85.61,50a12,12,0,0,0,20.77-12ZM76,96a52,52,0,1,1,52,52A52.06,52.06,0,0,1,76,96Z"/></svg><span>Profile</span></a>
         </div>
+
+        <!-- Modals inside .screen -->
+        <div id="pc-sheet" class="pc-sheet" hidden>
+          <div class="pc-sheet__card">
+            <h3>Why this proxy?</h3>
+            <p><strong>ellaa76</strong> wears the same piece you own: <strong>Anthropologie Somerset (XS)</strong>.
+               Seeing how it fits them helps you compare size and fit to similar items.</p>
+            <button class="pc-sheet__close">Got it</button>
+          </div>
+        </div>
+
+        <!-- Shared Sizes Modal -->
+        <div id="shared-sizes-modal" class="shared-modal" hidden role="dialog" aria-modal="true" aria-labelledby="modalTitle">
+          <div class="shared-modal__overlay"></div>
+          <div class="shared-modal__card">
+            <button class="shared-modal__close" aria-label="Close modal">
+              <svg width="20" height="20" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round">
+                <path d="M5 5L15 15M5 15L15 5"/>
+              </svg>
+            </button>
+
+            <header class="shared-modal__header">
+              <h2 id="modalTitle" class="shared-modal__title">You & ellaa76 share 2 sizes!</h2>
+            </header>
+
+            <!-- Simple list of shared items -->
+            <div class="shared-items-list">
+              <!-- Item 1: Somerset Dress -->
+              <div class="shared-list-item">
+                <div class="shared-list-thumb">
+                  <img src="../img/anthropologie-somerset-chiffon-maxi-dress.jpg" alt="Somerset Dress">
+                </div>
+                <div class="shared-list-content">
+                  <div class="shared-list-brand">Anthropologie</div>
+                  <div class="shared-list-name">Somerset Chiffon Maxi Dress</div>
+                  <div class="shared-list-match">Both own in <strong>S</strong></div>
+                </div>
+              </div>
+
+              <!-- Item 2: AYR Jeans -->
+              <div class="shared-list-item">
+                <div class="shared-list-thumb">
+                  <img src="https://www.ayr.com/cdn/shop/files/secretsauce-goodmood_CAT_d634f664-cb49-4e61-abef-5d94b707075e.jpg?crop=center&height=1440&v=1755036845&width=950" alt="AYR The Secret Sauce">
+                </div>
+                <div class="shared-list-content">
+                  <div class="shared-list-brand">AYR</div>
+                  <div class="shared-list-name">The Secret Sauce</div>
+                  <div class="shared-list-match">Both own in <strong>26S</strong></div>
+                </div>
+              </div>
+            </div>
+
+            <div class="shared-modal-footer">
+              <button class="shared-modal__cta">See ellaa76's closet</button>
+              <button class="shared-modal__link">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <circle cx="11" cy="11" r="8"/>
+                  <path d="M21 21l-4.35-4.35"/>
+                </svg>
+                Find more size twins
+              </button>
+            </div>
+          </div>
+        </div>
       </div>
     </div>
-
-<div id="pc-sheet" class="pc-sheet" hidden>
-  <div class="pc-sheet__card">
-    <h3>Why this proxy?</h3>
-    <p><strong>ellaa76</strong> wears the same piece you own: <strong>Anthropologie Somerset (XS)</strong>.
-       Seeing how it fits them helps you compare size and fit to similar items.</p>
-    <button class="pc-sheet__close">Got it</button>
-  </div>
-</div>
 
 <style>
 .pc-sheet{position:fixed;inset:0;background:rgba(0,0,0,.3);display:flex;align-items:flex-end}
@@ -1194,6 +1249,54 @@ body::before{
 .pc-sheet__card p{margin:0 0 12px;font:600 14px/1.45 Inter;color:#2F2F33}
 .pc-sheet__close{display:inline-flex;align-items:center;justify-content:center;padding:10px 14px;
   border-radius:10px;border:1px solid rgba(0,0,0,.08);background:#fff;font:700 14px/1.1 Inter}
+
+/* Shared Sizes Modal */
+.shared-modal{position:absolute;inset:0;z-index:9999;display:flex;align-items:center;justify-content:center;padding:20px}
+.shared-modal[hidden]{display:none}
+.shared-modal__overlay{position:absolute;inset:0;background:rgba(0,0,0,.6);backdrop-filter:blur(8px);animation:fadeIn .3s ease}
+.shared-modal__card{position:relative;width:100%;max-width:420px;background:#fff;border-radius:24px;padding:32px 24px 24px;box-shadow:0 20px 60px rgba(0,0,0,.3);animation:slideUp .4s cubic-bezier(.34,1.56,.64,1)}
+.shared-modal__close{position:absolute;top:14px;right:14px;width:32px;height:32px;border:none;background:rgba(0,0,0,.05);border-radius:50%;color:#666;cursor:pointer;display:flex;align-items:center;justify-content:center;transition:all .2s}
+.shared-modal__close:hover{background:rgba(0,0,0,.1);transform:scale(1.05)}
+
+/* Header */
+.shared-modal__header{text-align:center;margin-bottom:24px}
+.shared-modal__title{font:800 20px/1.3 Inter;color:#0B0F14;margin:0}
+
+/* Items List */
+.shared-items-list{display:flex;flex-direction:column;gap:12px;margin-bottom:24px}
+
+/* List Item */
+.shared-list-item{display:flex;gap:12px;align-items:center;padding:12px;background:#F9FAFB;border-radius:12px;border:1px solid #E5E7EB;transition:all .2s}
+.shared-list-item:hover{background:#F3F4F6;border-color:#D1D5DB}
+
+/* Thumbnail */
+.shared-list-thumb{flex-shrink:0;width:72px;height:72px;border-radius:8px;overflow:hidden;background:#E5E7EB}
+.shared-list-thumb img{width:100%;height:100%;object-fit:cover}
+
+/* Content */
+.shared-list-content{flex:1;min-width:0;display:flex;flex-direction:column;gap:2px}
+.shared-list-brand{font:700 11px/1.2 Inter;text-transform:uppercase;letter-spacing:.5px;color:#6B7280}
+.shared-list-name{font:600 15px/1.3 Inter;color:#111827;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.shared-list-match{font:600 13px/1.3 Inter;color:#00857A;margin-top:2px}
+.shared-list-match strong{font-weight:700;color:#00A3A3}
+
+/* Modal Footer */
+.shared-modal-footer{display:flex;flex-direction:column;gap:14px;align-items:stretch}
+.shared-modal__cta{width:100%;padding:15px 24px;background:linear-gradient(135deg,#00A3A3,#5ECED7);color:#fff;border:none;border-radius:12px;font:700 16px/1 Inter;cursor:pointer;transition:all .2s;box-shadow:0 4px 14px rgba(83,224,207,.35)}
+.shared-modal__cta:hover{transform:translateY(-2px);box-shadow:0 6px 20px rgba(83,224,207,.45)}
+.shared-modal__cta:active{transform:translateY(0)}
+
+/* Ghost Button */
+.shared-modal__link{display:flex;align-items:center;justify-content:center;gap:8px;width:100%;padding:12px 24px;background:transparent;border:1.5px solid rgba(83,224,207,.4);color:#53E0CF;border-radius:12px;font:600 15px/1 Inter;cursor:pointer;transition:all .2s}
+.shared-modal__link svg{transition:transform .2s}
+.shared-modal__link:hover{border-color:#53E0CF;background:rgba(83,224,207,.05)}
+.shared-modal__link:hover svg{transform:scale(1.1)}
+
+/* Animations */
+@keyframes fadeIn{from{opacity:0}to{opacity:1}}
+@keyframes slideUp{from{opacity:0;transform:translateY(40px)}to{opacity:1;transform:translateY(0)}}
+@keyframes popIn{from{opacity:0;transform:scale(.5)}to{opacity:1;transform:scale(1)}}
+@keyframes scaleIn{from{opacity:0;transform:scale(.8)}to{opacity:1;transform:scale(1)}}
 </style>
 
 <script>
@@ -1204,6 +1307,29 @@ body::before{
     link?.addEventListener('click', ()=> sheet.hidden = false);
     close?.addEventListener('click', ()=> sheet.hidden = true);
     sheet?.addEventListener('click', (e)=>{ if(e.target === sheet) sheet.hidden = true; });
+  })();
+</script>
+
+<script>
+  // Shared Sizes Modal
+  (function(){
+    const modal = document.querySelector('#shared-sizes-modal');
+    const closeBtn = modal?.querySelector('.shared-modal__close');
+    const overlay = modal?.querySelector('.shared-modal__overlay');
+    const trigger = document.querySelector('.pill-proxi--count'); // "2 shared sizes" pill
+
+    function openModal() {
+      if(modal) modal.hidden = false;
+    }
+
+    function closeModal() {
+      if(modal) modal.hidden = true;
+    }
+
+    // Event listeners
+    trigger?.addEventListener('click', openModal);
+    closeBtn?.addEventListener('click', closeModal);
+    overlay?.addEventListener('click', closeModal);
   })();
 </script>
 
