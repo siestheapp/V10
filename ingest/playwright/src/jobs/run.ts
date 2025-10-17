@@ -2,11 +2,23 @@ import 'dotenv/config';
 import PQueue from 'p-queue';
 import { withBrowser, newPage } from '../core/browser';
 import { ReformationAdapter } from '../adapters/reformation';
+import { AritziaAdapter } from '../adapters/aritzia';
 import { q } from '../db/pg';
 import { upsertBrand, ensureCategory, upsertStyle, upsertVariant, upsertProductUrl, insertPrice, insertImageRow } from '../db/upsert';
 import { uploadImageToStorage } from '../images/storage';
 
 type Adapter = typeof ReformationAdapter;
+
+// Map URLs to adapters
+function getAdapter(url: string): Adapter {
+  if (url.includes('aritzia.com')) {
+    return AritziaAdapter;
+  }
+  if (url.includes('reformation.com')) {
+    return ReformationAdapter;
+  }
+  throw new Error(`No adapter found for URL: ${url}. Supported: aritzia.com, reformation.com`);
+}
 
 async function createJob(brand: string, categoryUrl: string) {
   const rows = await q<{ id: number }>(
@@ -108,7 +120,11 @@ async function runJob(adapter: Adapter, categoryUrl: string) {
 (async () => {
   const categoryUrl = process.argv[2];
   if (!categoryUrl) throw new Error('Usage: ts-node src/jobs/run.ts <CATEGORY_URL>');
-  await runJob(ReformationAdapter, categoryUrl);
+
+  const adapter = getAdapter(categoryUrl);
+  console.log(`Using ${adapter.brandName} adapter for ${categoryUrl}`);
+
+  await runJob(adapter, categoryUrl);
 })();
 
 

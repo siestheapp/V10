@@ -14,6 +14,9 @@
     "pw-install": "playwright install chromium",
     "migrate": "dotenv -e .env -- psql \"$DATABASE_URL\" -f sql/001_jobs_and_images.sql",
     "ingest": "ts-node src/jobs/run.ts",
+    "test:aritzia": "ts-node scripts/test-aritzia.ts",
+    "scrape:json": "ts-node scripts/scrape-to-json.ts",
+    "scrape:aritzia": "ts-node scripts/scrape-aritzia-simple.ts",
     "typecheck": "tsc -p . --noEmit"
   },
   "dependencies": {

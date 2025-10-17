@@ -51,7 +51,8 @@
     .content{flex:1;overflow-y:auto;padding:40px 24px 120px;display:flex;flex-direction:column;gap:24px;align-items:center;justify-content:center}
 
     /* Product preview card */
-    .product-preview{display:flex;flex-direction:column;align-items:center;gap:16px;padding:24px;background:rgba(255,255,255,.05);border-radius:24px;border:1px solid rgba(255,255,255,.1);max-width:370px;width:100%}
+    .product-preview{display:flex;flex-direction:column;align-items:center;gap:16px;padding:24px;background:rgba(255,255,255,.05);border-radius:24px;border:1px solid rgba(255,255,255,.1);max-width:370px;width:100%;opacity:0;transition:opacity .3s ease}
+    .product-preview.loaded{opacity:1}
     .product-image{width:320px;height:320px;border-radius:20px;object-fit:cover;box-shadow:0 12px 40px rgba(0,0,0,.5)}
     .product-info{text-align:center;display:flex;flex-direction:column;gap:6px}
     .product-brand{font:600 13px/1.3 Inter;color:rgba(255,255,255,.6);text-transform:uppercase;letter-spacing:.05em}
@@ -118,13 +119,38 @@
   </div>
 
   <script>
+    // Brand mapping function
+    function normalizeBrand(brandName) {
+      const domain = brandName.toLowerCase().replace(/\.(com|net|org)$/, '').replace('www.', '');
+
+      const brandMap = {
+        'thereformation': 'Reformation',
+        'reformation': 'Reformation',
+        'jcrew': 'J.Crew',
+        'aritzia': 'Aritzia',
+        'everlane': 'Everlane',
+        'madewell': 'Madewell',
+        'anthropologie': 'Anthropologie',
+        'freepeople': 'Free People',
+        'urbanoutfitters': 'Urban Outfitters',
+        'zara': 'Zara',
+        'hm': 'H&M'
+      };
+
+      return brandMap[domain] || brandName;
+    }
+
     // Load product data from localStorage
     (function loadProductData() {
       const pendingProduct = localStorage.getItem('pendingProduct');
+      const productPreview = document.querySelector('.product-preview');
 
       if (pendingProduct) {
         try {
           const product = JSON.parse(pendingProduct);
+
+          // Normalize brand name
+          const normalizedBrand = normalizeBrand(product.brand);
 
           // Update product image
           const productImage = document.querySelector('.product-image');
@@ -135,8 +161,8 @@
 
           // Update brand name
           const brandElement = document.querySelector('.product-brand');
-          if (product.brand && brandElement) {
-            brandElement.textContent = product.brand;
+          if (brandElement) {
+            brandElement.textContent = normalizedBrand;
           }
 
           // Update product name
@@ -144,16 +170,30 @@
           if (product.title && nameElement) {
             // Try to extract product name without brand
             let productName = product.title;
-            if (product.brand && productName.toLowerCase().startsWith(product.brand.toLowerCase())) {
-              productName = productName.substring(product.brand.length).trim();
+            if (normalizedBrand && productName.toLowerCase().startsWith(normalizedBrand.toLowerCase())) {
+              productName = productName.substring(normalizedBrand.length).trim();
               // Remove common separators
               productName = productName.replace(/^[-|•:]/, '').trim();
             }
             nameElement.textContent = productName;
           }
 
+          // Show the product preview after data is loaded
+          if (productPreview) {
+            productPreview.classList.add('loaded');
+          }
+
         } catch (error) {
           console.error('Error loading product data:', error);
+          // Still show the preview even if there's an error
+          if (productPreview) {
+            productPreview.classList.add('loaded');
+          }
+        }
+      } else {
+        // No product data, show default
+        if (productPreview) {
+          productPreview.classList.add('loaded');
         }
       }
     })();

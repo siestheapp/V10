@@ -71,9 +71,18 @@
     .url-input{padding:16px 18px;background:rgba(255,255,255,.08);border:2px solid rgba(255,255,255,.15);border-radius:var(--radius-btn);font:500 15px/1.4 Inter;color:#fff;width:100%;transition:all .2s}
     .url-input::placeholder{color:rgba(255,255,255,.5)}
     .url-input:focus{outline:none;border-color:var(--petrol-400);background:rgba(255,255,255,.12)}
-    .url-submit{padding:16px 24px;background:var(--brand-sheen);color:#fff;border:none;border-radius:var(--radius-btn);font:700 16px/1 Inter;cursor:pointer;transition:all .3s;box-shadow:0 8px 24px rgba(0,163,163,.4)}
+    .url-submit{padding:16px 24px;background:var(--brand-sheen);color:#fff;border:none;border-radius:var(--radius-btn);font:700 16px/1 Inter;cursor:pointer;transition:all .3s;box-shadow:0 8px 24px rgba(0,163,163,.4);display:flex;align-items:center;justify-content:center;gap:10px}
     .url-submit:hover{transform:translateY(-2px);box-shadow:0 12px 32px rgba(0,163,163,.5)}
-    .url-submit:disabled{opacity:.4;cursor:not-allowed;transform:none}
+    .url-submit:disabled{opacity:.8;cursor:not-allowed;transform:none;box-shadow:0 4px 16px rgba(0,163,163,.3)}
+
+    /* Loading spinner */
+    .spinner{width:18px;height:18px;border:2.5px solid rgba(255,255,255,.3);border-top-color:#fff;border-radius:50%;animation:spin .8s linear infinite;display:none}
+    .url-submit.loading .spinner{display:block}
+    @keyframes spin{to{transform:rotate(360deg)}}
+
+    /* Loading message */
+    .loading-message{text-align:center;font:500 14px/1.4 Inter;color:rgba(255,255,255,.7);margin-top:12px;opacity:0;transition:opacity .3s;height:0;overflow:hidden}
+    .loading-message.visible{opacity:1;height:auto}
 
     /* Camera placeholder */
     .camera-placeholder{width:100%;max-width:340px;aspect-ratio:3/4;background:rgba(255,255,255,.05);border:2px dashed rgba(255,255,255,.2);border-radius:20px;display:flex;align-items:center;justify-content:center;margin-top:20px}
@@ -149,8 +158,12 @@
 
         <!-- URL input (hidden initially) -->
         <div class="url-input-container" id="urlInputContainer">
-          <input type="url" class="url-input" id="urlInput" placeholder="https://jcrew.com/..." />
-          <button class="url-submit" id="urlSubmit">Continue</button>
+          <input type="url" class="url-input" id="urlInput" placeholder="https://jcrew.com/..." value="https://www.thereformation.com/products/frankie-silk-dress/1304134LYI.html" />
+          <button class="url-submit" id="urlSubmit">
+            <span class="spinner"></span>
+            <span class="button-text">Continue</span>
+          </button>
+          <div class="loading-message" id="loadingMessage">Finding product details...</div>
         </div>
 
         <!-- Data table graphic -->
@@ -230,6 +243,12 @@
     const heroText = document.querySelector('.hero-text');
     const dataGraphic = document.getElementById('dataGraphic');
 
+    // Auto-show URL input for demo (remove these 4 lines if you want to show buttons first)
+    actions.style.display = 'none';
+    heroText.style.display = 'none';
+    dataGraphic.style.display = 'none';
+    urlInputContainer.classList.add('visible');
+
     urlBtn.addEventListener('click', () => {
       actions.style.display = 'none';
       heroText.style.display = 'none';
@@ -244,8 +263,14 @@
       if (!url) return;
 
       const submitBtn = document.getElementById('urlSubmit');
+      const buttonText = submitBtn.querySelector('.button-text');
+      const loadingMessage = document.getElementById('loadingMessage');
+
+      // Show loading state
       submitBtn.disabled = true;
-      submitBtn.textContent = 'Loading...';
+      submitBtn.classList.add('loading');
+      buttonText.textContent = 'Loading...';
+      loadingMessage.classList.add('visible');
 
       try {
         // Call Microlink API to extract product metadata
@@ -254,13 +279,36 @@
         const data = await response.json();
 
         if (data.status === 'success' && data.data) {
+          const title = data.data.title || '';
+          const description = data.data.description || '';
+
+          // Check for error pages (Cloudflare, bot protection, etc.)
+          const isErrorPage =
+            title.toLowerCase().includes('cloudflare') ||
+            title.toLowerCase().includes('attention required') ||
+            title.toLowerCase().includes('just a moment') ||
+            title.toLowerCase().includes('access denied') ||
+            title.toLowerCase().includes('403') ||
+            title.toLowerCase().includes('404') ||
+            description.toLowerCase().includes('cloudflare');
+
+          if (isErrorPage) {
+            alert('This website is blocking automated access. Please try:\n\n1. Copy the product name manually\n2. Use the "Take a photo" option instead\n3. Try a different retailer');
+            // Reset loading state
+            submitBtn.disabled = false;
+            submitBtn.classList.remove('loading');
+            buttonText.textContent = 'Continue';
+            loadingMessage.classList.remove('visible');
+            return;
+          }
+
           // Extract product information from metadata
           const productData = {
             url: url,
-            title: data.data.title || 'Unknown Product',
+            title: title || 'Unknown Product',
             image: data.data.image?.url || data.data.logo?.url || '',
             brand: data.data.publisher || extractBrandFromUrl(url),
-            description: data.data.description || ''
+            description: description
           };
 
           // Store in localStorage to pass to confirmation screen
@@ -270,14 +318,20 @@
           window.location.href = 'log-fit-confirm.html';
         } else {
           alert('Could not fetch product details. Please try another URL.');
+          // Reset loading state
           submitBtn.disabled = false;
-          submitBtn.textContent = 'Continue';
+          submitBtn.classList.remove('loading');
+          buttonText.textContent = 'Continue';
+          loadingMessage.classList.remove('visible');
         }
       } catch (error) {
         console.error('Error fetching product:', error);
         alert('Error loading product. Please try again.');
+        // Reset loading state
         submitBtn.disabled = false;
-        submitBtn.textContent = 'Continue';
+        submitBtn.classList.remove('loading');
+        buttonText.textContent = 'Continue';
+        loadingMessage.classList.remove('visible');
       }
     });
 
@@ -285,8 +339,24 @@
     function extractBrandFromUrl(url) {
       try {
         const hostname = new URL(url).hostname.replace('www.', '');
-        const brandName = hostname.split('.')[0];
-        return brandName.charAt(0).toUpperCase() + brandName.slice(1);
+        const domain = hostname.split('.')[0].toLowerCase();
+
+        // Map known brands to their proper names
+        const brandMap = {
+          'thereformation': 'Reformation',
+          'reformation': 'Reformation',
+          'jcrew': 'J.Crew',
+          'aritzia': 'Aritzia',
+          'everlane': 'Everlane',
+          'madewell': 'Madewell',
+          'anthropologie': 'Anthropologie',
+          'freepeople': 'Free People',
+          'urbanoutfitters': 'Urban Outfitters',
+          'zara': 'Zara',
+          'hm': 'H&M'
+        };
+
+        return brandMap[domain] || domain.charAt(0).toUpperCase() + domain.slice(1);
       } catch {
         return 'Unknown Brand';
       }

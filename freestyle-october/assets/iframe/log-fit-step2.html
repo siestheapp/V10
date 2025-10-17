@@ -134,15 +134,8 @@
         <!-- Size Section -->
         <div class="section">
           <label class="section-label">What size?</label>
-          <div class="size-grid">
-            <button class="size-btn">XXS</button>
-            <button class="size-btn">XS</button>
-            <button class="size-btn active">S</button>
-            <button class="size-btn">M</button>
-            <button class="size-btn">L</button>
-            <button class="size-btn">XL</button>
-            <button class="size-btn">XXL</button>
-            <button class="size-btn">XXXL</button>
+          <div class="size-grid" id="sizeGrid">
+            <!-- Sizes will be populated by JavaScript based on brand -->
           </div>
         </div>
       </div>
@@ -158,6 +151,34 @@
   </div>
 
   <script>
+    // Brand mapping function
+    function normalizeBrand(brandName) {
+      const domain = brandName.toLowerCase().replace(/\.(com|net|org)$/, '').replace('www.', '');
+
+      const brandMap = {
+        'thereformation': 'Reformation',
+        'reformation': 'Reformation',
+        'jcrew': 'J.Crew',
+        'aritzia': 'Aritzia',
+        'everlane': 'Everlane',
+        'madewell': 'Madewell',
+        'anthropologie': 'Anthropologie',
+        'freepeople': 'Free People',
+        'urbanoutfitters': 'Urban Outfitters',
+        'zara': 'Zara',
+        'hm': 'H&M'
+      };
+
+      return brandMap[domain] || brandName;
+    }
+
+    // Size configurations by brand
+    const sizeConfigs = {
+      'Reformation': ['0', '2', '4', '6', '8', '10', '12'],
+      'Aritzia': ['XXS', 'XS', 'S', 'M', 'L', 'XL', 'XXL'],
+      'default': ['XXS', 'XS', 'S', 'M', 'L', 'XL', 'XXL', 'XXXL']
+    };
+
     // Load product data from localStorage
     (function loadProductData() {
       const pendingProduct = localStorage.getItem('pendingProduct');
@@ -165,6 +186,9 @@
       if (pendingProduct) {
         try {
           const product = JSON.parse(pendingProduct);
+
+          // Normalize brand name
+          const normalizedBrand = normalizeBrand(product.brand);
 
           // Update product image
           const productImage = document.querySelector('.product-image');
@@ -177,16 +201,52 @@
           const productTitle = document.querySelector('.product-title');
           if (productTitle) {
             let productName = product.title;
-            if (product.brand && productName.toLowerCase().startsWith(product.brand.toLowerCase())) {
-              productName = productName.substring(product.brand.length).trim();
+            if (normalizedBrand && productName.toLowerCase().startsWith(normalizedBrand.toLowerCase())) {
+              productName = productName.substring(normalizedBrand.length).trim();
               productName = productName.replace(/^[-|•:]/, '').trim();
             }
-            productTitle.innerHTML = `<span class="brand">${product.brand}</span> • ${productName}`;
+            productTitle.innerHTML = `<span class="brand">${normalizedBrand}</span> • ${productName}`;
           }
+
+          // Populate size grid based on normalized brand
+          const sizeGrid = document.getElementById('sizeGrid');
+          const sizes = sizeConfigs[normalizedBrand] || sizeConfigs['default'];
+
+          // Set default active index (middle size for numeric, 'S' for alpha)
+          const defaultActiveIndex = normalizedBrand === 'Reformation' ? 2 : sizes.indexOf('S');
+
+          sizes.forEach((size, index) => {
+            const btn = document.createElement('button');
+            btn.className = 'size-btn';
+            btn.textContent = size;
+            if (index === defaultActiveIndex) {
+              btn.classList.add('active');
+            }
+            sizeGrid.appendChild(btn);
+          });
 
         } catch (error) {
           console.error('Error loading product data:', error);
+          // Fallback to default sizes if error
+          const sizeGrid = document.getElementById('sizeGrid');
+          sizeConfigs['default'].forEach((size, index) => {
+            const btn = document.createElement('button');
+            btn.className = 'size-btn';
+            btn.textContent = size;
+            if (size === 'S') btn.classList.add('active');
+            sizeGrid.appendChild(btn);
+          });
         }
+      } else {
+        // No product data, show default sizes
+        const sizeGrid = document.getElementById('sizeGrid');
+        sizeConfigs['default'].forEach((size, index) => {
+          const btn = document.createElement('button');
+          btn.className = 'size-btn';
+          btn.textContent = size;
+          if (size === 'S') btn.classList.add('active');
+          sizeGrid.appendChild(btn);
+        });
       }
     })();
 
@@ -200,14 +260,13 @@
       });
     });
 
-    // Size toggle
-    const sizeButtons = document.querySelectorAll('.size-btn');
-    sizeButtons.forEach(btn => {
-      btn.addEventListener('click', () => {
-        sizeButtons.forEach(b => b.classList.remove('active'));
-        btn.classList.add('active');
-        console.log('Size:', btn.textContent);
-      });
+    // Size toggle (using event delegation since buttons are created dynamically)
+    document.getElementById('sizeGrid').addEventListener('click', (e) => {
+      if (e.target.classList.contains('size-btn')) {
+        document.querySelectorAll('.size-btn').forEach(b => b.classList.remove('active'));
+        e.target.classList.add('active');
+        console.log('Size:', e.target.textContent);
+      }
     });
 
     // Back button - return to step 1
