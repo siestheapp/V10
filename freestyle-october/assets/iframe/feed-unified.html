@@ -458,7 +458,7 @@ body::before{
 .pc-dot{width:8px;height:8px;border-radius:50%;background:#e6e6ea;opacity:.9}
 .pc-dot.pc-active{background:#c9c5c0}
 .pc-look-caption{margin-top:14px}
-.pc-look-caption p{font:600 14px/1.45 Inter;color:#2F2F33}
+.pc-look-caption p{font:600 16px/1.4 Inter;color:#2F2F33}
 .pc-sub{margin-top:6px;font:500 13px/1.4 Inter;color:var(--muted)}
 .pc-user{margin-right:8px}
 .pc-comment-teaser{display:block;width:100%;text-align:left;margin-top:12px;border-radius:16px;border:1px solid rgba(0,0,0,.08);background:#fff;padding:10px 12px;box-shadow:0 2px 6px rgba(0,0,0,.03);cursor:pointer !important}
@@ -598,14 +598,15 @@ body::before{
 }
 
 /* Text variant: Shows text instead of symbol */
-.pill-proxi--text{ 
-  padding:0 8px !important; 
+.pill-proxi--text{
+  height:28px !important;
+  padding:0 10px !important;
   background:rgba(255,255,255,.94) !important;
   backdrop-filter:blur(8px) !important;
   border:1px solid rgba(0,0,0,.12) !important;
 }
 .pill-proxi--text .text-content{
-  font-weight:500; font-size:12px;
+  font-weight:500; font-size:13px;
   color:#34424D;
 }
 
@@ -709,7 +710,7 @@ body::before{
 /* Size bullet (from closet screen) */
 .size-bullet{
   position:absolute;
-  top:40px;
+  top:43px;
   right:10px;
   padding:6px 10px;
   border-radius:999px;
@@ -1003,7 +1004,7 @@ body::before{
                 </button>
               </div>
               <div class="pc-carousel" data-index="0">
-                <div class="pc-slide pc-active" data-brand="J.Crew" data-title="Halter Mixy Dress" data-size="S" data-comments="4" data-user="cottagecore28" data-q="Is this petite or regular?">
+                <div class="pc-slide pc-active" data-brand="J.Crew" data-title="Halter Mixy Dress" data-size="S" data-comments="4" data-user="ggnyc8989" data-q="Is this petite or regular?">
                   <a href="https://www.jcrew.com/p/womens/categories/clothing/dresses-and-jumpsuits/halter-mixy-dress/CL648?srsltid=AfmBOorYMAVYnJLhcm2oe3NyDuwMiBQTsxaAhV39sLde4Eo0to2OK1JR&color_name=vintage-garnet&colorProductCode=CL648" target="_blank" rel="noopener noreferrer">
                     <img class="pc-hero-img pc-hero-img--tight" src="../img/1__1__1__1-proxy-hero@3x_20251016_003318.png" alt="Halter Mixy Dress — S">
                   </a>
@@ -1034,7 +1035,7 @@ body::before{
             <div class="pc-comment-teaser" role="button" aria-label="View comments">
               <div class="pc-k">Comments · <span id="pcCCount">4</span></div>
               <div class="pc-row">
-                <span class="pc-username" id="pcCUser">cottagecore28</span><span class="pc-colon">:</span> <span id="pcCQ">Is this petite or regular?</span>
+                <span class="pc-username" id="pcCUser">ggnyc8989</span><span class="pc-colon">:</span> <span id="pcCQ">Is this petite or regular?</span>
               </div>
               <div class="pc-link" id="pcLinkBlock">See full thread &gt;</div>
             </div>
@@ -1274,9 +1275,9 @@ body::before{
   border-radius:10px;border:1px solid rgba(0,0,0,.08);background:#fff;font:700 14px/1.1 Inter}
 
 /* Shared Sizes Modal */
-.shared-modal{position:absolute;inset:0;z-index:9999;display:flex;align-items:center;justify-content:center;padding:20px;border-radius:53px;overflow:hidden}
+.shared-modal{position:absolute;inset:0;z-index:9999;display:flex;align-items:center;justify-content:center;padding:20px}
 .shared-modal[hidden]{display:none}
-.shared-modal__overlay{position:absolute;inset:0;background:rgba(0,0,0,.6);backdrop-filter:blur(8px);animation:fadeIn .3s ease;border-radius:53px}
+.shared-modal__overlay{position:absolute;inset:0;background:rgba(0,0,0,.6);backdrop-filter:blur(8px);animation:fadeIn .3s ease}
 .shared-modal__card{position:relative;width:100%;max-width:420px;background:#fff;border-radius:24px;padding:36px 28px 28px;box-shadow:0 20px 60px rgba(0,0,0,.3);animation:slideUp .4s cubic-bezier(.34,1.56,.64,1)}
 .shared-modal__close{position:absolute;top:14px;right:14px;width:32px;height:32px;border:none;background:rgba(0,0,0,.05);border-radius:50%;color:#666;cursor:pointer;display:flex;align-items:center;justify-content:center;transition:all .2s}
 .shared-modal__close:hover{background:rgba(0,0,0,.1);transform:scale(1.05)}
@@ -1397,7 +1398,7 @@ body::before{
     // Comment data for each slide
     const commentsData = {
       'Halter Mixy Dress': [
-        { username: 'cottagecore28', time: '2d ago', body: 'Is this petite or regular?' },
+        { username: 'ggnyc8989', time: '2d ago', body: 'Is this petite or regular?' },
         { username: 'ellaa76', time: '2d ago', body: 'Regular!', isOwner: true, isReply: true },
         { username: 'kb_2847', time: '1d ago', body: 'Would you say it runs true to size?' },
         { username: 'ellaa76', time: '1d ago', body: 'I would say it runs small, esp at the waist', isOwner: true, isReply: true }
