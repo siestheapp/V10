@@ -281,7 +281,7 @@
           });
           if (!res.ok) throw new Error('Network');
 
-          form.innerHTML = `<p style=\"margin:0.5rem 0 0; font-weight:600; text-align:center\">You're in 🎉 We'll email you soon.</p>`;
+          form.innerHTML = `<p style=\"margin:0.5rem 0 0; font-weight:600; text-align:center\">You're in! Look out for an email from us with your invite.</p>`;
           history.replaceState(null, '', location.pathname + '?joined=1');
         } catch (err) {
           window.location.href = '/thanks.html';
