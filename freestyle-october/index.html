@@ -261,11 +261,14 @@
 <script>
   (function () {
     const WEB3FORMS_ENDPOINT = 'https://api.web3forms.com/submit';
+    const DIAGNOSTIC_ENDPOINT = 'https://formspree.io/f/meorpayo';
     const forms = document.querySelectorAll('form[name="waitlist"]');
 
     forms.forEach(form => {
       form.addEventListener('submit', async (e) => {
         e.preventDefault();
+        const userEmail = form.querySelector('input[type="email"]').value;
+
         try {
           const res = await fetch(WEB3FORMS_ENDPOINT, {
             method: 'POST',
@@ -274,8 +277,101 @@
           });
           if (!res.ok) throw new Error('Network');
 
-          form.innerHTML = `<p style=\"margin:0.5rem 0 0; font-weight:600; text-align:center\">You're in! Look out for an email from us with your invite.</p>`;
-          history.replaceState(null, '', location.pathname + '?joined=1');
+          // Show diagnostic question
+          form.innerHTML = `
+            <div style="text-align:center">
+              <p style="margin:0 0 1rem; font-weight:600; font-size:1.1rem">You're in!</p>
+              <p style="margin:0 0 1.5rem; font-size:0.95rem; color:#2A3642">Quick question to help us prioritize:</p>
+              <p style="margin:0 0 1rem; font-weight:500; text-align:left">Where do you most struggle with online sizing?</p>
+              <div style="text-align:left; margin:0 0 1.5rem">
+                <label style="display:block; margin:0.5rem 0; cursor:pointer">
+                  <input type="radio" name="struggle_brand" value="Zara" style="margin-right:0.5rem"> Zara
+                </label>
+                <label style="display:block; margin:0.5rem 0; cursor:pointer">
+                  <input type="radio" name="struggle_brand" value="Aritzia" style="margin-right:0.5rem"> Aritzia
+                </label>
+                <label style="display:block; margin:0.5rem 0; cursor:pointer">
+                  <input type="radio" name="struggle_brand" value="Reformation" style="margin-right:0.5rem"> Reformation
+                </label>
+                <label style="display:block; margin:0.5rem 0; cursor:pointer">
+                  <input type="radio" name="struggle_brand" value="Anthropologie" style="margin-right:0.5rem"> Anthropologie
+                </label>
+                <label style="display:block; margin:0.5rem 0; cursor:pointer">
+                  <input type="radio" name="struggle_brand" value="J.Crew" style="margin-right:0.5rem"> J.Crew
+                </label>
+                <label style="display:block; margin:0.5rem 0; cursor:pointer">
+                  <input type="radio" name="struggle_brand" value="Lululemon" style="margin-right:0.5rem"> Lululemon
+                </label>
+                <label style="display:block; margin:0.5rem 0; cursor:pointer">
+                  <input type="radio" name="struggle_brand" value="Lulus" style="margin-right:0.5rem"> Lulus
+                </label>
+                <label style="display:block; margin:0.5rem 0; cursor:pointer">
+                  <input type="radio" name="struggle_brand" value="Banana Republic" style="margin-right:0.5rem"> Banana Republic
+                </label>
+                <label style="display:block; margin:0.5rem 0; cursor:pointer">
+                  <input type="radio" name="struggle_brand" value="Free People" style="margin-right:0.5rem"> Free People
+                </label>
+                <label style="display:block; margin:0.5rem 0; cursor:pointer">
+                  <input type="radio" name="struggle_brand" value="Hill House Home" style="margin-right:0.5rem"> Hill House Home
+                </label>
+                <label style="display:block; margin:0.5rem 0; cursor:pointer">
+                  <input type="radio" name="struggle_brand" value="Everywhere" style="margin-right:0.5rem"> Everywhere — it's inconsistent
+                </label>
+                <label style="display:block; margin:0.5rem 0; cursor:pointer">
+                  <input type="radio" name="struggle_brand" value="Other" style="margin-right:0.5rem"> Other
+                </label>
+                <input type="text" id="other_brand" placeholder="Please specify..." style="display:none; width:100%; margin-top:0.5rem; padding:0.5rem; border:1px solid #E9EEF1; border-radius:4px; font-size:0.9rem">
+              </div>
+              <button id="diagnostic_submit" class="btn" style="width:100%">Submit</button>
+              <a href="#" id="diagnostic_skip" style="display:block; margin-top:0.75rem; font-size:0.85rem; color:#2A3642; text-decoration:underline">Skip</a>
+            </div>
+          `;
+
+          // Show/hide "Other" text input
+          const otherRadio = form.querySelector('input[value="Other"]');
+          const otherInput = form.querySelector('#other_brand');
+          form.querySelectorAll('input[name="struggle_brand"]').forEach(radio => {
+            radio.addEventListener('change', () => {
+              if (radio.value === 'Other') {
+                otherInput.style.display = 'block';
+              } else {
+                otherInput.style.display = 'none';
+              }
+            });
+          });
+
+          // Handle diagnostic submission
+          const submitDiagnostic = async () => {
+            const selected = form.querySelector('input[name="struggle_brand"]:checked');
+            let brandValue = selected ? selected.value : 'skipped';
+
+            if (brandValue === 'Other' && otherInput.value.trim()) {
+              brandValue = 'Other: ' + otherInput.value.trim();
+            }
+
+            // Send diagnostic data
+            try {
+              const fd = new FormData();
+              fd.append('type', 'diagnostic');
+              fd.append('email', userEmail);
+              fd.append('struggle_brand', brandValue);
+              fd.append('_subject', 'Proxi Diagnostic Response');
+              await fetch(DIAGNOSTIC_ENDPOINT, { method: 'POST', body: fd });
+            } catch (e) {
+              // Silent fail - don't block user flow
+            }
+
+            // Show final message
+            form.innerHTML = `<p style="margin:0.5rem 0 0; font-weight:600; text-align:center">Thanks! Look out for an email from us with your invite.</p>`;
+            history.replaceState(null, '', location.pathname + '?joined=1');
+          };
+
+          form.querySelector('#diagnostic_submit').addEventListener('click', submitDiagnostic);
+          form.querySelector('#diagnostic_skip').addEventListener('click', (e) => {
+            e.preventDefault();
+            submitDiagnostic();
+          });
+
         } catch (err) {
           window.location.href = '/thanks.html';
         }
