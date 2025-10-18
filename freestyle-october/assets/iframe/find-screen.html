@@ -1,0 +1,348 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Proxi — Find Item</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <style>
+    :root{
+      --bg:#FFFFFF; --ink:#262626; --muted:#7A7A80;
+      --petrol-600:#009090; --petrol-500:#00A3A3; --petrol-400:#16B5B5; --petrol-100:#E0F7F7;
+      --mint-400:#A6FFCB; --ice-300:#7FE1FF;
+      --card:#FFFFFF; --track:#ECECEC; --shadow:0 10px 30px rgba(0,0,0,.06);
+    }
+    *{margin:0;padding:0;box-sizing:border-box}
+    html{background:#f5f5f5}
+    body{font-family:Inter,system-ui,-apple-system,"Segoe UI",Roboto,Helvetica,Arial;background:#f5f5f5;color:var(--ink);
+      min-height:100vh;display:flex;align-items:center;justify-content:center;padding:0;position:relative}
+    body::before{
+      content:""; position:fixed; inset:-20% -10% auto -10%; height:60vh; pointer-events:none;
+      background:
+        radial-gradient(800px 350px at 50% -120px, rgba(0,163,163,.08), transparent 60%),
+        radial-gradient(1200px 500px at 10% -80px, rgba(166,255,203,.08), transparent 65%);
+      filter:saturate(105%);
+    }
+
+    /* iPhone Frame */
+    .phone{width:430px;height:932px;border-radius:55px;background:transparent;border:2px solid #000;position:relative;box-shadow:none}
+    .screen{position:absolute;inset:2px;background:#fff;border-radius:53px;overflow:hidden;display:flex;flex-direction:column}
+    .island{position:absolute;top:11px;left:50%;transform:translateX(-50%);width:126px;height:37px;background:#000;border-radius:19px;z-index:5}
+    .status{height:54px;margin-top:20px;display:flex;align-items:center;justify-content:space-between;padding:0 30px;font-weight:600;color:#000;font-size:17px;letter-spacing:-.02em}
+    .status .right{display:flex;align-items:center;gap:6px}
+    .status .right img{height:13px;width:auto;display:block}
+
+    /* Header */
+    .header{padding:16px 20px;display:flex;align-items:center;justify-content:center;border-bottom:1px solid rgba(0,0,0,.08)}
+    .header .logo{font:800 24px/1 Inter;background:var(--petrol-500);-webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent}
+
+    /* Content area */
+    .content{flex:1;overflow-y:auto;padding:24px 20px 100px}
+
+    /* Initial state */
+    .find-initial{display:flex;flex-direction:column;align-items:center;padding-top:60px}
+    .find-initial.hidden{display:none}
+
+    .hero-text{text-align:center;max-width:300px;margin-bottom:32px}
+    .hero-title{font:700 28px/1.2 Inter;color:var(--ink);margin-bottom:8px}
+    .hero-subtitle{font:500 16px/1.5 Inter;color:var(--muted)}
+
+    .actions{display:flex;flex-direction:column;gap:12px;width:100%;max-width:340px}
+    .action-btn{padding:18px 20px;border:2px solid #E8E4DE;background:#fff;border-radius:12px;font:700 16px/1.2 Inter;color:var(--ink);cursor:pointer;transition:all .2s;display:flex;align-items:center;gap:12px;box-shadow:0 2px 8px rgba(0,0,0,.06)}
+    .action-btn:hover{border-color:#D8D3C8;background:#FAFAFA;transform:translateY(-1px);box-shadow:0 4px 16px rgba(0,0,0,.08)}
+    .action-btn.primary{background:linear-gradient(135deg,#009090,#35D1AE);border:none;color:#fff;box-shadow:0 8px 24px rgba(0,163,163,.3)}
+    .action-btn.primary:hover{transform:translateY(-2px);box-shadow:0 12px 32px rgba(0,163,163,.4)}
+    .action-icon{width:22px;height:22px;flex-shrink:0}
+    .action-label{flex:1;text-align:left}
+
+    /* URL input */
+    .url-input-container{display:none;width:100%;max-width:340px;margin:0 auto;padding-top:40px}
+    .url-input-container.visible{display:flex;flex-direction:column;gap:12px}
+    .url-input{padding:16px 18px;background:#fff;border:2px solid #E8E4DE;border-radius:12px;font:500 15px/1.4 Inter;color:var(--ink);width:100%;transition:all .2s}
+    .url-input::placeholder{color:var(--muted)}
+    .url-input:focus{outline:none;border-color:var(--petrol-400);background:#FAFAFA}
+    .url-submit{padding:16px 24px;background:linear-gradient(135deg,#009090,#35D1AE);color:#fff;border:none;border-radius:12px;font:700 16px/1 Inter;cursor:pointer;transition:all .3s;box-shadow:0 8px 24px rgba(0,163,163,.3);display:flex;align-items:center;justify-content:center;gap:10px}
+    .url-submit:hover{transform:translateY(-2px);box-shadow:0 12px 32px rgba(0,163,163,.4)}
+    .url-submit:disabled{opacity:.6;cursor:not-allowed;transform:none}
+
+    /* Loading spinner */
+    .spinner{width:18px;height:18px;border:2.5px solid rgba(255,255,255,.3);border-top-color:#fff;border-radius:50%;animation:spin .8s linear infinite;display:none}
+    .url-submit.loading .spinner{display:block}
+    @keyframes spin{to{transform:rotate(360deg)}}
+
+    /* Results view */
+    .results-view{display:none}
+    .results-view.visible{display:block}
+
+    .product-header{margin-bottom:24px;padding:20px;background:#fff;border-radius:16px;box-shadow:0 4px 16px rgba(0,0,0,.06);display:flex;gap:16px}
+    .product-image{width:100px;height:100px;border-radius:12px;object-fit:cover;background:#F0F0F0}
+    .product-info{flex:1;display:flex;flex-direction:column;justify-content:center}
+    .product-brand{font:700 13px/1.2 Inter;text-transform:uppercase;letter-spacing:.05em;color:var(--muted);margin-bottom:4px}
+    .product-name{font:600 17px/1.3 Inter;color:var(--ink);margin-bottom:8px}
+    .add-to-closet-btn{padding:10px 16px;background:var(--petrol-100);color:var(--petrol-600);border:none;border-radius:8px;font:700 14px/1 Inter;cursor:pointer;transition:all .2s;align-self:flex-start}
+    .add-to-closet-btn:hover{background:var(--petrol-400);color:#fff}
+
+    .section-title{font:700 18px/1.2 Inter;color:var(--ink);margin-bottom:16px}
+    .proxy-count{font:600 15px/1 Inter;color:var(--muted);margin-bottom:16px}
+
+    .proxy-list{display:flex;flex-direction:column;gap:12px}
+    .proxy-card{background:#fff;border-radius:14px;padding:16px;box-shadow:0 2px 8px rgba(0,0,0,.04);border:1px solid #E8E4DE;display:flex;align-items:center;gap:14px;transition:all .2s}
+    .proxy-card:hover{box-shadow:0 6px 16px rgba(0,0,0,.08);border-color:#D8D3C8}
+
+    .proxy-avatar{width:48px;height:48px;border-radius:50%;background:linear-gradient(135deg,#009090,#35D1AE);display:flex;align-items:center;justify-content:center;color:#fff;font:700 18px/1 Inter;flex-shrink:0}
+    .proxy-avatar img{width:100%;height:100%;border-radius:50%;object-fit:cover}
+
+    .proxy-info{flex:1}
+    .proxy-username{font:700 15px/1.2 Inter;color:var(--ink);margin-bottom:4px}
+    .proxy-shared{font:500 13px/1.3 Inter;color:var(--muted)}
+    .proxy-size{font:700 16px/1 Inter;color:var(--petrol-600);padding:8px 12px;background:var(--petrol-100);border-radius:8px}
+
+    .empty-state{text-align:center;padding:60px 20px;color:var(--muted)}
+    .empty-icon{width:64px;height:64px;margin:0 auto 16px;opacity:.5}
+    .empty-title{font:700 20px/1.2 Inter;color:var(--ink);margin-bottom:8px}
+    .empty-text{font:500 15px/1.4 Inter;color:var(--muted);max-width:280px;margin:0 auto}
+
+    .back-link{display:inline-flex;align-items:center;gap:8px;font:600 15px/1 Inter;color:var(--petrol-500);cursor:pointer;margin-bottom:20px;transition:color .2s}
+    .back-link:hover{color:var(--petrol-600)}
+
+    /* Tabs */
+    .tabs{position:absolute;left:0;right:0;bottom:0;height:83px;background:#fff;border-top:1px solid rgba(0,0,0,.08);
+      display:flex;justify-content:space-around;align-items:flex-start;padding-top:8px;padding-bottom:34px;z-index:100}
+    .tab{display:flex;flex-direction:column;align-items:center;gap:6px;text-decoration:none;color:#8e8e93;font-size:11px;font-weight:500;transition:color 0.2s ease}
+    .tab.active{color:var(--petrol-600);font-weight:600}
+    .ico{width:28px;height:28px;display:block}
+  </style>
+</head>
+<body>
+  <div class="phone">
+    <div class="screen">
+      <div class="island"></div>
+      <div class="status">
+        <div>9:41</div>
+        <div class="right">
+          <img src="../img/cellular-connection.svg" alt="cell"/>
+          <img src="../img/wifi.svg" alt="wifi"/>
+          <img src="../img/battery.svg" alt="battery"/>
+        </div>
+      </div>
+
+      <div class="header">
+        <div class="logo">proxi</div>
+      </div>
+
+      <div class="content">
+        <!-- Initial state: Scan or Paste URL -->
+        <div class="find-initial" id="findInitial">
+          <div class="hero-text">
+            <h1 class="hero-title">Find your fit</h1>
+            <p class="hero-subtitle">See what size your proxies wear in any item</p>
+          </div>
+
+          <div class="actions">
+            <button class="action-btn primary" id="scanBtn">
+              <svg class="action-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+                <rect x="3" y="3" width="18" height="18" rx="2"/>
+                <path d="M9 9h.01M9 15h.01M15 9h.01M15 15h.01"/>
+              </svg>
+              <span class="action-label">Scan barcode</span>
+            </button>
+
+            <button class="action-btn" id="pasteUrlBtn">
+              <svg class="action-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+                <path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"/>
+                <path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"/>
+              </svg>
+              <span class="action-label">Paste product link</span>
+            </button>
+          </div>
+
+          <!-- URL input (hidden initially) -->
+          <div class="url-input-container" id="urlInputContainer">
+            <input
+              type="url"
+              class="url-input"
+              id="urlInput"
+              placeholder="https://www.jcrew.com/product/..."
+              autocomplete="off"
+            />
+            <button class="url-submit" id="urlSubmit">
+              <span class="spinner"></span>
+              <span id="submitText">Search</span>
+            </button>
+          </div>
+        </div>
+
+        <!-- Results view (hidden initially) -->
+        <div class="results-view" id="resultsView">
+          <a class="back-link" id="backLink">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+              <path d="M19 12H5M12 19l-7-7 7-7"/>
+            </svg>
+            Back to search
+          </a>
+
+          <!-- Product info -->
+          <div class="product-header">
+            <img class="product-image" id="productImage" src="" alt="Product">
+            <div class="product-info">
+              <div class="product-brand" id="productBrand">J.CREW</div>
+              <div class="product-name" id="productName">Halter Mixy Dress</div>
+              <button class="add-to-closet-btn" id="addToClosetBtn">+ Add to closet</button>
+            </div>
+          </div>
+
+          <h2 class="section-title">Your proxies</h2>
+          <div class="proxy-count" id="proxyCount">3 proxies own this item</div>
+
+          <!-- Proxy list -->
+          <div class="proxy-list" id="proxyList">
+            <!-- Proxies will be dynamically inserted here -->
+          </div>
+
+          <!-- Empty state (hidden by default) -->
+          <div class="empty-state" id="emptyState" style="display:none">
+            <svg class="empty-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <circle cx="12" cy="12" r="10"/>
+              <path d="M16 16s-1.5-2-4-2-4 2-4 2M9 9h.01M15 9h.01"/>
+            </svg>
+            <div class="empty-title">No proxies found</div>
+            <p class="empty-text">None of your proxies have tried this item yet. Be the first!</p>
+          </div>
+        </div>
+      </div>
+
+      <div class="tabs">
+        <a class="tab active" href="#"><svg class="ico" viewBox="0 0 256 256" aria-hidden="true"><path fill="currentColor" d="M241,150.65s0,0,0-.05a51.33,51.33,0,0,0-2.53-5.9L196.93,50.18a12,12,0,0,0-2.5-3.65,36,36,0,0,0-50.92,0A12,12,0,0,0,140,55V76H116V55a12,12,0,0,0-3.51-8.48,36,36,0,0,0-50.92,0,12,12,0,0,0-2.5,3.65L17.53,144.7A51.33,51.33,0,0,0,15,150.6s0,0,0,.05A52,52,0,1,0,116,168V100h24v68a52,52,0,1,0,101-17.35ZM80,62.28a12,12,0,0,1,12-1.22v63.15a51.9,51.9,0,0,0-35.9-7.62ZM64,196a28,28,0,1,1,28-28A28,28,0,0,1,64,196ZM164,61.06a12.06,12.06,0,0,1,12,1.22l23.87,54.31a51.9,51.9,0,0,0-35.9,7.62ZM192,196a28,28,0,1,1,28-28A28,28,0,0,1,192,196Z"/></svg><span>Find</span></a>
+        <a class="tab" href="feed-unified.html"><svg class="ico" viewBox="0 0 256 256" aria-hidden="true"><path fill="currentColor" d="M225.24,174.74a12,12,0,0,1-1.58,16.89C205.49,206.71,189.06,212,174.15,212c-19.76,0-36.86-9.29-51.88-17.44-25.06-13.62-44.86-24.37-74.61.3a12,12,0,1,1-15.32-18.48c42.25-35,75-17.23,101.39-2.92,25.06,13.61,44.86,24.37,74.61-.3A12,12,0,0,1,225.24,174.74Zm-16.9-57.59c-29.75,24.67-49.55,13.91-74.61.3-26.35-14.3-59.14-32.11-101.39,2.92a12,12,0,0,0,15.32,18.48c29.75-24.67,49.55-13.92,74.61-.3,15,8.15,32.12,17.44,51.88,17.44,14.91,0,31.34-5.29,49.51-20.36a12,12,0,0,0-15.32-18.48ZM47.66,82.84c29.75-24.67,49.55-13.92,74.61-.3,15,8.15,32.12,17.44,51.88,17.44,14.91,0,31.34-5.29,49.51-20.36a12,12,0,0,0-15.32-18.48c-29.75,24.67-49.55,13.92-74.61.3-26.35-14.3-59.14-32.11-101.39,2.93A12,12,0,1,0,47.66,82.84Z"/></svg><span>Feed</span></a>
+        <a class="tab" href="closet-screen.html"><svg class="ico" viewBox="0 0 256 256" aria-hidden="true"><path fill="currentColor" d="M244,168,148,96l19.2-14.4A12,12,0,0,0,172,72a44,44,0,0,0-87.66-5.48,12,12,0,1,0,23.82,3,20,20,0,0,1,39.09-2.92L121,86.24c-.15.1-.29.21-.43.32L12,168a20,20,0,0,0,12,36H232a20,20,0,0,0,12-36ZM36,180l92-69,92,69Z"/></svg><span>Closet</span></a>
+        <a class="tab" href="#"><svg class="ico" viewBox="0 0 256 256" aria-hidden="true"><path fill="currentColor" d="M234.38,210a123.36,123.36,0,0,0-60.78-53.23,76,76,0,1,0-91.2,0A123.36,123.36,0,0,0,21.62,210a12,12,0,1,0,20.77,12c18.12-31.32,50.12-50,85.61-50s67.49,18.69,85.61,50a12,12,0,0,0,20.77-12ZM76,96a52,52,0,1,1,52,52A52.06,52.06,0,0,1,76,96Z"/></svg><span>Profile</span></a>
+      </div>
+    </div>
+  </div>
+
+<script>
+  // Elements
+  const findInitial = document.getElementById('findInitial');
+  const pasteUrlBtn = document.getElementById('pasteUrlBtn');
+  const scanBtn = document.getElementById('scanBtn');
+  const urlInputContainer = document.getElementById('urlInputContainer');
+  const urlInput = document.getElementById('urlInput');
+  const urlSubmit = document.getElementById('urlSubmit');
+  const submitText = document.getElementById('submitText');
+  const resultsView = document.getElementById('resultsView');
+  const backLink = document.getElementById('backLink');
+  const proxyList = document.getElementById('proxyList');
+  const emptyState = document.getElementById('emptyState');
+  const productImage = document.getElementById('productImage');
+  const productBrand = document.getElementById('productBrand');
+  const productName = document.getElementById('productName');
+  const proxyCount = document.getElementById('proxyCount');
+
+  // Mock data (replace with real API calls)
+  const mockProxyData = {
+    product: {
+      brand: 'J.CREW',
+      name: 'Halter Mixy Dress',
+      image: '../img/CL648_RD0165_m.png'
+    },
+    proxies: [
+      { username: 'ellaa76', shared: '2 shared sizes', size: 'S', avatar: '' },
+      { username: 'cottagecore28', shared: '1 shared size', size: 'M', avatar: '' },
+      { username: 'srd24', shared: '2 shared sizes', size: 'S', avatar: '' }
+    ]
+  };
+
+  // Show URL input
+  pasteUrlBtn.addEventListener('click', () => {
+    urlInputContainer.classList.add('visible');
+    urlInput.focus();
+  });
+
+  // Scan button (placeholder)
+  scanBtn.addEventListener('click', () => {
+    alert('Camera scanning coming soon!');
+  });
+
+  // Submit URL
+  urlSubmit.addEventListener('click', async () => {
+    const url = urlInput.value.trim();
+    if (!url) return;
+
+    // Show loading state
+    urlSubmit.classList.add('loading');
+    urlSubmit.disabled = true;
+    submitText.textContent = 'Searching...';
+
+    // Simulate API call
+    await new Promise(resolve => setTimeout(resolve, 1500));
+
+    // Show results
+    showResults(mockProxyData);
+
+    // Reset button
+    urlSubmit.classList.remove('loading');
+    urlSubmit.disabled = false;
+    submitText.textContent = 'Search';
+  });
+
+  // Enter key support
+  urlInput.addEventListener('keypress', (e) => {
+    if (e.key === 'Enter') urlSubmit.click();
+  });
+
+  // Back to search
+  backLink.addEventListener('click', () => {
+    resultsView.classList.remove('visible');
+    findInitial.classList.remove('hidden');
+    urlInput.value = '';
+    urlInputContainer.classList.remove('visible');
+  });
+
+  // Show results
+  function showResults(data) {
+    findInitial.classList.add('hidden');
+    resultsView.classList.add('visible');
+
+    // Update product info
+    productBrand.textContent = data.product.brand;
+    productName.textContent = data.product.name;
+    productImage.src = data.product.image;
+
+    // Update proxy count
+    const count = data.proxies.length;
+    proxyCount.textContent = count === 0 ? 'No proxies found' :
+      count === 1 ? '1 proxy owns this item' :
+      `${count} proxies own this item`;
+
+    // Show empty state or proxy list
+    if (count === 0) {
+      proxyList.style.display = 'none';
+      emptyState.style.display = 'block';
+    } else {
+      proxyList.style.display = 'flex';
+      emptyState.style.display = 'none';
+
+      // Render proxies
+      proxyList.innerHTML = data.proxies.map(proxy => `
+        <div class="proxy-card">
+          <div class="proxy-avatar">${proxy.avatar || proxy.username[0].toUpperCase()}</div>
+          <div class="proxy-info">
+            <div class="proxy-username">${proxy.username}</div>
+            <div class="proxy-shared">${proxy.shared}</div>
+          </div>
+          <div class="proxy-size">${proxy.size}</div>
+        </div>
+      `).join('');
+    }
+  }
+
+  // Add to closet button
+  document.getElementById('addToClosetBtn').addEventListener('click', () => {
+    alert('Item added to your closet!');
+  });
+</script>
+
+</body>
+</html>
