@@ -158,7 +158,7 @@
 
         <!-- URL input (hidden initially) -->
         <div class="url-input-container" id="urlInputContainer">
-          <input type="url" class="url-input" id="urlInput" placeholder="https://jcrew.com/..." value="https://www.thereformation.com/products/frankie-silk-dress/1304134LYI.html" />
+          <input type="url" class="url-input" id="urlInput" placeholder="https://jcrew.com/..." value="" />
           <button class="url-submit" id="urlSubmit">
             <span class="spinner"></span>
             <span class="button-text">Continue</span>
@@ -242,12 +242,6 @@
     const actions = document.querySelector('.actions');
     const heroText = document.querySelector('.hero-text');
     const dataGraphic = document.getElementById('dataGraphic');
-
-    // Auto-show URL input for demo (remove these 4 lines if you want to show buttons first)
-    actions.style.display = 'none';
-    heroText.style.display = 'none';
-    dataGraphic.style.display = 'none';
-    urlInputContainer.classList.add('visible');
 
     urlBtn.addEventListener('click', () => {
       actions.style.display = 'none';

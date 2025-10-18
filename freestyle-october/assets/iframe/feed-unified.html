@@ -131,7 +131,7 @@ body::before{
 .feed::-webkit-scrollbar{display:none;}
 
 /* Enhanced Card */
-.card{background:#fff;border:1px solid #eee6;border-radius:18px;overflow:visible;transition:transform 0.2s ease, box-shadow 0.2s ease;position:relative;box-shadow:0 8px 24px rgba(17,25,40,.05)}
+.card{background:#fff;border:1px solid #eee6;border-radius:18px;overflow:visible;transition:transform 0.2s ease, box-shadow 0.2s ease;position:relative;box-shadow:0 8px 24px rgba(17,25,40,.05);z-index:1}
 .card:hover{transform:translateY(-1px);box-shadow:0 16px 40px rgba(17,25,40,.12)}
 .card + .card{margin-top:6px}
 
@@ -284,7 +284,7 @@ body::before{
 .card > .look-h .avatar{box-shadow:0 1px 3px rgba(0,0,0,.08)}
 .card > .look-h + .hero-wrap{border-top-left-radius:0;border-top-right-radius:0}
 
-/* Tighter header for srd24 card (no avatar) */
+/* Tighter header for srd24 card */
 .proxy-card:nth-of-type(2) .pc-look-h{
   padding:8px 16px;
 }
@@ -426,7 +426,7 @@ body::before{
 </style>
 <style>
 /* ===== Proxy card (namespaced from size-twin) ===== */
-.proxy-card{background:#fff;border:1px solid rgba(0,0,0,.06);border-radius:18px;padding:8px 12px 10px;overflow:visible;position:relative}
+.proxy-card{background:#fff;border:1px solid rgba(0,0,0,.06);border-radius:18px;padding:8px 12px 10px;overflow:visible;position:relative;z-index:1}
 .pc-look-h{display:flex;align-items:center;gap:10px;padding:6px 6px 10px;overflow:visible;position:relative}
 .pc-avatar{width:34px;height:34px;border-radius:10px;object-fit:cover}
 .pc-avatar--circle{border-radius:999px}
@@ -978,6 +978,7 @@ body::before{
                 <span class="proxi-inline-wrap">
                   <button type="button"
                           class="pill-proxi pill-proxi--count proxi-trigger"
+                          data-user="ellaa76"
                           aria-label="Shared Proxi items"
                           aria-describedby="tip-proxi-count">
                     <span class="glyph" aria-hidden="true">
@@ -985,7 +986,7 @@ body::before{
                         <path fill="currentColor" d="M225.24,174.74a12,12,0,0,1-1.58,16.89C205.49,206.71,189.06,212,174.15,212c-19.76,0-36.86-9.29-51.88-17.44-25.06-13.62-44.86-24.37-74.61.3a12,12,0,1,1-15.32-18.48c42.25-35,75-17.23,101.39-2.92,25.06,13.61,44.86,24.37,74.61-.3A12,12,0,0,1,225.24,174.74Zm-16.9-57.59c-29.75,24.67-49.55,13.91-74.61.3-26.35-14.3-59.14-32.11-101.39,2.92a12,12,0,0,0,15.32,18.48c29.75-24.67,49.55-13.92,74.61-.3,15,8.15,32.12,17.44,51.88,17.44,14.91,0,31.34-5.29,49.51-20.36a12,12,0,0,0-15.32-18.48ZM47.66,82.84c29.75-24.67,49.55-13.92,74.61-.3,15,8.15,32.12,17.44,51.88,17.44,14.91,0,31.34-5.29,49.51-20.36a12,12,0,0,0-15.32-18.48c-29.75,24.67-49.55,13.92-74.61.3-26.35-14.3-59.14-32.11-101.39,2.93A12,12,0,1,0,47.66,82.84Z"/>
                       </svg>
                     </span>
-                    <span class="count">2 shared sizes</span>
+                    <span class="count">1 shared size</span>
                   </button>
                 </span>
               </div>
@@ -1053,11 +1054,13 @@ body::before{
           <!-- ===== DUPLICATED PROXY CARD (placed below the first) ===== -->
           <section class="proxy-card">
             <header class="pc-look-h">
+              <img class="pc-avatar pc-avatar--circle" src="../img/eli3.png" alt="srd24 profile photo">
               <div class="pc-name">srd24</div>
               <div class="pc-bads">
                 <span class="proxi-inline-wrap">
                   <button type="button"
                           class="pill-proxi pill-proxi--count proxi-trigger"
+                          data-user="srd24"
                           aria-label="Shared Proxi items"
                           aria-describedby="tip-proxi-count">
                     <span class="glyph" aria-hidden="true">
@@ -1065,7 +1068,7 @@ body::before{
                         <path fill="currentColor" d="M225.24,174.74a12,12,0,0,1-1.58,16.89C205.49,206.71,189.06,212,174.15,212c-19.76,0-36.86-9.29-51.88-17.44-25.06-13.62-44.86-24.37-74.61.3a12,12,0,1,1-15.32-18.48c42.25-35,75-17.23,101.39-2.92,25.06,13.61,44.86,24.37,74.61-.3A12,12,0,0,1,225.24,174.74Zm-16.9-57.59c-29.75,24.67-49.55,13.91-74.61.3-26.35-14.3-59.14-32.11-101.39,2.92a12,12,0,0,0,15.32,18.48c29.75-24.67,49.55-13.92,74.61-.3,15,8.15,32.12,17.44,51.88,17.44,14.91,0,31.34-5.29,49.51-20.36a12,12,0,0,0-15.32-18.48ZM47.66,82.84c29.75-24.67,49.55-13.92,74.61-.3,15,8.15,32.12,17.44,51.88,17.44,14.91,0,31.34-5.29,49.51-20.36a12,12,0,0,0-15.32-18.48c-29.75,24.67-49.55,13.92-74.61.3-26.35-14.3-59.14-32.11-101.39,2.93A12,12,0,1,0,47.66,82.84Z"/>
                       </svg>
                     </span>
-                    <span class="count">1 shared size</span>
+                    <span class="count">2 shared sizes</span>
                   </button>
                 </span>
               </div>
@@ -1206,7 +1209,7 @@ body::before{
             </button>
 
             <header class="shared-modal__header">
-              <h2 id="modalTitle" class="shared-modal__title">You & ellaa76 share 2 sizes!</h2>
+              <h2 id="modalTitle" class="shared-modal__title">You & ellaa76 share 1 size!</h2>
             </header>
 
             <!-- Simple list of shared items -->
@@ -1220,18 +1223,6 @@ body::before{
                   <div class="shared-list-brand">J.Crew</div>
                   <div class="shared-list-name">Halter Mixy Dress</div>
                   <div class="shared-list-match">Both own in <strong>S</strong></div>
-                </div>
-              </div>
-
-              <!-- Item 2: AYR Jeans -->
-              <div class="shared-list-item" role="button" tabindex="0">
-                <div class="shared-list-thumb">
-                  <img src="https://www.ayr.com/cdn/shop/files/secretsauce-goodmood_CAT_d634f664-cb49-4e61-abef-5d94b707075e.jpg?crop=center&height=1440&v=1755036845&width=950" alt="AYR The Secret Sauce">
-                </div>
-                <div class="shared-list-content">
-                  <div class="shared-list-brand">AYR</div>
-                  <div class="shared-list-name">The Secret Sauce</div>
-                  <div class="shared-list-match">Both own in <strong>26S</strong></div>
                 </div>
               </div>
             </div>
@@ -1301,7 +1292,7 @@ body::before{
 
 /* Thumbnail */
 .shared-list-thumb{flex-shrink:0;width:120px;height:120px;border-radius:12px;overflow:hidden;background:#E5E7EB}
-.shared-list-thumb img{width:100%;height:100%;object-fit:cover}
+.shared-list-thumb img{width:100%;height:100%;object-fit:cover;object-position:center 20%}
 
 /* Content */
 .shared-list-content{flex:1;min-width:0;display:flex;flex-direction:column;gap:5px}
@@ -1374,9 +1365,87 @@ body::before{
     const modal = document.querySelector('#shared-sizes-modal');
     const closeBtn = modal?.querySelector('.shared-modal__close');
     const overlay = modal?.querySelector('.shared-modal__overlay');
-    const trigger = document.querySelector('.pill-proxi--count'); // "2 shared sizes" pill
+    const triggers = document.querySelectorAll('.pill-proxi--count');
 
-    function openModal() {
+    // Data for each user's shared items
+    const sharedData = {
+      ellaa76: {
+        count: 1,
+        items: [
+          {
+            brand: 'J.Crew',
+            name: 'Halter Mixy Dress',
+            size: 'S',
+            image: '../img/CL648_RD0165_m.png'
+          }
+        ]
+      },
+      srd24: {
+        count: 2,
+        items: [
+          {
+            brand: 'Alexis',
+            name: 'Briette Satin Maxi Dress',
+            size: 'S',
+            image: 'https://cdn.modaoperandi.com/assets/images/products/1039207/685257/c/large_alexis-blue-briette-dress.jpg?_v=1755195214',
+            url: 'https://www.modaoperandi.com/women/p/alexis/briette-dress/685257'
+          },
+          {
+            brand: 'Reformation',
+            name: 'Taryn Two Piece',
+            size: '2',
+            image: 'https://media.thereformation.com/image/upload/f_auto,q_auto:eco,dpr_2.0/w_500/PRD-SFCC/1314122/BLACK/1314122.1.BLACK?_s=RAABAB0',
+            url: 'https://www.thereformation.com/products/taryn-two-piece/1314122.html?dwvar_1314122_color=BLK&quantity=1'
+          }
+        ]
+      }
+    };
+
+    function populateModal(username) {
+      const data = sharedData[username];
+      if (!data) return;
+
+      // Update title
+      const title = modal.querySelector('#modalTitle');
+      if (title) {
+        const sizeWord = data.count === 1 ? 'size' : 'sizes';
+        title.textContent = `You & ${username} share ${data.count} ${sizeWord}!`;
+      }
+
+      // Update items list
+      const itemsList = modal.querySelector('.shared-items-list');
+      if (itemsList) {
+        itemsList.innerHTML = data.items.map(item => `
+          <div class="shared-list-item" role="button" tabindex="0" ${item.url ? `data-url="${item.url}"` : ''} style="${item.url ? 'cursor: pointer;' : ''}">
+            <div class="shared-list-thumb">
+              <img src="${item.image}" alt="${item.name}">
+            </div>
+            <div class="shared-list-content">
+              <div class="shared-list-brand">${item.brand}</div>
+              <div class="shared-list-name">${item.name}</div>
+              <div class="shared-list-match">Both own in <strong>${item.size}</strong></div>
+            </div>
+          </div>
+        `).join('');
+
+        // Add click handlers for items with URLs
+        itemsList.querySelectorAll('.shared-list-item[data-url]').forEach(item => {
+          item.addEventListener('click', () => {
+            const url = item.dataset.url;
+            if (url) window.open(url, '_blank');
+          });
+        });
+      }
+
+      // Update footer button
+      const ctaBtn = modal.querySelector('.shared-modal__cta');
+      if (ctaBtn) {
+        ctaBtn.textContent = `See ${username}'s closet`;
+      }
+    }
+
+    function openModal(username) {
+      populateModal(username);
       if(modal) modal.hidden = false;
     }
 
@@ -1384,8 +1453,14 @@ body::before{
       if(modal) modal.hidden = true;
     }
 
-    // Event listeners
-    trigger?.addEventListener('click', openModal);
+    // Event listeners for all triggers
+    triggers.forEach(trigger => {
+      trigger.addEventListener('click', () => {
+        const username = trigger.dataset.user;
+        openModal(username);
+      });
+    });
+
     closeBtn?.addEventListener('click', closeModal);
     overlay?.addEventListener('click', closeModal);
   })();
