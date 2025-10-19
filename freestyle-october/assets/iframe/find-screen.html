@@ -51,13 +51,47 @@ body::before{
 .logo{font-weight:600;font-size:32px;letter-spacing:-.01em;background:linear-gradient(135deg,var(--cta-start),var(--cta-mid) 46%,var(--cta-end));
   -webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent}
 
+    /* Shared card + section system (aligns with feed/closet screens) */
+    .section{padding:0 24px;margin-top:12px}
+    .section:first-of-type{margin-top:0}
+    .card{
+      background:var(--card);
+      border:1px solid rgba(17,25,40,.08);
+      border-radius:20px;
+      box-shadow:0 12px 32px rgba(17,25,40,.08);
+      overflow:hidden;
+    }
+    .card.is-loose{box-shadow:0 8px 20px rgba(17,25,40,.06)}
+    .card.is-tight{box-shadow:0 10px 24px rgba(17,25,40,.05)}
+    .card-pad{padding:20px 24px}
+    .finder-shell.is-hidden{display:none;}
+    .loading-shell{display:none;}
+    .loading-shell.is-visible{display:block;}
+
     /* Content Container */
-    .content{flex:1;overflow-y:auto;overflow-x:hidden;scrollbar-width:none;-ms-overflow-style:none;position:relative}
+    .content{
+      flex:1;
+      overflow-y:auto;
+      overflow-x:hidden;
+      scrollbar-width:none;
+      -ms-overflow-style:none;
+      position:relative;
+      display:flex;
+      flex-direction:column;
+      gap:20px;
+      padding:12px 0 120px;
+    }
     .content::-webkit-scrollbar{display:none}
 
     /* Find Input Section */
-    .find-section{padding:24px 24px 32px;opacity:1;transition:opacity 0.4s ease,transform 0.4s ease}
-    .find-section.hidden{opacity:0;transform:translateY(-20px);pointer-events:none;position:absolute;width:100%}
+    .find-section{
+      display:flex;
+      flex-direction:column;
+      gap:18px;
+      opacity:1;
+      transition:opacity 0.3s ease;
+    }
+    .find-section.hidden{display:none;}
 
     .find-title{font-weight:700;font-size:28px;line-height:1.2;letter-spacing:-.01em;color:var(--ink);margin-bottom:8px}
     .find-subtitle{font-size:16px;color:var(--muted);margin-bottom:32px;line-height:1.5;max-width:340px}
@@ -77,90 +111,142 @@ body::before{
     .paste-btn:active{transform:scale(.98)}
 
     /* Loading State */
-    .loading-state{display:none;padding:120px 24px;text-align:center}
-    .loading-state.visible{display:block;animation:fadeIn 0.3s ease}
+    .loading-state{display:none;text-align:center}
+    .loading-state.visible{
+      display:flex;
+      flex-direction:column;
+      align-items:center;
+      gap:18px;
+      animation:fadeIn 0.3s ease;
+    }
     .spinner{width:56px;height:56px;border:5px solid var(--petrol-100);border-top-color:var(--petrol-500);
-      border-radius:50%;margin:0 auto 24px;animation:spin 0.8s linear infinite}
+      border-radius:50%;animation:spin 0.8s linear infinite}
     @keyframes spin{to{transform:rotate(360deg)}}
     .loading-text{font-size:17px;color:var(--muted);font-weight:600}
 
     /* Results Section */
-    .results-section{display:none;padding:0 0 96px;opacity:0}
-    .results-section.visible{display:block;animation:fadeIn 0.5s ease forwards}
+    .results-section{
+      display:none;
+      flex-direction:column;
+      gap:20px;
+      width:100%;
+      opacity:0;
+    }
+    .results-section.visible{
+      display:flex;
+      animation:fadeIn 0.5s ease forwards;
+    }
     @keyframes fadeIn{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:translateY(0)}}
 
     /* Product Hero */
-    .product-hero{
-      position:relative; padding-bottom:12px; border-bottom:1px solid rgba(0,0,0,.05);
-      background:linear-gradient(180deg, rgba(0,163,163,.02), #fff 60%);
-      margin-bottom:8px;
+    .product-card{
+      display:flex;
+      flex-direction:column;
+      overflow:hidden;
     }
-    .product-hero .hero-media{
-      position:relative; height:220px; border-radius:18px; overflow:hidden; margin:16px 16px 10px;
-      box-shadow:0 10px 28px rgba(17,25,40,.08);
+    .product-card .hero-media{
+      position:relative;
+      height:240px;
+      overflow:hidden;
+      background:#f6f7f8;
     }
-    .product-hero img{
-      width:100%; height:100%; object-fit:cover; object-position:center 35%; display:block;
+    .product-card .hero-media img{
+      width:100%;
+      height:100%;
+      object-fit:cover;
+      object-position:center 34%;
+      display:block;
       transform:scale(1.02);
     }
-    .product-hero .hero-gradient{
-      position:absolute; inset:auto 0 0 0; height:45%;
+    .product-card .hero-gradient{
+      position:absolute;
+      inset:auto 0 0 0;
+      height:45%;
       background:linear-gradient(180deg, rgba(0,0,0,0) 0%, rgba(255,255,255,.95) 85%, #fff 100%);
     }
+    .product-hero{
+      padding:20px 24px 22px;
+      display:flex;
+      flex-direction:column;
+      gap:12px;
+    }
     .hero-topline{
-      padding:0 20px; display:flex; flex-direction:column; gap:6px;
+      display:flex;
+      flex-direction:column;
+      gap:6px;
     }
     .hero-kicker{
-      font-size:12px; font-weight:800; letter-spacing:.08em; text-transform:uppercase; color:#7A7A80;
+      font-size:12px;
+      font-weight:700;
+      letter-spacing:.08em;
+      text-transform:uppercase;
+      color:var(--muted);
     }
     .hero-brandline{
-      display:flex; flex-wrap:wrap; align-items:baseline; gap:8px;
-      font-size:18px; line-height:1.25; color:#262626;
+      display:flex;
+      flex-wrap:wrap;
+      align-items:baseline;
+      gap:6px;
+      font-size:20px;
+      font-weight:800;
+      letter-spacing:-.01em;
+      color:var(--ink);
     }
     .hero-brandline .brand{letter-spacing:.06em}
-    .hero-brandline .dot{opacity:.35}
+    .hero-brandline .name{font-weight:600}
+    .hero-brandline .dot{opacity:.3}
 
     .hero-databar{
-      display:flex; gap:8px; flex-wrap:wrap; padding:8px 16px 0 16px;
+      display:flex;
+      flex-wrap:wrap;
+      gap:8px;
     }
     .chip{
-      display:inline-flex; align-items:center; gap:6px;
-      padding:8px 10px; border-radius:999px; font-size:12px; font-weight:800;
-      border:1px solid #E6F3F3; background:#F7FCFC; color:#047d7d;
+      display:inline-flex;
+      align-items:center;
+      gap:6px;
+      padding:8px 12px;
+      border-radius:999px;
+      font-size:12px;
+      font-weight:700;
+      border:1px solid #E6F3F3;
+      background:#F7FCFC;
+      color:#047d7d;
     }
     .chip.exact{background:#EAF8F8; border-color:#CDEEEE}
     .chip.twins::before{content:"👯"}
     .chip.notes::before{content:"💬"}
 
-    /* Smart Recommendation */
-    .recommendation-card{margin:24px 24px;padding:20px;background:linear-gradient(135deg,rgba(0,163,163,.08) 0%,rgba(166,255,203,.08) 100%);
-      border:1.5px solid rgba(0,163,163,.2);border-radius:20px;position:relative;overflow:hidden;
-      box-shadow:0 8px 24px rgba(0,163,163,.08);animation:slideIn 0.5s ease 0.3s backwards}
-    @keyframes slideIn{from{opacity:0;transform:translateY(-10px)}to{opacity:1;transform:translateY(0)}}
-    .recommendation-card::before{content:"";position:absolute;top:-50%;right:-10%;width:200px;height:200px;
-      background:radial-gradient(circle,rgba(255,255,255,.4),transparent 70%);pointer-events:none}
-    .rec-header{display:flex;align-items:center;gap:10px;margin-bottom:12px}
-    .rec-icon{width:24px;height:24px;background:linear-gradient(135deg,var(--petrol-500),var(--mint-400));
-      border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:14px;flex-shrink:0}
-    .rec-label{font-size:12px;font-weight:700;color:var(--petrol-600);letter-spacing:.05em;text-transform:uppercase}
-    .rec-title{font-size:20px;font-weight:800;color:var(--ink);margin-bottom:8px;line-height:1.3;letter-spacing:-.01em}
-    .rec-reason{font-size:15px;color:var(--ink);line-height:1.5;font-weight:500;opacity:.8}
-    .rec-reason .stat{color:var(--petrol-600);font-weight:700}
-
-    /* Size Twins Section */
-    .twins-header{padding:20px 24px 18px}
-    .twins-title{font-size:24px;font-weight:700;color:var(--ink);margin-bottom:8px;letter-spacing:-.01em}
-    .twins-count{font-size:15px;color:var(--muted);font-weight:600}
-    .twins-count .num{color:var(--petrol-600);font-weight:700}
+    /* Section heading pattern */
+    .section-head{
+      display:flex;
+      flex-direction:column;
+      gap:6px;
+    }
+    .section-title{
+      font-size:24px;
+      font-weight:700;
+      color:var(--ink);
+      letter-spacing:-.01em;
+    }
+    .section-subtitle{
+      font-size:15px;
+      color:var(--muted);
+      font-weight:600;
+    }
+    .section-subtitle .num{color:var(--petrol-600);font-weight:700}
 
     /* Twin Cards */
-    .twins-feed{padding:0 24px;display:flex;flex-direction:column;gap:18px}
-    .twin-card{background:#fff;border:1px solid rgba(0,0,0,.06);border-radius:20px;overflow:hidden;
-      box-shadow:0 12px 32px rgba(17,25,40,.06);transition:all 0.3s ease;animation:slideUp 0.5s ease backwards}
+    .twins-feed{display:flex;flex-direction:column;gap:16px;margin-top:16px}
+    .twin-card{
+      overflow:hidden;
+      transition:transform 0.2s ease, box-shadow 0.2s ease;
+      animation:slideUp 0.5s ease backwards;
+    }
     .twin-card:nth-child(1){animation-delay:0.1s}
     .twin-card:nth-child(2){animation-delay:0.2s}
     .twin-card:nth-child(3){animation-delay:0.3s}
-    .twin-card:hover{transform:translateY(-4px);box-shadow:0 20px 48px rgba(17,25,40,.14)}
+    .twin-card:hover{transform:translateY(-2px);box-shadow:0 18px 40px rgba(17,25,40,.16)}
     @keyframes slideUp{from{opacity:0;transform:translateY(20px)}to{opacity:1;transform:translateY(0)}}
 
     .twin-image-wrapper{position:relative;overflow:hidden}
@@ -187,7 +273,7 @@ body::before{
       text-transform:uppercase;letter-spacing:.05em}
     .fit-note-text{font-size:14px;color:var(--ink);line-height:1.5;font-weight:500;font-style:italic}
 
-    .twin-info{padding:20px 22px 22px}
+    .twin-info{padding:18px 20px 20px}
     .match-pill{display:inline-flex;align-items:center;gap:8px;padding:9px 16px;background:var(--petrol-100);
       border:1px solid rgba(0,163,163,.2);border-radius:999px;margin-bottom:14px}
     .match-pill .icon{font-size:15px}
@@ -217,13 +303,10 @@ body::before{
     /* Pulse animation for visual interest */
     @keyframes pulse{0%,100%{transform:scale(1)}50%{transform:scale(1.02)}}
 
-    /* Recommendation banner (replaces .recommendation-card styles) */
-    .rec-banner{
-      margin:8px 16px 0;
-      padding:16px;
-      border:1px solid #E6F3F3;
-      border-radius:16px;
-      background:linear-gradient(180deg,rgba(0,163,163,.04),#fff 70%);
+    /* Recommendation card */
+    .rec-card{
+      background:linear-gradient(180deg,rgba(0,163,163,.06),#fff 78%);
+      border:1px solid rgba(0,163,163,.18);
     }
     .rec-badge{
       display:inline-block;
@@ -254,28 +337,25 @@ body::before{
     }
     .why-panel{margin-top:8px; padding:10px 12px; border:1px dashed #CDEEEE; border-radius:12px; background:#F7FCFC}
 
-    /* Slim twin card overrides */
-    .twin-card{border:1px solid #eee; box-shadow:0 6px 18px rgba(17,25,40,.06)}
-    .twin-img{height:380px}
-    .kept-badge,.returned-badge{top:12px; right:12px}
-    .twin-info{padding:14px 16px 16px}
-    .twin-meta{display:flex;justify-content:space-between;align-items:center;margin-bottom:6px}
-    .twin-name{font-weight:700}
-    .twin-match{font-size:12px;color:#6b7280}
-    .twin-fit{font-size:14px;color:#374151}
-    .size-badge{left:12px;bottom:12px;padding:8px 12px;font-size:15px}
-
     /* Sticky action bar */
     .sticky-cta{
-      position:sticky; bottom:83px; /* sits above tab bar */
-      display:flex; align-items:center; justify-content:space-between; gap:12px;
-      margin:12px 16px; padding:10px 12px; border:1px solid #eee; border-radius:14px; background:#fff;
-      box-shadow:0 8px 24px rgba(0,0,0,.08); z-index:50;
+      position:sticky;
+      bottom:96px; /* sits above tab bar */
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      gap:16px;
+      padding:14px 18px;
+      border-radius:20px;
+      border:1px solid rgba(17,25,40,.08);
+      background:var(--card);
+      box-shadow:0 12px 32px rgba(17,25,40,.12);
+      z-index:90;
     }
-    .sticky-label{font-size:11px;color:#6b7280}
-    .sticky-size{font-size:16px;font-weight:800;color:#111}
+    .sticky-label{font-size:11px;color:#6b7280;font-weight:600;text-transform:uppercase;letter-spacing:.08em}
+    .sticky-size{font-size:16px;font-weight:800;color:#111;margin-top:2px}
     .sticky-btn{
-      white-space:nowrap; padding:12px 14px; border:none; border-radius:10px; font-weight:800;
+      white-space:nowrap; padding:12px 18px; border:none; border-radius:12px; font-weight:800;
       background:linear-gradient(135deg,var(--cta-start),var(--cta-mid) 46%,var(--cta-end)); color:#fff;
     }
   </style>
@@ -292,177 +372,177 @@ body::before{
 
         <!-- Main Content -->
         <div class="content">
-          <!-- Find Input Section -->
-          <div class="find-section" id="findSection">
-            <h1 class="find-title">Find your size</h1>
-            <p class="find-subtitle">Paste a product link to see who else owns it and what size they bought</p>
+          <section class="section finder-shell" id="findSectionWrap">
+            <div class="card card-pad find-section" id="findSection">
+              <h1 class="find-title">Find your size</h1>
+              <p class="find-subtitle">Paste a product link to see who else owns it and what size they bought</p>
 
-            <div class="input-wrapper">
-              <input
-                type="text"
-                class="url-input"
-                id="urlInput"
-                placeholder="https://petalandpup.com/products/..."
-                autocomplete="off"
-              >
+              <div class="input-wrapper">
+                <input
+                  type="text"
+                  class="url-input"
+                  id="urlInput"
+                  placeholder="https://petalandpup.com/products/..."
+                  autocomplete="off"
+                >
+              </div>
+
+              <button class="paste-btn" id="pasteBtn" onclick="handlePaste()">
+                Paste Link & Find Size Twins
+              </button>
             </div>
+          </section>
 
-            <button class="paste-btn" id="pasteBtn" onclick="handlePaste()">
-              Paste Link & Find Size Twins
-            </button>
-          </div>
+          <section class="section loading-shell" id="loadingSection">
+            <div class="card card-pad loading-state" id="loadingState">
+              <div class="spinner"></div>
+              <p class="loading-text">Finding your size twins...</p>
+            </div>
+          </section>
 
-          <!-- Loading State -->
-          <div class="loading-state" id="loadingState">
-            <div class="spinner"></div>
-            <p class="loading-text">Finding your size twins...</p>
-          </div>
-
-          <!-- Results Section -->
           <div class="results-section" id="resultsSection">
-            <!-- Product Hero -->
-            <header class="product-hero" aria-label="Product">
-              <div class="hero-media">
-                <!-- Correct relative path from assets/iframe to assets/img -->
-                <img src="../img/pnpdress.png" alt="Petal & Pup Botanique Midi Dress" />
-                <div class="hero-gradient"></div>
-              </div>
-
-              <div class="hero-topline">
-                <span class="hero-kicker">You’re looking for</span>
-                <div class="hero-brandline">
-                  <strong class="brand">PETAL & PUP</strong>
-                  <span class="dot">•</span>
-                  <span class="name">Botanique Midi Dress</span>
+            <section class="section">
+              <article class="card product-card">
+                <div class="hero-media">
+                  <img src="../img/pnpdress.png" alt="Petal & Pup Botanique Midi Dress"/>
+                  <div class="hero-gradient"></div>
                 </div>
-              </div>
+                <header class="product-hero" aria-label="Product">
+                  <div class="hero-topline">
+                    <span class="hero-kicker">You’re looking for</span>
+                    <div class="hero-brandline">
+                      <strong class="brand">PETAL & PUP</strong>
+                      <span class="dot">•</span>
+                      <span class="name">Botanique Midi Dress</span>
+                    </div>
+                  </div>
+                  <div class="hero-databar" role="status" aria-live="polite">
+                    <span class="chip exact">Exact match</span>
+                    <span class="chip twins"><span id="chipTwins">3</span> twins</span>
+                    <span class="chip notes"><span id="chipNotes">5</span> fit notes</span>
+                  </div>
+                </header>
+              </article>
+            </section>
 
-              <div class="hero-databar" role="status" aria-live="polite">
-                <span class="chip exact">Exact match</span>
-                <span class="chip twins"><span id="chipTwins">3</span> twins</span>
-                <span class="chip notes"><span id="chipNotes">5</span> fit notes</span>
-              </div>
-            </header>
+            <section class="section">
+              <article class="card card-pad rec-card" aria-labelledby="rec-title">
+                <div class="rec-badge">Smart recommendation</div>
 
-            <!-- Recommendation Banner -->
-            <section class="rec-banner" aria-labelledby="rec-title">
-              <div class="rec-badge">Smart recommendation</div>
+                <h2 id="rec-title" class="rec-headline">
+                  We recommend <span class="rec-size">Size S</span>
+                </h2>
 
-              <h2 id="rec-title" class="rec-headline">
-                We recommend <span class="rec-size">Size S</span>
-              </h2>
-
-              <div class="rec-confidence">
-                <div class="conf-row">
-                  <span class="conf-label">Confidence</span>
-                  <span class="conf-value">82%</span>
+                <div class="rec-confidence">
+                  <div class="conf-row">
+                    <span class="conf-label">Confidence</span>
+                    <span class="conf-value">82%</span>
+                  </div>
+                  <div class="conf-bar"><span style="width:82%"></span></div>
                 </div>
-                <div class="conf-bar"><span style="width:82%"></span></div>
+
+                <ul class="rec-why">
+                  <li><strong>2 of 3 twins kept S</strong> for this exact dress</li>
+                  <li>Your closest twin <strong>@sarah_chen</strong> stayed true to size</li>
+                  <li>Fits TTS in waist; runs slightly small in bust</li>
+                </ul>
+
+                <button class="primary-cta" onclick="handlePrimaryCTA()">
+                  Copy size & Open retailer →
+                </button>
+
+                <button class="why-toggle" aria-expanded="false" onclick="toggleWhy(this)">
+                  Why this size
+                  <svg width="18" height="18" viewBox="0 0 24 24" aria-hidden="true"><path fill="currentColor" d="M7 10l5 5 5-5z"/></svg>
+                </button>
+
+                <div class="why-panel" hidden>
+                  <p class="why-note">
+                    Based on 3 Proxi owners of this dress and your shared items. We never sell personal data.
+                  </p>
+                </div>
+              </article>
+            </section>
+
+            <section class="section twins-section">
+              <div class="section-head">
+                <h2 class="section-title">Your size twins</h2>
+                <p class="section-subtitle"><span class="num">3 dress twins</span> own this exact dress</p>
               </div>
 
-              <ul class="rec-why">
-                <li><strong>2 of 3 twins kept S</strong> for this exact dress</li>
-                <li>Your closest twin <strong>@sarah_chen</strong> stayed true to size</li>
-                <li>Fits TTS in waist; runs slightly small in bust</li>
-              </ul>
+              <div class="twins-feed">
+                <article class="card twin-card">
+                  <div class="twin-image-wrapper">
+                    <img src="https://images.unsplash.com/photo-1529139574466-a303027c1d8b?w=800&h=1200&fit=crop&q=80" alt="Size twin wearing dress" class="twin-img">
+                    <div class="size-badge">
+                      <span class="label">Bought</span>
+                      <span>size S</span>
+                    </div>
+                    <div class="kept-badge">✓ Kept it</div>
+                  </div>
+                  <div class="twin-info">
+                    <div class="twin-meta">
+                      <div class="twin-name">@sarah_chen</div>
+                      <div class="twin-match">Strong match • 3 shared dresses</div>
+                    </div>
+                    <div class="twin-fit">
+                      Kept <strong>Size S</strong>. Note: runs slightly small in bust.
+                    </div>
+                  </div>
+                </article>
 
-              <button class="primary-cta" onclick="handlePrimaryCTA()">
-                Copy size & Open retailer →
-              </button>
+                <article class="card twin-card">
+                  <div class="twin-image-wrapper">
+                    <img src="https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=800&h=1200&fit=crop&q=80" alt="Size twin wearing dress" class="twin-img">
+                    <div class="size-badge">
+                      <span class="label">Bought</span>
+                      <span>size S</span>
+                    </div>
+                    <div class="kept-badge">✓ Kept it</div>
+                  </div>
+                  <div class="twin-info">
+                    <div class="twin-meta">
+                      <div class="twin-name">@emma_rose</div>
+                      <div class="twin-match">Good match • 2 shared dresses</div>
+                    </div>
+                    <div class="twin-fit">
+                      Kept <strong>Size S</strong>. Note: true to size, perfect at waist.
+                    </div>
+                  </div>
+                </article>
 
-              <button class="why-toggle" aria-expanded="false" onclick="toggleWhy(this)">
-                Why this size
-                <svg width="18" height="18" viewBox="0 0 24 24" aria-hidden="true"><path fill="currentColor" d="M7 10l5 5 5-5z"/></svg>
-              </button>
-
-              <div class="why-panel" hidden>
-                <p class="why-note">
-                  Based on 3 Proxi owners of this dress and your shared items. We never sell personal data.
-                </p>
+                <article class="card twin-card">
+                  <div class="twin-image-wrapper">
+                    <img src="https://images.unsplash.com/photo-1488426862026-3ee34a7d66df?w=800&h=1200&fit=crop&q=80" alt="Size twin wearing dress" class="twin-img">
+                    <div class="size-badge">
+                      <span class="label">Bought</span>
+                      <span>size L</span>
+                    </div>
+                    <div class="returned-badge">✗ Returned it</div>
+                  </div>
+                  <div class="twin-info">
+                    <div class="twin-meta">
+                      <div class="twin-name">@maya_patel</div>
+                      <div class="twin-match">Match • 1 shared dress</div>
+                    </div>
+                    <div class="twin-fit">
+                      Returned <strong>Size L</strong>. Note: runs small; consider sizing up.
+                    </div>
+                  </div>
+                </article>
               </div>
             </section>
 
-            <!-- Size Twins Header -->
-            <div class="twins-header">
-              <h2 class="twins-title">Your size twins</h2>
-              <p class="twins-count"><span class="num">3 dress twins</span> own this exact dress</p>
-            </div>
-
-            <!-- Size Twins Feed -->
-            <div class="twins-feed">
-              <!-- Twin Card 1 - GOLD STANDARD -->
-              <div class="twin-card">
-                <div class="twin-image-wrapper">
-                  <img src="https://images.unsplash.com/photo-1529139574466-a303027c1d8b?w=800&h=1200&fit=crop&q=80" alt="Size twin wearing dress" class="twin-img">
-                  <div class="size-badge">
-                    <span class="label">Bought</span>
-                    <span>size S</span>
-                  </div>
-                  <div class="kept-badge">✓ Kept it</div>
+            <section class="section section--sticky">
+              <div class="sticky-cta" role="region" aria-label="Size action">
+                <div>
+                  <div class="sticky-label">Recommended</div>
+                  <div class="sticky-size">Size S</div>
                 </div>
-                <div class="twin-info">
-                  <div class="twin-meta">
-                    <div class="twin-name">@sarah_chen</div>
-                    <div class="twin-match">Strong match • 3 shared dresses</div>
-                  </div>
-                  <div class="twin-fit">
-                    Kept <strong>Size S</strong>. Note: runs slightly small in bust.
-                  </div>
-                </div>
+                <button class="sticky-btn" onclick="handlePrimaryCTA()">Copy size & Open retailer</button>
               </div>
-
-              <!-- Twin Card 2 - Also kept, good match -->
-              <div class="twin-card">
-                <div class="twin-image-wrapper">
-                  <img src="https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=800&h=1200&fit=crop&q=80" alt="Size twin wearing dress" class="twin-img">
-                  <div class="size-badge">
-                    <span class="label">Bought</span>
-                    <span>size S</span>
-                  </div>
-                  <div class="kept-badge">✓ Kept it</div>
-                </div>
-                <div class="twin-info">
-                  <div class="twin-meta">
-                    <div class="twin-name">@emma_rose</div>
-                    <div class="twin-match">Good match • 2 shared dresses</div>
-                  </div>
-                  <div class="twin-fit">
-                    Kept <strong>Size S</strong>. Note: true to size, perfect at waist.
-                  </div>
-                </div>
-              </div>
-
-              <!-- Twin Card 3 - Returned it (IMPORTANT SIGNAL) -->
-              <div class="twin-card">
-                <div class="twin-image-wrapper">
-                  <img src="https://images.unsplash.com/photo-1488426862026-3ee34a7d66df?w=800&h=1200&fit=crop&q=80" alt="Size twin wearing dress" class="twin-img">
-                  <div class="size-badge">
-                    <span class="label">Bought</span>
-                    <span>size L</span>
-                  </div>
-                  <div class="returned-badge">✗ Returned it</div>
-                </div>
-                <div class="twin-info">
-                  <div class="twin-meta">
-                    <div class="twin-name">@maya_patel</div>
-                    <div class="twin-match">Match • 1 shared dress</div>
-                  </div>
-                  <div class="twin-fit">
-                    Returned <strong>Size L</strong>. Note: runs small; consider sizing up.
-                  </div>
-                </div>
-              </div>
-            </div>
+            </section>
           </div>
-        </div>
-
-        <!-- Sticky action bar -->
-        <div class="sticky-cta" role="region" aria-label="Size action">
-          <div class="sticky-left">
-            <div class="sticky-label">Recommended</div>
-            <div class="sticky-size">Size S</div>
-          </div>
-          <button class="sticky-btn" onclick="handlePrimaryCTA()">Copy size & Open retailer</button>
         </div>
 
         <!-- Bottom Navigation -->
@@ -584,23 +664,29 @@ function handlePaste() {
 
 function showLoading() {
   const findSection = document.getElementById('findSection');
+  const findSectionWrap = document.getElementById('findSectionWrap');
+  const loadingSection = document.getElementById('loadingSection');
   const loadingState = document.getElementById('loadingState');
 
-  findSection.classList.add('hidden');
+  findSection?.classList.add('hidden');
+  findSectionWrap?.classList.add('is-hidden');
   setTimeout(() => {
-    loadingState.classList.add('visible');
+    loadingSection?.classList.add('is-visible');
+    loadingState?.classList.add('visible');
   }, 100);
 
   setTimeout(showResults, 1800);
 }
 
 function showResults() {
+  const loadingSection = document.getElementById('loadingSection');
   const loadingState = document.getElementById('loadingState');
   const resultsSection = document.getElementById('resultsSection');
   const content = document.querySelector('.content');
 
-  loadingState.classList.remove('visible');
-  resultsSection.classList.add('visible');
+  loadingState?.classList.remove('visible');
+  loadingSection?.classList.remove('is-visible');
+  resultsSection?.classList.add('visible');
 
   // Scroll to top smoothly
   setTimeout(() => {
@@ -672,11 +758,15 @@ function updateHeroChips(twins){
 window.addEventListener('DOMContentLoaded', () => {
   if (!window.SHOW_RESULTS_ON_LOAD) return;
   const findSection = document.getElementById('findSection');
+  const findSectionWrap = document.getElementById('findSectionWrap');
+  const loadingSection = document.getElementById('loadingSection');
   const loadingState = document.getElementById('loadingState');
   const resultsSection = document.getElementById('resultsSection');
-  if (findSection) findSection.classList.add('hidden');
-  if (loadingState) loadingState.classList.remove('visible');
-  if (resultsSection) resultsSection.classList.add('visible');
+  findSection?.classList.add('hidden');
+  findSectionWrap?.classList.add('is-hidden');
+  loadingState?.classList.remove('visible');
+  loadingSection?.classList.remove('is-visible');
+  resultsSection?.classList.add('visible');
   // Update hero chips using demo twins on load when showing results
   updateHeroChips(DEMO_TWINS);
 });
