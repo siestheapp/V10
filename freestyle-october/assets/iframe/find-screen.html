@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>Proxi — Find Item</title>
+  <title>Proxi — Find Your Size</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
@@ -12,336 +12,523 @@
       --bg:#FFFFFF; --ink:#262626; --muted:#7A7A80;
       --petrol-600:#009090; --petrol-500:#00A3A3; --petrol-400:#16B5B5; --petrol-100:#E0F7F7;
       --mint-400:#A6FFCB; --ice-300:#7FE1FF;
+      --cta-start:#008888; --cta-mid:#3ECFD5; --cta-end:#9BFFCF;
       --card:#FFFFFF; --track:#ECECEC; --shadow:0 10px 30px rgba(0,0,0,.06);
     }
-    *{margin:0;padding:0;box-sizing:border-box}
-    html{background:#f5f5f5}
-    body{font-family:Inter,system-ui,-apple-system,"Segoe UI",Roboto,Helvetica,Arial;background:#f5f5f5;color:var(--ink);
-      min-height:100vh;display:flex;align-items:center;justify-content:center;padding:0;position:relative}
-    body::before{
-      content:""; position:fixed; inset:-20% -10% auto -10%; height:60vh; pointer-events:none;
-      background:
-        radial-gradient(800px 350px at 50% -120px, rgba(0,163,163,.08), transparent 60%),
-        radial-gradient(1200px 500px at 10% -80px, rgba(166,255,203,.08), transparent 65%);
-      filter:saturate(105%);
-    }
+*{margin:0;padding:0;box-sizing:border-box}
+html{background:#f5f5f5}
+body{font-family:Inter,system-ui,-apple-system,"Segoe UI",Roboto,Helvetica,Arial;background:#f5f5f5;color:var(--ink);
+  min-height:100vh;display:flex;align-items:center;justify-content:center;padding:0;position:relative}
+/* Warm page glow behind app content */
+body::before{
+  content:""; position:fixed; inset:-20% -10% auto -10%; height:60vh; pointer-events:none;
+  background:
+    radial-gradient(800px 350px at 50% -120px, rgba(0,163,163,.08), transparent 60%),
+    radial-gradient(1200px 500px at 10% -80px, rgba(166,255,203,.08), transparent 65%);
+  filter:saturate(105%);
+}
 
-    /* iPhone Frame */
-    .phone{width:430px;height:932px;border-radius:55px;background:transparent;border:2px solid #000;position:relative;box-shadow:none}
-    .screen{position:absolute;inset:2px;background:#fff;border-radius:53px;overflow:hidden;display:flex;flex-direction:column}
-    .island{position:absolute;top:11px;left:50%;transform:translateX(-50%);width:126px;height:37px;background:#000;border-radius:19px;z-index:5}
-    .status{height:54px;margin-top:20px;display:flex;align-items:center;justify-content:space-between;padding:0 30px;font-weight:600;color:#000;font-size:17px;letter-spacing:-.02em}
-    .status .right{display:flex;align-items:center;gap:6px}
-    .status .right img{height:13px;width:auto;display:block}
+/* iPhone Frame */
+.phone{width:430px;height:932px;border-radius:55px;background:transparent;border:2px solid #000;position:relative;box-shadow:none}
+.screen{position:absolute;inset:2px;background:#fff;border-radius:53px;overflow:hidden;display:flex;flex-direction:column}
+.screen,
+.phone,
+.device,
+.feed-viewport{
+  overflow-x:hidden;
+}
 
-    /* Header */
-    .header{padding:16px 20px;display:flex;align-items:center;justify-content:center;border-bottom:1px solid rgba(0,0,0,.08)}
-    .header .logo{font:800 24px/1 Inter;background:var(--petrol-500);-webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent}
+/* Dynamic Island */
+.island{position:absolute;top:11px;left:50%;transform:translateX(-50%);width:126px;height:37px;background:#000;border-radius:19px;z-index:5}
 
-    /* Content area */
-    .content{flex:1;overflow-y:auto;padding:24px 20px 100px}
+/* Status Bar */
+.status{height:54px;margin-top:4px;display:flex;align-items:center;justify-content:space-between;padding:0 30px;font-weight:600;color:#000;font-size:17px;letter-spacing:-.02em}
+.status .right{display:flex;align-items:center;gap:6px}
+.status .right img{height:13px;width:auto;display:block}
 
-    /* Initial state */
-    .find-initial{display:flex;flex-direction:column;align-items:center;padding-top:60px}
-    .find-initial.hidden{display:none}
+/* App Content */
+.header{padding:3px 0px 0px;display:flex;align-items:center;justify-content:center;position:relative;margin-top:0}
+.logo{font-weight:600;font-size:32px;letter-spacing:-.01em;background:linear-gradient(135deg,var(--cta-start),var(--cta-mid) 46%,var(--cta-end));
+  -webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent}
 
-    .hero-text{text-align:center;max-width:300px;margin-bottom:32px}
-    .hero-title{font:700 28px/1.2 Inter;color:var(--ink);margin-bottom:8px}
-    .hero-subtitle{font:500 16px/1.5 Inter;color:var(--muted)}
+    /* Content Container */
+    .content{flex:1;overflow-y:auto;overflow-x:hidden;scrollbar-width:none;-ms-overflow-style:none;position:relative}
+    .content::-webkit-scrollbar{display:none}
 
-    .actions{display:flex;flex-direction:column;gap:12px;width:100%;max-width:340px}
-    .action-btn{padding:18px 20px;border:2px solid #E8E4DE;background:#fff;border-radius:12px;font:700 16px/1.2 Inter;color:var(--ink);cursor:pointer;transition:all .2s;display:flex;align-items:center;gap:12px;box-shadow:0 2px 8px rgba(0,0,0,.06)}
-    .action-btn:hover{border-color:#D8D3C8;background:#FAFAFA;transform:translateY(-1px);box-shadow:0 4px 16px rgba(0,0,0,.08)}
-    .action-btn.primary{background:linear-gradient(135deg,#009090,#35D1AE);border:none;color:#fff;box-shadow:0 8px 24px rgba(0,163,163,.3)}
-    .action-btn.primary:hover{transform:translateY(-2px);box-shadow:0 12px 32px rgba(0,163,163,.4)}
-    .action-icon{width:22px;height:22px;flex-shrink:0}
-    .action-label{flex:1;text-align:left}
+    /* Find Input Section */
+    .find-section{padding:24px 24px 32px;opacity:1;transition:opacity 0.4s ease,transform 0.4s ease}
+    .find-section.hidden{opacity:0;transform:translateY(-20px);pointer-events:none;position:absolute;width:100%}
 
-    /* URL input */
-    .url-input-container{display:none;width:100%;max-width:340px;margin:0 auto;padding-top:40px}
-    .url-input-container.visible{display:flex;flex-direction:column;gap:12px}
-    .url-input{padding:16px 18px;background:#fff;border:2px solid #E8E4DE;border-radius:12px;font:500 15px/1.4 Inter;color:var(--ink);width:100%;transition:all .2s}
-    .url-input::placeholder{color:var(--muted)}
-    .url-input:focus{outline:none;border-color:var(--petrol-400);background:#FAFAFA}
-    .url-submit{padding:16px 24px;background:linear-gradient(135deg,#009090,#35D1AE);color:#fff;border:none;border-radius:12px;font:700 16px/1 Inter;cursor:pointer;transition:all .3s;box-shadow:0 8px 24px rgba(0,163,163,.3);display:flex;align-items:center;justify-content:center;gap:10px}
-    .url-submit:hover{transform:translateY(-2px);box-shadow:0 12px 32px rgba(0,163,163,.4)}
-    .url-submit:disabled{opacity:.6;cursor:not-allowed;transform:none}
+    .find-title{font-weight:700;font-size:28px;line-height:1.2;letter-spacing:-.01em;color:var(--ink);margin-bottom:8px}
+    .find-subtitle{font-size:16px;color:var(--muted);margin-bottom:32px;line-height:1.5;max-width:340px}
 
-    /* Loading spinner */
-    .spinner{width:18px;height:18px;border:2.5px solid rgba(255,255,255,.3);border-top-color:#fff;border-radius:50%;animation:spin .8s linear infinite;display:none}
-    .url-submit.loading .spinner{display:block}
+    .input-wrapper{position:relative;margin-bottom:16px}
+    .url-input{width:100%;padding:18px 20px;border:2px solid #E8E4DE;border-radius:16px;font-size:16px;
+      color:var(--ink);background:#fff;font-family:inherit;transition:all 0.3s ease;outline:none;box-shadow:0 2px 8px rgba(0,0,0,.04)}
+    .url-input:focus{border-color:var(--petrol-400);box-shadow:0 0 0 4px rgba(0,163,163,.08),0 4px 12px rgba(0,0,0,.08)}
+    .url-input::placeholder{color:#999}
+
+    .paste-btn{width:100%;padding:18px;background:linear-gradient(135deg,var(--cta-start),var(--cta-mid) 46%,var(--cta-end));
+      border:none;border-radius:16px;color:#fff;font-weight:700;font-size:17px;cursor:pointer;
+      transition:all 0.3s ease;box-shadow:0 6px 20px rgba(0,163,163,.25);position:relative;overflow:hidden}
+    .paste-btn::before{content:"";position:absolute;inset:1px 1px auto 1px;height:40%;border-radius:15px;
+      background:linear-gradient(180deg,rgba(255,255,255,.12),rgba(255,255,255,0));pointer-events:none}
+    .paste-btn:hover{transform:translateY(-2px);box-shadow:0 8px 24px rgba(0,163,163,.35)}
+    .paste-btn:active{transform:scale(.98)}
+
+    /* Loading State */
+    .loading-state{display:none;padding:120px 24px;text-align:center}
+    .loading-state.visible{display:block;animation:fadeIn 0.3s ease}
+    .spinner{width:56px;height:56px;border:5px solid var(--petrol-100);border-top-color:var(--petrol-500);
+      border-radius:50%;margin:0 auto 24px;animation:spin 0.8s linear infinite}
     @keyframes spin{to{transform:rotate(360deg)}}
+    .loading-text{font-size:17px;color:var(--muted);font-weight:600}
 
-    /* Results view */
-    .results-view{display:none}
-    .results-view.visible{display:block}
+    /* Results Section */
+    .results-section{display:none;padding:0 0 96px;opacity:0}
+    .results-section.visible{display:block;animation:fadeIn 0.5s ease forwards}
+    @keyframes fadeIn{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:translateY(0)}}
 
-    .product-header{margin-bottom:24px;padding:20px;background:#fff;border-radius:16px;box-shadow:0 4px 16px rgba(0,0,0,.06);display:flex;gap:16px}
-    .product-image{width:100px;height:100px;border-radius:12px;object-fit:cover;background:#F0F0F0}
-    .product-info{flex:1;display:flex;flex-direction:column;justify-content:center}
-    .product-brand{font:700 13px/1.2 Inter;text-transform:uppercase;letter-spacing:.05em;color:var(--muted);margin-bottom:4px}
-    .product-name{font:600 17px/1.3 Inter;color:var(--ink);margin-bottom:8px}
-    .add-to-closet-btn{padding:10px 16px;background:var(--petrol-100);color:var(--petrol-600);border:none;border-radius:8px;font:700 14px/1 Inter;cursor:pointer;transition:all .2s;align-self:flex-start}
-    .add-to-closet-btn:hover{background:var(--petrol-400);color:#fff}
+    /* Product Header */
+    .product-header{padding:24px 24px 24px;background:linear-gradient(180deg,rgba(0,163,163,.02) 0%,rgba(255,255,255,0) 100%);
+      border-bottom:1px solid rgba(0,0,0,.05)}
+    .looking-for{font-size:12px;color:var(--muted);margin-bottom:12px;font-weight:700;letter-spacing:.08em;text-transform:uppercase}
+    .product-card{background:#fff;border:1px solid #E8E4DE;border-radius:18px;padding:18px;display:flex;gap:16px;align-items:center;
+      box-shadow:0 8px 24px rgba(0,0,0,.06)}
+    .product-img{width:90px;height:90px;border-radius:14px;object-fit:cover;background:#f8f8f8}
+    .product-info{flex:1}
+    .product-brand{font-size:12px;color:var(--muted);font-weight:700;margin-bottom:4px;letter-spacing:.08em;text-transform:uppercase}
+    .product-name{font-size:17px;font-weight:700;color:var(--ink);line-height:1.3}
 
-    .section-title{font:700 18px/1.2 Inter;color:var(--ink);margin-bottom:16px}
-    .proxy-count{font:600 15px/1 Inter;color:var(--muted);margin-bottom:16px}
+    /* Smart Recommendation */
+    .recommendation-card{margin:24px 24px;padding:20px;background:linear-gradient(135deg,rgba(0,163,163,.08) 0%,rgba(166,255,203,.08) 100%);
+      border:1.5px solid rgba(0,163,163,.2);border-radius:20px;position:relative;overflow:hidden;
+      box-shadow:0 8px 24px rgba(0,163,163,.08);animation:slideIn 0.5s ease 0.3s backwards}
+    @keyframes slideIn{from{opacity:0;transform:translateY(-10px)}to{opacity:1;transform:translateY(0)}}
+    .recommendation-card::before{content:"";position:absolute;top:-50%;right:-10%;width:200px;height:200px;
+      background:radial-gradient(circle,rgba(255,255,255,.4),transparent 70%);pointer-events:none}
+    .rec-header{display:flex;align-items:center;gap:10px;margin-bottom:12px}
+    .rec-icon{width:24px;height:24px;background:linear-gradient(135deg,var(--petrol-500),var(--mint-400));
+      border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:14px;flex-shrink:0}
+    .rec-label{font-size:12px;font-weight:700;color:var(--petrol-600);letter-spacing:.05em;text-transform:uppercase}
+    .rec-title{font-size:20px;font-weight:800;color:var(--ink);margin-bottom:8px;line-height:1.3;letter-spacing:-.01em}
+    .rec-reason{font-size:15px;color:var(--ink);line-height:1.5;font-weight:500;opacity:.8}
+    .rec-reason .stat{color:var(--petrol-600);font-weight:700}
 
-    .proxy-list{display:flex;flex-direction:column;gap:12px}
-    .proxy-card{background:#fff;border-radius:14px;padding:16px;box-shadow:0 2px 8px rgba(0,0,0,.04);border:1px solid #E8E4DE;display:flex;align-items:center;gap:14px;transition:all .2s}
-    .proxy-card:hover{box-shadow:0 6px 16px rgba(0,0,0,.08);border-color:#D8D3C8}
+    /* Size Twins Section */
+    .twins-header{padding:20px 24px 18px}
+    .twins-title{font-size:24px;font-weight:700;color:var(--ink);margin-bottom:8px;letter-spacing:-.01em}
+    .twins-count{font-size:15px;color:var(--muted);font-weight:600}
+    .twins-count .num{color:var(--petrol-600);font-weight:700}
 
-    .proxy-avatar{width:48px;height:48px;border-radius:50%;background:linear-gradient(135deg,#009090,#35D1AE);display:flex;align-items:center;justify-content:center;color:#fff;font:700 18px/1 Inter;flex-shrink:0}
-    .proxy-avatar img{width:100%;height:100%;border-radius:50%;object-fit:cover}
+    /* Twin Cards */
+    .twins-feed{padding:0 24px;display:flex;flex-direction:column;gap:18px}
+    .twin-card{background:#fff;border:1px solid rgba(0,0,0,.06);border-radius:20px;overflow:hidden;
+      box-shadow:0 12px 32px rgba(17,25,40,.06);transition:all 0.3s ease;animation:slideUp 0.5s ease backwards}
+    .twin-card:nth-child(1){animation-delay:0.1s}
+    .twin-card:nth-child(2){animation-delay:0.2s}
+    .twin-card:nth-child(3){animation-delay:0.3s}
+    .twin-card:hover{transform:translateY(-4px);box-shadow:0 20px 48px rgba(17,25,40,.14)}
+    @keyframes slideUp{from{opacity:0;transform:translateY(20px)}to{opacity:1;transform:translateY(0)}}
 
-    .proxy-info{flex:1}
-    .proxy-username{font:700 15px/1.2 Inter;color:var(--ink);margin-bottom:4px}
-    .proxy-shared{font:500 13px/1.3 Inter;color:var(--muted)}
-    .proxy-size{font:700 16px/1 Inter;color:var(--petrol-600);padding:8px 12px;background:var(--petrol-100);border-radius:8px}
+    .twin-image-wrapper{position:relative;overflow:hidden}
+    .twin-img{width:100%;height:460px;object-fit:cover;object-position:center 25%;display:block}
+    .twin-image-wrapper::after{content:"";position:absolute;left:0;right:0;bottom:0;height:15%;
+      background:linear-gradient(180deg,rgba(255,255,255,0) 0%,rgba(250,248,246,.4) 50%,rgba(255,255,255,.95) 100%);pointer-events:none}
 
-    .empty-state{text-align:center;padding:60px 20px;color:var(--muted)}
-    .empty-icon{width:64px;height:64px;margin:0 auto 16px;opacity:.5}
-    .empty-title{font:700 20px/1.2 Inter;color:var(--ink);margin-bottom:8px}
-    .empty-text{font:500 15px/1.4 Inter;color:var(--muted);max-width:280px;margin:0 auto}
+    .size-badge{position:absolute;left:18px;bottom:18px;display:inline-flex;align-items:center;gap:10px;
+      padding:12px 18px;background:rgba(255,255,255,.95);backdrop-filter:blur(16px);border:1px solid rgba(0,0,0,.06);
+      border-radius:999px;font-weight:800;font-size:17px;color:var(--petrol-600);z-index:2;
+      box-shadow:0 8px 24px rgba(0,0,0,.12)}
+    .size-badge .label{font-size:14px;font-weight:600;color:var(--muted)}
 
-    .back-link{display:inline-flex;align-items:center;gap:8px;font:600 15px/1 Inter;color:var(--petrol-500);cursor:pointer;margin-bottom:20px;transition:color .2s}
-    .back-link:hover{color:var(--petrol-600)}
+    .kept-badge{position:absolute;right:18px;top:18px;padding:8px 14px;background:rgba(34,197,94,.95);
+      backdrop-filter:blur(12px);border:1px solid rgba(255,255,255,.3);border-radius:999px;
+      font-weight:700;font-size:13px;color:#fff;z-index:2;box-shadow:0 4px 12px rgba(34,197,94,.3)}
+    .returned-badge{position:absolute;right:18px;top:18px;padding:8px 14px;background:rgba(239,68,68,.92);
+      backdrop-filter:blur(12px);border:1px solid rgba(255,255,255,.3);border-radius:999px;
+      font-weight:700;font-size:13px;color:#fff;z-index:2;box-shadow:0 4px 12px rgba(239,68,68,.3)}
 
-    /* Tabs */
+    .fit-note{margin-top:14px;padding:14px 16px;background:rgba(0,163,163,.04);border:1px solid rgba(0,163,163,.12);
+      border-radius:12px}
+    .fit-note-header{font-size:12px;font-weight:700;color:var(--petrol-600);margin-bottom:6px;
+      text-transform:uppercase;letter-spacing:.05em}
+    .fit-note-text{font-size:14px;color:var(--ink);line-height:1.5;font-weight:500;font-style:italic}
+
+    .twin-info{padding:20px 22px 22px}
+    .match-pill{display:inline-flex;align-items:center;gap:8px;padding:9px 16px;background:var(--petrol-100);
+      border:1px solid rgba(0,163,163,.2);border-radius:999px;margin-bottom:14px}
+    .match-pill .icon{font-size:15px}
+    .match-pill .text{font-size:13px;color:var(--petrol-600);font-weight:700;line-height:1.2}
+
+    .twin-details{margin-bottom:16px}
+    .twin-name{font-size:17px;font-weight:700;color:var(--ink);margin-bottom:8px}
+    .shared-item{font-size:15px;color:var(--muted);line-height:1.5;font-weight:500}
+    .shared-item .highlight{color:var(--petrol-600);font-weight:700}
+
+    .shop-btn{display:flex;align-items:center;justify-content:center;gap:10px;width:100%;
+      padding:16px;background:linear-gradient(135deg,var(--cta-start),var(--cta-mid) 46%,var(--cta-end));
+      border:none;border-radius:16px;color:#fff;font-weight:700;font-size:16px;cursor:pointer;
+      transition:all 0.3s ease;box-shadow:0 6px 20px rgba(0,163,163,.25);position:relative;overflow:hidden}
+    .shop-btn::before{content:"";position:absolute;inset:1px 1px auto 1px;height:40%;border-radius:15px;
+      background:linear-gradient(180deg,rgba(255,255,255,.12),rgba(255,255,255,0));pointer-events:none}
+    .shop-btn:hover{transform:translateY(-2px);box-shadow:0 8px 24px rgba(0,163,163,.35)}
+    .shop-btn:active{transform:scale(.98)}
+
+    /* Tab bar */
     .tabs{position:absolute;left:0;right:0;bottom:0;height:83px;background:#fff;border-top:1px solid rgba(0,0,0,.08);
       display:flex;justify-content:space-around;align-items:flex-start;padding-top:8px;padding-bottom:34px;z-index:100}
     .tab{display:flex;flex-direction:column;align-items:center;gap:6px;text-decoration:none;color:#8e8e93;font-size:11px;font-weight:500;transition:color 0.2s ease}
     .tab.active{color:var(--petrol-600);font-weight:600}
     .ico{width:28px;height:28px;display:block}
+
+    /* Pulse animation for visual interest */
+    @keyframes pulse{0%,100%{transform:scale(1)}50%{transform:scale(1.02)}}
   </style>
 </head>
 <body>
   <div class="phone">
-    <div class="screen">
-      <div class="island"></div>
-      <div class="status">
-        <div>9:41</div>
-        <div class="right">
-          <img src="../img/cellular-connection.svg" alt="cell"/>
-          <img src="../img/wifi.svg" alt="wifi"/>
-          <img src="../img/battery.svg" alt="battery"/>
-        </div>
-      </div>
+      <div class="screen">
+        <div class="island"></div>
+        <div class="status"><div>9:41</div><div class="right"><img src="../img/cellular-connection.svg" alt="cell"/><img src="../img/wifi.svg" alt="wifi"/><img src="../img/battery.svg" alt="battery"/></div></div>
 
-      <div class="header">
-        <div class="logo">proxi</div>
-      </div>
-
-      <div class="content">
-        <!-- Initial state: Scan or Paste URL -->
-        <div class="find-initial" id="findInitial">
-          <div class="hero-text">
-            <h1 class="hero-title">Find your fit</h1>
-            <p class="hero-subtitle">See what size your proxies wear in any item</p>
-          </div>
-
-          <div class="actions">
-            <button class="action-btn primary" id="scanBtn">
-              <svg class="action-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
-                <rect x="3" y="3" width="18" height="18" rx="2"/>
-                <path d="M9 9h.01M9 15h.01M15 9h.01M15 15h.01"/>
-              </svg>
-              <span class="action-label">Scan barcode</span>
-            </button>
-
-            <button class="action-btn" id="pasteUrlBtn">
-              <svg class="action-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
-                <path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"/>
-                <path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"/>
-              </svg>
-              <span class="action-label">Paste product link</span>
-            </button>
-          </div>
-
-          <!-- URL input (hidden initially) -->
-          <div class="url-input-container" id="urlInputContainer">
-            <input
-              type="url"
-              class="url-input"
-              id="urlInput"
-              placeholder="https://www.jcrew.com/product/..."
-              autocomplete="off"
-            />
-            <button class="url-submit" id="urlSubmit">
-              <span class="spinner"></span>
-              <span id="submitText">Search</span>
-            </button>
-          </div>
+        <div class="header">
+          <div class="logo">proxi</div>
         </div>
 
-        <!-- Results view (hidden initially) -->
-        <div class="results-view" id="resultsView">
-          <a class="back-link" id="backLink">
-            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
-              <path d="M19 12H5M12 19l-7-7 7-7"/>
-            </svg>
-            Back to search
-          </a>
+        <!-- Main Content -->
+        <div class="content">
+          <!-- Find Input Section -->
+          <div class="find-section" id="findSection">
+            <h1 class="find-title">Find your size</h1>
+            <p class="find-subtitle">Paste a product link to see who else owns it and what size they bought</p>
 
-          <!-- Product info -->
-          <div class="product-header">
-            <img class="product-image" id="productImage" src="" alt="Product">
-            <div class="product-info">
-              <div class="product-brand" id="productBrand">J.CREW</div>
-              <div class="product-name" id="productName">Halter Mixy Dress</div>
-              <button class="add-to-closet-btn" id="addToClosetBtn">+ Add to closet</button>
+            <div class="input-wrapper">
+              <input
+                type="text"
+                class="url-input"
+                id="urlInput"
+                placeholder="https://petalandpup.com/products/..."
+                autocomplete="off"
+              >
+            </div>
+
+            <button class="paste-btn" id="pasteBtn" onclick="handlePaste()">
+              Paste Link & Find Size Twins
+            </button>
+          </div>
+
+          <!-- Loading State -->
+          <div class="loading-state" id="loadingState">
+            <div class="spinner"></div>
+            <p class="loading-text">Finding your size twins...</p>
+          </div>
+
+          <!-- Results Section -->
+          <div class="results-section" id="resultsSection">
+            <!-- Product Header -->
+            <div class="product-header">
+              <div class="looking-for">You're looking for</div>
+              <div class="product-card">
+                <img src="https://images.unsplash.com/photo-1595777457583-95e059d581b8?w=200&h=200&fit=crop&q=80" alt="Product" class="product-img">
+                <div class="product-info">
+                  <div class="product-brand">PETAL & PUP</div>
+                  <div class="product-name">Botanique Midi Dress</div>
+                </div>
+              </div>
+            </div>
+
+            <!-- Smart Recommendation (Rule-based, no AI API needed!) -->
+            <div class="recommendation-card">
+              <div class="rec-header">
+                <div class="rec-icon">✨</div>
+                <div class="rec-label">Smart Recommendation</div>
+              </div>
+              <div class="rec-title">We recommend size M</div>
+              <div class="rec-reason">
+                <span class="stat">2 out of 3</span> dress twins bought size M and kept it. Your closest match (@sarah_chen with 3 shared dresses) sized up from S to M.
+              </div>
+            </div>
+
+            <!-- Size Twins Header -->
+            <div class="twins-header">
+              <h2 class="twins-title">Your size twins</h2>
+              <p class="twins-count"><span class="num">3 dress twins</span> own this exact dress</p>
+            </div>
+
+            <!-- Size Twins Feed -->
+            <div class="twins-feed">
+              <!-- Twin Card 1 - GOLD STANDARD -->
+              <div class="twin-card">
+                <div class="twin-image-wrapper">
+                  <img src="https://images.unsplash.com/photo-1529139574466-a303027c1d8b?w=800&h=1200&fit=crop&q=80" alt="Size twin wearing dress" class="twin-img">
+                  <div class="size-badge">
+                    <span class="label">Bought</span>
+                    <span>size M</span>
+                  </div>
+                  <div class="kept-badge">✓ Kept it</div>
+                </div>
+                <div class="twin-info">
+                  <div class="match-pill">
+                    <span class="icon">✨</span>
+                    <span class="text">Strong match • 3 shared dresses</span>
+                  </div>
+                  <div class="twin-details">
+                    <div class="twin-name">@sarah_chen</div>
+                    <p class="shared-item">You both wear a <span class="highlight">size S</span> in the Petal & Pup Rosalie Midi Dress</p>
+                  </div>
+                  <div class="fit-note">
+                    <div class="fit-note-header">💬 Fit notes</div>
+                    <p class="fit-note-text">"Sized up for a looser fit. Perfect length at 5'6". Runs slightly small in bust."</p>
+                  </div>
+                  <button class="shop-btn" onclick="handleShop()">
+                    Shop this size →
+                  </button>
+                </div>
+              </div>
+
+              <!-- Twin Card 2 - Also kept, good match -->
+              <div class="twin-card">
+                <div class="twin-image-wrapper">
+                  <img src="https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=800&h=1200&fit=crop&q=80" alt="Size twin wearing dress" class="twin-img">
+                  <div class="size-badge">
+                    <span class="label">Bought</span>
+                    <span>size M</span>
+                  </div>
+                  <div class="kept-badge">✓ Kept it</div>
+                </div>
+                <div class="twin-info">
+                  <div class="match-pill">
+                    <span class="icon">🎯</span>
+                    <span class="text">Good match • 2 shared dresses</span>
+                  </div>
+                  <div class="twin-details">
+                    <div class="twin-name">@emma_rose</div>
+                    <p class="shared-item">You both wear a <span class="highlight">size M</span> in the Aritzia Sunday Best Slip Dress</p>
+                  </div>
+                  <div class="fit-note">
+                    <div class="fit-note-header">💬 Fit notes</div>
+                    <p class="fit-note-text">"True to size. Fits perfectly at the waist. Love the length!"</p>
+                  </div>
+                  <button class="shop-btn" onclick="handleShop()">
+                    Shop this size →
+                  </button>
+                </div>
+              </div>
+
+              <!-- Twin Card 3 - Returned it (IMPORTANT SIGNAL) -->
+              <div class="twin-card">
+                <div class="twin-image-wrapper">
+                  <img src="https://images.unsplash.com/photo-1488426862026-3ee34a7d66df?w=800&h=1200&fit=crop&q=80" alt="Size twin wearing dress" class="twin-img">
+                  <div class="size-badge">
+                    <span class="label">Bought</span>
+                    <span>size L</span>
+                  </div>
+                  <div class="returned-badge">✗ Returned it</div>
+                </div>
+                <div class="twin-info">
+                  <div class="match-pill">
+                    <span class="icon">👤</span>
+                    <span class="text">Match • 1 shared dress</span>
+                  </div>
+                  <div class="twin-details">
+                    <div class="twin-name">@maya_patel</div>
+                    <p class="shared-item">You both wear a <span class="highlight">size L</span> in the Everlane Linen Dress</p>
+                  </div>
+                  <div class="fit-note">
+                    <div class="fit-note-header">💬 Fit notes</div>
+                    <p class="fit-note-text">"Sized up but still too tight. Runs very small - recommend going 2 sizes up."</p>
+                  </div>
+                  <button class="shop-btn" onclick="handleShop()">
+                    View details
+                  </button>
+                </div>
+              </div>
             </div>
           </div>
+        </div>
 
-          <h2 class="section-title">Your proxies</h2>
-          <div class="proxy-count" id="proxyCount">3 proxies own this item</div>
-
-          <!-- Proxy list -->
-          <div class="proxy-list" id="proxyList">
-            <!-- Proxies will be dynamically inserted here -->
-          </div>
-
-          <!-- Empty state (hidden by default) -->
-          <div class="empty-state" id="emptyState" style="display:none">
-            <svg class="empty-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-              <circle cx="12" cy="12" r="10"/>
-              <path d="M16 16s-1.5-2-4-2-4 2-4 2M9 9h.01M15 9h.01"/>
-            </svg>
-            <div class="empty-title">No proxies found</div>
-            <p class="empty-text">None of your proxies have tried this item yet. Be the first!</p>
-          </div>
+        <!-- Bottom Navigation -->
+        <div class="tabs">
+          <a class="tab active" href="#">
+            <svg class="ico" viewBox="0 0 256 256" aria-hidden="true"><path fill="currentColor" d="M241,150.65s0,0,0-.05a51.33,51.33,0,0,0-2.53-5.9L196.93,50.18a12,12,0,0,0-2.5-3.65,36,36,0,0,0-50.92,0A12,12,0,0,0,140,55V76H116V55a12,12,0,0,0-3.51-8.48,36,36,0,0,0-50.92,0,12,12,0,0,0-2.5,3.65L17.53,144.7A51.33,51.33,0,0,0,15,150.6s0,0,0,.05A52,52,0,1,0,116,168V100h24v68a52,52,0,1,0,101-17.35ZM80,62.28a12,12,0,0,1,12-1.22v63.15a51.9,51.9,0,0,0-35.9-7.62ZM64,196a28,28,0,1,1,28-28A28,28,0,0,1,64,196ZM164,61.06a12.06,12.06,0,0,1,12,1.22l23.87,54.31a51.9,51.9,0,0,0-35.9,7.62ZM192,196a28,28,0,1,1,28-28A28,28,0,0,1,192,196Z"/></svg>
+            <span>Find</span>
+          </a>
+          <a class="tab" href="#">
+            <svg class="ico" viewBox="0 0 256 256" aria-hidden="true"><path fill="currentColor" d="M225.24,174.74a12,12,0,0,1-1.58,16.89C205.49,206.71,189.06,212,174.15,212c-19.76,0-36.86-9.29-51.88-17.44-25.06-13.62-44.86-24.37-74.61.3a12,12,0,1,1-15.32-18.48c42.25-35,75-17.23,101.39-2.92,25.06,13.61,44.86,24.37,74.61-.3A12,12,0,0,1,225.24,174.74Zm-16.9-57.59c-29.75,24.67-49.55,13.91-74.61.3-26.35-14.3-59.14-32.11-101.39,2.92a12,12,0,0,0,15.32,18.48c29.75-24.67,49.55-13.92,74.61-.3,15,8.15,32.12,17.44,51.88,17.44,14.91,0,31.34-5.29,49.51-20.36a12,12,0,0,0-15.32-18.48ZM47.66,82.84c29.75-24.67,49.55-13.92,74.61-.3,15,8.15,32.12,17.44,51.88,17.44,14.91,0,31.34-5.29,49.51-20.36a12,12,0,0,0-15.32-18.48c-29.75,24.67-49.55,13.92-74.61.3-26.35-14.3-59.14-32.11-101.39,2.93A12,12,0,1,0,47.66,82.84Z"/></svg>
+            <span>Feed</span>
+          </a>
+          <a class="tab" href="closet-screen.html">
+            <svg class="ico" viewBox="0 0 256 256" aria-hidden="true"><path fill="currentColor" d="M244,168,148,96l19.2-14.4A12,12,0,0,0,172,72a44,44,0,0,0-87.66-5.48,12,12,0,1,0,23.82,3,20,20,0,0,1,39.09-2.92L121,86.24c-.15.1-.29.21-.43.32L12,168a20,20,0,0,0,12,36H232a20,20,0,0,0,12-36ZM36,180l92-69,92,69Z"/></svg>
+            <span>Closet</span>
+          </a>
+          <a class="tab" href="#">
+            <svg class="ico" viewBox="0 0 256 256" aria-hidden="true"><path fill="currentColor" d="M234.38,210a123.36,123.36,0,0,0-60.78-53.23,76,76,0,1,0-91.2,0A123.36,123.36,0,0,0,21.62,210a12,12,0,1,0,20.77,12c18.12-31.32,50.12-50,85.61-50s67.49,18.69,85.61,50a12,12,0,0,0,20.77-12ZM76,96a52,52,0,1,1,52,52A52.06,52.06,0,0,1,76,96Z"/></svg>
+            <span>Profile</span>
+          </a>
         </div>
       </div>
-
-      <div class="tabs">
-        <a class="tab active" href="#"><svg class="ico" viewBox="0 0 256 256" aria-hidden="true"><path fill="currentColor" d="M241,150.65s0,0,0-.05a51.33,51.33,0,0,0-2.53-5.9L196.93,50.18a12,12,0,0,0-2.5-3.65,36,36,0,0,0-50.92,0A12,12,0,0,0,140,55V76H116V55a12,12,0,0,0-3.51-8.48,36,36,0,0,0-50.92,0,12,12,0,0,0-2.5,3.65L17.53,144.7A51.33,51.33,0,0,0,15,150.6s0,0,0,.05A52,52,0,1,0,116,168V100h24v68a52,52,0,1,0,101-17.35ZM80,62.28a12,12,0,0,1,12-1.22v63.15a51.9,51.9,0,0,0-35.9-7.62ZM64,196a28,28,0,1,1,28-28A28,28,0,0,1,64,196ZM164,61.06a12.06,12.06,0,0,1,12,1.22l23.87,54.31a51.9,51.9,0,0,0-35.9,7.62ZM192,196a28,28,0,1,1,28-28A28,28,0,0,1,192,196Z"/></svg><span>Find</span></a>
-        <a class="tab" href="feed-unified.html"><svg class="ico" viewBox="0 0 256 256" aria-hidden="true"><path fill="currentColor" d="M225.24,174.74a12,12,0,0,1-1.58,16.89C205.49,206.71,189.06,212,174.15,212c-19.76,0-36.86-9.29-51.88-17.44-25.06-13.62-44.86-24.37-74.61.3a12,12,0,1,1-15.32-18.48c42.25-35,75-17.23,101.39-2.92,25.06,13.61,44.86,24.37,74.61-.3A12,12,0,0,1,225.24,174.74Zm-16.9-57.59c-29.75,24.67-49.55,13.91-74.61.3-26.35-14.3-59.14-32.11-101.39,2.92a12,12,0,0,0,15.32,18.48c29.75-24.67,49.55-13.92,74.61-.3,15,8.15,32.12,17.44,51.88,17.44,14.91,0,31.34-5.29,49.51-20.36a12,12,0,0,0-15.32-18.48ZM47.66,82.84c29.75-24.67,49.55-13.92,74.61-.3,15,8.15,32.12,17.44,51.88,17.44,14.91,0,31.34-5.29,49.51-20.36a12,12,0,0,0-15.32-18.48c-29.75,24.67-49.55,13.92-74.61.3-26.35-14.3-59.14-32.11-101.39,2.93A12,12,0,1,0,47.66,82.84Z"/></svg><span>Feed</span></a>
-        <a class="tab" href="closet-screen.html"><svg class="ico" viewBox="0 0 256 256" aria-hidden="true"><path fill="currentColor" d="M244,168,148,96l19.2-14.4A12,12,0,0,0,172,72a44,44,0,0,0-87.66-5.48,12,12,0,1,0,23.82,3,20,20,0,0,1,39.09-2.92L121,86.24c-.15.1-.29.21-.43.32L12,168a20,20,0,0,0,12,36H232a20,20,0,0,0,12-36ZM36,180l92-69,92,69Z"/></svg><span>Closet</span></a>
-        <a class="tab" href="#"><svg class="ico" viewBox="0 0 256 256" aria-hidden="true"><path fill="currentColor" d="M234.38,210a123.36,123.36,0,0,0-60.78-53.23,76,76,0,1,0-91.2,0A123.36,123.36,0,0,0,21.62,210a12,12,0,1,0,20.77,12c18.12-31.32,50.12-50,85.61-50s67.49,18.69,85.61,50a12,12,0,0,0,20.77-12ZM76,96a52,52,0,1,1,52,52A52.06,52.06,0,0,1,76,96Z"/></svg><span>Profile</span></a>
-      </div>
-    </div>
-  </div>
+</div>
 
 <script>
-  // Elements
-  const findInitial = document.getElementById('findInitial');
-  const pasteUrlBtn = document.getElementById('pasteUrlBtn');
-  const scanBtn = document.getElementById('scanBtn');
-  const urlInputContainer = document.getElementById('urlInputContainer');
-  const urlInput = document.getElementById('urlInput');
-  const urlSubmit = document.getElementById('urlSubmit');
-  const submitText = document.getElementById('submitText');
-  const resultsView = document.getElementById('resultsView');
-  const backLink = document.getElementById('backLink');
-  const proxyList = document.getElementById('proxyList');
-  const emptyState = document.getElementById('emptyState');
-  const productImage = document.getElementById('productImage');
-  const productBrand = document.getElementById('productBrand');
-  const productName = document.getElementById('productName');
-  const proxyCount = document.getElementById('proxyCount');
+/*
+ * RULE-BASED RECOMMENDATION ENGINE (Zero AI API Costs!)
+ *
+ * This generates personalized recommendations using simple logic.
+ * No LLM calls needed - just count, compare, and template.
+ *
+ * Example logic for generating the recommendation:
+ */
 
-  // Mock data (replace with real API calls)
-  const mockProxyData = {
-    product: {
-      brand: 'J.CREW',
-      name: 'Halter Mixy Dress',
-      image: '../img/CL648_RD0165_m.png'
-    },
-    proxies: [
-      { username: 'ellaa76', shared: '2 shared sizes', size: 'S', avatar: '' },
-      { username: 'cottagecore28', shared: '1 shared size', size: 'M', avatar: '' },
-      { username: 'srd24', shared: '2 shared sizes', size: 'S', avatar: '' }
-    ]
+function generateRecommendation(twins, userProfile) {
+  // 1. Count size distribution
+  const sizeCounts = {};
+  twins.forEach(twin => {
+    sizeCounts[twin.size] = (sizeCounts[twin.size] || 0) + 1;
+  });
+
+  // 2. Find modal size (most common)
+  const modalSize = Object.keys(sizeCounts).reduce((a, b) =>
+    sizeCounts[a] > sizeCounts[b] ? a : b
+  );
+  const modalCount = sizeCounts[modalSize];
+  const consensus = modalCount / twins.length;
+
+  // 3. Find strongest match (twin with most shared items)
+  const strongestMatch = twins.reduce((strongest, current) =>
+    current.sharedItemsCount > strongest.sharedItemsCount ? current : strongest
+  );
+
+  // 4. Generate recommendation based on rules
+  let recommendation = {
+    size: modalSize,
+    title: `We recommend size ${modalSize}`,
+    reason: ''
   };
 
-  // Show URL input
-  pasteUrlBtn.addEventListener('click', () => {
-    urlInputContainer.classList.add('visible');
-    urlInput.focus();
-  });
-
-  // Scan button (placeholder)
-  scanBtn.addEventListener('click', () => {
-    alert('Camera scanning coming soon!');
-  });
-
-  // Submit URL
-  urlSubmit.addEventListener('click', async () => {
-    const url = urlInput.value.trim();
-    if (!url) return;
-
-    // Show loading state
-    urlSubmit.classList.add('loading');
-    urlSubmit.disabled = true;
-    submitText.textContent = 'Searching...';
-
-    // Simulate API call
-    await new Promise(resolve => setTimeout(resolve, 1500));
-
-    // Show results
-    showResults(mockProxyData);
-
-    // Reset button
-    urlSubmit.classList.remove('loading');
-    urlSubmit.disabled = false;
-    submitText.textContent = 'Search';
-  });
-
-  // Enter key support
-  urlInput.addEventListener('keypress', (e) => {
-    if (e.key === 'Enter') urlSubmit.click();
-  });
-
-  // Back to search
-  backLink.addEventListener('click', () => {
-    resultsView.classList.remove('visible');
-    findInitial.classList.remove('hidden');
-    urlInput.value = '';
-    urlInputContainer.classList.remove('visible');
-  });
-
-  // Show results
-  function showResults(data) {
-    findInitial.classList.add('hidden');
-    resultsView.classList.add('visible');
-
-    // Update product info
-    productBrand.textContent = data.product.brand;
-    productName.textContent = data.product.name;
-    productImage.src = data.product.image;
-
-    // Update proxy count
-    const count = data.proxies.length;
-    proxyCount.textContent = count === 0 ? 'No proxies found' :
-      count === 1 ? '1 proxy owns this item' :
-      `${count} proxies own this item`;
-
-    // Show empty state or proxy list
-    if (count === 0) {
-      proxyList.style.display = 'none';
-      emptyState.style.display = 'block';
-    } else {
-      proxyList.style.display = 'flex';
-      emptyState.style.display = 'none';
-
-      // Render proxies
-      proxyList.innerHTML = data.proxies.map(proxy => `
-        <div class="proxy-card">
-          <div class="proxy-avatar">${proxy.avatar || proxy.username[0].toUpperCase()}</div>
-          <div class="proxy-info">
-            <div class="proxy-username">${proxy.username}</div>
-            <div class="proxy-shared">${proxy.shared}</div>
-          </div>
-          <div class="proxy-size">${proxy.size}</div>
-        </div>
-      `).join('');
-    }
+  // Rule 1: Strong consensus (80%+)
+  if (consensus >= 0.8) {
+    recommendation.reason = `<span class="stat">${modalCount} out of ${twins.length}</span> of your size twins bought size ${modalSize}.`;
+  }
+  // Rule 2: Closest match insight
+  else if (strongestMatch) {
+    recommendation.size = strongestMatch.size;
+    recommendation.title = `We recommend size ${strongestMatch.size}`;
+    recommendation.reason = `Your closest match (@${strongestMatch.username}) sized ${getSizingDirection(userProfile.size, strongestMatch.size)} to ${strongestMatch.size} in this dress.`;
+  }
+  // Rule 3: Split decision
+  else {
+    recommendation.title = `Most twins bought size ${modalSize}`;
+    recommendation.reason = `<span class="stat">${modalCount} out of ${twins.length}</span> twins bought size ${modalSize}, but sizes vary. Check the details below.`;
   }
 
-  // Add to closet button
-  document.getElementById('addToClosetBtn').addEventListener('click', () => {
-    alert('Item added to your closet!');
-  });
+  return recommendation;
+}
+
+function getSizingDirection(userSize, twinSize) {
+  const sizeOrder = ['XXS', 'XS', 'S', 'M', 'L', 'XL', 'XXL'];
+  const userIdx = sizeOrder.indexOf(userSize);
+  const twinIdx = sizeOrder.indexOf(twinSize);
+  if (twinIdx > userIdx) return 'up';
+  if (twinIdx < userIdx) return 'down';
+  return 'true to size';
+}
+
+// Total cost: $0. Zero API calls. Instant results.
+
+// Auto-play demo sequence for screen recording
+let isPlaying = false;
+
+function handlePaste() {
+  if (isPlaying) return;
+  isPlaying = true;
+
+  const urlInput = document.getElementById('urlInput');
+  const url = 'https://petalandpup.com/products/botanique-midi-dress-floral';
+
+  // Focus input
+  urlInput.focus();
+
+  // Type animation
+  let i = 0;
+  const typeInterval = setInterval(() => {
+    if (i < url.length) {
+      urlInput.value = url.substring(0, i + 1);
+      i++;
+    } else {
+      clearInterval(typeInterval);
+      setTimeout(showLoading, 400);
+    }
+  }, 25);
+}
+
+function showLoading() {
+  const findSection = document.getElementById('findSection');
+  const loadingState = document.getElementById('loadingState');
+
+  findSection.classList.add('hidden');
+  setTimeout(() => {
+    loadingState.classList.add('visible');
+  }, 100);
+
+  setTimeout(showResults, 1800);
+}
+
+function showResults() {
+  const loadingState = document.getElementById('loadingState');
+  const resultsSection = document.getElementById('resultsSection');
+  const content = document.querySelector('.content');
+
+  loadingState.classList.remove('visible');
+  resultsSection.classList.add('visible');
+
+  // Scroll to top smoothly
+  setTimeout(() => {
+    content.scrollTo({ top: 0, behavior: 'smooth' });
+  }, 100);
+
+  // Slow scroll through results for the video
+  setTimeout(() => {
+    const scrollHeight = content.scrollHeight - content.clientHeight;
+    const duration = 4000; // 4 seconds to scroll through
+    const startTime = performance.now();
+
+    function animateScroll(currentTime) {
+      const elapsed = currentTime - startTime;
+      const progress = Math.min(elapsed / duration, 1);
+
+      // Ease in-out function
+      const easeProgress = progress < 0.5
+        ? 2 * progress * progress
+        : 1 - Math.pow(-2 * progress + 2, 2) / 2;
+
+      content.scrollTop = scrollHeight * easeProgress;
+
+      if (progress < 1) {
+        requestAnimationFrame(animateScroll);
+      }
+    }
+
+    requestAnimationFrame(animateScroll);
+  }, 800);
+
+  isPlaying = false;
+}
+
+function handleShop() {
+  // Visual feedback
+  const btn = event.target;
+  btn.style.transform = 'scale(0.95)';
+  setTimeout(() => {
+    btn.style.transform = '';
+  }, 150);
+}
+
+// Auto-start demo after 1.5 seconds
+// DISABLED FOR EDITING - Uncomment for screen recording
+// setTimeout(() => {
+//   handlePaste();
+// }, 1500);
 </script>
 
 </body>
