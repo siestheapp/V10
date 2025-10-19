@@ -184,6 +184,43 @@ body::before{
 
     /* Pulse animation for visual interest */
     @keyframes pulse{0%,100%{transform:scale(1)}50%{transform:scale(1.02)}}
+
+    /* Recommendation banner (replaces .recommendation-card styles) */
+    .rec-banner{
+      margin:16px 16px 0;
+      padding:16px;
+      border:1px solid #E6F3F3;
+      border-radius:16px;
+      background:linear-gradient(180deg,rgba(0,163,163,.04),#fff 70%);
+    }
+    .rec-badge{
+      display:inline-block;
+      font-size:11px; font-weight:700; letter-spacing:.06em; text-transform:uppercase;
+      color:#047d7d; background:#EAF8F8; border:1px solid #CDEEEE;
+      border-radius:999px; padding:6px 10px; margin-bottom:10px;
+    }
+    .rec-headline{font-size:20px; font-weight:800; color:#222; margin-bottom:10px;}
+    .rec-size{color:#047d7d}
+    .rec-confidence{margin-bottom:10px}
+    .conf-row{display:flex;justify-content:space-between;align-items:center;margin-bottom:6px}
+    .conf-label{font-size:12px;color:#6b7280;font-weight:600}
+    .conf-value{font-size:12px;color:#111;font-weight:700}
+    .conf-bar{height:8px;background:#eef7f7;border-radius:999px;overflow:hidden}
+    .conf-bar span{display:block;height:100%;background:#00A3A3}
+
+    .rec-why{margin:10px 0 12px 18px;color:#374151;font-size:14px;line-height:1.45}
+    .rec-why li{margin:6px 0}
+    .primary-cta{
+      width:100%; padding:14px 16px; border:none; border-radius:12px;
+      background:linear-gradient(135deg,var(--cta-start),var(--cta-mid) 46%,var(--cta-end));
+      color:#fff; font-weight:800; font-size:16px; box-shadow:0 6px 16px rgba(0,163,163,.25);
+      margin-top:6px;
+    }
+    .why-toggle{
+      margin-top:8px; width:100%; background:transparent; border:none; color:#047d7d;
+      font-weight:700; font-size:13px; display:flex; align-items:center; justify-content:center; gap:6px;
+    }
+    .why-panel{margin-top:8px; padding:10px 12px; border:1px dashed #CDEEEE; border-radius:12px; background:#F7FCFC}
   </style>
 </head>
 <body>
@@ -238,17 +275,43 @@ body::before{
               </div>
             </div>
 
-            <!-- Smart Recommendation (Rule-based, no AI API needed!) -->
-            <div class="recommendation-card">
-              <div class="rec-header">
-                <div class="rec-icon">✨</div>
-                <div class="rec-label">Smart Recommendation</div>
+            <!-- Recommendation Banner -->
+            <section class="rec-banner" aria-labelledby="rec-title">
+              <div class="rec-badge">Smart recommendation</div>
+
+              <h2 id="rec-title" class="rec-headline">
+                We recommend <span class="rec-size">Size S</span>
+              </h2>
+
+              <div class="rec-confidence">
+                <div class="conf-row">
+                  <span class="conf-label">Confidence</span>
+                  <span class="conf-value">82%</span>
+                </div>
+                <div class="conf-bar"><span style="width:82%"></span></div>
               </div>
-              <div class="rec-title">We recommend size S</div>
-              <div class="rec-reason">
-                <span class="stat">2 out of 3</span> dress twins bought size S and kept it. Your closest match (@sarah_chen with 3 shared dresses) stayed true to size in S.
+
+              <ul class="rec-why">
+                <li><strong>2 of 3 twins kept S</strong> for this exact dress</li>
+                <li>Your closest twin <strong>@sarah_chen</strong> stayed true to size</li>
+                <li>Fits TTS in waist; runs slightly small in bust</li>
+              </ul>
+
+              <button class="primary-cta" onclick="handlePrimaryCTA()">
+                Copy size & Open retailer →
+              </button>
+
+              <button class="why-toggle" aria-expanded="false" onclick="toggleWhy(this)">
+                Why this size
+                <svg width="18" height="18" viewBox="0 0 24 24" aria-hidden="true"><path fill="currentColor" d="M7 10l5 5 5-5z"/></svg>
+              </button>
+
+              <div class="why-panel" hidden>
+                <p class="why-note">
+                  Based on 3 Proxi owners of this dress and your shared items. We never sell personal data.
+                </p>
               </div>
-            </div>
+            </section>
 
             <!-- Size Twins Header -->
             <div class="twins-header">
@@ -438,6 +501,9 @@ function getSizingDirection(userSize, twinSize) {
 
 // Auto-play demo sequence for screen recording
 let isPlaying = false;
+// Work-mode flags (no recording):
+window.SHOW_RESULTS_ON_LOAD = true;
+window.ENABLE_AUTOSCROLL = false;
 
 function handlePaste() {
   if (isPlaying) return;
@@ -487,30 +553,32 @@ function showResults() {
     content.scrollTo({ top: 0, behavior: 'smooth' });
   }, 100);
 
-  // Slow scroll through results for the video
-  setTimeout(() => {
-    const scrollHeight = content.scrollHeight - content.clientHeight;
-    const duration = 4000; // 4 seconds to scroll through
-    const startTime = performance.now();
+  // Slow scroll is disabled while editing unless explicitly enabled
+  if (window.ENABLE_AUTOSCROLL) {
+    setTimeout(() => {
+      const scrollHeight = content.scrollHeight - content.clientHeight;
+      const duration = 4000; // 4 seconds to scroll through
+      const startTime = performance.now();
 
-    function animateScroll(currentTime) {
-      const elapsed = currentTime - startTime;
-      const progress = Math.min(elapsed / duration, 1);
+      function animateScroll(currentTime) {
+        const elapsed = currentTime - startTime;
+        const progress = Math.min(elapsed / duration, 1);
 
-      // Ease in-out function
-      const easeProgress = progress < 0.5
-        ? 2 * progress * progress
-        : 1 - Math.pow(-2 * progress + 2, 2) / 2;
+        // Ease in-out function
+        const easeProgress = progress < 0.5
+          ? 2 * progress * progress
+          : 1 - Math.pow(-2 * progress + 2, 2) / 2;
 
-      content.scrollTop = scrollHeight * easeProgress;
+        content.scrollTop = scrollHeight * easeProgress;
 
-      if (progress < 1) {
-        requestAnimationFrame(animateScroll);
+        if (progress < 1) {
+          requestAnimationFrame(animateScroll);
+        }
       }
-    }
 
-    requestAnimationFrame(animateScroll);
-  }, 800);
+      requestAnimationFrame(animateScroll);
+    }, 800);
+  }
 
   isPlaying = false;
 }
@@ -529,6 +597,30 @@ function handleShop() {
 // setTimeout(() => {
 //   handlePaste();
 // }, 1500);
+
+// While editing: land directly on results
+window.addEventListener('DOMContentLoaded', () => {
+  if (!window.SHOW_RESULTS_ON_LOAD) return;
+  const findSection = document.getElementById('findSection');
+  const loadingState = document.getElementById('loadingState');
+  const resultsSection = document.getElementById('resultsSection');
+  if (findSection) findSection.classList.add('hidden');
+  if (loadingState) loadingState.classList.remove('visible');
+  if (resultsSection) resultsSection.classList.add('visible');
+});
+
+function toggleWhy(btn){
+  const panel = btn.nextElementSibling;
+  const expanded = btn.getAttribute('aria-expanded') === 'true';
+  btn.setAttribute('aria-expanded', !expanded);
+  panel.hidden = expanded;
+}
+
+function handlePrimaryCTA(){
+  // Copy size & open product in new tab
+  navigator.clipboard?.writeText('Size S');
+  window.open('https://petalandpup.com/products/botanique-midi-dress-floral', '_blank');
+}
 </script>
 
 </body>
