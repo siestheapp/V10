@@ -138,84 +138,127 @@ body::before{
     }
     @keyframes fadeIn{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:translateY(0)}}
 
-    /* Product Hero */
-    .product-card{
+    /* Unified Product + Recommendation Card */
+    .unified-card{
       display:flex;
-      flex-direction:column;
+      gap:20px;
+      padding:20px;
       overflow:hidden;
     }
-    .product-card .hero-media{
-      position:relative;
-      height:380px; /* Increased to show full dress */
-      overflow:hidden;
+    .product-image{
+      flex-shrink:0;
+      width:140px;
+      height:210px;
       background:#f6f7f8;
+      border-radius:12px;
+      overflow:hidden;
     }
-    .product-card .hero-media img{
+    .product-image img{
       width:100%;
       height:100%;
-      object-fit:contain; /* Changed from cover to contain to show full dress */
-      object-position:center center; /* Center the full image */
+      object-fit:contain;
+      object-position:center;
       display:block;
-      background:#f6f7f8; /* Match container background for any empty space */
     }
-    .product-card .hero-gradient{
-      position:absolute;
-      inset:auto 0 0 0;
-      height:25%; /* Reduced gradient height since image is taller */
-      background:linear-gradient(180deg, rgba(0,0,0,0) 0%, rgba(255,255,255,.95) 85%, #fff 100%);
-    }
-    .product-hero{
-      padding:20px 24px 22px;
+    .product-details{
+      flex:1;
       display:flex;
       flex-direction:column;
-      gap:12px;
+      gap:20px;
     }
-    .hero-topline{
+    .product-info{
       display:flex;
       flex-direction:column;
-      gap:6px;
+      gap:8px;
     }
-    .hero-kicker{
-      font-size:12px;
+    .product-kicker{
+      font-size:11px;
       font-weight:700;
       letter-spacing:.08em;
       text-transform:uppercase;
       color:var(--muted);
     }
-    .hero-brandline{
+    .product-title{
       display:flex;
-      flex-wrap:wrap;
-      align-items:baseline;
-      gap:6px;
+      flex-direction:column;
+      gap:4px;
+      margin:0;
+    }
+    .product-brand{
       font-size:20px;
       font-weight:800;
-      letter-spacing:-.01em;
+      letter-spacing:.01em;
       color:var(--ink);
     }
-    .hero-brandline .brand{letter-spacing:.06em}
-    .hero-brandline .name{font-weight:600}
-    .hero-brandline .dot{opacity:.3}
-
-    .hero-databar{
-      display:flex;
-      flex-wrap:wrap;
-      gap:8px;
+    .product-name{
+      font-size:17px;
+      font-weight:600;
+      color:var(--ink);
+      opacity:0.85;
     }
-    .chip{
-      display:inline-flex;
+
+    /* Size Recommendation Section */
+    .size-rec-section{
+      display:flex;
       align-items:center;
+      justify-content:space-between;
+      gap:12px;
+      padding-top:16px;
+      border-top:1px solid rgba(0,0,0,.06);
+      width:100%;
+    }
+    .size-rec-left{
+      flex:1;
+      display:flex;
+      flex-direction:column;
       gap:6px;
-      padding:8px 12px;
-      border-radius:999px;
-      font-size:12px;
+    }
+    .size-rec-title{
+      font-size:24px;
+      font-weight:800;
+      color:var(--ink);
+      margin:0;
+    }
+    .size-highlight{
+      color:#047d7d;
+      background:linear-gradient(135deg,var(--cta-start),var(--cta-mid));
+      -webkit-background-clip:text;
+      background-clip:text;
+      -webkit-text-fill-color:transparent;
+    }
+    .size-meta{
+      display:flex;
+      align-items:center;
+      gap:8px;
+      font-size:13px;
+    }
+    .confidence{
       font-weight:700;
-      border:1px solid #E6F3F3;
-      background:#F7FCFC;
       color:#047d7d;
     }
-    .chip.exact{background:#EAF8F8; border-color:#CDEEEE}
-    .chip.twins::before{content:"👯"}
-    .chip.notes::before{content:"💬"}
+    .separator{
+      color:#d1d5db;
+    }
+    .twins-agree{
+      color:#6b7280;
+      font-weight:600;
+    }
+    .cta-button{
+      padding:12px 20px;
+      border:none;
+      border-radius:12px;
+      background:linear-gradient(135deg,var(--cta-start),var(--cta-mid) 46%,var(--cta-end));
+      color:#fff;
+      font-weight:800;
+      font-size:14px;
+      box-shadow:0 4px 16px rgba(0,163,163,.25);
+      cursor:pointer;
+      transition:all 0.2s ease;
+      white-space:nowrap;
+      flex-shrink:0;
+    }
+    .cta-button:hover{transform:translateY(-2px);box-shadow:0 6px 20px rgba(0,163,163,.35)}
+    .cta-button:active{transform:scale(.98)}
 
     /* Section heading pattern */
     .section-head{
@@ -231,10 +274,9 @@ body::before{
     }
     .section-subtitle{
       font-size:15px;
-      color:var(--muted);
+      color:#047d7d;
       font-weight:600;
     }
-    .section-subtitle .num{color:var(--petrol-600);font-weight:700}
 
     /* Twin Cards */
     .twins-feed{display:flex;flex-direction:column;gap:16px;margin-top:16px}
@@ -303,54 +345,6 @@ body::before{
     /* Pulse animation for visual interest */
     @keyframes pulse{0%,100%{transform:scale(1)}50%{transform:scale(1.02)}}
 
-    /* Recommendation card */
-    .rec-card{
-      background:linear-gradient(180deg,rgba(0,163,163,.06),#fff 78%);
-      border:1px solid rgba(0,163,163,.18);
-    }
-    .rec-badge{
-      display:inline-block;
-      font-size:11px; font-weight:700; letter-spacing:.06em; text-transform:uppercase;
-      color:#047d7d; background:#EAF8F8; border:1px solid #CDEEEE;
-      border-radius:999px; padding:6px 10px; margin-bottom:10px;
-    }
-    .rec-headline{font-size:20px; font-weight:800; color:#222; margin-bottom:10px;}
-    .rec-size{color:#047d7d}
-    .rec-confidence{margin-bottom:10px}
-    .conf-row{display:flex;justify-content:space-between;align-items:center;margin-bottom:6px}
-    .conf-label{font-size:12px;color:#6b7280;font-weight:600}
-    .conf-value{font-size:12px;color:#111;font-weight:700}
-    .conf-bar{height:8px;background:#eef7f7;border-radius:999px;overflow:hidden}
-    .conf-bar span{display:block;height:100%;background:#00A3A3}
-
-    .rec-insight{
-      margin:16px 0;
-      display:flex;
-      flex-direction:column;
-      gap:10px;
-    }
-    .rec-stat{
-      font-size:15px;
-      color:#111;
-      display:flex;
-      align-items:center;
-      gap:8px;
-    }
-    .rec-fit-note{
-      font-size:14px;
-      color:#4b5563;
-      display:flex;
-      align-items:center;
-      gap:8px;
-    }
-    .primary-cta{
-      width:100%; padding:16px 18px; border:none; border-radius:14px;
-      background:linear-gradient(135deg,var(--cta-start),var(--cta-mid) 46%,var(--cta-end));
-      color:#fff; font-weight:800; font-size:17px; box-shadow:0 6px 20px rgba(0,163,163,.3);
-      margin-top:8px; cursor:pointer; transition:all 0.3s ease;
-    }
-    .primary-cta:hover{transform:translateY(-2px);box-shadow:0 8px 24px rgba(0,163,163,.4)}
-    .primary-cta:active{transform:scale(.98)}
 
     /* Sticky action bar */
     .sticky-cta{
@@ -421,120 +415,78 @@ body::before{
 
           <div class="results-section" id="resultsSection">
             <section class="section">
-              <article class="card product-card">
-                <div class="hero-media">
+              <article class="card unified-card">
+                <div class="product-image">
                   <img src="../img/pnpdress.png" alt="Petal & Pup Botanique Midi Dress"/>
-                  <div class="hero-gradient"></div>
                 </div>
-                <header class="product-hero" aria-label="Product">
-                  <div class="hero-topline">
-                    <span class="hero-kicker">You’re looking for</span>
-                    <div class="hero-brandline">
-                      <strong class="brand">PETAL & PUP</strong>
-                      <span class="dot">•</span>
-                      <span class="name">Botanique Midi Dress</span>
+                <div class="product-details">
+                  <div class="product-info">
+                    <span class="product-kicker">You're looking for</span>
+                    <h2 class="product-title">
+                      <span class="product-brand">PETAL & PUP</span>
+                      <span class="product-name">Botanique Midi Dress</span>
+                    </h2>
+                  </div>
+
+                  <div class="size-rec-section">
+                    <div class="size-rec-left">
+                      <h3 class="size-rec-title">Get <span class="size-highlight">Size S</span></h3>
+                      <div class="size-meta">
+                        <span class="confidence">82% confident</span>
+                        <span class="separator">•</span>
+                        <span class="twins-agree">2 of 3 twins agree</span>
+                      </div>
                     </div>
+                    <button class="cta-button" onclick="handlePrimaryCTA()">
+                      Copy & Shop →
+                    </button>
                   </div>
-                  <div class="hero-databar" role="status" aria-live="polite">
-                    <span class="chip exact">Exact match</span>
-                    <span class="chip twins"><span id="chipTwins">3</span> twins</span>
-                    <span class="chip notes"><span id="chipNotes">5</span> fit notes</span>
-                  </div>
-                </header>
-              </article>
-            </section>
-
-            <section class="section">
-              <article class="card card-pad rec-card" aria-labelledby="rec-title">
-                <div class="rec-badge">Proxi Recommendation</div>
-
-                <h2 id="rec-title" class="rec-headline">
-                  Order <span class="rec-size">Size S</span>
-                </h2>
-
-                <div class="rec-confidence">
-                  <div class="conf-row">
-                    <span class="conf-label">Confidence</span>
-                    <span class="conf-value">82% match</span>
-                  </div>
-                  <div class="conf-bar"><span style="width:82%"></span></div>
                 </div>
-
-                <div class="rec-insight">
-                  <div class="rec-stat">👯 <strong>2 of 3</strong> twins kept Size S</div>
-                  <div class="rec-fit-note">⚡ Fits true to size • Slightly snug in bust</div>
-                </div>
-
-                <button class="primary-cta" onclick="handlePrimaryCTA()">
-                  Copy Size S & Shop Now →
-                </button>
               </article>
             </section>
 
             <section class="section twins-section">
               <div class="section-head">
-                <h2 class="section-title">Your size twins</h2>
-                <p class="section-subtitle"><span class="num">3 dress twins</span> own this exact dress</p>
+                <h2 class="section-title">Your proxies</h2>
+                <p class="section-subtitle">3 dress twins own this exact dress</p>
               </div>
 
               <div class="twins-feed">
-                <article class="card twin-card">
-                  <div class="twin-image-wrapper">
-                    <img src="https://images.unsplash.com/photo-1529139574466-a303027c1d8b?w=800&h=1200&fit=crop&q=80" alt="Size twin wearing dress" class="twin-img">
-                    <div class="size-badge">
-                      <span class="label">Bought</span>
-                      <span>size S</span>
-                    </div>
-                    <div class="kept-badge">✓ Kept it</div>
-                  </div>
-                  <div class="twin-info">
-                    <div class="twin-meta">
-                      <div class="twin-name">@sarah_chen</div>
-                      <div class="twin-match">Strong match • 3 shared dresses</div>
-                    </div>
-                    <div class="twin-fit">
-                      Kept <strong>Size S</strong>. Note: runs slightly small in bust.
+                <!-- COMPARISON: First card from feed-unified.html -->
+                <article class="card proxy-card-feed" style="margin-top: 20px;">
+                  <div style="padding: 12px 16px; background: #fff; border-bottom: 1px solid #eee;">
+                    <div style="display: flex; align-items: center; gap: 10px;">
+                      <img style="width: 36px; height: 36px; border-radius: 50%; object-fit: cover; object-position: center 10%;" src="../img/u1.jpg" alt="bellag22">
+                      <div style="flex: 1;">
+                        <div style="font-weight: 700; font-size: 14px;">bellag22</div>
+                        <div style="font-size: 12px; color: #666;">Matches your Somerset (XS)</div>
+                      </div>
+                      <div style="padding: 4px 8px; background: #E0F7F7; border-radius: 999px; font-size: 11px; color: #047d7d; font-weight: 600;">
+                        1 shared size
+                      </div>
                     </div>
                   </div>
-                </article>
-
-                <article class="card twin-card">
-                  <div class="twin-image-wrapper">
-                    <img src="https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=800&h=1200&fit=crop&q=80" alt="Size twin wearing dress" class="twin-img">
-                    <div class="size-badge">
-                      <span class="label">Bought</span>
-                      <span>size S</span>
+                  <div style="position: relative;">
+                    <img src="../img/pnpreal.png" alt="J.Crew Halter Mixy Dress" style="width: 100%; height: 600px; object-fit: cover;">
+                    <div style="position: absolute; top: 10px; right: 10px; padding: 6px 10px; background: rgba(0,0,0,.45); backdrop-filter: blur(2px); border: 1px solid rgba(255,255,255,.35); border-radius: 999px; color: #fff; font-size: 12px; font-weight: 700;">
+                      S
                     </div>
-                    <div class="kept-badge">✓ Kept it</div>
-                  </div>
-                  <div class="twin-info">
-                    <div class="twin-meta">
-                      <div class="twin-name">@emma_rose</div>
-                      <div class="twin-match">Good match • 2 shared dresses</div>
-                    </div>
-                    <div class="twin-fit">
-                      Kept <strong>Size S</strong>. Note: true to size, perfect at waist.
+                    <div style="position: absolute; top: 10px; left: 10px; padding: 6px 12px; background: rgba(255,255,255,.94); backdrop-filter: blur(8px); border: 1px solid rgba(0,0,0,.12); border-radius: 999px; color: #34424D; font-size: 13px; font-weight: 500;">
+                      Same as yours
                     </div>
                   </div>
-                </article>
-
-                <article class="card twin-card">
-                  <div class="twin-image-wrapper">
-                    <img src="https://images.unsplash.com/photo-1488426862026-3ee34a7d66df?w=800&h=1200&fit=crop&q=80" alt="Size twin wearing dress" class="twin-img">
-                    <div class="size-badge">
-                      <span class="label">Bought</span>
-                      <span>size L</span>
+                  <div style="padding: 14px 16px;">
+                    <div style="font-size: 15px; margin-bottom: 8px;">
+                      <strong>J.Crew</strong> Halter Mixy Dress (S)
                     </div>
-                    <div class="returned-badge">✗ Returned it</div>
-                  </div>
-                  <div class="twin-info">
-                    <div class="twin-meta">
-                      <div class="twin-name">@maya_patel</div>
-                      <div class="twin-match">Match • 1 shared dress</div>
+                    <div style="padding: 10px 12px; background: #f5f5f5; border-radius: 8px; margin-bottom: 12px;">
+                      <div style="font-size: 12px; color: #666; margin-bottom: 4px;">Comments · 4</div>
+                      <div style="font-size: 13px;"><strong>ggnyc8989:</strong> Is this petite or regular?</div>
+                      <div style="font-size: 11px; color: #047d7d; margin-top: 4px;">See full thread &gt;</div>
                     </div>
-                    <div class="twin-fit">
-                      Returned <strong>Size L</strong>. Note: runs small; consider sizing up.
-                    </div>
+                    <button style="width: 100%; padding: 12px; background: linear-gradient(135deg,#008888,#3ECFD5 46%,#9BFFCF); border: none; border-radius: 12px; color: #fff; font-weight: 700; font-size: 15px;">
+                      Shop this item
+                    </button>
                   </div>
                 </article>
               </div>
@@ -790,10 +742,10 @@ function handlePrimaryCTA(){
   const sizeText = 'Size S';
   navigator.clipboard?.writeText(sizeText).then(() => {
     // Update button text temporarily to show it was copied
-    const buttons = document.querySelectorAll('.primary-cta, .sticky-btn');
+    const buttons = document.querySelectorAll('.cta-button, .sticky-btn');
     buttons.forEach(btn => {
       const originalText = btn.textContent;
-      btn.textContent = '✓ Copied Size S!';
+      btn.textContent = '✓ Copied!';
       setTimeout(() => {
         btn.textContent = originalText;
       }, 1500);
