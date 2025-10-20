@@ -52,10 +52,26 @@ body::before{
 .status .right{display:flex;align-items:center;gap:6px}
 .status .right img{height:13px;width:auto;display:block}
 
-/* App Content */
-.header{padding:3px 0px 0px;display:flex;align-items:center;justify-content:center;position:relative;margin-top:-5px}
-.logo{font-weight:600;font-size:32px;letter-spacing:-.01em;background:var(--brand-sheen);
-  -webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent}
+    /* App Content */
+    .header{
+      padding:3px 0px 0px;
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      position:relative;
+      margin-top:-5px;
+      flex-shrink:0; /* prevent header from shrinking */
+    }
+    .logo{
+      font-weight:600;
+      font-size:32px;
+      letter-spacing:-.01em;
+      background:var(--brand-sheen);
+      -webkit-background-clip:text;
+      background-clip:text;
+      -webkit-text-fill-color:transparent;
+      position:relative; /* ensure logo stays in place */
+    }
 
 /* Back Button */
 .back-btn{
@@ -101,7 +117,7 @@ body::before{
       box-shadow:var(--shadow-surface);
     }
     .card-pad{padding:20px 24px}
-    .finder-shell.is-hidden{display:none;}
+    .finder-shell.is-hidden{display:none !important;}
     .loading-shell{display:none;}
     .loading-shell.is-visible{display:block;}
 
@@ -117,6 +133,8 @@ body::before{
       flex-direction:column;
       gap:20px;
       padding:12px 0 120px;
+      /* Ensure content doesn't affect header */
+      min-height:0;
     }
     .content::-webkit-scrollbar{display:none}
 
@@ -959,6 +977,313 @@ body::before{
       .reveal-up{transition:none!important;transform:none!important;}
       .spinner{animation:none!important;}
     }
+
+    /* Stepper states */
+    .load-row[aria-hidden="true"] { opacity: .35; }
+    .load-row.is-active { opacity: 1; }
+    .load-row.is-done   { opacity: 1; }
+    .load-row.is-done .dot { transform: scale(1); }
+    .load-row .dot { transform: scale(.8); transition: transform .18s ease; }
+
+    /* Shimmered track */
+    .progress--shimmer { position:relative; overflow:hidden; }
+    .progress--shimmer::before{
+      content:""; position:absolute; inset:0;
+      background:linear-gradient(90deg, rgba(255,255,255,0), rgba(255,255,255,.25), rgba(255,255,255,0));
+      animation:trackShimmer 2.2s ease-in-out infinite;
+      opacity:.35;
+    }
+    @keyframes trackShimmer { 0%{transform:translateX(-60%)} 100%{transform:translateX(60%)} }
+
+    /* Focus ring for back button while loading */
+    #backBtn:focus-visible{
+      outline:2px solid transparent; outline-offset:2px;
+      box-shadow:0 0 0 2px rgba(31,174,217,.35);
+    }
+
+    /* Reduced motion: freeze shimmer & transforms */
+    @media (prefers-reduced-motion: reduce){
+      .progress--shimmer::before{ animation:none !important; }
+      .load-row .dot{ transform:none !important; }
+      .hero-image-container,
+      .hero-product-info,
+      .hero-loading-section{
+        opacity: 1 !important;
+        transform: none !important;
+        transition: none !important;
+      }
+    }
+
+    /* --- Loading stage centering --- */
+    /* When loading, center the card without affecting header */
+    .content.is-loading{
+      /* Keep exact same padding as normal state */
+      padding: 12px 0 120px;
+      /* Center content using flexbox without changing layout structure */
+      justify-content: center;
+      align-items: center;
+      /* Ensure we don't change the content's flex properties */
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+    }
+
+    /* Make the card sit centered */
+    .content.is-loading #loadingCard{
+      margin: 0 24px;               /* reset the old top margin */
+      width: min(640px, 90%);       /* keeps it elegant on large screens in the hero */
+    }
+
+    /* On very short viewports, adjust centering */
+    @media (max-height: 740px){
+      .content.is-loading{
+        justify-content: flex-start;
+        /* Keep same padding to maintain header position */
+        padding: 12px 0 120px;
+      }
+    }
+
+    /* ——— Promote the confirmation chip to a big, primary element ——— */
+    .loading-card.is-large .load-row[data-step="confirm"]{
+      align-items: stretch;        /* let the chip breathe */
+    }
+
+    .loading-card.is-large .mini-chip{
+      /* Big, tappable card look */
+      flex: 1 1 auto;
+      display: grid;
+      grid-template-columns: 72px 1fr auto;  /* image | text | check */
+      align-items: center;
+      gap: 14px;
+      padding: 12px 14px;
+      border-radius: 16px;
+      background: #fff;
+      border: 1px solid rgba(0,0,0,.06);
+      box-shadow: 0 10px 28px rgba(17,25,40,.10);
+      min-height: 80px;
+    }
+
+    .loading-card.is-large .mini-thumb{
+      width: 72px; height: 72px;
+      border-radius: 12px;
+      object-fit: cover;
+      background: #eef3f6;
+    }
+
+    .loading-card.is-large .mini-meta{
+      display: flex; flex-direction: column; gap: 4px;
+      min-width: 0; /* allow text wrap */
+    }
+
+    .loading-card.is-large .mini-meta .brand{
+      font-size: 16px; line-height: 1.1;
+      font-weight: 900;
+      color: #0f2430;
+      letter-spacing: -.01em;
+      white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+    }
+
+    .loading-card.is-large .mini-meta .title{
+      font-size: 14px; line-height: 1.2;
+      font-weight: 600; color: #4a5b66;
+      overflow: hidden; text-overflow: ellipsis;
+    }
+
+    .loading-card.is-large .mini-chip::after{
+      /* strong confirmation check */
+      content: "✓";
+      display: inline-grid; place-items: center;
+      width: 28px; height: 28px;
+      border-radius: 999px;
+      background: #D1F6E6;
+      color: #0E8A62; font-weight: 900;
+    }
+
+    /* So the text label doesn't compete with the big card */
+    .loading-card.is-large .load-row[data-step="confirm"] .text{
+      display: none;
+    }
+
+    /* Entrance polish */
+    .mini-chip[data-state="ready"]{
+      animation: chipIn .22s cubic-bezier(.21,.9,.3,1.17);
+    }
+    @keyframes chipIn{
+      from{ opacity:0; transform: translateY(4px) scale(.98); }
+      to{   opacity:1; transform: translateY(0)    scale(1);   }
+    }
+
+    /* Skeleton state keeps size stable until image is ready */
+    .mini-chip[data-state="loading"] .mini-thumb{
+      background: linear-gradient(90deg,#eef4f6 0%,#f6fbfc 40%,#eef4f6 80%);
+      background-size: 200% 100%;
+      animation: miniShimmer 1.2s ease-in-out infinite;
+    }
+    @keyframes miniShimmer { 0%{background-position:0% 0} 100%{background-position:200% 0} }
+
+    /* Don't show placeholder "—" text */
+    .mini-meta .brand:empty, .mini-meta .title:empty { display:none; }
+
+    /* ——— Hero Product Card (for loading) ——— */
+    .hero-product-card{
+      width:100%;
+      max-width:380px;
+      background:#fff;
+      border-radius:28px;
+      overflow:hidden;
+      box-shadow:
+        0 4px 6px -1px rgba(0,0,0,0.03),
+        0 10px 15px -3px rgba(0,0,0,0.04),
+        0 20px 25px -5px rgba(0,0,0,0.03);
+    }
+
+    /* Staggered entrance animations for each section */
+    .hero-image-container{
+      opacity: 0;
+      transform: translateY(20px);
+      transition: opacity 0.4s ease, transform 0.4s ease;
+    }
+
+    .hero-product-info{
+      opacity: 0;
+      transform: translateY(20px);
+      transition: opacity 0.4s ease 0.1s, transform 0.4s ease 0.1s;
+    }
+
+    .hero-loading-section{
+      opacity: 0;
+      transform: translateY(20px);
+      transition: opacity 0.4s ease 0.2s, transform 0.4s ease 0.2s;
+    }
+
+    /* Show elements when card is visible */
+    .hero-product-card.is-visible .hero-image-container,
+    .hero-product-card.is-visible .hero-product-info,
+    .hero-product-card.is-visible .hero-loading-section{
+      opacity: 1;
+      transform: translateY(0);
+    }
+
+    @keyframes slideUp{
+      from{opacity:0;transform:translateY(30px)}
+      to{opacity:1;transform:translateY(0)}
+    }
+
+    /* Hero Product Image */
+    .hero-image-container{
+      position:relative;
+      width:100%;
+      height:420px;
+      background:#F9FAFB;
+      overflow:hidden;
+    }
+
+    .hero-product-image{
+      width:100%;
+      height:100%;
+      object-fit:cover;
+      object-position:center;
+    }
+
+    /* Gradient overlay for better text readability */
+    .hero-image-overlay{
+      position:absolute;
+      bottom:0;
+      left:0;
+      right:0;
+      height:80px;
+      background:linear-gradient(to top, rgba(255,255,255,0.9), transparent);
+      pointer-events:none;
+    }
+
+    /* Hero Product Info Section */
+    .hero-product-info{
+      padding:18px 20px 20px;
+    }
+
+    .hero-product-status{
+      display:inline-flex;
+      align-items:center;
+      gap:8px;
+      padding:6px 12px;
+      background:#E8FBF3;
+      border-radius:20px;
+      font-size:14px;
+      color:#0E8A62;
+      font-weight:500;
+      margin-bottom:16px;
+    }
+
+    .hero-product-brand{
+      font-size:13px;
+      font-weight:700;
+      letter-spacing:0.08em;
+      text-transform:uppercase;
+      color:#8B95A6;
+      margin-bottom:6px;
+    }
+
+    .hero-product-name{
+      font-size:22px;
+      font-weight:600;
+      color:#0B0F14;
+      line-height:1.3;
+    }
+
+    .hero-status-check{
+      width:16px;
+      height:16px;
+      background:#0E8A62;
+      border-radius:50%;
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      color:white;
+      font-size:10px;
+      font-weight:bold;
+    }
+
+    /* Hero Loading Section */
+    .hero-loading-section{
+      padding:18px 20px 20px;
+      border-top:1px solid #F3F4F6;
+      display:flex;
+      flex-direction:column;
+      align-items:center;
+      gap:12px;
+    }
+
+    .hero-loading-text{
+      font-size:16px;
+      font-weight:500;
+      color:#6A7683;
+      text-align:center;
+    }
+
+    /* Hero Progress Indicator */
+    .hero-progress-track{
+      width:100%;
+      height:6px;
+      background:#F3F4F6;
+      border-radius:3px;
+      overflow:hidden;
+    }
+
+    .hero-progress-fill{
+      height:100%;
+      background:linear-gradient(90deg, #00A3A3, #16B5B5);
+      border-radius:3px;
+      width:0%;
+      transition:width 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+
+    /* Skeleton state for hero image */
+    .hero-product-image[data-state="loading"]{
+      background: linear-gradient(90deg,#eef4f6 0%,#f6fbfc 40%,#eef4f6 80%);
+      background-size: 200% 100%;
+      animation: heroImageShimmer 1.2s ease-in-out infinite;
+    }
+    @keyframes heroImageShimmer { 0%{background-position:0% 0} 100%{background-position:200% 0} }
   </style>
 </head>
 <body>
@@ -1002,30 +1327,35 @@ body::before{
               </div>
 
               <button class="paste-btn" id="pasteBtn" onclick="handlePaste()">
-                Paste Link & Find Size Twins
+                Paste link to find size twins
               </button>
             </div>
           </section>
 
-          <section id="loadingCard" class="loading-card is-large" aria-live="polite" hidden>
-            <div class="load-rows">
-              <div class="load-row done">
-                <span class="dot">✓</span>
-                <span class="text">Product matched</span>
-                <div class="mini-chip" aria-hidden="true">
-                  <img class="mini-thumb" id="miniThumb" alt="" />
-                  <div class="mini-meta">
-                    <div class="brand" id="miniBrand">—</div>
-                    <div class="title" id="miniTitle">—</div>
-                  </div>
-                </div>
+          <section id="loadingCard" class="hero-product-card" aria-live="polite" hidden style="opacity: 0;">
+            <!-- Large Hero Image -->
+            <div class="hero-image-container">
+              <img class="hero-product-image" id="heroImage" data-state="loading" alt="" />
+              <div class="hero-image-overlay"></div>
+            </div>
+
+            <!-- Product Details -->
+            <div class="hero-product-info">
+              <div class="hero-product-status">
+                <span class="hero-status-check">✓</span>
+                <span>Product matched</span>
               </div>
-              <div class="load-row active" role="status" aria-label="Finding your size twins">
-                <span class="spinner" aria-hidden="true"></span>
-                <span class="text">Finding your size twins…</span>
+              <div class="hero-product-brand" id="heroBrand">—</div>
+              <h2 class="hero-product-name" id="heroName">—</h2>
+            </div>
+
+            <!-- Loading State -->
+            <div class="hero-loading-section">
+              <div class="hero-loading-text" id="heroLoadingText">Finding size twins</div>
+              <div class="hero-progress-track">
+                <div class="hero-progress-fill" id="heroProgressBar"></div>
               </div>
             </div>
-            <div class="progress" aria-hidden="true"><span id="progressBar"></span></div>
           </section>
 
 
@@ -1351,17 +1681,18 @@ const pastePillEl = document.getElementById('pastePill');
 }
 
 const DEFAULT_PRODUCT = {
-  thumb: 'https://images.unsplash.com/photo-1516826957135-700dedea698c?q=80&w=300&auto=format&fit=crop',
+  thumb: '../img/pnpdress.png',
   brand: 'PETAL & PUP',
   title: 'Botanique Midi Dress'
 };
 
 // Loading card refs
 const loadingCardEl = document.getElementById('loadingCard');
-const progressEl = document.getElementById('progressBar');
-const miniThumbEl = document.getElementById('miniThumb');
-const miniBrandEl = document.getElementById('miniBrand');
-const miniTitleEl = document.getElementById('miniTitle');
+const progressEl = document.getElementById('heroProgressBar');
+const heroImageEl = document.getElementById('heroImage');
+const heroBrandEl = document.getElementById('heroBrand');
+const heroNameEl = document.getElementById('heroName');
+const heroLoadingTextEl = document.getElementById('heroLoadingText');
 const resultsSectionEl = document.getElementById('resultsSection');
 
 if (resultsSectionEl && !resultsSectionEl.classList.contains('reveal-up')){
@@ -1384,98 +1715,123 @@ function hideElement(el){
 
 function setProgress(p){ if(progressEl) progressEl.style.width = `${p}%`; }
 
-// Extract brand/title/thumb from parsed product; provide graceful fallback
-function applyMiniChip(data){
-  if(miniThumbEl){
-    if(data?.thumb){ miniThumbEl.src = data.thumb; miniThumbEl.alt = data.title || ''; }
-    else { miniThumbEl.removeAttribute('src'); miniThumbEl.alt = ''; }
+// Populate hero card with product data
+function applyHeroCard(data){
+  if (!heroImageEl || !heroBrandEl || !heroNameEl) return;
+
+  // Set copy now
+  if (heroBrandEl) heroBrandEl.textContent = data.brand || '';
+  if (heroNameEl) heroNameEl.textContent = data.title || '';
+
+  // Show skeleton image while preloading
+  heroImageEl.setAttribute('data-state','loading');
+
+  if (!data.thumb){
+    heroImageEl.setAttribute('data-state','ready');
+    return;
   }
-  if(miniBrandEl) miniBrandEl.textContent = data?.brand || '—';
-  if(miniTitleEl) miniTitleEl.textContent = data?.title || '—';
+
+  // Preload image completely before showing
+  const img = new Image();
+  img.onload = () => {
+    if (heroImageEl){
+      heroImageEl.src = data.thumb;
+      heroImageEl.alt = data.title || '';
+      heroImageEl.setAttribute('data-state','ready');
+    }
+  };
+  img.onerror = () => {
+    heroImageEl.setAttribute('data-state','ready');
+  };
+  img.src = data.thumb;
 }
 
 const PARSE_MS = 500;
 const FETCH_MS = 1100;
 
+// ---- Timing you can tune for recording
+const DURATIONS = { match: 900, confirm: 900, twins: 1800 }; // ms total per stage
+const BAR_MIN_START = 8; // avoid starting at 0%
+const BAR_END_BEFORE = 96; // avoid hitting 100% until the cut
+
+function setProgress(p){ if(progressEl) progressEl.style.width = `${p}%`; }
+
+// Smooth fake-progress that eases toward a target
+function animateProgress(to, ms){
+  return new Promise(resolve=>{
+    const from = Math.min(parseFloat(progressEl.style.width) || 0, to);
+    const start = performance.now();
+    (function tick(now){
+      const t = Math.min((now - start)/ms, 1);
+      // easeOutCubic
+      const eased = 1 - Math.pow(1 - t, 3);
+      setProgress(from + (to - from)*eased);
+      if (t < 1) requestAnimationFrame(tick); else resolve();
+    })(start);
+  });
+}
+
+function markStep(step, state){ // state: 'active' | 'done'
+  const row = document.querySelector(`.load-row[data-step="${step}"]`);
+  if (!row) return;
+  row.classList.remove('is-active','is-done');
+  row.setAttribute('aria-hidden', state === 'active' ? 'false' : 'true');
+  if (state === 'active') row.classList.add('is-active');
+  if (state === 'done')  row.classList.add('is-done');
+}
+
 async function startFlow(product = DEFAULT_PRODUCT){
-  const findSection = document.getElementById('findSection');
-  const findSectionWrap = document.getElementById('findSectionWrap');
-  const loadingCard = document.getElementById('loadingCard');
+  const wrap = document.getElementById('findSectionWrap');
+  const find = document.getElementById('findSection');
+  const contentEl = document.querySelector('.content');
 
-  findSection?.classList.add('is-leaving');
-  await wait(200);
-  findSection?.classList.add('hidden');
-  findSection?.classList.remove('is-leaving');
-  findSectionWrap?.classList.add('is-hidden');
-
-  if (resultsSectionEl){
-    resultsSectionEl.classList.remove('visible', 'is-in');
-    resultsSectionEl.hidden = true;
+  // Parse product and populate hero card FIRST (while input is still visible)
+  const parsed = await parseProduct(product);
+  applyHeroCard(parsed);
+  setProgress(0);
+  
+  // Ensure loading card is completely hidden initially
+  if (loadingCardEl) {
+    loadingCardEl.hidden = true;
+    loadingCardEl.style.opacity = '0';
+    loadingCardEl.classList.remove('is-visible');
+  }
+  
+  // Switch to loading mode and hide input simultaneously
+  contentEl?.classList.add('is-loading');
+  find?.classList.add('is-leaving');
+  
+  await wait(180);
+  
+  // Hide input section
+  wrap?.classList.add('is-hidden');
+  
+  // Wait a frame to ensure layout is settled, then show loading card
+  await wait(16);
+  if (loadingCardEl) {
+    loadingCardEl.hidden = false;
+    loadingCardEl.style.opacity = '1';
+    // Add is-visible class to trigger staggered animations
+    requestAnimationFrame(() => {
+      loadingCardEl.classList.add('is-visible');
+    });
   }
 
-  // Stage 1: Finding product (simple spinner)
-  const loadRows = loadingCard.querySelector('.load-rows');
-  const progressContainer = loadingCard.querySelector('.progress');
+  // Animate progress through stages
+  await wait(300);
+  await animateProgress(35, DURATIONS.match * .9);
+  
+  await wait(200);
+  await animateProgress(65, DURATIONS.confirm * .9);
+  
+  await wait(200);
+  await animateProgress(BAR_END_BEFORE, DURATIONS.twins * .9);
 
-  loadRows.innerHTML = `
-    <div class="load-row active">
-      <span class="spinner" aria-hidden="true"></span>
-      <span class="text">Finding product...</span>
-    </div>
-  `;
-  if (progressContainer) progressContainer.style.display = 'none';
-
-  showElement(loadingCardEl);
-  await wait(1000);
-
-  // Stage 2: Product found (show product with checkmark)
-  const parsed = await parseProduct(product);
-  loadRows.innerHTML = `
-    <div class="load-row done">
-      <span class="dot">✓</span>
-      <span class="text">Product found</span>
-      <div class="mini-chip" aria-hidden="true">
-        <img class="mini-thumb" src="${parsed.thumb}" alt="" />
-        <div class="mini-meta">
-          <div class="brand">${parsed.brand}</div>
-          <div class="title">${parsed.title}</div>
-        </div>
-      </div>
-    </div>
-  `;
-
-  await wait(1500);
-
-  // Stage 3: Finding size twins (with progress bar)
-  loadRows.innerHTML = `
-    <div class="load-row done">
-      <span class="dot">✓</span>
-      <span class="text">Product matched</span>
-      <div class="mini-chip" aria-hidden="true">
-        <img class="mini-thumb" src="${parsed.thumb}" alt="" />
-        <div class="mini-meta">
-          <div class="brand">${parsed.brand}</div>
-          <div class="title">${parsed.title}</div>
-        </div>
-      </div>
-    </div>
-    <div class="load-row active">
-      <span class="spinner" aria-hidden="true"></span>
-      <span class="text">Finding your size twins…</span>
-    </div>
-  `;
-
-  if (progressContainer) progressContainer.style.display = 'block';
-  setProgress(20);
-  await wait(600);
-  setProgress(60);
-  await wait(600);
-  setProgress(100);
-  await wait(500);
-
-  // Transition to results
+  // Finish and show results
+  await wait(200);
   hideElement(loadingCardEl);
-  await wait(220);
+  await wait(160);
+  setProgress(100); // (hidden by now; keeps state tidy)
   showResults();
 }
 
@@ -1524,6 +1880,8 @@ function showResults() {
   const content = document.querySelector('.content');
   const backBtn = document.getElementById('backBtn');
   const confidenceBlock = document.getElementById('confidenceBlock');
+
+  content?.classList.remove('is-loading');
 
   if (resultsSection){
     resultsSection.hidden = false;
@@ -1700,6 +2058,8 @@ function goBack(){
   const backBtn = document.getElementById('backBtn');
   const urlInput = document.getElementById('urlInput');
   
+  document.querySelector('.content')?.classList.remove('is-loading');
+  
   // Hide results
   if (resultsSection){
     resultsSection.classList.remove('visible', 'is-in');
@@ -1709,12 +2069,14 @@ function goBack(){
     loadingCardEl.classList.remove('is-visible');
     loadingCardEl.hidden = true;
   }
-  if (miniThumbEl){
-    miniThumbEl.removeAttribute('src');
-    miniThumbEl.alt = '';
+  if (heroImageEl){
+    heroImageEl.removeAttribute('src');
+    heroImageEl.alt = '';
+    heroImageEl.setAttribute('data-state', 'loading');
   }
-  if (miniBrandEl) miniBrandEl.textContent = '—';
-  if (miniTitleEl) miniTitleEl.textContent = '—';
+  if (heroBrandEl) heroBrandEl.textContent = '—';
+  if (heroNameEl) heroNameEl.textContent = '—';
+  setProgress(0);
   backBtn?.style.setProperty('display', 'none');
   isPlaying = false;
   
