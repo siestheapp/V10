@@ -858,6 +858,48 @@ body::before{
       .shared-items-panel{transition:none!important}
       .shared-item{transition:none!important}
     }
+
+    /* === Hierarchy Fix: Bridge first, Product ribbon second === */
+
+    /* Pull the insight up and reduce vertical rhythm */
+    .section{margin-top:8px;}
+    .confidence-bridge{margin:6px 24px 8px;}
+    .bridge-overline{color:var(--petrol-600);letter-spacing:.08em;}
+    .bridge-headline{font-size:18px;font-weight:800;letter-spacing:-.01em;}
+    .divider{width:48px;height:3px;border-radius:999px;opacity:.9;}
+
+    /* Convert the product "card" into a subtle ribbon */
+    .product-card{
+      box-shadow:none!important;
+      border:none!important;
+      background:transparent!important;
+    }
+
+    .product-found{
+      display:flex;
+      align-items:center;
+      gap:12px;
+      padding:12px 14px;
+      margin:0 24px 6px;
+      border-radius:12px;
+      background:linear-gradient(135deg, rgba(0,163,163,.10), rgba(127,225,255,.08));
+      border:1px solid rgba(0,163,163,.22);
+      box-shadow:none;
+    }
+
+    .product-found::before{display:none!important;}
+    .product-thumb{width:56px;height:56px;border-radius:10px;}
+    .product-meta{gap:4px;}
+
+    .found-label{font-size:10px;color:var(--petrol-600);opacity:.9;}
+    .product-name{font-size:15px;font-weight:800;color:var(--ink);}
+    .product-subtitle{font-size:12.5px;color:var(--ink-300);}
+
+    /* Slightly lift twins feed closer to the insight */
+    .twins-feed{margin-top:6px;}
+
+    /* Tweak the confidence-block wrapper so the ribbon doesn't add extra offset */
+    .confidence-block{margin:0 0 8px;padding:0;}
   </style>
 </head>
 <body>
@@ -914,22 +956,7 @@ body::before{
           </section>
 
           <div class="results-section" id="resultsSection">
-          <section class="section confidence-block" id="confidenceBlock">
-            <!-- Product found confirmation -->
-            <article class="card product-card">
-              <div class="product-found">
-                <div class="product-thumb">
-                  <img src="../img/pnpdress.png" alt="Petal & Pup Botanique Midi Dress"/>
-                </div>
-                <div class="product-meta">
-                  <span class="found-label">Product found</span>
-                  <div class="product-name">PETAL & PUP</div>
-                  <div class="product-subtitle">Botanique Midi Dress</div>
-                </div>
-              </div>
-            </article>
-            </section>
-
+            <!-- BRIDGE FIRST -->
             <section class="section">
               <div class="confidence-bridge" aria-live="polite">
                 <div class="bridge-overline">YOUR SIZE NETWORK</div>
@@ -1080,7 +1107,22 @@ body::before{
               </div>
             </section>
 
-            
+            <!-- PRODUCT CONFIRMATION SECOND (kept, but visually demoted to a ribbon) -->
+            <section class="section confidence-block" id="confidenceBlock">
+              <article class="card product-card">
+                <div class="product-found">
+                  <div class="product-thumb">
+                    <img src="../img/pnpdress.png" alt="Petal & Pup Botanique Midi Dress"/>
+                  </div>
+                  <div class="product-meta">
+                    <span class="found-label">Product found</span>
+                    <div class="product-name">PETAL & PUP</div>
+                    <div class="product-subtitle">Botanique Midi Dress</div>
+                  </div>
+                </div>
+              </article>
+            </section>
+
           </div>
         </div>
 
