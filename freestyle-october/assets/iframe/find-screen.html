@@ -117,7 +117,12 @@ body::before{
       box-shadow:var(--shadow-surface);
     }
     .card-pad{padding:20px 24px}
-    .finder-shell.is-hidden{display:none !important;}
+    .finder-shell.is-hidden{
+      opacity:0;
+      pointer-events:none;
+      position:absolute;
+      visibility:hidden;
+    }
     .loading-shell{display:none;}
     .loading-shell.is-visible{display:block;}
 
@@ -328,9 +333,8 @@ body::before{
     }
     .results-section.visible{
       display:flex;
-      animation:fadeIn 0.35s ease forwards;
+      opacity:1;
     }
-    @keyframes fadeIn{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:translateY(0)}}
 
     .confidence-block{
       padding:0 24px;
@@ -943,7 +947,7 @@ body::before{
     .mini-meta .brand{font-weight:800;font-size:12.5px;letter-spacing:.02em;color:#24323a;line-height:1}
     .mini-meta .title{font-size:12px;color:#6A7683;line-height:1.1}
     .progress{position:relative;height:4px;border-radius:999px;background:rgba(0,0,0,.06);margin-top:10px;overflow:hidden}
-    .progress span{position:absolute;inset:0 auto 0 0;width:0%;background:var(--focus-gradient);border-radius:inherit;transition:width .35s ease}
+    .progress span{position:absolute;inset:0 auto 0 0;width:0%;background:var(--focus-gradient);border-radius:inherit;transition:width .1s linear}
     @keyframes spin{to{transform:rotate(360deg)}}
 
     /* ——— Loading Card: Large preset ——— */
@@ -967,9 +971,9 @@ body::before{
     .loading-card.is-large .progress{ height: 8px; border-radius: 999px; margin-top: 14px; }
     .loading-card.is-large .progress span{ box-shadow: inset 0 0 0 1px rgba(255,255,255,.3); }
 
-    /* Enter/exit helpers for results */
-    .reveal-up{opacity:0;transform:translateY(8px);}
-    .reveal-up.is-in{opacity:1;transform:none;transition:opacity .3s ease, transform .3s ease;}
+    /* Enter/exit helpers for results - no animation */
+    .reveal-up{opacity:1;transform:none;}
+    .reveal-up.is-in{opacity:1;transform:none;}
 
     /* Reduced motion */
     @media (prefers-reduced-motion: reduce){
@@ -1015,31 +1019,33 @@ body::before{
     }
 
     /* --- Loading stage centering --- */
-    /* When loading, center the card without affecting header */
+    /* Stage layout that keeps header at top and centers just the loading card */
     .content.is-loading{
-      /* Keep exact same padding as normal state */
-      padding: 12px 0 120px;
-      /* Center content using flexbox without changing layout structure */
-      justify-content: center;
-      align-items: center;
-      /* Ensure we don't change the content's flex properties */
-      flex: 1;
-      display: flex;
-      flex-direction: column;
+      display: grid;
+      grid-template-rows: auto 1fr auto;  /* header | stage | tabs area */
+      align-items: start;
+      justify-items: center;
+      padding: 12px 0 120px;              /* keep your existing vertical rhythm */
     }
 
-    /* Make the card sit centered */
+    /* Explicit row placement so the logo never moves */
+    .content.is-loading .header{
+      grid-row: 1;
+      justify-self: stretch;
+    }
+
+    /* Center the loading card in the stage area */
     .content.is-loading #loadingCard{
-      margin: 0 24px;               /* reset the old top margin */
-      width: min(640px, 90%);       /* keeps it elegant on large screens in the hero */
+      grid-row: 2;
+      place-self: center;
+      margin: 0 24px;
+      width: min(640px, 90%);
     }
 
-    /* On very short viewports, adjust centering */
+    /* Short viewports: bias up a bit but keep header pinned */
     @media (max-height: 740px){
       .content.is-loading{
-        justify-content: flex-start;
-        /* Keep same padding to maintain header position */
-        padding: 12px 0 120px;
+        align-items: start;
       }
     }
 
@@ -1749,10 +1755,10 @@ function applyHeroCard(data){
 const PARSE_MS = 500;
 const FETCH_MS = 1100;
 
-// ---- Timing you can tune for recording
-const DURATIONS = { match: 900, confirm: 900, twins: 1800 }; // ms total per stage
-const BAR_MIN_START = 8; // avoid starting at 0%
-const BAR_END_BEFORE = 96; // avoid hitting 100% until the cut
+// ---- Timing for smooth 2.5 second loading
+const DURATIONS = { match: 600, confirm: 600, twins: 800 }; // ms total per stage (2s total)
+const BAR_MIN_START = 0; // start at 0%
+const BAR_END_BEFORE = 100; // complete to 100%
 
 function setProgress(p){ if(progressEl) progressEl.style.width = `${p}%`; }
 
@@ -1817,21 +1823,17 @@ async function startFlow(product = DEFAULT_PRODUCT){
     });
   }
 
-  // Animate progress through stages
-  await wait(300);
-  await animateProgress(35, DURATIONS.match * .9);
-  
-  await wait(200);
-  await animateProgress(65, DURATIONS.confirm * .9);
-  
-  await wait(200);
-  await animateProgress(BAR_END_BEFORE, DURATIONS.twins * .9);
+  // Smooth continuous progress over 2.5 seconds total
+  // Start immediately after card appears
+  await wait(100);
 
-  // Finish and show results
-  await wait(200);
+  // Single smooth animation from 0 to 100% over 2.4 seconds
+  await animateProgress(100, 2400);
+
+  // Quick transition to results
+  await wait(100);
   hideElement(loadingCardEl);
-  await wait(160);
-  setProgress(100); // (hidden by now; keeps state tidy)
+  await wait(100);
   showResults();
 }
 
@@ -1885,11 +1887,8 @@ function showResults() {
 
   if (resultsSection){
     resultsSection.hidden = false;
-    resultsSection.classList.add('visible');
-    requestAnimationFrame(() => resultsSection.classList.add('is-in'));
+    resultsSection.classList.add('visible', 'is-in'); // Show immediately, no animation
   }
-  confidenceBlock?.classList.add('is-entering');
-  setTimeout(()=>confidenceBlock?.classList.remove('is-entering'), 350);
   backBtn?.style.setProperty('display', 'flex');
 
   // Scroll to top smoothly
