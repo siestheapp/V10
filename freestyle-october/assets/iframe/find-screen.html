@@ -51,6 +51,35 @@ body::before{
 .logo{font-weight:600;font-size:32px;letter-spacing:-.01em;background:linear-gradient(135deg,var(--cta-start),var(--cta-mid) 46%,var(--cta-end));
   -webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent}
 
+/* Back Button */
+.back-btn{
+  position:absolute;
+  left:20px;
+  top:50%;
+  transform:translateY(-50%);
+  width:40px;
+  height:40px;
+  border-radius:50%;
+  background:rgba(255,255,255,.9);
+  border:1px solid rgba(0,0,0,.1);
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  cursor:pointer;
+  transition:all 0.2s ease;
+  color:#333;
+  z-index:10;
+  box-shadow:0 2px 8px rgba(0,0,0,.1);
+}
+.back-btn:hover{
+  background:rgba(255,255,255,1);
+  transform:translateY(-50%) scale(1.05);
+  box-shadow:0 4px 12px rgba(0,0,0,.15);
+}
+.back-btn:active{
+  transform:translateY(-50%) scale(0.95);
+}
+
     /* Shared card + section system (aligns with feed/closet screens) */
     .section{padding:0 24px;margin-top:12px}
     .section:first-of-type{margin-top:0}
@@ -142,17 +171,19 @@ body::before{
     .unified-card{
       display:flex;
       flex-direction:column;
+      border-radius:20px;
       overflow:hidden;
     }
     .product-top{
       display:flex;
-      gap:20px;
-      padding:20px;
+      align-items:center;
+      gap:16px;
+      padding:18px 20px 18px;
     }
     .product-image{
       flex-shrink:0;
-      width:140px;
-      height:210px;
+      width:110px;
+      height:110px;
       background:#f6f7f8;
       border-radius:12px;
       overflow:hidden;
@@ -160,15 +191,16 @@ body::before{
     .product-image img{
       width:100%;
       height:100%;
-      object-fit:contain;
-      object-position:center;
+      object-fit:cover;
+      object-position:center 30%;
       display:block;
     }
     .product-details{
       flex:1;
       display:flex;
       flex-direction:column;
-      gap:20px;
+      gap:12px;
+      justify-content:center;
     }
     .product-info{
       display:flex;
@@ -188,32 +220,46 @@ body::before{
       gap:4px;
       margin:0;
     }
-    .product-brand{
-      font-size:20px;
-      font-weight:800;
-      letter-spacing:.01em;
-      color:var(--ink);
+    .found-label{
+      font-size:11px;
+      font-weight:700;
+      letter-spacing:.08em;
+      text-transform:uppercase;
+      color:var(--petrol-600);
+      display:flex;
+      align-items:center;
+      gap:6px;
+    }
+    .found-label::before{
+      content:'✓';
+      display:inline-flex;
+      align-items:center;
+      justify-content:center;
+      width:16px;
+      height:16px;
+      background:var(--petrol-100);
+      border-radius:50%;
+      font-size:10px;
     }
     .product-name{
       font-size:17px;
+      font-weight:800;
+      color:var(--ink);
+      letter-spacing:-.01em;
+    }
+    .product-subtitle{
+      font-size:14px;
       font-weight:600;
       color:var(--ink);
-      opacity:0.85;
+      opacity:0.7;
     }
 
-    .smart-cta{
-      display:flex;
-      flex-direction:column;
-      border-top:1px solid rgba(17,25,40,.08);
-    }
     .smart-toggle{
       width:100%;
       padding:16px 20px;
       background:linear-gradient(135deg,var(--cta-start),var(--cta-mid) 46%,var(--cta-end));
       color:#fff;
       border:none;
-      border-bottom-left-radius:20px;
-      border-bottom-right-radius:20px;
       font-size:15px;
       font-weight:800;
       text-align:left;
@@ -234,26 +280,12 @@ body::before{
       font-size:18px;
       font-weight:800;
     }
-    .smart-cta.open .smart-toggle{
-      border-bottom-left-radius:0;
-      border-bottom-right-radius:0;
-    }
-    .smart-cta.open .smart-toggle::after{
-      content:'-';
-    }
-    .smart-cta.open .smart-toggle:hover,
-    .smart-cta.open .smart-toggle:active{
-      transform:none;
-      box-shadow:none;
-    }
     .smart-panel{
       display:flex;
       flex-direction:column;
       gap:12px;
       padding:18px 20px 20px;
       background:rgba(0,163,163,.08);
-      border-bottom-left-radius:20px;
-      border-bottom-right-radius:20px;
       border-top:1px solid rgba(255,255,255,.4);
     }
     .smart-panel[hidden]{display:none;}
@@ -481,6 +513,11 @@ body::before{
         <div class="status"><div>9:41</div><div class="right"><img src="../img/cellular-connection.svg" alt="cell"/><img src="../img/wifi.svg" alt="wifi"/><img src="../img/battery.svg" alt="battery"/></div></div>
 
         <div class="header">
+          <button class="back-btn" id="backBtn" onclick="goBack()" style="display: none;">
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <path d="M19 12H5M12 19L5 12L12 5" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+            </svg>
+          </button>
           <div class="logo">proxi</div>
         </div>
 
@@ -523,33 +560,18 @@ body::before{
                   </div>
                   <div class="product-details">
                     <div class="product-info">
-                      <span class="product-kicker">You're looking for</span>
-                      <h2 class="product-title">
-                        <span class="product-brand">PETAL & PUP</span>
-                        <span class="product-name">Botanique Midi Dress</span>
-                      </h2>
+                    <span class="found-label">Found your product</span>
+                    <div class="product-name">PETAL & PUP</div>
+                    <div class="product-subtitle">Botanique Midi Dress</div>
                     </div>
 
-                    <div class="size-rec-section">
-                      <div class="size-rec-left">
-                        <h3 class="size-rec-title">Get <span class="size-highlight">Size S</span></h3>
-                        <div class="size-meta">
-                          <span class="confidence">82% confident</span>
-                          <span class="separator">•</span>
-                          <span class="twins-agree">2 of 3 twins agree</span>
-                        </div>
-                      </div>
-                      <button class="cta-button" onclick="handlePrimaryCTA()">
-                        Copy & Shop →
-                      </button>
-                    </div>
                   </div>
                 </div>
 
                 <div class="smart-cta">
-                  <button class="smart-toggle" type="button" aria-expanded="false" aria-controls="smartPanel" onclick="toggleSmartRec(this)">
-                    <span class="smart-toggle-text">Why Size S?</span>
-                  </button>
+                  <div class="info-bar smart-toggle" role="button" aria-expanded="false" aria-controls="smartPanel" onclick="toggleSmartRec(this)">
+                    <span class="smart-toggle-text">More info</span>
+                  </div>
                   <div class="smart-panel" id="smartPanel" hidden>
                     <div class="smart-metric">
                       <div class="smart-metric-head">
@@ -593,7 +615,7 @@ body::before{
                     </div>
                   </div>
                   <div style="position: relative;">
-                    <img src="../img/pnpreal.png" alt="J.Crew Halter Mixy Dress" style="width: 100%; height: 600px; object-fit: cover;">
+                    <img src="../img/pnpreal.png" alt="J.Crew Halter Mixy Dress" style="width: 100%; aspect-ratio: 1 / 1; object-fit: cover;">
                     <div style="position: absolute; top: 10px; right: 10px; padding: 6px 10px; background: rgba(0,0,0,.45); backdrop-filter: blur(2px); border: 1px solid rgba(255,255,255,.35); border-radius: 999px; color: #fff; font-size: 12px; font-weight: 700;">
                       S
                     </div>
@@ -768,10 +790,12 @@ function showResults() {
   const loadingState = document.getElementById('loadingState');
   const resultsSection = document.getElementById('resultsSection');
   const content = document.querySelector('.content');
+  const backBtn = document.getElementById('backBtn');
 
   loadingState?.classList.remove('visible');
   loadingSection?.classList.remove('is-visible');
   resultsSection?.classList.add('visible');
+  backBtn?.style.setProperty('display', 'flex');
 
   // Scroll to top smoothly
   setTimeout(() => {
@@ -847,11 +871,13 @@ window.addEventListener('DOMContentLoaded', () => {
   const loadingSection = document.getElementById('loadingSection');
   const loadingState = document.getElementById('loadingState');
   const resultsSection = document.getElementById('resultsSection');
+  const backBtn = document.getElementById('backBtn');
   findSection?.classList.add('hidden');
   findSectionWrap?.classList.add('is-hidden');
   loadingState?.classList.remove('visible');
   loadingSection?.classList.remove('is-visible');
   resultsSection?.classList.add('visible');
+  backBtn?.style.setProperty('display', 'flex');
   // Update hero chips using demo twins on load when showing results
   updateHeroChips(DEMO_TWINS);
 });
@@ -875,7 +901,7 @@ function toggleSmartRec(button){
   }
   const label = button.querySelector('.smart-toggle-text');
   if(label){
-    label.textContent = expanded ? 'Why Size S?' : 'Hide fit details';
+    label.textContent = expanded ? 'More info' : 'Hide info';
   }
 }
 
@@ -898,6 +924,31 @@ function handlePrimaryCTA(){
   setTimeout(() => {
     window.open('https://petalandpup.com/products/botanique-midi-dress-floral', '_blank');
   }, 300);
+}
+
+function goBack(){
+  // Hide results and show input screen
+  const findSection = document.getElementById('findSection');
+  const findSectionWrap = document.getElementById('findSectionWrap');
+  const resultsSection = document.getElementById('resultsSection');
+  const backBtn = document.getElementById('backBtn');
+  const urlInput = document.getElementById('urlInput');
+  
+  // Hide results
+  resultsSection?.classList.remove('visible');
+  backBtn?.style.setProperty('display', 'none');
+  
+  // Show input screen
+  setTimeout(() => {
+    findSection?.classList.remove('hidden');
+    findSectionWrap?.classList.remove('is-hidden');
+    
+    // Clear the input and focus it
+    if (urlInput) {
+      urlInput.value = '';
+      urlInput.focus();
+    }
+  }, 100);
 }
 </script>
 
