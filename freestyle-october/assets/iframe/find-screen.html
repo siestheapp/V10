@@ -332,9 +332,10 @@ body::before{
       display:none;
       flex-direction:column;
       width:100%;
-      opacity:1;
+      opacity:0;
       transform:none !important;
       margin-top:0;  /* reset margin when not in grid mode */
+      transition: opacity 0.6s ease;
     }
     .results-section.visible{
       display:flex;
@@ -1811,9 +1812,8 @@ function animateProgress(to, ms){
     const start = performance.now();
     (function tick(now){
       const t = Math.min((now - start)/ms, 1);
-      // easeOutCubic
-      const eased = 1 - Math.pow(1 - t, 3);
-      setProgress(from + (to - from)*eased);
+      // linear progress - consistent speed throughout
+      setProgress(from + (to - from)*t);
       if (t < 1) requestAnimationFrame(tick); else resolve();
     })(start);
   });
@@ -1873,7 +1873,7 @@ async function startFlow(product = DEFAULT_PRODUCT){
   await animateProgress(100, 2400);
 
   // Wait a moment to let users see the completed progress bar
-  await wait(500);
+  await wait(800);
 
   // ---- handoff to results (no jolt) ----
   
@@ -1946,7 +1946,10 @@ function showResults(opts = {}) {
   // Show results in place (still in grid mode during handoff)
   if (resultsSection){
     resultsSection.hidden = false;
-    resultsSection.classList.add('visible', 'is-in'); // Show immediately, no animation
+    // Trigger smooth fade-in after a brief delay
+    requestAnimationFrame(() => {
+      resultsSection.classList.add('visible', 'is-in');
+    });
   }
   backBtn?.style.setProperty('display', 'flex');
 
