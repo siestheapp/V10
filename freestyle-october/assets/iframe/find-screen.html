@@ -172,18 +172,20 @@ body::before{
       display:flex;
       flex-direction:column;
       overflow:hidden;
+      margin-bottom:6px;
     }
 
     /* Product confirmation section */
     .product-found{
-      padding:24px 20px 20px;
+      padding:20px 24px;
       display:flex;
+      align-items:center;
       gap:16px;
     }
     .product-thumb{
       flex-shrink:0;
-      width:80px;
-      height:80px;
+      width:90px;
+      height:90px;
       background:#f6f7f8;
       border-radius:12px;
       overflow:hidden;
@@ -192,7 +194,7 @@ body::before{
       width:100%;
       height:100%;
       object-fit:cover;
-      object-position:center;
+      object-position:center 25%;
       display:block;
     }
     .product-meta{
@@ -200,7 +202,7 @@ body::before{
       display:flex;
       flex-direction:column;
       justify-content:center;
-      gap:6px;
+      gap:8px;
     }
     .product-kicker{
       font-size:11px;
@@ -255,7 +257,7 @@ body::before{
       background:linear-gradient(135deg,var(--cta-start),var(--cta-mid) 46%,var(--cta-end));
       color:#fff;
       border:none;
-      border-top:1px solid rgba(255,255,255,.5);
+      border-top:1px solid rgba(255,255,255,.45);
       font-size:15px;
       font-weight:800;
       text-align:left;
@@ -402,19 +404,19 @@ body::before{
       margin-bottom:8px;
     }
     .section-title{
-      font-size:24px;
-      font-weight:700;
+      font-size:22px;
+      font-weight:800;
       color:var(--ink);
       letter-spacing:-.01em;
     }
     .section-subtitle{
-      font-size:15px;
+      font-size:14px;
       color:#047d7d;
       font-weight:600;
     }
 
     /* Twin Cards */
-    .twins-feed{display:flex;flex-direction:column;gap:16px;margin-top:16px}
+    .twins-feed{display:flex;flex-direction:column;gap:16px;margin-top:12px}
     .twin-card{
       overflow:hidden;
       transition:transform 0.2s ease, box-shadow 0.2s ease;
@@ -571,6 +573,35 @@ body::before{
     .modal-close:hover{
       background:rgba(255,255,255,.3);
     }
+
+    /* Confidence Bridge */
+    .confidence-bridge{
+      padding:0 24px;
+      margin:4px 0 2px;
+      text-align:center;
+      opacity:0;
+      transform:translateY(-6px);
+      animation:fadeSlide 0.4s ease forwards 0.3s;
+    }
+    @keyframes fadeSlide{
+      to{
+        opacity:1;
+        transform:translateY(0);
+      }
+    }
+    .bridge-text{
+      font-size:13px;
+      font-weight:600;
+      color:#036b6b;
+      letter-spacing:0.01em;
+    }
+    .divider{
+      margin:6px auto 0;
+      width:56px;
+      height:3px;
+      background:linear-gradient(to right, #3ECFD5, #9BFFCF);
+      border-radius:9999px;
+    }
   </style>
 </head>
 <body>
@@ -633,74 +664,52 @@ body::before{
                   </div>
                 </div>
 
-                <div class="smart-cta">
-                  <div class="info-bar smart-toggle" role="button" aria-expanded="false" aria-controls="smartPanel" onclick="toggleSmartRec(this)">
-                    <span class="smart-toggle-text">View size insight</span>
-                  </div>
-                  <div class="smart-panel" id="smartPanel" hidden>
-                    <div class="smart-metric">
-                      <div class="smart-metric-head">
-                        <span>Confidence level</span>
-                        <span>82%</span>
-                      </div>
-                      <div class="smart-meter">
-                        <span style="width:82%"></span>
-                      </div>
-                    </div>
-                    <ul class="smart-list">
-                      <li><strong>2 of 3 twins</strong> kept Size S for this exact dress.</li>
-                      <li>Closest twin <strong>@sarah_chen</strong> shares 3 dresses and stayed true to Size S.</li>
-                      <li>Fit notes: true to size in waist; slightly snug in bust.</li>
-                    </ul>
-                    <p class="smart-note">Confidence reflects keep rates from your closest size twins.</p>
-                  </div>
-                </div>
               </article>
             </section>
 
-            <section class="section twins-section">
-              <div class="section-head">
-                <h2 class="section-title">Your size twins</h2>
-                <p class="section-subtitle">1 size twin owns this exact dress</p>
+            <section class="confidence-bridge">
+              <div class="bridge-text">
+                <span class="sparkle">✨</span>
+                <span>Proxi found <strong>1 size twin</strong> who owns this dress</span>
               </div>
-
-              <div class="twins-feed">
-                <!-- COMPARISON: First card from feed-unified.html -->
-                <article class="card proxy-card-feed" style="margin-top: 20px;">
-                  <div style="padding: 12px 16px; background: #fff; border-bottom: 1px solid #eee;">
-                    <div style="display: flex; align-items: center; gap: 10px;">
-                      <img style="width: 36px; height: 36px; border-radius: 50%; object-fit: cover; object-position: center 10%;" src="../img/u1.jpg" alt="bellag22">
-                      <div style="flex: 1;">
-                        <div style="font-weight: 700; font-size: 14px;">bellag22</div>
-                        <div style="font-size: 12px; color: #666;">Matches your Somerset (XS)</div>
-                      </div>
-                      <div style="padding: 4px 8px; background: #E0F7F7; border-radius: 999px; font-size: 11px; color: #047d7d; font-weight: 600;">
-                        1 shared size
-                      </div>
-                    </div>
-                  </div>
-                  <div style="position: relative;">
-                    <img src="../img/pnpreal.png" alt="J.Crew Halter Mixy Dress" style="width: 100%; aspect-ratio: 1 / 1; object-fit: cover; cursor: pointer;" onclick="openImageModal(this.src, this.alt)">
-                    <div style="position: absolute; top: 10px; right: 10px; padding: 6px 10px; background: rgba(0,0,0,.45); backdrop-filter: blur(2px); border: 1px solid rgba(255,255,255,.35); border-radius: 999px; color: #fff; font-size: 12px; font-weight: 700;">
-                      S
-                    </div>
-                  </div>
-                  <div style="padding: 14px 16px;">
-                    <div style="font-size: 15px; margin-bottom: 8px;">
-                      <strong>J.Crew</strong> Halter Mixy Dress (S)
-                    </div>
-                    <div style="padding: 10px 12px; background: #f5f5f5; border-radius: 8px; margin-bottom: 12px;">
-                      <div style="font-size: 12px; color: #666; margin-bottom: 4px;">Comments · 4</div>
-                      <div style="font-size: 13px;"><strong>ggnyc8989:</strong> Is this petite or regular?</div>
-                      <div style="font-size: 11px; color: #047d7d; margin-top: 4px;">See full thread &gt;</div>
-                    </div>
-                    <button style="width: 100%; padding: 12px; background: linear-gradient(135deg,#008888,#3ECFD5 46%,#9BFFCF); border: none; border-radius: 12px; color: #fff; font-weight: 700; font-size: 15px;">
-                      Shop this item
-                    </button>
-                  </div>
-                </article>
-              </div>
+              <div class="divider"></div>
             </section>
+
+            <div class="twins-feed">
+              <!-- COMPARISON: First card from feed-unified.html -->
+              <article class="card proxy-card-feed">
+                <div style="padding: 12px 16px; background: #fff; border-bottom: 1px solid #eee;">
+                  <div style="display: flex; align-items: center; gap: 10px;">
+                    <img style="width: 36px; height: 36px; border-radius: 50%; object-fit: cover; object-position: center 10%;" src="../img/u1.jpg" alt="bellag22">
+                    <div style="flex: 1;">
+                      <div style="font-weight: 700; font-size: 14px;">bellag22</div>
+                    </div>
+                    <div style="padding: 4px 8px; background: #E0F7F7; border-radius: 999px; font-size: 11px; color: #047d7d; font-weight: 600;">
+                      1 shared size
+                    </div>
+                  </div>
+                </div>
+                <div style="position: relative;">
+                  <img src="../img/pnpreal.png" alt="J.Crew Halter Mixy Dress" style="width: 100%; height: 600px; object-fit: cover; cursor: pointer;" onclick="openImageModal(this.src, this.alt)">
+                  <div style="position: absolute; top: 10px; right: 10px; padding: 6px 10px; background: rgba(0,0,0,.45); backdrop-filter: blur(2px); border: 1px solid rgba(255,255,255,.35); border-radius: 999px; color: #fff; font-size: 12px; font-weight: 700;">
+                    S
+                  </div>
+                </div>
+                <div style="padding: 14px 16px;">
+                  <div style="font-size: 15px; margin-bottom: 8px;">
+                    <strong>J.Crew</strong> Halter Mixy Dress (S)
+                  </div>
+                  <div style="padding: 10px 12px; background: #f5f5f5; border-radius: 8px; margin-bottom: 12px;">
+                    <div style="font-size: 12px; color: #666; margin-bottom: 4px;">Comments · 4</div>
+                    <div style="font-size: 13px;"><strong>ggnyc8989:</strong> Is this petite or regular?</div>
+                    <div style="font-size: 11px; color: #047d7d; margin-top: 4px;">See full thread &gt;</div>
+                  </div>
+                  <button style="width: 100%; padding: 12px; background: linear-gradient(135deg,#008888,#3ECFD5 46%,#9BFFCF); border: none; border-radius: 12px; color: #fff; font-weight: 700; font-size: 15px;">
+                    Shop this item
+                  </button>
+                </div>
+              </article>
+            </div>
 
             <section class="section section--sticky">
               <div class="sticky-cta" role="region" aria-label="Size action">
