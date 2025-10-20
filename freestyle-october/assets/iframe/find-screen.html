@@ -900,6 +900,65 @@ body::before{
 
     /* Tweak the confidence-block wrapper so the ribbon doesn't add extra offset */
     .confidence-block{margin:0 0 8px;padding:0;}
+
+    /* ====== LOADING CARD ====== */
+    /* Loading Card — compact, quiet */
+    .loading-card{
+      margin:16px 24px 8px;
+      padding:16px 14px 12px;
+      background:#fff;
+      border:1px solid rgba(11,15,20,.06);
+      border-radius:14px;
+      box-shadow:var(--shadow-surface);
+      opacity:0; transform:translateY(6px);
+      transition:opacity .22s ease, transform .22s ease;
+    }
+    .loading-card.is-visible{opacity:1;transform:none}
+    .load-rows{display:flex;flex-direction:column;gap:8px}
+    .load-row{display:flex;align-items:center;gap:8px;font:600 15px/1.2 Inter;color:#3A4652}
+    .load-row .text{flex:0 0 auto}
+    .load-row .mini-chip{margin-left:auto}
+    .dot{width:18px;height:18px;border-radius:50%;display:grid;place-items:center;font-weight:900;font-size:12px;background:#CFF3E1;color:#0E8A62}
+    .loading-card .spinner{width:18px;height:18px;border-radius:50%;border:2px solid #E6F5F5;border-top-color:#16B5B5;animation:spin .9s linear infinite}
+    .mini-chip{display:flex;align-items:center;gap:10px;padding:6px 8px;border-radius:12px;background:linear-gradient(135deg, rgba(0,163,163,.06), rgba(127,225,255,.05));border:1px solid rgba(0,163,163,.16)}
+    .mini-thumb{width:32px;height:32px;border-radius:8px;object-fit:cover;background:#f2f4f6}
+    .mini-meta .brand{font-weight:800;font-size:12.5px;letter-spacing:.02em;color:#24323a;line-height:1}
+    .mini-meta .title{font-size:12px;color:#6A7683;line-height:1.1}
+    .progress{position:relative;height:4px;border-radius:999px;background:rgba(0,0,0,.06);margin-top:10px;overflow:hidden}
+    .progress span{position:absolute;inset:0 auto 0 0;width:0%;background:var(--focus-gradient);border-radius:inherit;transition:width .35s ease}
+    @keyframes spin{to{transform:rotate(360deg)}}
+
+    /* ——— Loading Card: Large preset ——— */
+    .loading-card.is-large{
+      margin: 24px 24px 16px;
+      padding: 20px 16px 16px;
+      border-radius: 18px;
+      box-shadow: var(--shadow-elevated);
+    }
+    .loading-card.is-large .load-row{ font: 700 17px/1.2 Inter, system-ui; gap: 12px; }
+    .loading-card.is-large .dot{ width: 22px; height: 22px; font-size: 13px; }
+    .loading-card.is-large .spinner{ width: 24px; height: 24px; border-width: 3px; }
+    .loading-card.is-large .mini-chip{
+      gap: 12px;
+      padding: 8px 10px;
+      border-radius: 14px;
+    }
+    .loading-card.is-large .mini-thumb{ width: 40px; height: 40px; border-radius: 10px; }
+    .loading-card.is-large .mini-meta .brand{ font-size: 13.5px; }
+    .loading-card.is-large .mini-meta .title{ font-size: 12.5px; }
+    .loading-card.is-large .progress{ height: 8px; border-radius: 999px; margin-top: 14px; }
+    .loading-card.is-large .progress span{ box-shadow: inset 0 0 0 1px rgba(255,255,255,.3); }
+
+    /* Enter/exit helpers for results */
+    .reveal-up{opacity:0;transform:translateY(8px);}
+    .reveal-up.is-in{opacity:1;transform:none;transition:opacity .3s ease, transform .3s ease;}
+
+    /* Reduced motion */
+    @media (prefers-reduced-motion: reduce){
+      .loading-card,
+      .reveal-up{transition:none!important;transform:none!important;}
+      .spinner{animation:none!important;}
+    }
   </style>
 </head>
 <body>
@@ -948,14 +1007,29 @@ body::before{
             </div>
           </section>
 
-          <section class="section loading-shell" id="loadingSection">
-            <div class="card card-pad loading-state" id="loadingState">
-              <div class="spinner"></div>
-              <p class="loading-text">Finding your size twins...</p>
+          <section id="loadingCard" class="loading-card is-large" aria-live="polite" hidden>
+            <div class="load-rows">
+              <div class="load-row done">
+                <span class="dot">✓</span>
+                <span class="text">Product matched</span>
+                <div class="mini-chip" aria-hidden="true">
+                  <img class="mini-thumb" id="miniThumb" alt="" />
+                  <div class="mini-meta">
+                    <div class="brand" id="miniBrand">—</div>
+                    <div class="title" id="miniTitle">—</div>
+                  </div>
+                </div>
+              </div>
+              <div class="load-row active" role="status" aria-label="Finding your size twins">
+                <span class="spinner" aria-hidden="true"></span>
+                <span class="text">Finding your size twins…</span>
+              </div>
             </div>
+            <div class="progress" aria-hidden="true"><span id="progressBar"></span></div>
           </section>
 
-          <div class="results-section" id="resultsSection">
+
+          <div class="results-section reveal-up" id="resultsSection">
             <!-- BRIDGE FIRST -->
             <section class="section">
               <div class="confidence-bridge" aria-live="polite">
@@ -1245,11 +1319,11 @@ maybeShowPastePill();
 
 const urlInputEl = document.getElementById('urlInput');
 const pastePillEl = document.getElementById('pastePill');
-if (urlInputEl){
-  ['dragenter','dragover'].forEach(eventName => {
-    urlInputEl.addEventListener(eventName, event => {
-      event.preventDefault();
-      urlInputEl.classList.add('is-drag');
+  if (urlInputEl){
+    ['dragenter','dragover'].forEach(eventName => {
+      urlInputEl.addEventListener(eventName, event => {
+        event.preventDefault();
+        urlInputEl.classList.add('is-drag');
     });
   });
   ['dragleave','drop'].forEach(eventName => {
@@ -1276,6 +1350,101 @@ if (urlInputEl){
   });
 }
 
+const DEFAULT_PRODUCT = {
+  thumb: 'https://images.unsplash.com/photo-1516826957135-700dedea698c?q=80&w=300&auto=format&fit=crop',
+  brand: 'PETAL & PUP',
+  title: 'Botanique Midi Dress'
+};
+
+// Loading card refs
+const loadingCardEl = document.getElementById('loadingCard');
+const progressEl = document.getElementById('progressBar');
+const miniThumbEl = document.getElementById('miniThumb');
+const miniBrandEl = document.getElementById('miniBrand');
+const miniTitleEl = document.getElementById('miniTitle');
+const resultsSectionEl = document.getElementById('resultsSection');
+
+if (resultsSectionEl && !resultsSectionEl.classList.contains('reveal-up')){
+  resultsSectionEl.classList.add('reveal-up');
+}
+
+function showElement(el){
+  if (!el) return;
+  el.hidden = false;
+  requestAnimationFrame(() => el.classList.add('is-visible'));
+}
+
+function hideElement(el){
+  if (!el) return;
+  el.classList.remove('is-visible');
+  setTimeout(() => {
+    el.hidden = true;
+  }, 260);
+}
+
+function setProgress(p){ if(progressEl) progressEl.style.width = `${p}%`; }
+
+// Extract brand/title/thumb from parsed product; provide graceful fallback
+function applyMiniChip(data){
+  if(miniThumbEl){
+    if(data?.thumb){ miniThumbEl.src = data.thumb; miniThumbEl.alt = data.title || ''; }
+    else { miniThumbEl.removeAttribute('src'); miniThumbEl.alt = ''; }
+  }
+  if(miniBrandEl) miniBrandEl.textContent = data?.brand || '—';
+  if(miniTitleEl) miniTitleEl.textContent = data?.title || '—';
+}
+
+const PARSE_MS = 500;
+const FETCH_MS = 1100;
+
+async function startFlow(product = DEFAULT_PRODUCT){
+  const findSection = document.getElementById('findSection');
+  const findSectionWrap = document.getElementById('findSectionWrap');
+
+  findSection?.classList.add('is-leaving');
+  await wait(200);
+  findSection?.classList.add('hidden');
+  findSection?.classList.remove('is-leaving');
+  findSectionWrap?.classList.add('is-hidden');
+
+  if (resultsSectionEl){
+    resultsSectionEl.classList.remove('visible', 'is-in');
+    resultsSectionEl.hidden = true;
+  }
+
+  // 0) Enter loading
+  showElement(loadingCardEl);
+  setProgress(8);
+
+  // 1) Parse product (existing PARSE_MS simulated or real)
+  const parsed = await parseProduct(product); // implement using your existing parser or mock wait
+  // populate chip immediately on parse resolve
+  applyMiniChip(parsed || {});
+  setProgress(45);
+
+  // 2) Fetch twins (existing FETCH_MS simulated or real)
+  const twins = await fetchTwins(parsed); // implement using your current demo wait
+  setProgress(100);
+
+  // 3) Hand-off with small fade and bring in real content
+  hideElement(loadingCardEl);
+  await wait(220);
+  showResults();
+}
+
+// Minimal mocks if you are still in demo mode
+async function parseProduct(candidate){
+  await wait(PARSE_MS);
+  // Derive from URL or reuse your current default product
+  // return { brand: 'PETAL & PUP', title: 'Botanique Midi Dress', thumb: '../img/pnpdress.png' };
+  return DEFAULT_PRODUCT; // consistent with your current demo
+}
+async function fetchTwins(parsed){ await wait(FETCH_MS); return DEMO_TWINS; }
+
+function wait(ms){
+  return new Promise(resolve => setTimeout(resolve, ms));
+}
+
 function handlePaste() {
   if (isPlaying) return;
   isPlaying = true;
@@ -1296,50 +1465,34 @@ function handlePaste() {
         : 22;
       setTimeout(typeNext, pause);
     } else {
-      setTimeout(showLoading, 420);
+      setTimeout(() => startFlow(DEFAULT_PRODUCT), 420);
     }
   }
 
   typeNext();
 }
 
-function showLoading() {
-  const findSection = document.getElementById('findSection');
-  const findSectionWrap = document.getElementById('findSectionWrap');
-  const loadingSection = document.getElementById('loadingSection');
-  const loadingState = document.getElementById('loadingState');
-
-  findSection?.classList.add('is-leaving');
-  setTimeout(() => {
-    findSection?.classList.add('hidden');
-    findSection?.classList.remove('is-leaving');
-    findSectionWrap?.classList.add('is-hidden');
-    loadingSection?.classList.add('is-visible');
-    loadingState?.classList.add('visible');
-  }, 220);
-
-  setTimeout(showResults, 1800);
-}
-
 function showResults() {
-  const loadingSection = document.getElementById('loadingSection');
-  const loadingState = document.getElementById('loadingState');
   const resultsSection = document.getElementById('resultsSection');
   const content = document.querySelector('.content');
   const backBtn = document.getElementById('backBtn');
   const confidenceBlock = document.getElementById('confidenceBlock');
 
-  loadingState?.classList.remove('visible');
-  loadingSection?.classList.remove('is-visible');
-  resultsSection?.classList.add('visible');
+  if (resultsSection){
+    resultsSection.hidden = false;
+    resultsSection.classList.add('visible');
+    requestAnimationFrame(() => resultsSection.classList.add('is-in'));
+  }
   confidenceBlock?.classList.add('is-entering');
   setTimeout(()=>confidenceBlock?.classList.remove('is-entering'), 350);
   backBtn?.style.setProperty('display', 'flex');
 
   // Scroll to top smoothly
-  setTimeout(() => {
-    content.scrollTo({ top: 0, behavior: 'smooth' });
-  }, 100);
+  if (content){
+    setTimeout(() => {
+      content.scrollTo({ top: 0, behavior: 'smooth' });
+    }, 100);
+  }
 
   // Slow scroll is disabled while editing unless explicitly enabled and motion allowed
   const prefersReduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
@@ -1408,16 +1561,19 @@ window.addEventListener('DOMContentLoaded', () => {
   if (!window.SHOW_RESULTS_ON_LOAD) return;
   const findSection = document.getElementById('findSection');
   const findSectionWrap = document.getElementById('findSectionWrap');
-  const loadingSection = document.getElementById('loadingSection');
-  const loadingState = document.getElementById('loadingState');
   const resultsSection = document.getElementById('resultsSection');
   const backBtn = document.getElementById('backBtn');
   const confidenceBlock = document.getElementById('confidenceBlock');
+  if (loadingCardEl){
+    loadingCardEl.classList.remove('is-visible');
+    loadingCardEl.hidden = true;
+  }
   findSection?.classList.add('hidden');
   findSectionWrap?.classList.add('is-hidden');
-  loadingState?.classList.remove('visible');
-  loadingSection?.classList.remove('is-visible');
-  resultsSection?.classList.add('visible');
+  if (resultsSection){
+    resultsSection.hidden = false;
+    resultsSection.classList.add('visible', 'is-in');
+  }
   backBtn?.style.setProperty('display', 'flex');
   // Update hero chips using demo twins on load when showing results
   updateHeroChips(DEMO_TWINS);
@@ -1498,8 +1654,22 @@ function goBack(){
   const urlInput = document.getElementById('urlInput');
   
   // Hide results
-  resultsSection?.classList.remove('visible');
+  if (resultsSection){
+    resultsSection.classList.remove('visible', 'is-in');
+    resultsSection.hidden = true;
+  }
+  if (loadingCardEl){
+    loadingCardEl.classList.remove('is-visible');
+    loadingCardEl.hidden = true;
+  }
+  if (miniThumbEl){
+    miniThumbEl.removeAttribute('src');
+    miniThumbEl.alt = '';
+  }
+  if (miniBrandEl) miniBrandEl.textContent = '—';
+  if (miniTitleEl) miniTitleEl.textContent = '—';
   backBtn?.style.setProperty('display', 'none');
+  isPlaying = false;
   
   // Show input screen
   setTimeout(() => {
