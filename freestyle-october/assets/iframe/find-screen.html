@@ -716,10 +716,10 @@ body::before{
       background:linear-gradient(180deg,rgba(255,255,255,0) 0%,rgba(250,248,246,.4) 50%,rgba(255,255,255,.95) 100%);pointer-events:none}
 
     .size-badge{position:absolute;left:18px;bottom:18px;display:inline-flex;align-items:center;gap:10px;
-      padding:12px 18px;background:rgba(255,255,255,.95);backdrop-filter:blur(16px);border:1px solid rgba(0,0,0,.06);
-      border-radius:999px;font-weight:800;font-size:17px;color:var(--petrol-600);z-index:2;
-      box-shadow:0 8px 24px rgba(0,0,0,.12)}
-    .size-badge .label{font-size:14px;font-weight:600;color:var(--muted)}
+      padding:10px 16px;background:rgba(255,255,255,.92);backdrop-filter:blur(12px);border:1px solid rgba(0,0,0,.08);
+      border-radius:12px;font-weight:600;font-size:16px;color:#0B0F14;z-index:2;
+      box-shadow:0 4px 16px rgba(0,0,0,.08)}
+    .size-badge .label{font-size:13px;font-weight:500;color:#4A5B66;letter-spacing:0.02em}
 
     .kept-badge{position:absolute;right:18px;top:18px;padding:8px 14px;background:rgba(34,197,94,.95);
       backdrop-filter:blur(12px);border:1px solid rgba(255,255,255,.3);border-radius:999px;
@@ -742,9 +742,9 @@ body::before{
     .twin-avatar{width:36px;height:36px;border-radius:50%;object-fit:cover;object-position:center 10%}
     .twin-name{flex:1;font-weight:700;font-size:16px;color:#262626}
     .twin-pill{padding:6px 10px;background:var(--petrol-100);border-radius:999px;font-size:13px;color:var(--accent);font-weight:700;display:inline-flex;align-items:center}
-    .shared-pill{padding:8px 14px;background:linear-gradient(115deg,rgba(224,247,247,.85),rgba(239,255,254,.9));border-radius:999px;font-size:14px;color:var(--accent);font-weight:700;cursor:pointer;transition:background 0.3s ease,color 0.25s ease,transform 0.25s ease,box-shadow 0.25s ease;display:inline-flex;align-items:center;gap:6px}
-    .shared-pill:hover{transform:scale(1.03);box-shadow:var(--shadow-surface)}
-    .shared-pill.open{background:var(--focus-gradient);color:#fff;box-shadow:var(--shadow-elevated)}
+    .shared-pill{padding:10px 16px;background:transparent;border:1px solid #E9EEF1;border-radius:8px;font-size:14px;color:#0B0F14;font-weight:500;letter-spacing:0.01em;cursor:pointer;transition:all 0.3s cubic-bezier(0.4, 0, 0.2, 1);display:inline-flex;align-items:center;gap:8px}
+    .shared-pill:hover{border-color:#00A3A3;color:#00A3A3;transform:translateY(-1px);box-shadow:0 4px 12px rgba(0, 163, 163, 0.15)}
+    .shared-pill.open{background:#00A3A3;color:#fff;border-color:#00A3A3;box-shadow:0 8px 20px rgba(0, 163, 163, 0.2)}
     .chevron{font-size:10px;transition:transform 0.2s ease}
     .shared-pill.open .chevron{transform:rotate(180deg)}
     .shared-pill:focus-visible{
@@ -958,8 +958,8 @@ body::before{
     /* Pull the insight up and reduce vertical rhythm */
     .section{margin-top:8px;}
     .confidence-bridge{margin:6px 24px 8px;}
-    .bridge-overline{color:var(--petrol-600);letter-spacing:.08em;}
-    .bridge-headline{font-size:18px;font-weight:800;letter-spacing:-.01em;}
+    .bridge-overline{color:#00A3A3;letter-spacing:.08em;font-weight:500;}  /* Lighter weight, brand color */
+    .bridge-headline{font-size:20px;font-weight:500;letter-spacing:-.02em;}  /* Larger, lighter like paste screen */
     .divider{width:48px;height:3px;border-radius:999px;opacity:.9;}
 
     /* Convert the product "card" into a subtle ribbon */
@@ -1307,29 +1307,30 @@ body::before{
       display:inline-flex;
       align-items:center;
       gap:8px;
-      padding:6px 12px;
-      background:#E8FBF3;
-      border-radius:20px;
+      padding:8px 14px;
+      background:rgba(0, 163, 163, 0.08);  /* Consistent with brand color */
+      border-radius:8px;  /* Less round for consistency */
       font-size:14px;
-      color:#0E8A62;
+      color:#00A3A3;  /* Brand color */
       font-weight:500;
       margin-bottom:16px;
     }
 
     .hero-product-brand{
       font-size:13px;
-      font-weight:700;
+      font-weight:500;  /* Match paste screen's lighter weight */
       letter-spacing:0.08em;
       text-transform:uppercase;
-      color:#8B95A6;
+      color:#0B0F14;  /* Darker for premium feel */
       margin-bottom:6px;
     }
 
     .hero-product-name{
-      font-size:22px;
-      font-weight:600;
+      font-size:24px;  /* Slightly larger */
+      font-weight:500;  /* Lighter weight like paste screen */
       color:#0B0F14;
       line-height:1.3;
+      letter-spacing:-0.01em;  /* Tighter like headline */
     }
 
     .hero-status-check{
@@ -1357,24 +1358,25 @@ body::before{
 
     .hero-loading-text{
       font-size:16px;
-      font-weight:500;
-      color:#6A7683;
+      font-weight:400;  /* Lighter weight for elegance */
+      color:#4A5B66;  /* Slightly darker like subtitle */
       text-align:center;
+      letter-spacing:0.01em;  /* Add slight spacing */
     }
 
     /* Hero Progress Indicator */
     .hero-progress-track{
       width:100%;
-      height:6px;
-      background:#F3F4F6;
-      border-radius:3px;
+      height:4px;  /* Thinner for elegance */
+      background:#E9EEF1;  /* Consistent with input border color */
+      border-radius:2px;
       overflow:hidden;
     }
 
     .hero-progress-fill{
       height:100%;
-      background:linear-gradient(90deg, #00A3A3, #16B5B5);
-      border-radius:3px;
+      background:#00A3A3;  /* Solid brand color instead of gradient */
+      border-radius:2px;
       width:0%;
       transition:width 0.3s cubic-bezier(0.4, 0, 0.2, 1);
     }
