@@ -6,7 +6,7 @@
   <title>Proxi — Find Your Size</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=optional" rel="stylesheet">
   <link rel="stylesheet" href="../../../freestyle-tokens.css">
   <style>
     :root{
@@ -52,17 +52,53 @@ body::before{
 .status .right{display:flex;align-items:center;gap:6px}
 .status .right img{height:13px;width:auto;display:block}
 
-/* App Content */
-.header{padding:3px 0px 0px;display:flex;align-items:center;justify-content:center;position:relative;margin-top:-5px}
-.logo{font-weight:600;font-size:32px;letter-spacing:-.01em;background:var(--brand-sheen);
-  -webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent}
+    /* App Content */
+    /* Header never animates, never shifts */
+    .header{
+      /* constant size */
+      min-height:48px;
+      padding:3px 0 0;
+      margin-top:7px;
 
-/* Back Button */
+      /* center the logo with flex, not transforms */
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      position:relative;
+      z-index:10;
+
+      /* kill any inherited animation/transition */
+      animation:none !important;
+      transition:none !important;
+    }
+
+    /* Logo always centered; no absolute, no transforms, no fades */
+    .logo{
+      position:static !important;
+      transform:none !important;
+      opacity:1 !important;
+      animation:none !important;
+      transition:none !important;
+      margin:0 auto;
+      
+      font-weight:600;
+      font-size:32px;
+      letter-spacing:-.01em;
+      background:var(--brand-sheen);
+      -webkit-background-clip:text;
+      background-clip:text;
+      -webkit-text-fill-color:transparent;
+    }
+
+/* Back Button anchors left but shares the same grid cell */
 .back-btn{
   position:absolute;
   left:24px;
   top:50%;
   transform:translateY(-50%);
+  animation:none !important;
+  transition:none !important;
+  
   width:32px;
   height:32px;
   border-radius:50%;
@@ -72,7 +108,6 @@ body::before{
   align-items:center;
   justify-content:center;
   cursor:pointer;
-  transition:all 0.2s ease;
   color:#666;
   z-index:10;
   box-shadow:0 1px 4px rgba(0,0,0,.06);
@@ -81,6 +116,7 @@ body::before{
   background:rgba(255,255,255,.8);
   transform:translateY(-50%) scale(1.02);
   box-shadow:0 2px 8px rgba(0,0,0,.08);
+  transition:transform 0.2s ease, background 0.2s ease, box-shadow 0.2s ease;
 }
 .back-btn:active{
   transform:translateY(-50%) scale(0.98);
@@ -101,24 +137,42 @@ body::before{
       box-shadow:var(--shadow-surface);
     }
     .card-pad{padding:20px 24px}
-    .finder-shell.is-hidden{display:none;}
+    .finder-shell.is-hidden{
+      opacity:0;
+      pointer-events:none;
+      position:absolute;
+      visibility:hidden;
+    }
     .loading-shell{display:none;}
     .loading-shell.is-visible{display:block;}
 
-    /* Content Container */
+    /* Content Container - always grid to prevent layout reflow */
     .content{
       flex:1;
       overflow-y:auto;
       overflow-x:hidden;
+      /* Reserve space for vertical scrollbar to prevent width shift */
+      scrollbar-gutter: stable both-edges;
       scrollbar-width:none;
       -ms-overflow-style:none;
       position:relative;
-      display:flex;
-      flex-direction:column;
-      gap:20px;
+      display:grid;
+      grid-template-rows:auto 1fr auto;
+      row-gap:20px;
+      align-items:start;
       padding:12px 0 120px;
+      /* Ensure content doesn't affect header */
+      min-height:0;
     }
     .content::-webkit-scrollbar{display:none}
+
+    /* Fallback for browsers without scrollbar-gutter support */
+    @supports not (scrollbar-gutter: stable){
+      .content{ overflow-y:scroll; }
+    }
+
+    /* Loading card vertical offset (only affects loading state) */
+    #loadingCard{ margin-top:0; }
 
     /* Find Input Section */
     .find-section{
@@ -196,6 +250,8 @@ body::before{
       outline:none;
       box-shadow:none;
     }
+    /* when long, shrink slightly so more fits */
+    .url-input.is-long{ font-size:14px; }
     .url-input.has-icon{padding-left:48px;padding-right:88px}
     .url-input:focus{
       border-color:transparent;
@@ -301,18 +357,19 @@ body::before{
     @keyframes spin{to{transform:rotate(360deg)}}
     .loading-text{font-size:17px;color:var(--muted);font-weight:600}
 
-    /* Results Section */
+    /* Results Section - container only, children handle their own animations */
     .results-section{
       display:none;
       flex-direction:column;
       width:100%;
-      opacity:0;
+      margin-top:0;  /* reset margin when not in grid mode */
+      opacity:0;               /* start hidden for fade-in */
+      transition:opacity .7s ease .08s;  /* slow overall entrance */
     }
     .results-section.visible{
       display:flex;
-      animation:fadeIn 0.35s ease forwards;
+      opacity:1;
     }
-    @keyframes fadeIn{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:translateY(0)}}
 
     .confidence-block{
       padding:0 24px;
@@ -321,6 +378,12 @@ body::before{
       border:none;
       box-shadow:none;
       display:block;
+    }
+    /* Ensure hidden attribute truly hides the ribbon regardless of base styles */
+    .confidence-block[hidden]{
+      display:none !important;
+      margin:0 !important;
+      padding:0 !important;
     }
     .confidence-bridge{
       margin:0;
@@ -605,8 +668,17 @@ body::before{
       font-weight:600;
     }
 
-    /* Twin Cards */
-    .twins-feed{display:flex;flex-direction:column;gap:16px}
+    /* Results: slight delay for content below the bridge */
+    .twins-feed{
+      display:flex;
+      flex-direction:column;
+      gap:16px;
+      opacity:0;                 /* start hidden */
+      transform:none;
+      transition: opacity .35s ease .22s; /* fade in after bridge */
+    }
+    .results-section.visible .twins-feed{opacity:1;transform:none}
+    .twins-feed .proxy-card-feed{opacity:1;transform:none;transition:none}
     .twin-card{
       overflow:hidden;
       transition:transform 0.2s ease, box-shadow 0.2s ease;
@@ -797,12 +869,9 @@ body::before{
       background:rgba(255,255,255,.3);
     }
 
-    /* Confidence Bridge */
-    .confidence-bridge{
-      padding:0;
-      margin:0 0 16px;
-      text-align:left;
-    }
+    /* Results: show immediately (no animation) */
+    .confidence-bridge{padding:0;margin:0 0 16px;text-align:left;min-height:72px;opacity:1;transform:none;transition:none}
+    .results-section.visible .confidence-bridge{opacity:1;transform:none}
     @keyframes fadeSlide{
       to{
         opacity:1;
@@ -841,18 +910,20 @@ body::before{
       0%{background-position:0% 50%}
       100%{background-position:100% 50%}
     }
-    /* Confidence block entrance */
-    .confidence-block{will-change:transform,opacity}
-    .confidence-block.is-entering{animation:confidenceIn .35s cubic-bezier(.2,.8,.2,1) forwards}
-    @keyframes confidenceIn{from{opacity:0;transform:scale(.985)}to{opacity:1;transform:scale(1)}}
+    /* Confidence block: fade in slightly after the bridge */
+    .confidence-block{opacity:0;transform:none;transition:opacity .35s ease .26s}
+    .results-section.visible .confidence-block{opacity:1;transform:none}
+    @keyframes fadeInOnly{from{opacity:0}to{opacity:1}}
 
     /* Prefers-reduced-motion: minimize or remove transitions/animations */
     @media (prefers-reduced-motion: reduce){
       *{scroll-behavior:auto!important}
       .results-section.visible{animation:none!important}
+      .confidence-bridge{transition:none!important;opacity:1!important;transform:none!important}
+      .twins-feed{transition:none!important;opacity:1!important;transform:none!important}
+      .confidence-block{transition:none!important;opacity:1!important;transform:none!important}
+      .twins-feed .proxy-card-feed{transition:none!important;opacity:1!important;transform:none!important}
       .twin-card{animation:none!important}
-      .confidence-bridge{animation:none!important}
-      .confidence-block.is-entering{animation:none!important}
       .sticky-cta{transition:none!important;transform:none!important;opacity:1!important}
       .smart-panel{transition:none!important}
       .shared-items-panel{transition:none!important}
@@ -925,7 +996,7 @@ body::before{
     .mini-meta .brand{font-weight:800;font-size:12.5px;letter-spacing:.02em;color:#24323a;line-height:1}
     .mini-meta .title{font-size:12px;color:#6A7683;line-height:1.1}
     .progress{position:relative;height:4px;border-radius:999px;background:rgba(0,0,0,.06);margin-top:10px;overflow:hidden}
-    .progress span{position:absolute;inset:0 auto 0 0;width:0%;background:var(--focus-gradient);border-radius:inherit;transition:width .35s ease}
+    .progress span{position:absolute;inset:0 auto 0 0;width:0%;background:var(--focus-gradient);border-radius:inherit;transition:width .1s linear}
     @keyframes spin{to{transform:rotate(360deg)}}
 
     /* ——— Loading Card: Large preset ——— */
@@ -949,16 +1020,349 @@ body::before{
     .loading-card.is-large .progress{ height: 8px; border-radius: 999px; margin-top: 14px; }
     .loading-card.is-large .progress span{ box-shadow: inset 0 0 0 1px rgba(255,255,255,.3); }
 
-    /* Enter/exit helpers for results */
-    .reveal-up{opacity:0;transform:translateY(8px);}
-    .reveal-up.is-in{opacity:1;transform:none;transition:opacity .3s ease, transform .3s ease;}
+    /* Ensure results stay locked in position during grid mode */
+    .content.is-loading #resultsSection.visible{
+      transform:none !important;
+      opacity:1 !important;
+      transition:none !important;
+    }
 
     /* Reduced motion */
     @media (prefers-reduced-motion: reduce){
       .loading-card,
-      .reveal-up{transition:none!important;transform:none!important;}
+      .reveal-up,
+      .confidence-bridge,
+      .twins-feed,
+      .confidence-block{transition:none!important;transform:none!important;opacity:1!important;}
       .spinner{animation:none!important;}
     }
+
+    /* Stepper states */
+    .load-row[aria-hidden="true"] { opacity: .35; }
+    .load-row.is-active { opacity: 1; }
+    .load-row.is-done   { opacity: 1; }
+    .load-row.is-done .dot { transform: scale(1); }
+    .load-row .dot { transform: scale(.8); transition: transform .18s ease; }
+
+    /* Shimmered track */
+    .progress--shimmer { position:relative; overflow:hidden; }
+    .progress--shimmer::before{
+      content:""; position:absolute; inset:0;
+      background:linear-gradient(90deg, rgba(255,255,255,0), rgba(255,255,255,.25), rgba(255,255,255,0));
+      animation:trackShimmer 2.2s ease-in-out infinite;
+      opacity:.35;
+    }
+    @keyframes trackShimmer { 0%{transform:translateX(-60%)} 100%{transform:translateX(60%)} }
+
+    /* Focus ring for back button while loading */
+    #backBtn:focus-visible{
+      outline:2px solid transparent; outline-offset:2px;
+      box-shadow:0 0 0 2px rgba(31,174,217,.35);
+    }
+
+    /* Reduced motion: freeze shimmer & transforms */
+    @media (prefers-reduced-motion: reduce){
+      .progress--shimmer::before{ animation:none !important; }
+      .load-row .dot{ transform:none !important; }
+      .hero-image-container,
+      .hero-product-info,
+      .hero-loading-section{
+        opacity: 1 !important;
+        transform: none !important;
+        transition: none !important;
+      }
+    }
+
+    /* === JOLT FIXES === */
+    /* Results entrance handled by child elements now */
+
+    /* Once not loading, ensure the loader never affects layout */
+    .content:not(.is-loading) #loadingCard{
+      position: absolute;
+      margin: 0;
+      padding: 0;
+      height: 0;
+      overflow: hidden;
+      border: 0;
+    }
+
+    /* --- Loading stage centering --- */
+    /* Loading layout: same grid, just taller middle row for centering */
+    .content.is-loading{
+      grid-template-rows: auto minmax(520px, 1fr) auto;  /* expand middle row */
+      justify-items: center;
+    }
+
+    /* Explicit row placement so header never moves in loading mode */
+    .content.is-loading .header{ 
+      grid-row: 1; 
+      justify-self: stretch; 
+    }
+
+    /* Center ONLY the loading card in the stage row */
+    .content.is-loading #loadingCard{
+      grid-row: 2;
+      place-self: center;
+      margin: -37px 24px 0; /* pull loading card up slightly more */
+      width: min(640px, 90%);
+    }
+
+    /* Keep results anchored in the same stage row during handoff */
+    .content.is-loading #resultsSection{
+      grid-row: 2;
+      place-self: start center;  /* same alignment as loading card */
+      margin-top: 0;  /* no top margin - keep at natural position */
+      align-self: start;  /* ensure it stays at top */
+    }
+
+    /* Short viewports: bias up a bit but keep header pinned */
+    @media (max-height: 740px){
+      .content.is-loading{
+        align-items: start;
+      }
+    }
+
+    /* ——— Promote the confirmation chip to a big, primary element ——— */
+    .loading-card.is-large .load-row[data-step="confirm"]{
+      align-items: stretch;        /* let the chip breathe */
+    }
+
+    .loading-card.is-large .mini-chip{
+      /* Big, tappable card look */
+      flex: 1 1 auto;
+      display: grid;
+      grid-template-columns: 72px 1fr auto;  /* image | text | check */
+      align-items: center;
+      gap: 14px;
+      padding: 12px 14px;
+      border-radius: 16px;
+      background: #fff;
+      border: 1px solid rgba(0,0,0,.06);
+      box-shadow: 0 10px 28px rgba(17,25,40,.10);
+      min-height: 80px;
+    }
+
+    .loading-card.is-large .mini-thumb{
+      width: 72px; height: 72px;
+      border-radius: 12px;
+      object-fit: cover;
+      background: #eef3f6;
+    }
+
+    .loading-card.is-large .mini-meta{
+      display: flex; flex-direction: column; gap: 4px;
+      min-width: 0; /* allow text wrap */
+    }
+
+    .loading-card.is-large .mini-meta .brand{
+      font-size: 16px; line-height: 1.1;
+      font-weight: 900;
+      color: #0f2430;
+      letter-spacing: -.01em;
+      white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+    }
+
+    .loading-card.is-large .mini-meta .title{
+      font-size: 14px; line-height: 1.2;
+      font-weight: 600; color: #4a5b66;
+      overflow: hidden; text-overflow: ellipsis;
+    }
+
+    .loading-card.is-large .mini-chip::after{
+      /* strong confirmation check */
+      content: "✓";
+      display: inline-grid; place-items: center;
+      width: 28px; height: 28px;
+      border-radius: 999px;
+      background: #D1F6E6;
+      color: #0E8A62; font-weight: 900;
+    }
+
+    /* So the text label doesn't compete with the big card */
+    .loading-card.is-large .load-row[data-step="confirm"] .text{
+      display: none;
+    }
+
+    /* Entrance polish */
+    .mini-chip[data-state="ready"]{
+      animation: chipIn .22s cubic-bezier(.21,.9,.3,1.17);
+    }
+    @keyframes chipIn{
+      from{ opacity:0; transform: translateY(4px) scale(.98); }
+      to{   opacity:1; transform: translateY(0)    scale(1);   }
+    }
+
+    /* Skeleton state keeps size stable until image is ready */
+    .mini-chip[data-state="loading"] .mini-thumb{
+      background: linear-gradient(90deg,#eef4f6 0%,#f6fbfc 40%,#eef4f6 80%);
+      background-size: 200% 100%;
+      animation: miniShimmer 1.2s ease-in-out infinite;
+    }
+    @keyframes miniShimmer { 0%{background-position:0% 0} 100%{background-position:200% 0} }
+
+    /* Don't show placeholder "—" text */
+    .mini-meta .brand:empty, .mini-meta .title:empty { display:none; }
+
+    /* ——— Hero Product Card (for loading) ——— */
+    .hero-product-card{
+      width:100%;
+      max-width:380px;
+      background:#fff;
+      border-radius:28px;
+      overflow:hidden;
+      box-shadow:
+        0 4px 6px -1px rgba(0,0,0,0.03),
+        0 10px 15px -3px rgba(0,0,0,0.04),
+        0 20px 25px -5px rgba(0,0,0,0.03);
+    }
+
+    /* Staggered entrance animations for each section */
+    .hero-image-container{
+      opacity: 0;
+      transform: translateY(20px);
+      transition: opacity 0.4s ease, transform 0.4s ease;
+    }
+
+    .hero-product-info{
+      opacity: 0;
+      transform: translateY(20px);
+      transition: opacity 0.4s ease 0.1s, transform 0.4s ease 0.1s;
+    }
+
+    .hero-loading-section{
+      opacity: 0;
+      transform: translateY(20px);
+      transition: opacity 0.4s ease 0.2s, transform 0.4s ease 0.2s;
+    }
+
+    /* Show elements when card is visible */
+    .hero-product-card.is-visible .hero-image-container,
+    .hero-product-card.is-visible .hero-product-info,
+    .hero-product-card.is-visible .hero-loading-section{
+      opacity: 1;
+      transform: translateY(0);
+    }
+
+    @keyframes slideUp{
+      from{opacity:0;transform:translateY(30px)}
+      to{opacity:1;transform:translateY(0)}
+    }
+
+    /* Hero Product Image */
+    .hero-image-container{
+      position:relative;
+      width:100%;
+      height:420px;
+      background:#F9FAFB;
+      overflow:hidden;
+    }
+
+    .hero-product-image{
+      width:100%;
+      height:100%;
+      object-fit:cover;
+      object-position:center;
+    }
+
+    /* Gradient overlay for better text readability */
+    .hero-image-overlay{
+      position:absolute;
+      bottom:0;
+      left:0;
+      right:0;
+      height:80px;
+      background:linear-gradient(to top, rgba(255,255,255,0.9), transparent);
+      pointer-events:none;
+    }
+
+    /* Hero Product Info Section */
+    .hero-product-info{
+      padding:18px 20px 20px;
+    }
+
+    .hero-product-status{
+      display:inline-flex;
+      align-items:center;
+      gap:8px;
+      padding:6px 12px;
+      background:#E8FBF3;
+      border-radius:20px;
+      font-size:14px;
+      color:#0E8A62;
+      font-weight:500;
+      margin-bottom:16px;
+    }
+
+    .hero-product-brand{
+      font-size:13px;
+      font-weight:700;
+      letter-spacing:0.08em;
+      text-transform:uppercase;
+      color:#8B95A6;
+      margin-bottom:6px;
+    }
+
+    .hero-product-name{
+      font-size:22px;
+      font-weight:600;
+      color:#0B0F14;
+      line-height:1.3;
+    }
+
+    .hero-status-check{
+      width:16px;
+      height:16px;
+      background:#0E8A62;
+      border-radius:50%;
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      color:white;
+      font-size:10px;
+      font-weight:bold;
+    }
+
+    /* Hero Loading Section */
+    .hero-loading-section{
+      padding:18px 20px 20px;
+      border-top:1px solid #F3F4F6;
+      display:flex;
+      flex-direction:column;
+      align-items:center;
+      gap:12px;
+    }
+
+    .hero-loading-text{
+      font-size:16px;
+      font-weight:500;
+      color:#6A7683;
+      text-align:center;
+    }
+
+    /* Hero Progress Indicator */
+    .hero-progress-track{
+      width:100%;
+      height:6px;
+      background:#F3F4F6;
+      border-radius:3px;
+      overflow:hidden;
+    }
+
+    .hero-progress-fill{
+      height:100%;
+      background:linear-gradient(90deg, #00A3A3, #16B5B5);
+      border-radius:3px;
+      width:0%;
+      transition:width 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+
+    /* Skeleton state for hero image */
+    .hero-product-image[data-state="loading"]{
+      background: linear-gradient(90deg,#eef4f6 0%,#f6fbfc 40%,#eef4f6 80%);
+      background-size: 200% 100%;
+      animation: heroImageShimmer 1.2s ease-in-out infinite;
+    }
+    @keyframes heroImageShimmer { 0%{background-position:0% 0} 100%{background-position:200% 0} }
   </style>
 </head>
 <body>
@@ -967,16 +1371,18 @@ body::before{
         <div class="island"></div>
         <div class="status"><div>9:41</div><div class="right"><img src="../img/cellular-connection.svg" alt="cell"/><img src="../img/wifi.svg" alt="wifi"/><img src="../img/battery.svg" alt="battery"/></div></div>
 
+        <!-- Header (outside scroll container to avoid scrollbar centering shifts) -->
+        <div class="header">
+          <button class="back-btn" id="backBtn" onclick="goBack()" style="display: none;">
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <path d="M19 12H5M12 19L5 12L12 5" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+            </svg>
+          </button>
+          <div class="logo">proxi</div>
+        </div>
+
         <!-- Main Content -->
         <div class="content">
-          <div class="header">
-            <button class="back-btn" id="backBtn" onclick="goBack()" style="display: none;">
-              <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                <path d="M19 12H5M12 19L5 12L12 5" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-              </svg>
-            </button>
-            <div class="logo">proxi</div>
-          </div>
           <section class="section finder-shell" id="findSectionWrap">
             <div class="card card-pad find-section" id="findSection">
               <h1 class="find-title">Find your best fit</h1>
@@ -1002,30 +1408,35 @@ body::before{
               </div>
 
               <button class="paste-btn" id="pasteBtn" onclick="handlePaste()">
-                Paste Link & Find Size Twins
+                Paste link to find size twins
               </button>
             </div>
           </section>
 
-          <section id="loadingCard" class="loading-card is-large" aria-live="polite" hidden>
-            <div class="load-rows">
-              <div class="load-row done">
-                <span class="dot">✓</span>
-                <span class="text">Product matched</span>
-                <div class="mini-chip" aria-hidden="true">
-                  <img class="mini-thumb" id="miniThumb" alt="" />
-                  <div class="mini-meta">
-                    <div class="brand" id="miniBrand">—</div>
-                    <div class="title" id="miniTitle">—</div>
-                  </div>
-                </div>
+          <section id="loadingCard" class="hero-product-card" aria-live="polite" hidden style="opacity: 0;">
+            <!-- Large Hero Image -->
+            <div class="hero-image-container">
+              <img class="hero-product-image" id="heroImage" data-state="loading" alt="" />
+              <div class="hero-image-overlay"></div>
+            </div>
+
+            <!-- Product Details -->
+            <div class="hero-product-info">
+              <div class="hero-product-status">
+                <span class="hero-status-check">✓</span>
+                <span>Product matched</span>
               </div>
-              <div class="load-row active" role="status" aria-label="Finding your size twins">
-                <span class="spinner" aria-hidden="true"></span>
-                <span class="text">Finding your size twins…</span>
+              <div class="hero-product-brand" id="heroBrand">—</div>
+              <h2 class="hero-product-name" id="heroName">—</h2>
+            </div>
+
+            <!-- Loading State -->
+            <div class="hero-loading-section">
+              <div class="hero-loading-text" id="heroLoadingText">Finding size twins</div>
+              <div class="hero-progress-track">
+                <div class="hero-progress-fill" id="heroProgressBar"></div>
               </div>
             </div>
-            <div class="progress" aria-hidden="true"><span id="progressBar"></span></div>
           </section>
 
 
@@ -1181,8 +1592,8 @@ body::before{
               </div>
             </section>
 
-            <!-- PRODUCT CONFIRMATION SECOND (kept, but visually demoted to a ribbon) -->
-            <section class="section confidence-block" id="confidenceBlock">
+            <!-- PRODUCT CONFIRMATION REMOVED PER REQUEST -->
+            <section class="section confidence-block" id="confidenceBlock" hidden>
               <article class="card product-card">
                 <div class="product-found">
                   <div class="product-thumb">
@@ -1351,17 +1762,18 @@ const pastePillEl = document.getElementById('pastePill');
 }
 
 const DEFAULT_PRODUCT = {
-  thumb: 'https://images.unsplash.com/photo-1516826957135-700dedea698c?q=80&w=300&auto=format&fit=crop',
+  thumb: '../img/pnpdress.png',
   brand: 'PETAL & PUP',
   title: 'Botanique Midi Dress'
 };
 
 // Loading card refs
 const loadingCardEl = document.getElementById('loadingCard');
-const progressEl = document.getElementById('progressBar');
-const miniThumbEl = document.getElementById('miniThumb');
-const miniBrandEl = document.getElementById('miniBrand');
-const miniTitleEl = document.getElementById('miniTitle');
+const progressEl = document.getElementById('heroProgressBar');
+const heroImageEl = document.getElementById('heroImage');
+const heroBrandEl = document.getElementById('heroBrand');
+const heroNameEl = document.getElementById('heroName');
+const heroLoadingTextEl = document.getElementById('heroLoadingText');
 const resultsSectionEl = document.getElementById('resultsSection');
 
 if (resultsSectionEl && !resultsSectionEl.classList.contains('reveal-up')){
@@ -1384,99 +1796,145 @@ function hideElement(el){
 
 function setProgress(p){ if(progressEl) progressEl.style.width = `${p}%`; }
 
-// Extract brand/title/thumb from parsed product; provide graceful fallback
-function applyMiniChip(data){
-  if(miniThumbEl){
-    if(data?.thumb){ miniThumbEl.src = data.thumb; miniThumbEl.alt = data.title || ''; }
-    else { miniThumbEl.removeAttribute('src'); miniThumbEl.alt = ''; }
+// Populate hero card with product data
+function applyHeroCard(data){
+  if (!heroImageEl || !heroBrandEl || !heroNameEl) return;
+
+  // Set copy now
+  if (heroBrandEl) heroBrandEl.textContent = data.brand || '';
+  if (heroNameEl) heroNameEl.textContent = data.title || '';
+
+  // Show skeleton image while preloading
+  heroImageEl.setAttribute('data-state','loading');
+
+  if (!data.thumb){
+    heroImageEl.setAttribute('data-state','ready');
+    return;
   }
-  if(miniBrandEl) miniBrandEl.textContent = data?.brand || '—';
-  if(miniTitleEl) miniTitleEl.textContent = data?.title || '—';
+
+  // Preload image completely before showing
+  const img = new Image();
+  img.onload = () => {
+    if (heroImageEl){
+      heroImageEl.src = data.thumb;
+      heroImageEl.alt = data.title || '';
+      heroImageEl.setAttribute('data-state','ready');
+    }
+  };
+  img.onerror = () => {
+    heroImageEl.setAttribute('data-state','ready');
+  };
+  img.src = data.thumb;
 }
 
 const PARSE_MS = 500;
 const FETCH_MS = 1100;
 
+// ---- Timing for smooth 2.5 second loading
+const DURATIONS = { match: 600, confirm: 600, twins: 800 }; // ms total per stage (2s total)
+const BAR_MIN_START = 0; // start at 0%
+const BAR_END_BEFORE = 100; // complete to 100%
+
+function setProgress(p){ if(progressEl) progressEl.style.width = `${p}%`; }
+
+// Smooth fake-progress that eases toward a target
+function animateProgress(to, ms){
+  return new Promise(resolve=>{
+    const from = Math.min(parseFloat(progressEl.style.width) || 0, to);
+    const start = performance.now();
+    (function tick(now){
+      const t = Math.min((now - start)/ms, 1);
+      // linear progress - consistent speed throughout
+      setProgress(from + (to - from)*t);
+      if (t < 1) requestAnimationFrame(tick); else resolve();
+    })(start);
+  });
+}
+
+function markStep(step, state){ // state: 'active' | 'done'
+  const row = document.querySelector(`.load-row[data-step="${step}"]`);
+  if (!row) return;
+  row.classList.remove('is-active','is-done');
+  row.setAttribute('aria-hidden', state === 'active' ? 'false' : 'true');
+  if (state === 'active') row.classList.add('is-active');
+  if (state === 'done')  row.classList.add('is-done');
+}
+
 async function startFlow(product = DEFAULT_PRODUCT){
-  const findSection = document.getElementById('findSection');
-  const findSectionWrap = document.getElementById('findSectionWrap');
-  const loadingCard = document.getElementById('loadingCard');
+  const wrap = document.getElementById('findSectionWrap');
+  const find = document.getElementById('findSection');
+  const contentEl = document.querySelector('.content');
 
-  findSection?.classList.add('is-leaving');
-  await wait(200);
-  findSection?.classList.add('hidden');
-  findSection?.classList.remove('is-leaving');
-  findSectionWrap?.classList.add('is-hidden');
+  console.log('Starting flow...');
 
-  if (resultsSectionEl){
-    resultsSectionEl.classList.remove('visible', 'is-in');
-    resultsSectionEl.hidden = true;
+  // Parse product and populate hero card FIRST (while input is still visible)
+  const parsed = await parseProduct(product);
+  applyHeroCard(parsed);
+  setProgress(0);
+  
+  // Ensure loading card is completely hidden initially and reset any previous state
+  if (loadingCardEl) {
+    loadingCardEl.hidden = true;
+    loadingCardEl.style.opacity = '0';
+    loadingCardEl.style.display = '';
+    loadingCardEl.style.visibility = '';
+    loadingCardEl.classList.remove('is-visible');
+    console.log('Reset loading card state');
+  }
+  
+  // Switch to loading mode and hide input simultaneously
+  contentEl?.classList.add('is-loading');
+  find?.classList.add('is-leaving');
+  
+  await wait(180);
+  
+  // Hide input section
+  wrap?.classList.add('is-hidden');
+  
+  // Wait a frame to ensure layout is settled, then show loading card
+  await wait(16);
+  if (loadingCardEl) {
+    console.log('Showing loading card');
+    loadingCardEl.hidden = false;
+    loadingCardEl.style.opacity = '1';
+    loadingCardEl.style.display = 'block';
+    // Add is-visible class to trigger staggered animations
+    requestAnimationFrame(() => {
+      loadingCardEl.classList.add('is-visible');
+      console.log('Loading card should be visible now');
+    });
+  } else {
+    console.error('Loading card element not found!');
   }
 
-  // Stage 1: Finding product (simple spinner)
-  const loadRows = loadingCard.querySelector('.load-rows');
-  const progressContainer = loadingCard.querySelector('.progress');
+  // Smooth continuous progress over 2.5 seconds total
+  // Start immediately after card appears
+  await wait(100);
 
-  loadRows.innerHTML = `
-    <div class="load-row active">
-      <span class="spinner" aria-hidden="true"></span>
-      <span class="text">Finding product...</span>
-    </div>
-  `;
-  if (progressContainer) progressContainer.style.display = 'none';
+  // Single smooth animation from 0 to 100% over 2.4 seconds
+  await animateProgress(100, 2400);
 
-  showElement(loadingCardEl);
-  await wait(1000);
+  // Wait a moment to let users see the completed progress bar
+  await wait(750);
 
-  // Stage 2: Product found (show product with checkmark)
-  const parsed = await parseProduct(product);
-  loadRows.innerHTML = `
-    <div class="load-row done">
-      <span class="dot">✓</span>
-      <span class="text">Product found</span>
-      <div class="mini-chip" aria-hidden="true">
-        <img class="mini-thumb" src="${parsed.thumb}" alt="" />
-        <div class="mini-meta">
-          <div class="brand">${parsed.brand}</div>
-          <div class="title">${parsed.title}</div>
-        </div>
-      </div>
-    </div>
-  `;
+  // ---- handoff to results (no jolt) ----
+  
+  // show results while we're STILL in grid mode
+  if (contentEl) contentEl.scrollTop = 0;
+  showResults({ keepLoadingCard: true });
 
-  await wait(1500);
+  // immediately remove the loader from layout (so it can't collapse later)
+  if (loadingCardEl){
+    loadingCardEl.classList.remove('is-visible');
+    loadingCardEl.style.opacity = '0';
+    loadingCardEl.style.visibility = 'hidden';
+    loadingCardEl.hidden = true;         // <-- moved up (immediate)
+  }
 
-  // Stage 3: Finding size twins (with progress bar)
-  loadRows.innerHTML = `
-    <div class="load-row done">
-      <span class="dot">✓</span>
-      <span class="text">Product matched</span>
-      <div class="mini-chip" aria-hidden="true">
-        <img class="mini-thumb" src="${parsed.thumb}" alt="" />
-        <div class="mini-meta">
-          <div class="brand">${parsed.brand}</div>
-          <div class="title">${parsed.title}</div>
-        </div>
-      </div>
-    </div>
-    <div class="load-row active">
-      <span class="spinner" aria-hidden="true"></span>
-      <span class="text">Finding your size twins…</span>
-    </div>
-  `;
-
-  if (progressContainer) progressContainer.style.display = 'block';
-  setProgress(20);
-  await wait(600);
-  setProgress(60);
-  await wait(600);
-  setProgress(100);
-  await wait(500);
-
-  // Transition to results
-  hideElement(loadingCardEl);
-  await wait(220);
-  showResults();
+  // next frame: exit grid mode
+  await wait(16);
+  contentEl?.classList.remove('is-loading');
+  if (contentEl) contentEl.scrollTop = 0;
 }
 
 // Minimal mocks if you are still in demo mode
@@ -1502,43 +1960,50 @@ function handlePaste() {
 
   urlInput.focus();
 
-  let index = 0;
-  function typeNext(){
-    if (index <= url.length){
-      urlInput.value = url.slice(0, index++);
-      const slice = urlInput.value;
-      const pause = slice.endsWith('.com/') ? 320
-        : slice.endsWith('/products/') ? 280
-        : 22;
-      setTimeout(typeNext, pause);
-    } else {
-      setTimeout(() => startFlow(DEFAULT_PRODUCT), 420);
-    }
+  // Clear the input first
+  urlInput.value = '';
+  
+  // Type each character with a simple loop
+  for (let i = 0; i < url.length; i++) {
+    setTimeout(() => {
+      urlInput.value = url.slice(0, i + 1);
+      
+      // follow the caret to reveal the whole typed value
+      urlInput.setSelectionRange(urlInput.value.length, urlInput.value.length);
+      urlInput.scrollLeft = urlInput.scrollWidth;
+      
+      // If we've typed the last character, start the flow
+      if (i === url.length - 1) {
+        setTimeout(() => startFlow(DEFAULT_PRODUCT), 300);
+      }
+    }, i * 35); // 35ms delay between each character
   }
-
-  typeNext();
 }
 
-function showResults() {
+function showResults(opts = {}) {
   const resultsSection = document.getElementById('resultsSection');
   const content = document.querySelector('.content');
   const backBtn = document.getElementById('backBtn');
-  const confidenceBlock = document.getElementById('confidenceBlock');
 
+  // Show results in place (still in grid mode during handoff)
   if (resultsSection){
     resultsSection.hidden = false;
-    resultsSection.classList.add('visible');
-    requestAnimationFrame(() => resultsSection.classList.add('is-in'));
+    // Trigger smooth fade-in after a brief delay
+    requestAnimationFrame(() => {
+      resultsSection.classList.add('visible', 'is-in');
+    });
   }
-  confidenceBlock?.classList.add('is-entering');
-  setTimeout(()=>confidenceBlock?.classList.remove('is-entering'), 350);
   backBtn?.style.setProperty('display', 'flex');
 
-  // Scroll to top smoothly
-  if (content){
-    setTimeout(() => {
-      content.scrollTo({ top: 0, behavior: 'smooth' });
-    }, 100);
+  // IMPORTANT: Don't remove .is-loading here; startFlow() handles the timing
+  // to prevent layout jolt. Only remove it if called from elsewhere (like DOMContentLoaded).
+  if (!opts.keepLoadingCard) {
+    // If not keeping loading card, we're being called from somewhere else (not startFlow)
+    // so it's safe to remove grid mode and reset scroll immediately
+    if (content) content.scrollTop = 0;
+    requestAnimationFrame(() => {
+      content?.classList.remove('is-loading');
+    });
   }
 
   // Slow scroll is disabled while editing unless explicitly enabled and motion allowed
@@ -1624,9 +2089,7 @@ window.addEventListener('DOMContentLoaded', () => {
   backBtn?.style.setProperty('display', 'flex');
   // Update hero chips using demo twins on load when showing results
   updateHeroChips(DEMO_TWINS);
-  // Entrance animations
-  confidenceBlock?.classList.add('is-entering');
-  setTimeout(()=>confidenceBlock?.classList.remove('is-entering'), 350);
+  // Entrance animations - removed confidence block animation to prevent jolt
   // sticky CTA removed
 });
 
@@ -1700,6 +2163,8 @@ function goBack(){
   const backBtn = document.getElementById('backBtn');
   const urlInput = document.getElementById('urlInput');
   
+  document.querySelector('.content')?.classList.remove('is-loading');
+  
   // Hide results
   if (resultsSection){
     resultsSection.classList.remove('visible', 'is-in');
@@ -1708,13 +2173,18 @@ function goBack(){
   if (loadingCardEl){
     loadingCardEl.classList.remove('is-visible');
     loadingCardEl.hidden = true;
+    loadingCardEl.style.opacity = '0';
+    loadingCardEl.style.display = '';
+    loadingCardEl.style.visibility = '';
   }
-  if (miniThumbEl){
-    miniThumbEl.removeAttribute('src');
-    miniThumbEl.alt = '';
+  if (heroImageEl){
+    heroImageEl.removeAttribute('src');
+    heroImageEl.alt = '';
+    heroImageEl.setAttribute('data-state', 'loading');
   }
-  if (miniBrandEl) miniBrandEl.textContent = '—';
-  if (miniTitleEl) miniTitleEl.textContent = '—';
+  if (heroBrandEl) heroBrandEl.textContent = '—';
+  if (heroNameEl) heroNameEl.textContent = '—';
+  setProgress(0);
   backBtn?.style.setProperty('display', 'none');
   isPlaying = false;
   
