@@ -1400,6 +1400,7 @@ const FETCH_MS = 1100;
 async function startFlow(product = DEFAULT_PRODUCT){
   const findSection = document.getElementById('findSection');
   const findSectionWrap = document.getElementById('findSectionWrap');
+  const loadingCard = document.getElementById('loadingCard');
 
   findSection?.classList.add('is-leaving');
   await wait(200);
@@ -1412,21 +1413,67 @@ async function startFlow(product = DEFAULT_PRODUCT){
     resultsSectionEl.hidden = true;
   }
 
-  // 0) Enter loading
+  // Stage 1: Finding product (simple spinner)
+  const loadRows = loadingCard.querySelector('.load-rows');
+  const progressContainer = loadingCard.querySelector('.progress');
+
+  loadRows.innerHTML = `
+    <div class="load-row active">
+      <span class="spinner" aria-hidden="true"></span>
+      <span class="text">Finding product...</span>
+    </div>
+  `;
+  if (progressContainer) progressContainer.style.display = 'none';
+
   showElement(loadingCardEl);
-  setProgress(8);
+  await wait(1000);
 
-  // 1) Parse product (existing PARSE_MS simulated or real)
-  const parsed = await parseProduct(product); // implement using your existing parser or mock wait
-  // populate chip immediately on parse resolve
-  applyMiniChip(parsed || {});
-  setProgress(45);
+  // Stage 2: Product found (show product with checkmark)
+  const parsed = await parseProduct(product);
+  loadRows.innerHTML = `
+    <div class="load-row done">
+      <span class="dot">✓</span>
+      <span class="text">Product found</span>
+      <div class="mini-chip" aria-hidden="true">
+        <img class="mini-thumb" src="${parsed.thumb}" alt="" />
+        <div class="mini-meta">
+          <div class="brand">${parsed.brand}</div>
+          <div class="title">${parsed.title}</div>
+        </div>
+      </div>
+    </div>
+  `;
 
-  // 2) Fetch twins (existing FETCH_MS simulated or real)
-  const twins = await fetchTwins(parsed); // implement using your current demo wait
+  await wait(1500);
+
+  // Stage 3: Finding size twins (with progress bar)
+  loadRows.innerHTML = `
+    <div class="load-row done">
+      <span class="dot">✓</span>
+      <span class="text">Product matched</span>
+      <div class="mini-chip" aria-hidden="true">
+        <img class="mini-thumb" src="${parsed.thumb}" alt="" />
+        <div class="mini-meta">
+          <div class="brand">${parsed.brand}</div>
+          <div class="title">${parsed.title}</div>
+        </div>
+      </div>
+    </div>
+    <div class="load-row active">
+      <span class="spinner" aria-hidden="true"></span>
+      <span class="text">Finding your size twins…</span>
+    </div>
+  `;
+
+  if (progressContainer) progressContainer.style.display = 'block';
+  setProgress(20);
+  await wait(600);
+  setProgress(60);
+  await wait(600);
   setProgress(100);
+  await wait(500);
 
-  // 3) Hand-off with small fade and bring in real content
+  // Transition to results
   hideElement(loadingCardEl);
   await wait(220);
   showResults();
