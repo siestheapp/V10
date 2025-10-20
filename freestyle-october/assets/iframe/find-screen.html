@@ -58,11 +58,12 @@ body::before{
       /* constant size */
       min-height:48px;
       padding:3px 0 0;
-      margin-top:-5px;
+      margin-top:7px;
 
-      /* center the logo with grid, not transforms */
-      display:grid;
-      place-items:center;
+      /* center the logo with flex, not transforms */
+      display:flex;
+      align-items:center;
+      justify-content:center;
       position:relative;
       z-index:10;
 
@@ -73,7 +74,6 @@ body::before{
 
     /* Logo always centered; no absolute, no transforms, no fades */
     .logo{
-      grid-area:1 / 1;
       position:static !important;
       transform:none !important;
       opacity:1 !important;
@@ -92,10 +92,10 @@ body::before{
 
 /* Back Button anchors left but shares the same grid cell */
 .back-btn{
-  grid-area:1 / 1;
-  justify-self:start;
-  margin-left:24px;
-  position:static;          /* no absolute/transform */
+  position:absolute;
+  left:24px;
+  top:50%;
+  transform:translateY(-50%);
   animation:none !important;
   transition:none !important;
   
@@ -114,12 +114,12 @@ body::before{
 }
 .back-btn:hover{
   background:rgba(255,255,255,.8);
-  transform:scale(1.02);
+  transform:translateY(-50%) scale(1.02);
   box-shadow:0 2px 8px rgba(0,0,0,.08);
   transition:transform 0.2s ease, background 0.2s ease, box-shadow 0.2s ease;
 }
 .back-btn:active{
-  transform:scale(0.98);
+  transform:translateY(-50%) scale(0.98);
 }
 
     /* Shared card + section system (aligns with feed/closet screens) */
@@ -151,6 +151,8 @@ body::before{
       flex:1;
       overflow-y:auto;
       overflow-x:hidden;
+      /* Reserve space for vertical scrollbar to prevent width shift */
+      scrollbar-gutter: stable both-edges;
       scrollbar-width:none;
       -ms-overflow-style:none;
       position:relative;
@@ -163,6 +165,14 @@ body::before{
       min-height:0;
     }
     .content::-webkit-scrollbar{display:none}
+
+    /* Fallback for browsers without scrollbar-gutter support */
+    @supports not (scrollbar-gutter: stable){
+      .content{ overflow-y:scroll; }
+    }
+
+    /* Loading card vertical offset (only affects loading state) */
+    #loadingCard{ margin-top:0; }
 
     /* Find Input Section */
     .find-section{
@@ -1103,7 +1113,7 @@ body::before{
     .content.is-loading #loadingCard{
       grid-row: 2;
       place-self: center;
-      margin: 0 24px;
+      margin: -37px 24px 0; /* pull loading card up slightly more */
       width: min(640px, 90%);
     }
 
@@ -1371,16 +1381,18 @@ body::before{
         <div class="island"></div>
         <div class="status"><div>9:41</div><div class="right"><img src="../img/cellular-connection.svg" alt="cell"/><img src="../img/wifi.svg" alt="wifi"/><img src="../img/battery.svg" alt="battery"/></div></div>
 
+        <!-- Header (outside scroll container to avoid scrollbar centering shifts) -->
+        <div class="header">
+          <button class="back-btn" id="backBtn" onclick="goBack()" style="display: none;">
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <path d="M19 12H5M12 19L5 12L12 5" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+            </svg>
+          </button>
+          <div class="logo">proxi</div>
+        </div>
+
         <!-- Main Content -->
         <div class="content">
-          <div class="header">
-            <button class="back-btn" id="backBtn" onclick="goBack()" style="display: none;">
-              <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                <path d="M19 12H5M12 19L5 12L12 5" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-              </svg>
-            </button>
-            <div class="logo">proxi</div>
-          </div>
           <section class="section finder-shell" id="findSectionWrap">
             <div class="card card-pad find-section" id="findSection">
               <h1 class="find-title">Find your best fit</h1>
