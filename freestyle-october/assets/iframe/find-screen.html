@@ -260,6 +260,7 @@ body::before{
       background:linear-gradient(135deg,var(--cta-start),var(--cta-mid) 46%,var(--cta-end));
       color:#fff;
       border:none;
+      border-top:1px solid rgba(255,255,255,.5);
       font-size:15px;
       font-weight:800;
       text-align:left;
@@ -287,8 +288,13 @@ body::before{
       padding:18px 20px 20px;
       background:rgba(0,163,163,.08);
       border-top:1px solid rgba(255,255,255,.4);
+      transition:max-height .25s ease, opacity .25s ease, transform .25s ease;
+      transform:translateY(-4px);
     }
     .smart-panel[hidden]{display:none;}
+    .smart-cta.open .smart-panel{
+      transform:translateY(0);
+    }
     .smart-metric{
       display:flex;
       flex-direction:column;
@@ -397,7 +403,8 @@ body::before{
     .section-head{
       display:flex;
       flex-direction:column;
-      gap:6px;
+      gap:4px;
+      margin-bottom:8px;
     }
     .section-title{
       font-size:24px;
@@ -504,6 +511,71 @@ body::before{
     }
     .sticky-btn:hover{transform:translateX(2px)}
     .sticky-btn:active{transform:scale(.98)}
+
+    /* In-App Image Modal */
+    .image-modal{
+      position:absolute;
+      top:0;
+      left:0;
+      right:0;
+      bottom:0;
+      background:rgba(0,0,0,.3);
+      backdrop-filter:blur(8px);
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      z-index:200;
+      opacity:0;
+      visibility:hidden;
+      transition:opacity 0.4s ease, visibility 0.4s ease;
+      border-radius:53px;
+    }
+    .image-modal.open{
+      opacity:1;
+      visibility:visible;
+    }
+    .modal-content{
+      position:relative;
+      width:100%;
+      height:100%;
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      padding:60px 20px 20px;
+      transform:scale(0.9);
+      transition:transform 0.4s ease;
+    }
+    .image-modal.open .modal-content{
+      transform:scale(1);
+    }
+    .modal-image{
+      width:100%;
+      height:100%;
+      object-fit:contain;
+      border-radius:12px;
+      box-shadow:0 20px 40px rgba(0,0,0,.2);
+    }
+    .modal-close{
+      position:absolute;
+      top:20px;
+      right:20px;
+      width:40px;
+      height:40px;
+      background:rgba(255,255,255,.2);
+      border:none;
+      border-radius:50%;
+      color:#fff;
+      font-size:20px;
+      cursor:pointer;
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      transition:background 0.2s ease;
+      z-index:10;
+    }
+    .modal-close:hover{
+      background:rgba(255,255,255,.3);
+    }
   </style>
 </head>
 <body>
@@ -560,7 +632,7 @@ body::before{
                   </div>
                   <div class="product-details">
                     <div class="product-info">
-                    <span class="found-label">Found your product</span>
+                    <span class="found-label">✅ Product found</span>
                     <div class="product-name">PETAL & PUP</div>
                     <div class="product-subtitle">Botanique Midi Dress</div>
                     </div>
@@ -570,12 +642,12 @@ body::before{
 
                 <div class="smart-cta">
                   <div class="info-bar smart-toggle" role="button" aria-expanded="false" aria-controls="smartPanel" onclick="toggleSmartRec(this)">
-                    <span class="smart-toggle-text">More info</span>
+                    <span class="smart-toggle-text">View size insight</span>
                   </div>
                   <div class="smart-panel" id="smartPanel" hidden>
                     <div class="smart-metric">
                       <div class="smart-metric-head">
-                        <span>Confidence</span>
+                        <span>Confidence level</span>
                         <span>82%</span>
                       </div>
                       <div class="smart-meter">
@@ -587,7 +659,7 @@ body::before{
                       <li>Closest twin <strong>@sarah_chen</strong> shares 3 dresses and stayed true to Size S.</li>
                       <li>Fit notes: true to size in waist; slightly snug in bust.</li>
                     </ul>
-                    <p class="smart-note">Confidence blends keep rates from your closest closet twins.</p>
+                    <p class="smart-note">Confidence reflects keep rates from your closest size twins.</p>
                   </div>
                 </div>
               </article>
@@ -595,8 +667,8 @@ body::before{
 
             <section class="section twins-section">
               <div class="section-head">
-                <h2 class="section-title">Your proxies</h2>
-                <p class="section-subtitle">3 dress twins own this exact dress</p>
+                <h2 class="section-title">Your size twins</h2>
+                <p class="section-subtitle">1 size twin owns this exact dress</p>
               </div>
 
               <div class="twins-feed">
@@ -615,12 +687,9 @@ body::before{
                     </div>
                   </div>
                   <div style="position: relative;">
-                    <img src="../img/pnpreal.png" alt="J.Crew Halter Mixy Dress" style="width: 100%; aspect-ratio: 1 / 1; object-fit: cover;">
+                    <img src="../img/pnpreal.png" alt="J.Crew Halter Mixy Dress" style="width: 100%; aspect-ratio: 1 / 1; object-fit: cover; cursor: pointer;" onclick="openImageModal(this.src, this.alt)">
                     <div style="position: absolute; top: 10px; right: 10px; padding: 6px 10px; background: rgba(0,0,0,.45); backdrop-filter: blur(2px); border: 1px solid rgba(255,255,255,.35); border-radius: 999px; color: #fff; font-size: 12px; font-weight: 700;">
                       S
-                    </div>
-                    <div style="position: absolute; top: 10px; left: 10px; padding: 6px 12px; background: rgba(255,255,255,.94); backdrop-filter: blur(8px); border: 1px solid rgba(0,0,0,.12); border-radius: 999px; color: #34424D; font-size: 13px; font-weight: 500;">
-                      Same as yours
                     </div>
                   </div>
                   <div style="padding: 14px 16px;">
@@ -670,6 +739,14 @@ body::before{
             <svg class="ico" viewBox="0 0 256 256" aria-hidden="true"><path fill="currentColor" d="M234.38,210a123.36,123.36,0,0,0-60.78-53.23,76,76,0,1,0-91.2,0A123.36,123.36,0,0,0,21.62,210a12,12,0,1,0,20.77,12c18.12-31.32,50.12-50,85.61-50s67.49,18.69,85.61,50a12,12,0,0,0,20.77-12ZM76,96a52,52,0,1,1,52,52A52.06,52.06,0,0,1,76,96Z"/></svg>
             <span>Profile</span>
           </a>
+        </div>
+
+        <!-- In-App Image Modal -->
+        <div class="image-modal" id="imageModal">
+          <div class="modal-content">
+            <button class="modal-close" onclick="closeImageModal()">×</button>
+            <img class="modal-image" id="modalImage" src="" alt="">
+          </div>
         </div>
       </div>
 </div>
@@ -901,7 +978,7 @@ function toggleSmartRec(button){
   }
   const label = button.querySelector('.smart-toggle-text');
   if(label){
-    label.textContent = expanded ? 'More info' : 'Hide info';
+    label.textContent = expanded ? 'View size insight' : 'Hide size insight';
   }
 }
 
@@ -950,6 +1027,34 @@ function goBack(){
     }
   }, 100);
 }
+
+function openImageModal(imageSrc, imageAlt) {
+  const modal = document.getElementById('imageModal');
+  const modalImage = document.getElementById('modalImage');
+  
+  modalImage.src = imageSrc;
+  modalImage.alt = imageAlt;
+  modal.classList.add('open');
+}
+
+function closeImageModal() {
+  const modal = document.getElementById('imageModal');
+  modal.classList.remove('open');
+}
+
+// Close modal when clicking outside the image
+document.getElementById('imageModal').addEventListener('click', function(e) {
+  if (e.target === this) {
+    closeImageModal();
+  }
+});
+
+// Close modal with Escape key
+document.addEventListener('keydown', function(e) {
+  if (e.key === 'Escape') {
+    closeImageModal();
+  }
+});
 </script>
 
 </body>
