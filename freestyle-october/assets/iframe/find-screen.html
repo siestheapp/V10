@@ -248,11 +248,9 @@ body::before{
       flex-direction:column;
       gap:20px;
       width:100%;
-      opacity:0;
     }
     .results-section.visible{
       display:flex;
-      animation:fadeIn 0.5s ease forwards;
     }
     @keyframes fadeIn{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:translateY(0)}}
 
@@ -507,15 +505,11 @@ body::before{
     }
 
     /* Twin Cards */
-    .twins-feed{display:flex;flex-direction:column;gap:16px;margin-top:12px}
+    .twins-feed{display:flex;flex-direction:column;gap:16px}
     .twin-card{
       overflow:hidden;
       transition:transform 0.2s ease, box-shadow 0.2s ease;
-      animation:slideUp 0.5s ease backwards;
     }
-    .twin-card:nth-child(1){animation-delay:0.1s}
-    .twin-card:nth-child(2){animation-delay:0.2s}
-    .twin-card:nth-child(3){animation-delay:0.3s}
     .twin-card:hover{transform:translateY(-2px);box-shadow:0 18px 40px rgba(17,25,40,.16)}
     @keyframes slideUp{from{opacity:0;transform:translateY(20px)}to{opacity:1;transform:translateY(0)}}
 
@@ -608,7 +602,7 @@ body::before{
     .review-text{font-size:14px;line-height:1.6;color:#262626;position:relative}
     .review-text::before,.review-text::after{content:'"';display:inline;font-size:14px;color:#262626;font-weight:400}
     .review-text::after{margin-left:0}
-    .review-text::before{margin-right:0}
+    .review-text::before{margin-right:-2px}
 
     .shop-btn{display:flex;align-items:center;justify-content:center;gap:10px;width:100%;padding:16px;background:linear-gradient(135deg,var(--cta-start),var(--cta-mid) 46%,var(--cta-end));border:none;border-radius:12px;color:#fff;font-weight:700;font-size:16px;cursor:pointer;transition:all 0.3s ease;box-shadow:0 6px 20px rgba(0,163,163,.25);position:relative;overflow:hidden;min-height:44px}
     .shop-btn::before{content:"";position:absolute;inset:1px 1px auto 1px;height:40%;border-radius:11px;background:linear-gradient(180deg,rgba(255,255,255,.12),rgba(255,255,255,0));pointer-events:none}
@@ -696,12 +690,9 @@ body::before{
 
     /* Confidence Bridge */
     .confidence-bridge{
-      padding:0 24px;
+      padding:20px 24px;
       margin:6px 0 6px;
       text-align:center;
-      opacity:0;
-      transform:translateY(-6px);
-      animation:fadeSlide 0.4s ease forwards 0.3s;
     }
     @keyframes fadeSlide{
       to{
@@ -710,15 +701,15 @@ body::before{
       }
     }
     .bridge-overline{
-      font-size:11px;
+      font-size:13px;
       font-weight:800;
       letter-spacing:.08em;
       text-transform:uppercase;
       color:#7A7A80;
-      margin-bottom:6px;
+      margin-bottom:8px;
     }
     .bridge-headline{
-      font-size:18px;
+      font-size:22px;
       line-height:1.35;
       font-weight:800;
       letter-spacing:-0.01em;
@@ -727,9 +718,9 @@ body::before{
       max-width:80%;
     }
     .divider{
-      margin:10px auto 0;
-      width:72px;
-      height:4px;
+      margin:12px auto 0;
+      width:90px;
+      height:5px;
       border-radius:9999px;
       background:linear-gradient(90deg,#3ECFD5,#9BFFCF,#3ECFD5);
       background-size:200% 200%;
@@ -1084,7 +1075,7 @@ function getSizingDirection(userSize, twinSize) {
 // Auto-play demo sequence for screen recording
 let isPlaying = false;
 // Work-mode flags (no recording):
-window.SHOW_RESULTS_ON_LOAD = false;
+window.SHOW_RESULTS_ON_LOAD = true;
 window.ENABLE_AUTOSCROLL = false;
 
 // Clipboard functionality disabled to prevent permission popups
