@@ -167,45 +167,40 @@ body::before{
     }
     @keyframes fadeIn{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:translateY(0)}}
 
-    /* Unified Product + Recommendation Card */
-    .unified-card{
+    /* Product Confirmation + Recommendation Card */
+    .product-card{
       display:flex;
       flex-direction:column;
-      border-radius:20px;
       overflow:hidden;
     }
-    .product-top{
+
+    /* Product confirmation section */
+    .product-found{
+      padding:24px 20px 20px;
       display:flex;
-      align-items:center;
       gap:16px;
-      padding:18px 20px 18px;
     }
-    .product-image{
+    .product-thumb{
       flex-shrink:0;
-      width:110px;
-      height:110px;
+      width:80px;
+      height:80px;
       background:#f6f7f8;
       border-radius:12px;
       overflow:hidden;
     }
-    .product-image img{
+    .product-thumb img{
       width:100%;
       height:100%;
       object-fit:cover;
-      object-position:center 30%;
+      object-position:center;
       display:block;
     }
-    .product-details{
+    .product-meta{
       flex:1;
       display:flex;
       flex-direction:column;
-      gap:12px;
       justify-content:center;
-    }
-    .product-info{
-      display:flex;
-      flex-direction:column;
-      gap:8px;
+      gap:6px;
     }
     .product-kicker{
       font-size:11px;
@@ -625,18 +620,16 @@ body::before{
 
           <div class="results-section" id="resultsSection">
             <section class="section">
-              <article class="card unified-card">
-                <div class="product-top">
-                  <div class="product-image">
+              <article class="card product-card">
+                <!-- Product found confirmation -->
+                <div class="product-found">
+                  <div class="product-thumb">
                     <img src="../img/pnpdress.png" alt="Petal & Pup Botanique Midi Dress"/>
                   </div>
-                  <div class="product-details">
-                    <div class="product-info">
-                    <span class="found-label">✅ Product found</span>
+                  <div class="product-meta">
+                    <span class="found-label">Product found</span>
                     <div class="product-name">PETAL & PUP</div>
                     <div class="product-subtitle">Botanique Midi Dress</div>
-                    </div>
-
                   </div>
                 </div>
 
