@@ -6,7 +6,7 @@
   <title>Proxi — Find Your Size</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=optional" rel="stylesheet">
   <link rel="stylesheet" href="../../../freestyle-tokens.css">
   <style>
     :root{
@@ -53,26 +53,34 @@ body::before{
 .status .right img{height:13px;width:auto;display:block}
 
     /* App Content */
+    /* Header never animates, never shifts */
     .header{
-      padding:3px 0px 0px;
-      display:flex;
-      align-items:center;
-      justify-content:center;
-      position:relative;
+      /* constant size */
+      min-height:48px;
+      padding:3px 0 0;
       margin-top:-5px;
-      flex-shrink:0; /* prevent header from shrinking */
-      min-height:48px; /* Keep header height constant whether back button is visible or not */
-      width:100%;
-      box-sizing:border-box;
-    }
-    /* Ensure logo stays fixed in all layout modes */
-    .header .logo{
-      position:absolute;
-      left:50%;
-      transform:translateX(-50%);
+
+      /* center the logo with grid, not transforms */
+      display:grid;
+      place-items:center;
+      position:relative;
       z-index:10;
+
+      /* kill any inherited animation/transition */
+      animation:none !important;
+      transition:none !important;
     }
+
+    /* Logo always centered; no absolute, no transforms, no fades */
     .logo{
+      grid-area:1 / 1;
+      position:static !important;
+      transform:none !important;
+      opacity:1 !important;
+      animation:none !important;
+      transition:none !important;
+      margin:0 auto;
+      
       font-weight:600;
       font-size:32px;
       letter-spacing:-.01em;
@@ -80,15 +88,17 @@ body::before{
       -webkit-background-clip:text;
       background-clip:text;
       -webkit-text-fill-color:transparent;
-      position:relative; /* ensure logo stays in place */
     }
 
-/* Back Button */
+/* Back Button anchors left but shares the same grid cell */
 .back-btn{
-  position:absolute;
-  left:24px;
-  top:50%;
-  transform:translateY(-50%);
+  grid-area:1 / 1;
+  justify-self:start;
+  margin-left:24px;
+  position:static;          /* no absolute/transform */
+  animation:none !important;
+  transition:none !important;
+  
   width:32px;
   height:32px;
   border-radius:50%;
@@ -98,18 +108,18 @@ body::before{
   align-items:center;
   justify-content:center;
   cursor:pointer;
-  transition:all 0.2s ease;
   color:#666;
   z-index:10;
   box-shadow:0 1px 4px rgba(0,0,0,.06);
 }
 .back-btn:hover{
   background:rgba(255,255,255,.8);
-  transform:translateY(-50%) scale(1.02);
+  transform:scale(1.02);
   box-shadow:0 2px 8px rgba(0,0,0,.08);
+  transition:transform 0.2s ease, background 0.2s ease, box-shadow 0.2s ease;
 }
 .back-btn:active{
-  transform:translateY(-50%) scale(0.98);
+  transform:scale(0.98);
 }
 
     /* Shared card + section system (aligns with feed/closet screens) */
@@ -136,7 +146,7 @@ body::before{
     .loading-shell{display:none;}
     .loading-shell.is-visible{display:block;}
 
-    /* Content Container */
+    /* Content Container - always grid to prevent layout reflow */
     .content{
       flex:1;
       overflow-y:auto;
@@ -144,9 +154,10 @@ body::before{
       scrollbar-width:none;
       -ms-overflow-style:none;
       position:relative;
-      display:flex;
-      flex-direction:column;
-      gap:20px;
+      display:grid;
+      grid-template-rows:auto 1fr auto;
+      row-gap:20px;
+      align-items:start;
       padding:12px 0 120px;
       /* Ensure content doesn't affect header */
       min-height:0;
@@ -336,20 +347,15 @@ body::before{
     @keyframes spin{to{transform:rotate(360deg)}}
     .loading-text{font-size:17px;color:var(--muted);font-weight:600}
 
-    /* Results Section */
+    /* Results Section - container only, children handle their own animations */
     .results-section{
       display:none;
       flex-direction:column;
       width:100%;
-      opacity:0;
-      transform: translateY(20px);
       margin-top:0;  /* reset margin when not in grid mode */
-      transition: opacity 1.5s ease, transform 1.5s ease;
     }
     .results-section.visible{
       display:flex;
-      opacity:1;
-      transform: translateY(0);
     }
 
     .confidence-block{
@@ -643,25 +649,24 @@ body::before{
       font-weight:600;
     }
 
-    /* Twin Cards */
-    .twins-feed{display:flex;flex-direction:column;gap:16px}
-    .twin-card{
-      overflow:hidden;
-      transition:transform 0.2s ease, box-shadow 0.2s ease, opacity 1.2s ease, transform 1.2s ease;
+    /* Twin Cards Feed - staggered entrance matching loading card */
+    .twins-feed{
+      display:flex;
+      flex-direction:column;
+      gap:16px;
       opacity:0;
       transform: translateY(20px);
+      transition: opacity 0.4s ease 0.1s, transform 0.4s ease 0.1s;
     }
-    .twin-card:hover{transform:translateY(-2px);box-shadow:0 18px 40px rgba(17,25,40,.16)}
-    .results-section.visible .twin-card{
+    .results-section.visible .twins-feed{
       opacity:1;
       transform: translateY(0);
     }
-    .results-section.visible .twin-card:nth-child(1){
-      transition-delay: 0.6s;
+    .twin-card{
+      overflow:hidden;
+      transition:transform 0.2s ease, box-shadow 0.2s ease;
     }
-    .results-section.visible .twin-card:nth-child(2){
-      transition-delay: 0.9s;
-    }
+    .twin-card:hover{transform:translateY(-2px);box-shadow:0 18px 40px rgba(17,25,40,.16)}
     @keyframes slideUp{from{opacity:0;transform:translateY(20px)}to{opacity:1;transform:translateY(0)}}
 
     .twin-image-wrapper{position:relative;overflow:hidden}
@@ -847,7 +852,7 @@ body::before{
       background:rgba(255,255,255,.3);
     }
 
-    /* Confidence Bridge */
+    /* Confidence Bridge - matches loading card timing */
     .confidence-bridge{
       padding:0;
       margin:0 0 16px;
@@ -855,7 +860,7 @@ body::before{
       min-height:72px;  /* Reserve steady space to prevent reflows */
       opacity:0;
       transform: translateY(20px);
-      transition: opacity 1.2s ease 0.3s, transform 1.2s ease 0.3s;
+      transition: opacity 0.4s ease, transform 0.4s ease;
     }
     .results-section.visible .confidence-bridge{
       opacity:1;
@@ -899,18 +904,26 @@ body::before{
       0%{background-position:0% 50%}
       100%{background-position:100% 50%}
     }
-    /* Confidence block entrance - disabled to prevent jolt */
-    .confidence-block{will-change:auto}
-    .confidence-block.is-entering{animation:none}
+    /* Confidence block entrance - matches loading card timing */
+    .confidence-block{
+      opacity:0;
+      transform: translateY(20px);
+      transition: opacity 0.4s ease 0.2s, transform 0.4s ease 0.2s;
+    }
+    .results-section.visible .confidence-block{
+      opacity:1;
+      transform: translateY(0);
+    }
     @keyframes fadeInOnly{from{opacity:0}to{opacity:1}}
 
     /* Prefers-reduced-motion: minimize or remove transitions/animations */
     @media (prefers-reduced-motion: reduce){
       *{scroll-behavior:auto!important}
       .results-section.visible{animation:none!important}
+      .confidence-bridge{transition:none!important;opacity:1!important;transform:none!important}
+      .twins-feed{transition:none!important;opacity:1!important;transform:none!important}
+      .confidence-block{transition:none!important;opacity:1!important;transform:none!important}
       .twin-card{animation:none!important}
-      .confidence-bridge{animation:none!important}
-      .confidence-block.is-entering{animation:none!important}
       .sticky-cta{transition:none!important;transform:none!important;opacity:1!important}
       .smart-panel{transition:none!important}
       .shared-items-panel{transition:none!important}
@@ -1007,10 +1020,6 @@ body::before{
     .loading-card.is-large .progress{ height: 8px; border-radius: 999px; margin-top: 14px; }
     .loading-card.is-large .progress span{ box-shadow: inset 0 0 0 1px rgba(255,255,255,.3); }
 
-    /* Enter/exit helpers for results - completely static to prevent jolt */
-    .reveal-up{opacity:1;transform:none !important;transition:none !important;}
-    .reveal-up.is-in{opacity:1;transform:none !important;transition:none !important;}
-    
     /* Ensure results stay locked in position during grid mode */
     .content.is-loading #resultsSection.visible{
       transform:none !important;
@@ -1021,7 +1030,10 @@ body::before{
     /* Reduced motion */
     @media (prefers-reduced-motion: reduce){
       .loading-card,
-      .reveal-up{transition:none!important;transform:none!important;}
+      .reveal-up,
+      .confidence-bridge,
+      .twins-feed,
+      .confidence-block{transition:none!important;transform:none!important;opacity:1!important;}
       .spinner{animation:none!important;}
     }
 
@@ -1062,14 +1074,7 @@ body::before{
     }
 
     /* === JOLT FIXES === */
-    /* Kill vertical movement on results entrance */
-    .results-section.visible{
-      animation: fadeInNoMove .28s ease forwards;
-    }
-    @keyframes fadeInNoMove{
-      from { opacity: 0 }
-      to   { opacity: 1 }
-    }
+    /* Results entrance handled by child elements now */
 
     /* Once not loading, ensure the loader never affects layout */
     .content:not(.is-loading) #loadingCard{
@@ -1082,32 +1087,23 @@ body::before{
     }
 
     /* --- Loading stage centering --- */
-    /* Stage layout that keeps header at top and centers just the loading card */
+    /* Loading layout: same grid, just taller middle row for centering */
     .content.is-loading{
-      display: grid;
-      grid-template-rows: auto minmax(520px, 1fr) auto;  /* header | STAGE (stable height) | tabs area */
-      row-gap: 20px;  /* match the flex gap for consistent spacing */
-      align-items: start;
+      grid-template-rows: auto minmax(520px, 1fr) auto;  /* expand middle row */
       justify-items: center;
-      padding: 12px 0 120px;              /* keep the SAME top pad as .content to avoid vertical shift */
     }
 
-    /* Explicit row placement so the logo never moves */
-    .content.is-loading .header{
-      grid-row: 1;
-      justify-self: stretch;
-    }
-    /* Ensure header stays fixed during all transitions */
-    .header{
-      position: relative;
-      z-index: 10;
+    /* Explicit row placement so header never moves in loading mode */
+    .content.is-loading .header{ 
+      grid-row: 1; 
+      justify-self: stretch; 
     }
 
-    /* Center the loading card in the stage area */
+    /* Center ONLY the loading card in the stage row */
     .content.is-loading #loadingCard{
       grid-row: 2;
-      place-self: start center;  /* align to top, center horizontally */
-      margin: 0 24px;  /* no top margin - keep at natural position */
+      place-self: center;
+      margin: 0 24px;
       width: min(640px, 90%);
     }
 
