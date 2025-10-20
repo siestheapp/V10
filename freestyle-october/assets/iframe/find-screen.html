@@ -29,9 +29,9 @@ body{font-family:Inter,system-ui,-apple-system,"Segoe UI",Roboto,Helvetica,Arial
 body::before{
   content:""; position:fixed; inset:-20% -10% auto -10%; height:60vh; pointer-events:none;
   background:
-    radial-gradient(800px 350px at 50% -120px, rgba(0,163,163,.08), transparent 60%),
-    radial-gradient(1200px 500px at 10% -80px, rgba(166,255,203,.08), transparent 65%);
-  filter:saturate(105%);
+    radial-gradient(900px 380px at 50% -120px, rgba(0,163,163,.10), transparent 60%),
+    radial-gradient(1200px 520px at 10% -80px, rgba(166,255,203,.10), transparent 65%);
+  filter:saturate(110%);
 }
 
 /* iPhone Frame */
@@ -127,23 +127,106 @@ body::before{
       transition:opacity 0.3s ease;
     }
     .find-section.hidden{display:none;}
+    .card.card-pad.find-section{
+      box-shadow:0 16px 50px rgba(17,25,40,.10);
+    }
 
-    .find-title{font-weight:700;font-size:28px;line-height:1.2;letter-spacing:-.01em;color:var(--ink);margin-bottom:8px}
-    .find-subtitle{font-size:16px;color:var(--muted);margin-bottom:32px;line-height:1.5;max-width:340px}
+    .find-title{
+      font-weight:800;
+      font-size:28px;
+      line-height:1.18;
+      letter-spacing:-.01em;
+      color:var(--ink);
+      margin-bottom:4px;
+    }
+    .find-subtitle{
+      font-size:16px;
+      color:var(--muted);
+      margin-bottom:18px;
+      line-height:1.5;
+      max-width:340px;
+    }
+    .trust-logos{
+      display:flex;
+      gap:10px;
+      flex-wrap:wrap;
+      margin:8px 0 14px;
+      opacity:.75;
+    }
+    .logo-chip{
+      font-size:12px;
+      font-weight:700;
+      color:#9aa0a6;
+      letter-spacing:.03em;
+      background:#f4f6f8;
+      border:1px solid #edf0f3;
+      border-radius:var(--radius-chip);
+      padding:6px 10px;
+    }
 
     .input-wrapper{position:relative;margin-bottom:16px}
+    .input-icon{
+      position:absolute;
+      left:16px;
+      top:50%;
+      transform:translateY(-50%);
+      font-size:16px;
+      opacity:.6;
+      pointer-events:none;
+    }
     .url-input{width:100%;padding:18px 20px;border:2px solid #E8E4DE;border-radius:16px;font-size:16px;
       color:var(--ink);background:#fff;font-family:inherit;transition:all 0.3s ease;outline:none;box-shadow:0 2px 8px rgba(0,0,0,.04)}
+    .url-input.has-icon{padding-left:48px;padding-right:88px}
     .url-input:focus{border-color:var(--petrol-400);box-shadow:0 0 0 4px rgba(0,163,163,.08),0 4px 12px rgba(0,0,0,.08)}
     .url-input::placeholder{color:#999}
+    .url-input.is-drag{
+      border-color:var(--petrol-400);
+      box-shadow:0 8px 24px rgba(0,0,0,.12);
+      background:linear-gradient(120deg,rgba(166,255,203,.08),rgba(23,197,197,.06));
+    }
+    .paste-pill{
+      position:absolute;
+      right:12px;
+      top:50%;
+      transform:translateY(-50%);
+      padding:8px 12px;
+      border-radius:999px;
+      border:1px solid rgba(0,0,0,.06);
+      background:#fff;
+      font-weight:700;
+      font-size:12px;
+      color:#036b6b;
+      cursor:pointer;
+      box-shadow:0 2px 8px rgba(0,0,0,.08);
+      transition:transform .15s ease, box-shadow .15s ease, background .2s ease;
+      display:none;
+    }
+    .paste-pill:hover{
+      transform:translateY(-50%) translateY(-1px);
+      box-shadow:0 4px 12px rgba(0,0,0,.12);
+      background:#f7ffff;
+    }
 
     .paste-btn{width:100%;padding:18px;background:linear-gradient(135deg,var(--cta-start),var(--cta-mid) 46%,var(--cta-end));
       border:none;border-radius:16px;color:#fff;font-weight:700;font-size:17px;cursor:pointer;
       transition:all 0.3s ease;box-shadow:0 6px 20px rgba(0,163,163,.25);position:relative;overflow:hidden}
     .paste-btn::before{content:"";position:absolute;inset:1px 1px auto 1px;height:40%;border-radius:15px;
       background:linear-gradient(180deg,rgba(255,255,255,.12),rgba(255,255,255,0));pointer-events:none}
+    .paste-btn::after{
+      content:"";
+      position:absolute;
+      inset:-30% -60%;
+      transform:skewX(-20deg);
+      background:linear-gradient(90deg, rgba(255,255,255,0) 0%, rgba(255,255,255,.35) 50%, rgba(255,255,255,0) 100%);
+      animation:btnShine 3.2s ease-in-out infinite;
+    }
     .paste-btn:hover{transform:translateY(-2px);box-shadow:0 8px 24px rgba(0,163,163,.35)}
     .paste-btn:active{transform:scale(.98)}
+    @keyframes btnShine{
+      0%{transform:translateX(-60%) skewX(-20deg)}
+      60%{transform:translateX(60%) skewX(-20deg)}
+      100%{transform:translateX(60%) skewX(-20deg)}
+    }
 
     /* Loading State */
     .loading-state{display:none;text-align:center}
@@ -694,17 +777,26 @@ body::before{
           </div>
           <section class="section finder-shell" id="findSectionWrap">
             <div class="card card-pad find-section" id="findSection">
-              <h1 class="find-title">Find your size</h1>
-              <p class="find-subtitle">Paste a product link to see who else owns it and what size they bought</p>
+              <h1 class="find-title">Find your best fit</h1>
+              <p class="find-subtitle">Paste a product link&mdash;we'll show who owns it and what size they kept.</p>
+
+              <div class="trust-logos" aria-hidden="true" role="presentation">
+                <span class="logo-chip">Reformation</span>
+                <span class="logo-chip">AYR</span>
+                <span class="logo-chip">J.Crew</span>
+                <span class="logo-chip">Aritzia</span>
+              </div>
 
               <div class="input-wrapper">
+                <span class="input-icon" aria-hidden="true">🔗</span>
                 <input
                   type="text"
-                  class="url-input"
+                  class="url-input has-icon"
                   id="urlInput"
-                  placeholder="https://petalandpup.com/products/..."
+                  placeholder="Paste a product link..."
                   autocomplete="off"
                 >
+                <button type="button" class="paste-pill" id="pastePill" onclick="pasteFromClipboard()" aria-label="Paste from clipboard">Paste</button>
               </div>
 
               <button class="paste-btn" id="pasteBtn" onclick="handlePaste()">
@@ -995,27 +1087,97 @@ let isPlaying = false;
 window.SHOW_RESULTS_ON_LOAD = true;
 window.ENABLE_AUTOSCROLL = false;
 
+// Clipboard-aware paste pill for the hero moment
+async function maybeShowPastePill(){
+  const pill = document.getElementById('pastePill');
+  if (!pill || !navigator.clipboard?.readText) return;
+  try{
+    const text = (await navigator.clipboard.readText()).trim();
+    const looksLikeUrl = /^https?:\/\/\S+$/i.test(text);
+    pill.style.display = looksLikeUrl ? 'inline-flex' : 'none';
+  }catch(err){
+    // Clipboard access may be blocked; fail silently for demo polish
+  }
+}
+
+async function pasteFromClipboard(){
+  const urlInput = document.getElementById('urlInput');
+  if (!urlInput || !navigator.clipboard?.readText) return;
+  try{
+    const text = (await navigator.clipboard.readText()).trim();
+    if (text){
+      urlInput.value = text;
+      urlInput.focus();
+      urlInput.dispatchEvent(new Event('input', { bubbles: true }));
+      maybeShowPastePill();
+    }
+  }catch(err){
+    // Ignore clipboard failures to keep the flow smooth
+  }
+}
+
+document.addEventListener('visibilitychange', maybeShowPastePill);
+window.addEventListener('focus', maybeShowPastePill);
+maybeShowPastePill();
+
+const urlInputEl = document.getElementById('urlInput');
+const pastePillEl = document.getElementById('pastePill');
+if (urlInputEl){
+  ['dragenter','dragover'].forEach(eventName => {
+    urlInputEl.addEventListener(eventName, event => {
+      event.preventDefault();
+      urlInputEl.classList.add('is-drag');
+    });
+  });
+  ['dragleave','drop'].forEach(eventName => {
+    urlInputEl.addEventListener(eventName, event => {
+      event.preventDefault();
+      urlInputEl.classList.remove('is-drag');
+    });
+  });
+  urlInputEl.addEventListener('drop', event => {
+    const data = event.dataTransfer?.getData('text');
+    if (data){
+      urlInputEl.value = data.trim();
+      urlInputEl.focus();
+      urlInputEl.dispatchEvent(new Event('input', { bubbles: true }));
+    }
+  });
+  urlInputEl.addEventListener('input', () => {
+    if (!pastePillEl) return;
+    if (urlInputEl.value.trim()){
+      pastePillEl.style.display = 'none';
+    } else {
+      maybeShowPastePill();
+    }
+  });
+}
+
 function handlePaste() {
   if (isPlaying) return;
   isPlaying = true;
 
   const urlInput = document.getElementById('urlInput');
+  if (!urlInput) return;
   const url = 'https://petalandpup.com/products/botanique-midi-dress-floral';
 
-  // Focus input
   urlInput.focus();
 
-  // Type animation
-  let i = 0;
-  const typeInterval = setInterval(() => {
-    if (i < url.length) {
-      urlInput.value = url.substring(0, i + 1);
-      i++;
+  let index = 0;
+  function typeNext(){
+    if (index <= url.length){
+      urlInput.value = url.slice(0, index++);
+      const slice = urlInput.value;
+      const pause = slice.endsWith('.com/') ? 320
+        : slice.endsWith('/products/') ? 280
+        : 22;
+      setTimeout(typeNext, pause);
     } else {
-      clearInterval(typeInterval);
-      setTimeout(showLoading, 400);
+      setTimeout(showLoading, 420);
     }
-  }, 25);
+  }
+
+  typeNext();
 }
 
 function showLoading() {
