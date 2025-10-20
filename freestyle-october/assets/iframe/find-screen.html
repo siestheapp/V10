@@ -363,9 +363,12 @@ body::before{
       flex-direction:column;
       width:100%;
       margin-top:0;  /* reset margin when not in grid mode */
+      opacity:0;               /* start hidden for fade-in */
+      transition:opacity .7s ease .08s;  /* slow overall entrance */
     }
     .results-section.visible{
       display:flex;
+      opacity:1;
     }
 
     .confidence-block{
@@ -375,6 +378,12 @@ body::before{
       border:none;
       box-shadow:none;
       display:block;
+    }
+    /* Ensure hidden attribute truly hides the ribbon regardless of base styles */
+    .confidence-block[hidden]{
+      display:none !important;
+      margin:0 !important;
+      padding:0 !important;
     }
     .confidence-bridge{
       margin:0;
@@ -659,19 +668,17 @@ body::before{
       font-weight:600;
     }
 
-    /* Twin Cards Feed - staggered entrance matching loading card */
+    /* Results: slight delay for content below the bridge */
     .twins-feed{
       display:flex;
       flex-direction:column;
       gap:16px;
-      opacity:0;
-      transform: translateY(20px);
-      transition: opacity 0.4s ease 0.1s, transform 0.4s ease 0.1s;
+      opacity:0;                 /* start hidden */
+      transform:none;
+      transition: opacity .35s ease .22s; /* fade in after bridge */
     }
-    .results-section.visible .twins-feed{
-      opacity:1;
-      transform: translateY(0);
-    }
+    .results-section.visible .twins-feed{opacity:1;transform:none}
+    .twins-feed .proxy-card-feed{opacity:1;transform:none;transition:none}
     .twin-card{
       overflow:hidden;
       transition:transform 0.2s ease, box-shadow 0.2s ease;
@@ -862,20 +869,9 @@ body::before{
       background:rgba(255,255,255,.3);
     }
 
-    /* Confidence Bridge - matches loading card timing */
-    .confidence-bridge{
-      padding:0;
-      margin:0 0 16px;
-      text-align:left;
-      min-height:72px;  /* Reserve steady space to prevent reflows */
-      opacity:0;
-      transform: translateY(20px);
-      transition: opacity 0.4s ease, transform 0.4s ease;
-    }
-    .results-section.visible .confidence-bridge{
-      opacity:1;
-      transform: translateY(0);
-    }
+    /* Results: show immediately (no animation) */
+    .confidence-bridge{padding:0;margin:0 0 16px;text-align:left;min-height:72px;opacity:1;transform:none;transition:none}
+    .results-section.visible .confidence-bridge{opacity:1;transform:none}
     @keyframes fadeSlide{
       to{
         opacity:1;
@@ -914,16 +910,9 @@ body::before{
       0%{background-position:0% 50%}
       100%{background-position:100% 50%}
     }
-    /* Confidence block entrance - matches loading card timing */
-    .confidence-block{
-      opacity:0;
-      transform: translateY(20px);
-      transition: opacity 0.4s ease 0.2s, transform 0.4s ease 0.2s;
-    }
-    .results-section.visible .confidence-block{
-      opacity:1;
-      transform: translateY(0);
-    }
+    /* Confidence block: fade in slightly after the bridge */
+    .confidence-block{opacity:0;transform:none;transition:opacity .35s ease .26s}
+    .results-section.visible .confidence-block{opacity:1;transform:none}
     @keyframes fadeInOnly{from{opacity:0}to{opacity:1}}
 
     /* Prefers-reduced-motion: minimize or remove transitions/animations */
@@ -933,6 +922,7 @@ body::before{
       .confidence-bridge{transition:none!important;opacity:1!important;transform:none!important}
       .twins-feed{transition:none!important;opacity:1!important;transform:none!important}
       .confidence-block{transition:none!important;opacity:1!important;transform:none!important}
+      .twins-feed .proxy-card-feed{transition:none!important;opacity:1!important;transform:none!important}
       .twin-card{animation:none!important}
       .sticky-cta{transition:none!important;transform:none!important;opacity:1!important}
       .smart-panel{transition:none!important}
@@ -1602,8 +1592,8 @@ body::before{
               </div>
             </section>
 
-            <!-- PRODUCT CONFIRMATION SECOND (kept, but visually demoted to a ribbon) -->
-            <section class="section confidence-block" id="confidenceBlock">
+            <!-- PRODUCT CONFIRMATION REMOVED PER REQUEST -->
+            <section class="section confidence-block" id="confidenceBlock" hidden>
               <article class="card product-card">
                 <div class="product-found">
                   <div class="product-thumb">
