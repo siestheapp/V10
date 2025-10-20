@@ -141,9 +141,13 @@ body::before{
     /* Unified Product + Recommendation Card */
     .unified-card{
       display:flex;
+      flex-direction:column;
+      overflow:hidden;
+    }
+    .product-top{
+      display:flex;
       gap:20px;
       padding:20px;
-      overflow:hidden;
     }
     .product-image{
       flex-shrink:0;
@@ -195,6 +199,103 @@ body::before{
       font-weight:600;
       color:var(--ink);
       opacity:0.85;
+    }
+
+    .smart-cta{
+      display:flex;
+      flex-direction:column;
+      border-top:1px solid rgba(17,25,40,.08);
+    }
+    .smart-toggle{
+      width:100%;
+      padding:16px 20px;
+      background:linear-gradient(135deg,var(--cta-start),var(--cta-mid) 46%,var(--cta-end));
+      color:#fff;
+      border:none;
+      border-bottom-left-radius:20px;
+      border-bottom-right-radius:20px;
+      font-size:15px;
+      font-weight:800;
+      text-align:left;
+      display:flex;
+      justify-content:space-between;
+      align-items:center;
+      gap:12px;
+      cursor:pointer;
+      transition:transform 0.2s ease, box-shadow 0.2s ease;
+    }
+    .smart-toggle-text{
+      flex:1;
+    }
+    .smart-toggle:hover{transform:translateY(-1px);box-shadow:0 8px 24px rgba(0,163,163,.35)}
+    .smart-toggle:active{transform:scale(.98)}
+    .smart-toggle::after{
+      content:'+';
+      font-size:18px;
+      font-weight:800;
+    }
+    .smart-cta.open .smart-toggle{
+      border-bottom-left-radius:0;
+      border-bottom-right-radius:0;
+    }
+    .smart-cta.open .smart-toggle::after{
+      content:'-';
+    }
+    .smart-cta.open .smart-toggle:hover,
+    .smart-cta.open .smart-toggle:active{
+      transform:none;
+      box-shadow:none;
+    }
+    .smart-panel{
+      display:flex;
+      flex-direction:column;
+      gap:12px;
+      padding:18px 20px 20px;
+      background:rgba(0,163,163,.08);
+      border-bottom-left-radius:20px;
+      border-bottom-right-radius:20px;
+      border-top:1px solid rgba(255,255,255,.4);
+    }
+    .smart-panel[hidden]{display:none;}
+    .smart-metric{
+      display:flex;
+      flex-direction:column;
+      gap:8px;
+    }
+    .smart-metric-head{
+      display:flex;
+      justify-content:space-between;
+      font-size:13px;
+      font-weight:700;
+      color:#047d7d;
+    }
+    .smart-meter{
+      height:6px;
+      background:rgba(0,163,163,.12);
+      border-radius:999px;
+      overflow:hidden;
+    }
+    .smart-meter span{
+      display:block;
+      height:100%;
+      background:#00A3A3;
+      border-radius:999px;
+    }
+    .smart-list{
+      margin:0;
+      padding-left:18px;
+      display:flex;
+      flex-direction:column;
+      gap:8px;
+    }
+    .smart-list li{
+      font-size:13px;
+      color:#374151;
+      line-height:1.5;
+    }
+    .smart-note{
+      font-size:13px;
+      color:#6b7280;
     }
 
     /* Size Recommendation Section */
@@ -416,30 +517,55 @@ body::before{
           <div class="results-section" id="resultsSection">
             <section class="section">
               <article class="card unified-card">
-                <div class="product-image">
-                  <img src="../img/pnpdress.png" alt="Petal & Pup Botanique Midi Dress"/>
-                </div>
-                <div class="product-details">
-                  <div class="product-info">
-                    <span class="product-kicker">You're looking for</span>
-                    <h2 class="product-title">
-                      <span class="product-brand">PETAL & PUP</span>
-                      <span class="product-name">Botanique Midi Dress</span>
-                    </h2>
+                <div class="product-top">
+                  <div class="product-image">
+                    <img src="../img/pnpdress.png" alt="Petal & Pup Botanique Midi Dress"/>
                   </div>
+                  <div class="product-details">
+                    <div class="product-info">
+                      <span class="product-kicker">You're looking for</span>
+                      <h2 class="product-title">
+                        <span class="product-brand">PETAL & PUP</span>
+                        <span class="product-name">Botanique Midi Dress</span>
+                      </h2>
+                    </div>
 
-                  <div class="size-rec-section">
-                    <div class="size-rec-left">
-                      <h3 class="size-rec-title">Get <span class="size-highlight">Size S</span></h3>
-                      <div class="size-meta">
-                        <span class="confidence">82% confident</span>
-                        <span class="separator">•</span>
-                        <span class="twins-agree">2 of 3 twins agree</span>
+                    <div class="size-rec-section">
+                      <div class="size-rec-left">
+                        <h3 class="size-rec-title">Get <span class="size-highlight">Size S</span></h3>
+                        <div class="size-meta">
+                          <span class="confidence">82% confident</span>
+                          <span class="separator">•</span>
+                          <span class="twins-agree">2 of 3 twins agree</span>
+                        </div>
+                      </div>
+                      <button class="cta-button" onclick="handlePrimaryCTA()">
+                        Copy & Shop →
+                      </button>
+                    </div>
+                  </div>
+                </div>
+
+                <div class="smart-cta">
+                  <button class="smart-toggle" type="button" aria-expanded="false" aria-controls="smartPanel" onclick="toggleSmartRec(this)">
+                    <span class="smart-toggle-text">Why Size S?</span>
+                  </button>
+                  <div class="smart-panel" id="smartPanel" hidden>
+                    <div class="smart-metric">
+                      <div class="smart-metric-head">
+                        <span>Confidence</span>
+                        <span>82%</span>
+                      </div>
+                      <div class="smart-meter">
+                        <span style="width:82%"></span>
                       </div>
                     </div>
-                    <button class="cta-button" onclick="handlePrimaryCTA()">
-                      Copy & Shop →
-                    </button>
+                    <ul class="smart-list">
+                      <li><strong>2 of 3 twins</strong> kept Size S for this exact dress.</li>
+                      <li>Closest twin <strong>@sarah_chen</strong> shares 3 dresses and stayed true to Size S.</li>
+                      <li>Fit notes: true to size in waist; slightly snug in bust.</li>
+                    </ul>
+                    <p class="smart-note">Confidence blends keep rates from your closest closet twins.</p>
                   </div>
                 </div>
               </article>
@@ -735,6 +861,22 @@ function toggleWhy(btn){
   const expanded = btn.getAttribute('aria-expanded') === 'true';
   btn.setAttribute('aria-expanded', !expanded);
   panel.hidden = expanded;
+}
+
+function toggleSmartRec(button){
+  const container = button.closest('.smart-cta');
+  if(!container) return;
+  const panel = container.querySelector('.smart-panel');
+  const expanded = button.getAttribute('aria-expanded') === 'true';
+  button.setAttribute('aria-expanded', String(!expanded));
+  container.classList.toggle('open', !expanded);
+  if(panel){
+    panel.hidden = expanded;
+  }
+  const label = button.querySelector('.smart-toggle-text');
+  if(label){
+    label.textContent = expanded ? 'Why Size S?' : 'Hide fit details';
+  }
 }
 
 function handlePrimaryCTA(){
