@@ -60,30 +60,30 @@ body::before{
 /* Back Button */
 .back-btn{
   position:absolute;
-  left:20px;
+  left:24px;
   top:50%;
   transform:translateY(-50%);
-  width:40px;
-  height:40px;
+  width:32px;
+  height:32px;
   border-radius:50%;
-  background:rgba(255,255,255,.9);
-  border:1px solid rgba(0,0,0,.1);
+  background:rgba(255,255,255,.6);
+  border:1px solid rgba(0,0,0,.05);
   display:flex;
   align-items:center;
   justify-content:center;
   cursor:pointer;
   transition:all 0.2s ease;
-  color:#333;
+  color:#666;
   z-index:10;
-  box-shadow:0 2px 8px rgba(0,0,0,.1);
+  box-shadow:0 1px 4px rgba(0,0,0,.06);
 }
 .back-btn:hover{
-  background:rgba(255,255,255,1);
-  transform:translateY(-50%) scale(1.05);
-  box-shadow:0 4px 12px rgba(0,0,0,.15);
+  background:rgba(255,255,255,.8);
+  transform:translateY(-50%) scale(1.02);
+  box-shadow:0 2px 8px rgba(0,0,0,.08);
 }
 .back-btn:active{
-  transform:translateY(-50%) scale(0.95);
+  transform:translateY(-50%) scale(0.98);
 }
 
     /* Shared card + section system (aligns with feed/closet screens) */
@@ -469,18 +469,18 @@ body::before{
     .twin-avatar{width:36px;height:36px;border-radius:50%;object-fit:cover;object-position:center 10%}
     .twin-name{flex:1;font-weight:700;font-size:16px;color:#262626}
     .twin-pill{padding:6px 10px;background:#E0F7F7;border-radius:999px;font-size:13px;color:#036b6b;font-weight:700;display:inline-flex;align-items:center}
-    .shared-pill{padding:8px 14px;background:#E0F7F7;border-radius:999px;font-size:14px;color:#036b6b;font-weight:700;cursor:pointer;transition:all 0.2s ease;display:inline-flex;align-items:center;gap:6px}
-    .shared-pill:hover{background:#D0F0F0;transform:scale(1.02)}
-    .shared-pill.open{background:#047d7d;color:#fff}
+    .shared-pill{padding:8px 14px;background:linear-gradient(115deg,#E0F7F7,#f6fffe);border-radius:999px;font-size:14px;color:#036b6b;font-weight:700;cursor:pointer;transition:background 0.3s ease,color 0.25s ease,transform 0.25s ease,box-shadow 0.25s ease;display:inline-flex;align-items:center;gap:6px}
+    .shared-pill:hover{transform:scale(1.03);box-shadow:0 4px 12px rgba(0,163,163,.18)}
+    .shared-pill.open{background:linear-gradient(to right,#16B5B5,#00A3A3);color:#fff;box-shadow:0 8px 18px rgba(0,163,163,.28)}
     .chevron{font-size:10px;transition:transform 0.2s ease}
     .shared-pill.open .chevron{transform:rotate(180deg)}
     .shared-pill:focus-visible{outline:2px solid var(--petrol-500); outline-offset:2px; box-shadow:0 0 0 2px rgba(0,163,163,.35)}
 
-    .shared-items-panel{max-height:0;overflow:hidden;transition:max-height 0.3s ease, opacity .25s ease, transform .25s ease;background:linear-gradient(to bottom,#f0fffe,#f8fffe);margin-top:0;border-radius:12px;border:1px solid #e0f7f7;opacity:0;transform:translateY(-4px)}
-    .shared-items-panel.open{max-height:200px;opacity:1;transform:translateY(0);margin-top:12px}
+    .shared-items-panel{max-height:0;overflow:hidden;transition:max-height 0.35s cubic-bezier(.21,.9,.3,1.17), opacity .25s ease, transform .25s ease, box-shadow .3s ease;background:linear-gradient(to bottom,#f0fffe,#f8fffe);margin-top:0;border-radius:12px;border:1px solid #e0f7f7;opacity:0;transform:translateY(-4px);box-shadow:none}
+    .shared-items-panel.open{max-height:220px;opacity:1;transform:translateY(0);margin-top:12px;box-shadow:inset 0 0 12px rgba(0,163,163,.12)}
     .shared-items-content{padding:14px 16px}
     .shared-items-label{font-size:11px;font-weight:700;color:#047d7d;text-transform:uppercase;margin-bottom:12px;letter-spacing:0.05em;text-align:center}
-    .shared-item{display:flex;align-items:center;justify-content:space-between;gap:16px;padding:10px 0;border-bottom:1px solid rgba(0,163,163,0.08);opacity:0;transform:translateY(4px);transition:opacity .25s ease, transform .25s ease}
+    .shared-item{display:flex;align-items:center;justify-content:space-between;gap:16px;padding:10px 0;border-bottom:1px solid rgba(0,163,163,0.08);opacity:0;transform:translateY(4px);transition:opacity .25s ease, transform .28s cubic-bezier(.18,.89,.32,1.28)}
     .shared-item:last-child{border-bottom:none}
     .shared-items-panel.open .shared-item{opacity:1;transform:translateY(0)}
     .shared-items-panel.open .shared-item:nth-child(1){transition-delay:.06s}
@@ -492,10 +492,23 @@ body::before{
     .shared-item-size{padding:4px 10px;background:#047d7d;color:#fff;border-radius:8px;font-size:13px;font-weight:700;min-width:32px;text-align:center}
 
     .twin-photo{position:relative;width:100%;height:600px;object-fit:cover;cursor:pointer}
-    .size-badge-float{position:absolute;top:14px;right:14px;padding:7px 13px;font-size:16px;font-weight:700;color:#036b6b;background:rgba(255,255,255,0.8);backdrop-filter:blur(10px);border:1px solid rgba(0,163,163,0.15);border-radius:999px;box-shadow:0 4px 12px rgba(0,0,0,0.08),inset 0 0 0 1px rgba(255,255,255,0.3);letter-spacing:-0.02em;transition:all 0.25s ease}
+    .size-badge-float{
+      position:absolute;
+      top:14px;
+      right:14px;
+      padding:7px 13px;
+      font-size:16px;
+      font-weight:700;
+      color:#036b6b;
+      background:rgba(255,255,255,0.8);
+      backdrop-filter:blur(10px);
+      border:1px solid rgba(0,163,163,0.15);
+      border-radius:999px;
+      box-shadow:0 4px 12px rgba(0,0,0,0.08),inset 0 0 0 1px rgba(255,255,255,0.3);
+      letter-spacing:-0.02em;
+      transition:all 0.25s ease;
+    }
     .size-badge-float:hover{transform:translateY(-1px);box-shadow:0 6px 18px rgba(0,0,0,0.12)}
-    /* Invisible hit area to meet 44x44 without visual change */
-    .size-badge-float::after{content:"";position:absolute;inset:-10px;min-width:44px;min-height:44px;border-radius:999px}
 
     .star-rating{display:flex;align-items:center;gap:12px;margin-bottom:14px}
     .stars{display:flex;gap:2px;font-size:16px}
@@ -615,17 +628,27 @@ body::before{
     }
     .bridge-text{
       font-size:16px;
-      font-weight:700;
+      font-weight:800;
       color:#036b6b;
-      letter-spacing:0.02em;
+      letter-spacing:-0.01em;
     }
-    .sparkle{font-size:18px;margin-right:6px}
+    .sparkle{font-size:18px;margin-right:6px;animation:sparklePulse 2.6s ease-in-out infinite}
     .divider{
       margin:8px auto 0;
       width:72px;
       height:4px;
-      background:linear-gradient(to right, #3ECFD5, #9BFFCF);
+      background:linear-gradient(90deg,#3ECFD5,#9BFFCF,#3ECFD5);
+      background-size:200% 200%;
+      animation:gradientSlide 3s ease-in-out infinite;
       border-radius:9999px;
+    }
+    @keyframes sparklePulse{
+      0%,100%{transform:scale(1);opacity:1}
+      50%{transform:scale(1.15);opacity:.85}
+    }
+    @keyframes gradientSlide{
+      0%{background-position:0% 50%}
+      100%{background-position:100% 50%}
     }
     /* Confidence block entrance */
     .confidence-block{will-change:transform,opacity}
@@ -724,7 +747,7 @@ body::before{
                     <div class="twin-header-main">
                       <img class="twin-avatar" src="../img/u1.jpg" alt="bellag22">
                       <div class="twin-name">bellag22</div>
-                      <div class="shared-pill" id="sharedPill" onclick="toggleSharedItems()">
+                      <div class="shared-pill" data-panel="sharedPanel" onclick="toggleSharedItems(this)">
                         <span>2 shared sizes</span>
                         <span class="chevron">▼</span>
                       </div>
@@ -801,7 +824,7 @@ body::before{
                     <div class="twin-header-main">
                       <img class="twin-avatar" src="../img/u2.jpg" alt="freepppl131">
                       <div class="twin-name">freepppl131</div>
-                      <div class="shared-pill" onclick="toggleSharedItems2()">
+                      <div class="shared-pill" data-panel="sharedPanel2" onclick="toggleSharedItems(this)">
                         <span>1 shared size</span>
                         <span class="chevron">▼</span>
                       </div>
@@ -1131,17 +1154,11 @@ function toggleSmartRec(button){
   }
 }
 
-function toggleSharedItems(){
-  const pill = document.getElementById('sharedPill');
-  const panel = document.getElementById('sharedPanel');
-  pill?.classList.toggle('open');
-  panel?.classList.toggle('open');
-}
-
-function toggleSharedItems2(){
-  const pill = document.querySelector('.shared-pill[onclick="toggleSharedItems2()"]');
-  const panel = document.getElementById('sharedPanel2');
-  pill?.classList.toggle('open');
+function toggleSharedItems(pill){
+  if(!pill) return;
+  const panelId = pill.dataset.panel;
+  const panel = panelId ? document.getElementById(panelId) : pill.nextElementSibling;
+  pill.classList.toggle('open');
   panel?.classList.toggle('open');
 }
 
