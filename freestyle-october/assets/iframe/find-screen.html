@@ -53,7 +53,7 @@ body::before{
 .status .right img{height:13px;width:auto;display:block}
 
 /* App Content */
-.header{padding:3px 0px 0px;display:flex;align-items:center;justify-content:center;position:relative;margin-top:0}
+.header{padding:3px 0px 0px;display:flex;align-items:center;justify-content:center;position:relative;margin-top:-5px}
 .logo{font-weight:600;font-size:32px;letter-spacing:-.01em;background:linear-gradient(135deg,var(--cta-start),var(--cta-mid) 46%,var(--cta-end));
   -webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent}
 
@@ -476,7 +476,7 @@ body::before{
     .shared-pill.open .chevron{transform:rotate(180deg)}
     .shared-pill:focus-visible{outline:2px solid var(--petrol-500); outline-offset:2px; box-shadow:0 0 0 2px rgba(0,163,163,.35)}
 
-    .shared-items-panel{max-height:0;overflow:hidden;transition:max-height 0.35s cubic-bezier(.21,.9,.3,1.17), opacity .25s ease, transform .25s ease, box-shadow .3s ease;background:linear-gradient(to bottom,#f0fffe,#f8fffe);margin-top:0;border-radius:12px;border:1px solid #e0f7f7;opacity:0;transform:translateY(-4px);box-shadow:none}
+    .shared-items-panel{max-height:0;overflow:hidden;transition:max-height 0.35s cubic-bezier(.21,.9,.3,1.17), opacity .25s ease, transform .25s ease, box-shadow .3s ease, margin-top .25s ease;background:linear-gradient(to bottom,#f0fffe,#f8fffe);margin-top:0;border-radius:12px;border:1px solid #e0f7f7;opacity:0;transform:translateY(-4px);box-shadow:none}
     .shared-items-panel.open{max-height:220px;opacity:1;transform:translateY(0);margin-top:12px;box-shadow:inset 0 0 12px rgba(0,163,163,.12)}
     .shared-items-content{padding:14px 16px}
     .shared-items-label{font-size:11px;font-weight:700;color:#047d7d;text-transform:uppercase;margin-bottom:12px;letter-spacing:0.05em;text-align:center}
@@ -489,14 +489,14 @@ body::before{
     .shared-item-text{flex:1;font-size:14px;color:#262626;font-weight:500;display:flex;align-items:center;gap:4px}
     .shared-item-brand{font-weight:700;color:#262626}
     .shared-item-product{color:#7A7A80;font-weight:400}
-    .shared-item-size{padding:4px 10px;background:#047d7d;color:#fff;border-radius:8px;font-size:13px;font-weight:700;min-width:32px;text-align:center}
+    .shared-item-size{padding:2px 8px;background:#047d7d;color:#fff;border-radius:8px;font-size:13px;font-weight:700;min-width:32px;text-align:center}
 
     .twin-photo{position:relative;width:100%;height:600px;object-fit:cover;cursor:pointer}
     .size-badge-float{
       position:absolute;
       top:14px;
       right:14px;
-      padding:7px 13px;
+      padding:5px 11px;
       font-size:16px;
       font-weight:700;
       color:#036b6b;
@@ -523,7 +523,7 @@ body::before{
 
     .review-section{margin-bottom:18px}
     .review-text{font-size:14px;line-height:1.6;color:#262626;position:relative}
-    .review-text::before,.review-text::after{content:'"';display:inline;font-size:18px;color:#047d7d;font-weight:700}
+    .review-text::before,.review-text::after{content:'"';display:inline;font-size:14px;color:#262626;font-weight:400}
     .review-text::after{margin-left:0}
     .review-text::before{margin-right:0}
 
@@ -614,7 +614,7 @@ body::before{
     /* Confidence Bridge */
     .confidence-bridge{
       padding:0 24px;
-      margin:4px 0 0px;
+      margin:6px 0 6px;
       text-align:center;
       opacity:0;
       transform:translateY(-6px);
@@ -626,26 +626,33 @@ body::before{
         transform:translateY(0);
       }
     }
-    .bridge-text{
-      font-size:16px;
+    .bridge-overline{
+      font-size:11px;
       font-weight:800;
-      color:#036b6b;
-      letter-spacing:-0.01em;
+      letter-spacing:.08em;
+      text-transform:uppercase;
+      color:#7A7A80;
+      margin-bottom:6px;
     }
-    .sparkle{font-size:18px;margin-right:6px;animation:sparklePulse 2.6s ease-in-out infinite}
+    .bridge-headline{
+      font-size:18px;
+      line-height:1.35;
+      font-weight:800;
+      letter-spacing:-0.01em;
+      color:#036b6b;
+      margin:0 auto;
+      max-width:80%;
+    }
     .divider{
-      margin:8px auto 0;
+      margin:10px auto 0;
       width:72px;
       height:4px;
+      border-radius:9999px;
       background:linear-gradient(90deg,#3ECFD5,#9BFFCF,#3ECFD5);
       background-size:200% 200%;
       animation:gradientSlide 3s ease-in-out infinite;
-      border-radius:9999px;
     }
-    @keyframes sparklePulse{
-      0%,100%{transform:scale(1);opacity:1}
-      50%{transform:scale(1.15);opacity:.85}
-    }
+    .sparkle{display:none!important}
     @keyframes gradientSlide{
       0%{background-position:0% 50%}
       100%{background-position:100% 50%}
@@ -675,17 +682,16 @@ body::before{
         <div class="island"></div>
         <div class="status"><div>9:41</div><div class="right"><img src="../img/cellular-connection.svg" alt="cell"/><img src="../img/wifi.svg" alt="wifi"/><img src="../img/battery.svg" alt="battery"/></div></div>
 
-        <div class="header">
-          <button class="back-btn" id="backBtn" onclick="goBack()" style="display: none;">
-            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-              <path d="M19 12H5M12 19L5 12L12 5" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-            </svg>
-          </button>
-          <div class="logo">proxi</div>
-        </div>
-
         <!-- Main Content -->
         <div class="content">
+          <div class="header">
+            <button class="back-btn" id="backBtn" onclick="goBack()" style="display: none;">
+              <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <path d="M19 12H5M12 19L5 12L12 5" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+              </svg>
+            </button>
+            <div class="logo">proxi</div>
+          </div>
           <section class="section finder-shell" id="findSectionWrap">
             <div class="card card-pad find-section" id="findSection">
               <h1 class="find-title">Find your size</h1>
@@ -732,11 +738,11 @@ body::before{
               </article>
             </section>
 
-            <section class="confidence-bridge">
-              <div class="bridge-text">
-                <span class="sparkle">✨</span>
-                <span>2 of your size twins own this dress</span>
-              </div>
+            <section class="confidence-bridge" aria-live="polite">
+              <div class="bridge-overline">YOUR SIZE NETWORK</div>
+              <h2 class="bridge-headline">
+                <span id="bridgeTwinCount">2</span> of your size twins own this dress
+              </h2>
               <div class="divider"></div>
             </section>
 
@@ -1245,6 +1251,7 @@ document.addEventListener('keydown', function(e) {
     closeImageModal();
   }
 });
+
 </script>
 
 </body>
