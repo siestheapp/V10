@@ -14,6 +14,12 @@
       --mint-400:#A6FFCB; --ice-300:#7FE1FF;
       --cta-start:#008888; --cta-mid:#3ECFD5; --cta-end:#9BFFCF;
       --card:#FFFFFF; --track:#ECECEC; --shadow:0 10px 30px rgba(0,0,0,.06);
+      /* Unified depth + radii tokens */
+      --shadow-surface: 0 8px 24px rgba(17,25,40,.06);
+      --shadow-elevated: 0 12px 32px rgba(17,25,40,.10);
+      --radius-card: 20px;
+      --radius-chip: 999px;
+      --radius-thumb: 12px;
     }
 *{margin:0;padding:0;box-sizing:border-box}
 html{background:#f5f5f5}
@@ -86,8 +92,8 @@ body::before{
     .card{
       background:var(--card);
       border:1px solid rgba(17,25,40,.08);
-      border-radius:20px;
-      box-shadow:0 12px 32px rgba(17,25,40,.08);
+      border-radius:var(--radius-card);
+      box-shadow:var(--shadow-surface);
       overflow:hidden;
     }
     .card.is-loose{box-shadow:0 8px 20px rgba(17,25,40,.06)}
@@ -237,12 +243,13 @@ body::before{
       background:var(--petrol-100);
       border-radius:50%;
       font-size:10px;
+      box-shadow: inset 0 0 0 1px rgba(0,163,163,.18);
     }
     .product-name{
-      font-size:17px;
+      font-size:18.5px;
       font-weight:800;
       color:var(--ink);
-      letter-spacing:-.01em;
+      letter-spacing:-.012em;
     }
     .product-subtitle{
       font-size:14px;
@@ -268,6 +275,7 @@ body::before{
       cursor:pointer;
       transition:transform 0.2s ease, box-shadow 0.2s ease;
     }
+    .smart-toggle:focus-visible{outline:2px solid var(--petrol-500); outline-offset:2px; box-shadow:0 0 0 2px rgba(0,163,163,.35)}
     .smart-toggle-text{
       flex:1;
     }
@@ -429,6 +437,7 @@ body::before{
     @keyframes slideUp{from{opacity:0;transform:translateY(20px)}to{opacity:1;transform:translateY(0)}}
 
     .twin-image-wrapper{position:relative;overflow:hidden}
+    .twin-image-wrapper::before{content:"";position:absolute;inset:0;pointer-events:none;opacity:.02;mix-blend-mode:overlay;background-image:radial-gradient(rgba(0,0,0,.35) 1px, transparent 1px);background-size:2px 2px;border-radius:inherit}
     .twin-img{width:100%;height:460px;object-fit:cover;object-position:center 25%;display:block}
     .twin-image-wrapper::after{content:"";position:absolute;left:0;right:0;bottom:0;height:15%;
       background:linear-gradient(180deg,rgba(255,255,255,0) 0%,rgba(250,248,246,.4) 50%,rgba(255,255,255,.95) 100%);pointer-events:none}
@@ -447,30 +456,36 @@ body::before{
       font-weight:700;font-size:13px;color:#fff;z-index:2;box-shadow:0 4px 12px rgba(239,68,68,.3)}
 
     .fit-note{margin-top:14px;padding:14px 16px;background:rgba(0,163,163,.04);border:1px solid rgba(0,163,163,.12);
-      border-radius:12px}
+      border-radius:12px;position:relative;padding-left:34px}
+    .fit-note::before{content:"";position:absolute;left:12px;top:14px;width:16px;height:16px;border-radius:50%;background:linear-gradient(135deg,var(--cta-start),var(--cta-mid));opacity:.9}
     .fit-note-header{font-size:12px;font-weight:700;color:var(--petrol-600);margin-bottom:6px;
       text-transform:uppercase;letter-spacing:.05em}
     .fit-note-text{font-size:14px;color:var(--ink);line-height:1.5;font-weight:500;font-style:italic}
 
     .twin-info{padding:20px 20px 20px}
 
-    .twin-header{padding:12px 16px;background:#fff;border-bottom:1px solid #eee}
+    .twin-header{padding:12px 16px 8px;background:#fff;border-bottom:1px solid #eee}
     .twin-header-main{display:flex;align-items:center;gap:10px}
     .twin-avatar{width:36px;height:36px;border-radius:50%;object-fit:cover;object-position:center 10%}
     .twin-name{flex:1;font-weight:700;font-size:16px;color:#262626}
-    .twin-pill{padding:4px 8px;background:#E0F7F7;border-radius:999px;font-size:13px;color:#047d7d;font-weight:600}
-    .shared-pill{padding:4px 8px;background:#E0F7F7;border-radius:999px;font-size:13px;color:#047d7d;font-weight:600;cursor:pointer;transition:all 0.2s ease;display:inline-flex;align-items:center;gap:4px}
+    .twin-pill{padding:6px 10px;background:#E0F7F7;border-radius:999px;font-size:13px;color:#036b6b;font-weight:700;display:inline-flex;align-items:center}
+    .shared-pill{padding:6px 10px;background:#E0F7F7;border-radius:999px;font-size:13px;color:#036b6b;font-weight:700;cursor:pointer;transition:all 0.2s ease;display:inline-flex;align-items:center;gap:6px}
     .shared-pill:hover{background:#D0F0F0;transform:scale(1.02)}
     .shared-pill.open{background:#047d7d;color:#fff}
     .chevron{font-size:10px;transition:transform 0.2s ease}
     .shared-pill.open .chevron{transform:rotate(180deg)}
+    .shared-pill:focus-visible{outline:2px solid var(--petrol-500); outline-offset:2px; box-shadow:0 0 0 2px rgba(0,163,163,.35)}
 
-    .shared-items-panel{max-height:0;overflow:hidden;transition:max-height 0.3s ease;background:linear-gradient(to bottom,#f0fffe,#f8fffe);margin-top:12px;border-radius:12px;border:1px solid #e0f7f7}
-    .shared-items-panel.open{max-height:200px}
+    .shared-items-panel{max-height:0;overflow:hidden;transition:max-height 0.3s ease, opacity .25s ease, transform .25s ease;background:linear-gradient(to bottom,#f0fffe,#f8fffe);margin-top:0;border-radius:12px;border:1px solid #e0f7f7;opacity:0;transform:translateY(-4px)}
+    .shared-items-panel.open{max-height:200px;opacity:1;transform:translateY(0);margin-top:12px}
     .shared-items-content{padding:14px 16px}
     .shared-items-label{font-size:11px;font-weight:700;color:#047d7d;text-transform:uppercase;margin-bottom:12px;letter-spacing:0.05em;text-align:center}
-    .shared-item{display:flex;align-items:center;justify-content:space-between;gap:16px;padding:10px 0;border-bottom:1px solid rgba(0,163,163,0.08)}
+    .shared-item{display:flex;align-items:center;justify-content:space-between;gap:16px;padding:10px 0;border-bottom:1px solid rgba(0,163,163,0.08);opacity:0;transform:translateY(4px);transition:opacity .25s ease, transform .25s ease}
     .shared-item:last-child{border-bottom:none}
+    .shared-items-panel.open .shared-item{opacity:1;transform:translateY(0)}
+    .shared-items-panel.open .shared-item:nth-child(1){transition-delay:.06s}
+    .shared-items-panel.open .shared-item:nth-child(2){transition-delay:.12s}
+    .shared-items-panel.open .shared-item:nth-child(3){transition-delay:.18s}
     .shared-item-text{flex:1;font-size:14px;color:#262626;font-weight:500;display:flex;align-items:center;gap:4px}
     .shared-item-brand{font-weight:700;color:#262626}
     .shared-item-product{color:#7A7A80;font-weight:400}
@@ -478,6 +493,8 @@ body::before{
 
     .twin-photo{position:relative;width:100%;height:600px;object-fit:cover;cursor:pointer}
     .size-badge-float{position:absolute;top:10px;right:10px;padding:6px 10px;background:rgba(0,0,0,.45);backdrop-filter:blur(2px);border:1px solid rgba(255,255,255,.35);border-radius:999px;color:#fff;font-size:12px;font-weight:700}
+    /* Invisible hit area to meet 44x44 without visual change */
+    .size-badge-float::after{content:"";position:absolute;inset:-10px;min-width:44px;min-height:44px;border-radius:999px}
 
     .star-rating{display:flex;align-items:center;gap:12px;margin-bottom:14px}
     .stars{display:flex;gap:2px;font-size:16px}
@@ -496,10 +513,11 @@ body::before{
     .review-text::after{margin-left:0}
     .review-text::before{margin-right:0}
 
-    .shop-btn{display:flex;align-items:center;justify-content:center;gap:10px;width:100%;padding:16px;background:linear-gradient(135deg,var(--cta-start),var(--cta-mid) 46%,var(--cta-end));border:none;border-radius:16px;color:#fff;font-weight:700;font-size:16px;cursor:pointer;transition:all 0.3s ease;box-shadow:0 6px 20px rgba(0,163,163,.25);position:relative;overflow:hidden}
-    .shop-btn::before{content:"";position:absolute;inset:1px 1px auto 1px;height:40%;border-radius:15px;background:linear-gradient(180deg,rgba(255,255,255,.12),rgba(255,255,255,0));pointer-events:none}
+    .shop-btn{display:flex;align-items:center;justify-content:center;gap:10px;width:100%;padding:16px;background:linear-gradient(135deg,var(--cta-start),var(--cta-mid) 46%,var(--cta-end));border:none;border-radius:12px;color:#fff;font-weight:700;font-size:16px;cursor:pointer;transition:all 0.3s ease;box-shadow:0 6px 20px rgba(0,163,163,.25);position:relative;overflow:hidden;min-height:44px}
+    .shop-btn::before{content:"";position:absolute;inset:1px 1px auto 1px;height:40%;border-radius:11px;background:linear-gradient(180deg,rgba(255,255,255,.12),rgba(255,255,255,0));pointer-events:none}
     .shop-btn:hover{transform:translateY(-2px);box-shadow:0 8px 24px rgba(0,163,163,.35)}
     .shop-btn:active{transform:scale(.98)}
+    .shop-btn:focus-visible{outline:2px solid var(--petrol-500); outline-offset:2px; box-shadow:0 0 0 2px rgba(0,163,163,.35),0 6px 20px rgba(0,163,163,.25)}
 
     /* Tab bar */
     .tabs{position:absolute;left:0;right:0;bottom:0;height:83px;background:#fff;border-top:1px solid rgba(0,0,0,.08);
@@ -512,31 +530,7 @@ body::before{
     @keyframes pulse{0%,100%{transform:scale(1)}50%{transform:scale(1.02)}}
 
 
-    /* Sticky action bar */
-    .sticky-cta{
-      position:sticky;
-      bottom:96px; /* sits above tab bar */
-      display:flex;
-      align-items:center;
-      justify-content:space-between;
-      gap:16px;
-      padding:12px 16px;
-      border-radius:20px;
-      border:1px solid rgba(17,25,40,.08);
-      background:var(--card);
-      box-shadow:0 12px 32px rgba(17,25,40,.12);
-      z-index:90;
-    }
-    .sticky-rec{display:flex;flex-direction:column;gap:2px}
-    .sticky-size{font-size:18px;font-weight:800;color:#111}
-    .sticky-label{font-size:12px;color:#047d7d;font-weight:600}
-    .sticky-btn{
-      white-space:nowrap; padding:12px 20px; border:none; border-radius:12px; font-weight:800;
-      background:linear-gradient(135deg,var(--cta-start),var(--cta-mid) 46%,var(--cta-end)); color:#fff;
-      font-size:15px; cursor:pointer; transition:all 0.2s ease;
-    }
-    .sticky-btn:hover{transform:translateX(2px)}
-    .sticky-btn:active{transform:scale(.98)}
+    /* Sticky action bar removed */
 
     /* In-App Image Modal */
     .image-modal{
@@ -632,6 +626,23 @@ body::before{
       background:linear-gradient(to right, #3ECFD5, #9BFFCF);
       border-radius:9999px;
     }
+    /* Confidence block entrance */
+    .confidence-block{will-change:transform,opacity}
+    .confidence-block.is-entering{animation:confidenceIn .35s cubic-bezier(.2,.8,.2,1) forwards}
+    @keyframes confidenceIn{from{opacity:0;transform:scale(.985)}to{opacity:1;transform:scale(1)}}
+
+    /* Prefers-reduced-motion: minimize or remove transitions/animations */
+    @media (prefers-reduced-motion: reduce){
+      *{scroll-behavior:auto!important}
+      .results-section.visible{animation:none!important}
+      .twin-card{animation:none!important}
+      .confidence-bridge{animation:none!important}
+      .confidence-block.is-entering{animation:none!important}
+      .sticky-cta{transition:none!important;transform:none!important;opacity:1!important}
+      .smart-panel{transition:none!important}
+      .shared-items-panel{transition:none!important}
+      .shared-item{transition:none!important}
+    }
   </style>
 </head>
 <body>
@@ -680,8 +691,8 @@ body::before{
           </section>
 
           <div class="results-section" id="resultsSection">
-            <section class="section">
-              <article class="card product-card">
+          <section class="section confidence-block" id="confidenceBlock">
+            <article class="card product-card">
                 <!-- Product found confirmation -->
                 <div class="product-found">
                   <div class="product-thumb">
@@ -700,7 +711,7 @@ body::before{
             <section class="confidence-bridge">
               <div class="bridge-text">
                 <span class="sparkle">✨</span>
-                <span>One of your size twins owns this dress</span>
+                <span>Your size twin owns this dress</span>
               </div>
               <div class="divider"></div>
             </section>
@@ -712,7 +723,7 @@ body::before{
                     <div class="twin-header-main">
                       <img class="twin-avatar" src="../img/u1.jpg" alt="bellag22">
                       <div class="twin-name">bellag22</div>
-                      <div class="twin-pill">5'9"</div>
+                      <div class="twin-pill">5'3"</div>
                       <div class="shared-pill" id="sharedPill" onclick="toggleSharedItems()">
                         <span>2 shared sizes</span>
                         <span class="chevron">▼</span>
@@ -747,14 +758,14 @@ body::before{
                     <div class="size-badge-float">S</div>
                   </div>
 
-                  <div class="twin-info">
+                    <div class="twin-info">
                     <div class="star-rating">
-                      <div class="stars">
-                        <span class="star">★</span>
-                        <span class="star">★</span>
-                        <span class="star">★</span>
-                        <span class="star">★</span>
-                        <span class="star empty">★</span>
+                      <div class="stars" aria-label="4 out of 5">
+                        <svg width="16" height="16" viewBox="0 0 24 24" class="star" style="fill:#262626"><path d="M12 17.27L18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21z"/></svg>
+                        <svg width="16" height="16" viewBox="0 0 24 24" class="star" style="fill:#262626"><path d="M12 17.27L18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21z"/></svg>
+                        <svg width="16" height="16" viewBox="0 0 24 24" class="star" style="fill:#262626"><path d="M12 17.27L18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21z"/></svg>
+                        <svg width="16" height="16" viewBox="0 0 24 24" class="star" style="fill:#262626"><path d="M12 17.27L18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21z"/></svg>
+                        <svg width="16" height="16" viewBox="0 0 24 24" class="star" style="fill:#d1d5db"><path d="M12 17.27L18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21z"/></svg>
                       </div>
                       <div class="review-title">Actually true to size</div>
                     </div>
@@ -766,7 +777,7 @@ body::before{
                       </div>
                       <div class="stat-item">
                         <div class="stat-label">Height</div>
-                        <div class="stat-value">5'9"</div>
+                        <div class="stat-value">5'3"</div>
                       </div>
                       <div class="stat-item">
                         <div class="stat-label">Usually wears</div>
@@ -780,7 +791,71 @@ body::before{
                       </div>
                     </div>
 
-                    <button class="shop-btn" onclick="handlePrimaryCTA()">Shop Size S →</button>
+                    <button class="shop-btn" onclick="handlePrimaryCTA(event)">Shop Size S →</button>
+                  </div>
+                </article>
+                
+                <!-- Optional second card: AYR jeans 26S (kept minimal for demo) -->
+                <article class="card proxy-card-feed">
+                  <div class="twin-header">
+                    <div class="twin-header-main">
+                      <img class="twin-avatar" src="../img/u2.jpg" alt="freepppl131">
+                      <div class="twin-name">freepppl131</div>
+                      <div class="twin-pill">5'6"</div>
+                      <div class="shared-pill" onclick="toggleSharedItems2()">
+                        <span>1 shared size</span>
+                        <span class="chevron">▼</span>
+                      </div>
+                    </div>
+
+                    <div class="shared-items-panel" id="sharedPanel2">
+                      <div class="shared-items-content">
+                        <div class="shared-items-label">You both own these in the same size</div>
+
+                        <div class="shared-item">
+                          <div class="shared-item-text">
+                            <span class="shared-item-brand">Reformation</span>
+                            <span class="shared-item-product">Taryn Two Piece</span>
+                          </div>
+                          <div class="shared-item-size">S</div>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                  <div style="position: relative;">
+                    <img class="twin-photo" src="../img/pic3.png" alt="AYR The Secret Sauce Jeans on freepppl131" onclick="openImageModal(this.src, this.alt)">
+                    <div class="size-badge-float">26S</div>
+                  </div>
+                  <div class="twin-info">
+                    <div class="star-rating">
+                      <div class="stars" aria-label="5 out of 5">
+                        <svg width="16" height="16" viewBox="0 0 24 24" class="star" style="fill:#262626"><path d="M12 17.27L18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21z"/></svg>
+                        <svg width="16" height="16" viewBox="0 0 24 24" class="star" style="fill:#262626"><path d="M12 17.27L18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21z"/></svg>
+                        <svg width="16" height="16" viewBox="0 0 24 24" class="star" style="fill:#262626"><path d="M12 17.27L18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21z"/></svg>
+                        <svg width="16" height="16" viewBox="0 0 24 24" class="star" style="fill:#262626"><path d="M12 17.27L18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21z"/></svg>
+                        <svg width="16" height="16" viewBox="0 0 24 24" class="star" style="fill:#262626"><path d="M12 17.27L18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21z"/></svg>
+                      </div>
+                      <div class="review-title">Loved the fit</div>
+                    </div>
+
+                    <div class="twin-stats">
+                      <div class="stat-item">
+                        <div class="stat-label">Size</div>
+                        <div class="stat-value">S</div>
+                      </div>
+                      <div class="stat-item">
+                        <div class="stat-label">Height</div>
+                        <div class="stat-value">5'6"</div>
+                      </div>
+                      <div class="stat-item">
+                        <div class="stat-label">Usually wears</div>
+                        <div class="stat-value">S</div>
+                      </div>
+                    </div>
+                    <div class="review-section">
+                      <div class="review-text">This dress is stunning on. The pattern is so cute, the material could be a little bit better for the price but overall I am happy! Size small fits perfectly, 5' 6", 120lb 34C.</div>
+                    </div>
+                    <button class="shop-btn" onclick="handlePrimaryCTA(event)">Shop Size 26S →</button>
                   </div>
                 </article>
               </div>
@@ -948,8 +1023,9 @@ function showResults() {
     content.scrollTo({ top: 0, behavior: 'smooth' });
   }, 100);
 
-  // Slow scroll is disabled while editing unless explicitly enabled
-  if (window.ENABLE_AUTOSCROLL) {
+  // Slow scroll is disabled while editing unless explicitly enabled and motion allowed
+  const prefersReduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  if (window.ENABLE_AUTOSCROLL && !prefersReduced) {
     setTimeout(() => {
       const scrollHeight = content.scrollHeight - content.clientHeight;
       const duration = 4000; // 4 seconds to scroll through
@@ -1018,6 +1094,7 @@ window.addEventListener('DOMContentLoaded', () => {
   const loadingState = document.getElementById('loadingState');
   const resultsSection = document.getElementById('resultsSection');
   const backBtn = document.getElementById('backBtn');
+  const confidenceBlock = document.getElementById('confidenceBlock');
   findSection?.classList.add('hidden');
   findSectionWrap?.classList.add('is-hidden');
   loadingState?.classList.remove('visible');
@@ -1026,6 +1103,10 @@ window.addEventListener('DOMContentLoaded', () => {
   backBtn?.style.setProperty('display', 'flex');
   // Update hero chips using demo twins on load when showing results
   updateHeroChips(DEMO_TWINS);
+  // Entrance animations
+  confidenceBlock?.classList.add('is-entering');
+  setTimeout(()=>confidenceBlock?.classList.remove('is-entering'), 350);
+  // sticky CTA removed
 });
 
 function toggleWhy(btn){
@@ -1058,7 +1139,14 @@ function toggleSharedItems(){
   panel?.classList.toggle('open');
 }
 
-function handlePrimaryCTA(){
+function toggleSharedItems2(){
+  const pill = document.querySelector('.shared-pill[onclick="toggleSharedItems2()"]');
+  const panel = document.getElementById('sharedPanel2');
+  pill?.classList.toggle('open');
+  panel?.classList.toggle('open');
+}
+
+function handlePrimaryCTA(e){
   // Copy size to clipboard with visual feedback
   const sizeText = 'Size S';
   navigator.clipboard?.writeText(sizeText).then(() => {
@@ -1072,6 +1160,16 @@ function handlePrimaryCTA(){
       }, 1500);
     });
   });
+
+  // Micro-interaction: glow + haptic
+  const targetBtn = e?.currentTarget;
+  if (targetBtn) {
+    targetBtn.classList.add('pulse');
+    setTimeout(()=>targetBtn.classList.remove('pulse'), 180);
+  }
+  if (navigator.vibrate) {
+    navigator.vibrate(10);
+  }
 
   // Open product in new tab after brief delay
   setTimeout(() => {
