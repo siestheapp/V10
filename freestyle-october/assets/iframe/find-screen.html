@@ -463,6 +463,16 @@ body::before{
     .shared-item{font-size:15px;color:var(--muted);line-height:1.5;font-weight:500}
     .shared-item .highlight{color:var(--petrol-600);font-weight:700}
 
+    .twin-info{padding:18px 20px 20px}
+    .match-pill{display:inline-flex;align-items:center;gap:8px;padding:9px 16px;background:var(--petrol-100);
+      border:1px solid rgba(0,163,163,.2);border-radius:999px;margin-bottom:14px}
+    .match-pill .icon{font-size:15px}
+    .match-pill .text{font-size:13px;color:var(--petrol-600);font-weight:700;line-height:1.2}
+
+    .twin-details{margin-bottom:16px}
+    .shared-item{font-size:15px;color:var(--muted);line-height:1.5;font-weight:500}
+    .shared-item .highlight{color:var(--petrol-600);font-weight:700}
+
     .shop-btn{display:flex;align-items:center;justify-content:center;gap:10px;width:100%;
       padding:16px;background:linear-gradient(135deg,var(--cta-start),var(--cta-mid) 46%,var(--cta-end));
       border:none;border-radius:16px;color:#fff;font-weight:700;font-size:16px;cursor:pointer;
@@ -577,7 +587,7 @@ body::before{
     /* Confidence Bridge */
     .confidence-bridge{
       padding:0 24px;
-      margin:4px 0 2px;
+      margin:4px 0 0px;
       text-align:center;
       opacity:0;
       transform:translateY(-6px);
@@ -675,9 +685,10 @@ body::before{
               <div class="divider"></div>
             </section>
 
-            <div class="twins-feed">
-              <!-- COMPARISON: First card from feed-unified.html -->
-              <article class="card proxy-card-feed">
+            <section class="section">
+              <div class="twins-feed">
+                <!-- COMPARISON: First card from feed-unified.html -->
+                <article class="card proxy-card-feed">
                 <div style="padding: 12px 16px; background: #fff; border-bottom: 1px solid #eee;">
                   <div style="display: flex; align-items: center; gap: 10px;">
                     <img style="width: 36px; height: 36px; border-radius: 50%; object-fit: cover; object-position: center 10%;" src="../img/u1.jpg" alt="bellag22">
@@ -685,7 +696,7 @@ body::before{
                       <div style="font-weight: 700; font-size: 14px;">bellag22</div>
                     </div>
                     <div style="padding: 4px 8px; background: #E0F7F7; border-radius: 999px; font-size: 11px; color: #047d7d; font-weight: 600;">
-                      1 shared size
+                      2 shared sizes
                     </div>
                   </div>
                 </div>
@@ -695,21 +706,25 @@ body::before{
                     S
                   </div>
                 </div>
-                <div style="padding: 14px 16px;">
-                  <div style="font-size: 15px; margin-bottom: 8px;">
-                    <strong>J.Crew</strong> Halter Mixy Dress (S)
+                <div class="twin-info">
+                  <div class="match-pill">
+                    <span class="icon">👯‍♀️</span>
+                    <span class="text">Matches your Somerset (XS)</span>
                   </div>
-                  <div style="padding: 10px 12px; background: #f5f5f5; border-radius: 8px; margin-bottom: 12px;">
-                    <div style="font-size: 12px; color: #666; margin-bottom: 4px;">Comments · 4</div>
-                    <div style="font-size: 13px;"><strong>ggnyc8989:</strong> Is this petite or regular?</div>
-                    <div style="font-size: 11px; color: #047d7d; margin-top: 4px;">See full thread &gt;</div>
+
+                  <div class="twin-details">
+                    <div class="shared-item">
+                      <span class="highlight">Kept S</span> · true to size in waist; slightly snug in bust
+                    </div>
                   </div>
-                  <button style="width: 100%; padding: 12px; background: linear-gradient(135deg,#008888,#3ECFD5 46%,#9BFFCF); border: none; border-radius: 12px; color: #fff; font-weight: 700; font-size: 15px;">
-                    Shop this item
+
+                  <button class="shop-btn" onclick="handlePrimaryCTA()">
+                    Shop Size S →
                   </button>
                 </div>
-              </article>
-            </div>
+                </article>
+              </div>
+            </section>
 
             <section class="section section--sticky">
               <div class="sticky-cta" role="region" aria-label="Size action">
