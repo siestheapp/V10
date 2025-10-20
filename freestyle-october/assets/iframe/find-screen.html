@@ -492,7 +492,8 @@ body::before{
     .shared-item-size{padding:4px 10px;background:#047d7d;color:#fff;border-radius:8px;font-size:13px;font-weight:700;min-width:32px;text-align:center}
 
     .twin-photo{position:relative;width:100%;height:600px;object-fit:cover;cursor:pointer}
-    .size-badge-float{position:absolute;top:10px;right:10px;padding:6px 10px;background:#fff;border:2px solid var(--petrol-500);border-radius:999px;color:#1F1F1F;font-size:18px;font-weight:700}
+    .size-badge-float{position:absolute;top:14px;right:14px;padding:7px 13px;font-size:16px;font-weight:700;color:#036b6b;background:rgba(255,255,255,0.8);backdrop-filter:blur(10px);border:1px solid rgba(0,163,163,0.15);border-radius:999px;box-shadow:0 4px 12px rgba(0,0,0,0.08),inset 0 0 0 1px rgba(255,255,255,0.3);letter-spacing:-0.02em;transition:all 0.25s ease}
+    .size-badge-float:hover{transform:translateY(-1px);box-shadow:0 6px 18px rgba(0,0,0,0.12)}
     /* Invisible hit area to meet 44x44 without visual change */
     .size-badge-float::after{content:"";position:absolute;inset:-10px;min-width:44px;min-height:44px;border-radius:999px}
 
@@ -711,7 +712,7 @@ body::before{
             <section class="confidence-bridge">
               <div class="bridge-text">
                 <span class="sparkle">✨</span>
-                <span>Your size twin owns this dress</span>
+                <span>2 of your size twins own this dress</span>
               </div>
               <div class="divider"></div>
             </section>
