@@ -452,33 +452,52 @@ body::before{
       text-transform:uppercase;letter-spacing:.05em}
     .fit-note-text{font-size:14px;color:var(--ink);line-height:1.5;font-weight:500;font-style:italic}
 
-    .twin-info{padding:18px 20px 20px}
-    .match-pill{display:inline-flex;align-items:center;gap:8px;padding:9px 16px;background:var(--petrol-100);
-      border:1px solid rgba(0,163,163,.2);border-radius:999px;margin-bottom:14px}
-    .match-pill .icon{font-size:15px}
-    .match-pill .text{font-size:13px;color:var(--petrol-600);font-weight:700;line-height:1.2}
+    .twin-info{padding:20px 20px 20px}
 
-    .twin-details{margin-bottom:16px}
-    .twin-name{font-size:17px;font-weight:700;color:var(--ink);margin-bottom:8px}
-    .shared-item{font-size:15px;color:var(--muted);line-height:1.5;font-weight:500}
-    .shared-item .highlight{color:var(--petrol-600);font-weight:700}
+    .twin-header{padding:12px 16px;background:#fff;border-bottom:1px solid #eee}
+    .twin-header-main{display:flex;align-items:center;gap:10px}
+    .twin-avatar{width:36px;height:36px;border-radius:50%;object-fit:cover;object-position:center 10%}
+    .twin-name{flex:1;font-weight:700;font-size:16px;color:#262626}
+    .twin-pill{padding:4px 8px;background:#E0F7F7;border-radius:999px;font-size:13px;color:#047d7d;font-weight:600}
+    .shared-pill{padding:4px 8px;background:#E0F7F7;border-radius:999px;font-size:13px;color:#047d7d;font-weight:600;cursor:pointer;transition:all 0.2s ease;display:inline-flex;align-items:center;gap:4px}
+    .shared-pill:hover{background:#D0F0F0;transform:scale(1.02)}
+    .shared-pill.open{background:#047d7d;color:#fff}
+    .chevron{font-size:10px;transition:transform 0.2s ease}
+    .shared-pill.open .chevron{transform:rotate(180deg)}
 
-    .twin-info{padding:18px 20px 20px}
-    .match-pill{display:inline-flex;align-items:center;gap:8px;padding:9px 16px;background:var(--petrol-100);
-      border:1px solid rgba(0,163,163,.2);border-radius:999px;margin-bottom:14px}
-    .match-pill .icon{font-size:15px}
-    .match-pill .text{font-size:13px;color:var(--petrol-600);font-weight:700;line-height:1.2}
+    .shared-items-panel{max-height:0;overflow:hidden;transition:max-height 0.3s ease;background:linear-gradient(to bottom,#f0fffe,#f8fffe);margin-top:12px;border-radius:12px;border:1px solid #e0f7f7}
+    .shared-items-panel.open{max-height:200px}
+    .shared-items-content{padding:14px 16px}
+    .shared-items-label{font-size:11px;font-weight:700;color:#047d7d;text-transform:uppercase;margin-bottom:12px;letter-spacing:0.05em;text-align:center}
+    .shared-item{display:flex;align-items:center;justify-content:space-between;gap:16px;padding:10px 0;border-bottom:1px solid rgba(0,163,163,0.08)}
+    .shared-item:last-child{border-bottom:none}
+    .shared-item-text{flex:1;font-size:14px;color:#262626;font-weight:500;display:flex;align-items:center;gap:4px}
+    .shared-item-brand{font-weight:700;color:#262626}
+    .shared-item-product{color:#7A7A80;font-weight:400}
+    .shared-item-size{padding:4px 10px;background:#047d7d;color:#fff;border-radius:8px;font-size:13px;font-weight:700;min-width:32px;text-align:center}
 
-    .twin-details{margin-bottom:16px}
-    .shared-item{font-size:15px;color:var(--muted);line-height:1.5;font-weight:500}
-    .shared-item .highlight{color:var(--petrol-600);font-weight:700}
+    .twin-photo{position:relative;width:100%;height:600px;object-fit:cover;cursor:pointer}
+    .size-badge-float{position:absolute;top:10px;right:10px;padding:6px 10px;background:rgba(0,0,0,.45);backdrop-filter:blur(2px);border:1px solid rgba(255,255,255,.35);border-radius:999px;color:#fff;font-size:12px;font-weight:700}
 
-    .shop-btn{display:flex;align-items:center;justify-content:center;gap:10px;width:100%;
-      padding:16px;background:linear-gradient(135deg,var(--cta-start),var(--cta-mid) 46%,var(--cta-end));
-      border:none;border-radius:16px;color:#fff;font-weight:700;font-size:16px;cursor:pointer;
-      transition:all 0.3s ease;box-shadow:0 6px 20px rgba(0,163,163,.25);position:relative;overflow:hidden}
-    .shop-btn::before{content:"";position:absolute;inset:1px 1px auto 1px;height:40%;border-radius:15px;
-      background:linear-gradient(180deg,rgba(255,255,255,.12),rgba(255,255,255,0));pointer-events:none}
+    .star-rating{display:flex;align-items:center;gap:12px;margin-bottom:14px}
+    .stars{display:flex;gap:2px;font-size:16px}
+    .star{color:#262626}
+    .star.empty{color:#d1d5db}
+    .review-title{font-size:13px;font-weight:700;text-transform:uppercase;color:#262626;letter-spacing:0.02em}
+
+    .twin-stats{display:flex;gap:20px;margin-bottom:16px;padding-bottom:16px;border-bottom:1px solid #f0f0f0}
+    .stat-item{display:flex;flex-direction:column;gap:2px}
+    .stat-label{font-size:11px;font-weight:600;text-transform:uppercase;color:#7A7A80;letter-spacing:0.05em}
+    .stat-value{font-size:14px;font-weight:600;color:#262626}
+
+    .review-section{margin-bottom:18px}
+    .review-text{font-size:14px;line-height:1.6;color:#262626;position:relative}
+    .review-text::before,.review-text::after{content:'"';display:inline;font-size:18px;color:#047d7d;font-weight:700}
+    .review-text::after{margin-left:0}
+    .review-text::before{margin-right:0}
+
+    .shop-btn{display:flex;align-items:center;justify-content:center;gap:10px;width:100%;padding:16px;background:linear-gradient(135deg,var(--cta-start),var(--cta-mid) 46%,var(--cta-end));border:none;border-radius:16px;color:#fff;font-weight:700;font-size:16px;cursor:pointer;transition:all 0.3s ease;box-shadow:0 6px 20px rgba(0,163,163,.25);position:relative;overflow:hidden}
+    .shop-btn::before{content:"";position:absolute;inset:1px 1px auto 1px;height:40%;border-radius:15px;background:linear-gradient(180deg,rgba(255,255,255,.12),rgba(255,255,255,0));pointer-events:none}
     .shop-btn:hover{transform:translateY(-2px);box-shadow:0 8px 24px rgba(0,163,163,.35)}
     .shop-btn:active{transform:scale(.98)}
 
@@ -688,44 +707,81 @@ body::before{
 
             <section class="section">
               <div class="twins-feed">
-                <!-- COMPARISON: First card from feed-unified.html -->
                 <article class="card proxy-card-feed">
-                <div style="padding: 12px 16px; background: #fff; border-bottom: 1px solid #eee;">
-                  <div style="display: flex; align-items: center; gap: 10px;">
-                    <img style="width: 36px; height: 36px; border-radius: 50%; object-fit: cover; object-position: center 10%;" src="../img/u1.jpg" alt="bellag22">
-                    <div style="flex: 1;">
-                      <div style="font-weight: 700; font-size: 16px;">bellag22</div>
+                  <div class="twin-header">
+                    <div class="twin-header-main">
+                      <img class="twin-avatar" src="../img/u1.jpg" alt="bellag22">
+                      <div class="twin-name">bellag22</div>
+                      <div class="twin-pill">5'9"</div>
+                      <div class="shared-pill" id="sharedPill" onclick="toggleSharedItems()">
+                        <span>2 shared sizes</span>
+                        <span class="chevron">▼</span>
+                      </div>
                     </div>
-                    <div style="padding: 4px 8px; background: #E0F7F7; border-radius: 999px; font-size: 13px; color: #047d7d; font-weight: 600; margin-right: -6px;">
-                      5'9"
+
+                    <div class="shared-items-panel" id="sharedPanel">
+                      <div class="shared-items-content">
+                        <div class="shared-items-label">You both own these in the same size</div>
+
+                        <div class="shared-item">
+                          <div class="shared-item-text">
+                            <span class="shared-item-brand">J.Crew</span>
+                            <span class="shared-item-product">Halter Mixy Dress</span>
+                          </div>
+                          <div class="shared-item-size">S</div>
+                        </div>
+
+                        <div class="shared-item">
+                          <div class="shared-item-text">
+                            <span class="shared-item-brand">AYR</span>
+                            <span class="shared-item-product">The Secret Sauce Jeans</span>
+                          </div>
+                          <div class="shared-item-size">26</div>
+                        </div>
+                      </div>
                     </div>
-                    <div style="padding: 4px 8px; background: #E0F7F7; border-radius: 999px; font-size: 13px; color: #047d7d; font-weight: 600;">
-                      2 shared sizes
-                    </div>
-                  </div>
-                </div>
-                <div style="position: relative;">
-                  <img src="../img/pnpreal.png" alt="J.Crew Halter Mixy Dress" style="width: 100%; height: 600px; object-fit: cover; cursor: pointer;" onclick="openImageModal(this.src, this.alt)">
-                  <div style="position: absolute; top: 10px; right: 10px; padding: 6px 10px; background: rgba(0,0,0,.45); backdrop-filter: blur(2px); border: 1px solid rgba(255,255,255,.35); border-radius: 999px; color: #fff; font-size: 12px; font-weight: 700;">
-                    S
-                  </div>
-                </div>
-                <div class="twin-info">
-                  <div class="match-pill">
-                    <span class="icon">👯‍♀️</span>
-                    <span class="text">Matches your Somerset (XS)</span>
                   </div>
 
-                  <div class="twin-details">
-                    <div class="shared-item">
-                      <span class="highlight">Kept S</span> · true to size in waist; slightly snug in bust
-                    </div>
+                  <div style="position: relative;">
+                    <img class="twin-photo" src="../img/pnpreal.png" alt="Petal & Pup dress on bellag22" onclick="openImageModal(this.src, this.alt)">
+                    <div class="size-badge-float">S</div>
                   </div>
 
-                  <button class="shop-btn" onclick="handlePrimaryCTA()">
-                    Shop Size S →
-                  </button>
-                </div>
+                  <div class="twin-info">
+                    <div class="star-rating">
+                      <div class="stars">
+                        <span class="star">★</span>
+                        <span class="star">★</span>
+                        <span class="star">★</span>
+                        <span class="star">★</span>
+                        <span class="star empty">★</span>
+                      </div>
+                      <div class="review-title">Actually true to size</div>
+                    </div>
+
+                    <div class="twin-stats">
+                      <div class="stat-item">
+                        <div class="stat-label">Size</div>
+                        <div class="stat-value">S</div>
+                      </div>
+                      <div class="stat-item">
+                        <div class="stat-label">Height</div>
+                        <div class="stat-value">5'9"</div>
+                      </div>
+                      <div class="stat-item">
+                        <div class="stat-label">Usually wears</div>
+                        <div class="stat-value">S</div>
+                      </div>
+                    </div>
+
+                    <div class="review-section">
+                      <div class="review-text">
+                        A lot of reviews say it runs small so I went up a size to medium, which was way too big. I exchanged for an S for a better fit around my waist.
+                      </div>
+                    </div>
+
+                    <button class="shop-btn" onclick="handlePrimaryCTA()">Shop Size S →</button>
+                  </div>
                 </article>
               </div>
             </section>
@@ -993,6 +1049,13 @@ function toggleSmartRec(button){
   if(label){
     label.textContent = expanded ? 'View size insight' : 'Hide size insight';
   }
+}
+
+function toggleSharedItems(){
+  const pill = document.getElementById('sharedPill');
+  const panel = document.getElementById('sharedPanel');
+  pill?.classList.toggle('open');
+  panel?.classList.toggle('open');
 }
 
 function handlePrimaryCTA(){
