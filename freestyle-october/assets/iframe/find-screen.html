@@ -62,6 +62,15 @@ body::before{
       margin-top:-5px;
       flex-shrink:0; /* prevent header from shrinking */
       min-height:48px; /* Keep header height constant whether back button is visible or not */
+      width:100%;
+      box-sizing:border-box;
+    }
+    /* Ensure logo stays fixed in all layout modes */
+    .header .logo{
+      position:absolute;
+      left:50%;
+      transform:translateX(-50%);
+      z-index:10;
     }
     .logo{
       font-weight:600;
@@ -333,13 +342,14 @@ body::before{
       flex-direction:column;
       width:100%;
       opacity:0;
-      transform:none !important;
+      transform: translateY(20px);
       margin-top:0;  /* reset margin when not in grid mode */
-      transition: opacity 0.6s ease;
+      transition: opacity 1.5s ease, transform 1.5s ease;
     }
     .results-section.visible{
       display:flex;
       opacity:1;
+      transform: translateY(0);
     }
 
     .confidence-block{
@@ -637,9 +647,21 @@ body::before{
     .twins-feed{display:flex;flex-direction:column;gap:16px}
     .twin-card{
       overflow:hidden;
-      transition:transform 0.2s ease, box-shadow 0.2s ease;
+      transition:transform 0.2s ease, box-shadow 0.2s ease, opacity 1.2s ease, transform 1.2s ease;
+      opacity:0;
+      transform: translateY(20px);
     }
     .twin-card:hover{transform:translateY(-2px);box-shadow:0 18px 40px rgba(17,25,40,.16)}
+    .results-section.visible .twin-card{
+      opacity:1;
+      transform: translateY(0);
+    }
+    .results-section.visible .twin-card:nth-child(1){
+      transition-delay: 0.6s;
+    }
+    .results-section.visible .twin-card:nth-child(2){
+      transition-delay: 0.9s;
+    }
     @keyframes slideUp{from{opacity:0;transform:translateY(20px)}to{opacity:1;transform:translateY(0)}}
 
     .twin-image-wrapper{position:relative;overflow:hidden}
@@ -831,6 +853,13 @@ body::before{
       margin:0 0 16px;
       text-align:left;
       min-height:72px;  /* Reserve steady space to prevent reflows */
+      opacity:0;
+      transform: translateY(20px);
+      transition: opacity 1.2s ease 0.3s, transform 1.2s ease 0.3s;
+    }
+    .results-section.visible .confidence-bridge{
+      opacity:1;
+      transform: translateY(0);
     }
     @keyframes fadeSlide{
       to{
@@ -1067,6 +1096,11 @@ body::before{
     .content.is-loading .header{
       grid-row: 1;
       justify-self: stretch;
+    }
+    /* Ensure header stays fixed during all transitions */
+    .header{
+      position: relative;
+      z-index: 10;
     }
 
     /* Center the loading card in the stage area */
@@ -1833,16 +1867,21 @@ async function startFlow(product = DEFAULT_PRODUCT){
   const find = document.getElementById('findSection');
   const contentEl = document.querySelector('.content');
 
+  console.log('Starting flow...');
+
   // Parse product and populate hero card FIRST (while input is still visible)
   const parsed = await parseProduct(product);
   applyHeroCard(parsed);
   setProgress(0);
   
-  // Ensure loading card is completely hidden initially
+  // Ensure loading card is completely hidden initially and reset any previous state
   if (loadingCardEl) {
     loadingCardEl.hidden = true;
     loadingCardEl.style.opacity = '0';
+    loadingCardEl.style.display = '';
+    loadingCardEl.style.visibility = '';
     loadingCardEl.classList.remove('is-visible');
+    console.log('Reset loading card state');
   }
   
   // Switch to loading mode and hide input simultaneously
@@ -1857,12 +1896,17 @@ async function startFlow(product = DEFAULT_PRODUCT){
   // Wait a frame to ensure layout is settled, then show loading card
   await wait(16);
   if (loadingCardEl) {
+    console.log('Showing loading card');
     loadingCardEl.hidden = false;
     loadingCardEl.style.opacity = '1';
+    loadingCardEl.style.display = 'block';
     // Add is-visible class to trigger staggered animations
     requestAnimationFrame(() => {
       loadingCardEl.classList.add('is-visible');
+      console.log('Loading card should be visible now');
     });
+  } else {
+    console.error('Loading card element not found!');
   }
 
   // Smooth continuous progress over 2.5 seconds total
@@ -1873,7 +1917,7 @@ async function startFlow(product = DEFAULT_PRODUCT){
   await animateProgress(100, 2400);
 
   // Wait a moment to let users see the completed progress bar
-  await wait(800);
+  await wait(750);
 
   // ---- handoff to results (no jolt) ----
   
@@ -2131,6 +2175,9 @@ function goBack(){
   if (loadingCardEl){
     loadingCardEl.classList.remove('is-visible');
     loadingCardEl.hidden = true;
+    loadingCardEl.style.opacity = '0';
+    loadingCardEl.style.display = '';
+    loadingCardEl.style.visibility = '';
   }
   if (heroImageEl){
     heroImageEl.removeAttribute('src');
