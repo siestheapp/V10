@@ -1084,36 +1084,18 @@ function getSizingDirection(userSize, twinSize) {
 // Auto-play demo sequence for screen recording
 let isPlaying = false;
 // Work-mode flags (no recording):
-window.SHOW_RESULTS_ON_LOAD = true;
+window.SHOW_RESULTS_ON_LOAD = false;
 window.ENABLE_AUTOSCROLL = false;
 
-// Clipboard-aware paste pill for the hero moment
+// Clipboard functionality disabled to prevent permission popups
 async function maybeShowPastePill(){
-  const pill = document.getElementById('pastePill');
-  if (!pill || !navigator.clipboard?.readText) return;
-  try{
-    const text = (await navigator.clipboard.readText()).trim();
-    const looksLikeUrl = /^https?:\/\/\S+$/i.test(text);
-    pill.style.display = looksLikeUrl ? 'inline-flex' : 'none';
-  }catch(err){
-    // Clipboard access may be blocked; fail silently for demo polish
-  }
+  // Disabled to prevent clipboard permission popups
+  return;
 }
 
 async function pasteFromClipboard(){
-  const urlInput = document.getElementById('urlInput');
-  if (!urlInput || !navigator.clipboard?.readText) return;
-  try{
-    const text = (await navigator.clipboard.readText()).trim();
-    if (text){
-      urlInput.value = text;
-      urlInput.focus();
-      urlInput.dispatchEvent(new Event('input', { bubbles: true }));
-      maybeShowPastePill();
-    }
-  }catch(err){
-    // Ignore clipboard failures to keep the flow smooth
-  }
+  // Disabled to prevent clipboard permission popups
+  return;
 }
 
 document.addEventListener('visibilitychange', maybeShowPastePill);
@@ -1331,9 +1313,9 @@ function toggleSharedItems(pill){
 }
 
 function handlePrimaryCTA(e){
-  // Copy size to clipboard with visual feedback
+  // Copy size to clipboard with visual feedback (disabled to prevent popups)
   const sizeText = 'Size S';
-  navigator.clipboard?.writeText(sizeText).then(() => {
+  // navigator.clipboard?.writeText(sizeText).then(() => {
     // Update button text temporarily to show it was copied
     const buttons = document.querySelectorAll('.cta-button, .sticky-btn');
     buttons.forEach(btn => {
@@ -1343,7 +1325,7 @@ function handlePrimaryCTA(e){
         btn.textContent = originalText;
       }, 1500);
     });
-  });
+  // });
 
   // Micro-interaction: glow + haptic
   const targetBtn = e?.currentTarget;
