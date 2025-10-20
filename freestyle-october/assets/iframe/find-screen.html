@@ -61,6 +61,7 @@ body::before{
       position:relative;
       margin-top:-5px;
       flex-shrink:0; /* prevent header from shrinking */
+      min-height:48px; /* Keep header height constant whether back button is visible or not */
     }
     .logo{
       font-weight:600;
@@ -219,6 +220,8 @@ body::before{
       outline:none;
       box-shadow:none;
     }
+    /* when long, shrink slightly so more fits */
+    .url-input.is-long{ font-size:14px; }
     .url-input.has-icon{padding-left:48px;padding-right:88px}
     .url-input:focus{
       border-color:transparent;
@@ -329,7 +332,9 @@ body::before{
       display:none;
       flex-direction:column;
       width:100%;
-      opacity:0;
+      opacity:1;
+      transform:none !important;
+      margin-top:0;  /* reset margin when not in grid mode */
     }
     .results-section.visible{
       display:flex;
@@ -824,6 +829,7 @@ body::before{
       padding:0;
       margin:0 0 16px;
       text-align:left;
+      min-height:72px;  /* Reserve steady space to prevent reflows */
     }
     @keyframes fadeSlide{
       to{
@@ -863,10 +869,10 @@ body::before{
       0%{background-position:0% 50%}
       100%{background-position:100% 50%}
     }
-    /* Confidence block entrance */
-    .confidence-block{will-change:transform,opacity}
-    .confidence-block.is-entering{animation:confidenceIn .35s cubic-bezier(.2,.8,.2,1) forwards}
-    @keyframes confidenceIn{from{opacity:0;transform:scale(.985)}to{opacity:1;transform:scale(1)}}
+    /* Confidence block entrance - disabled to prevent jolt */
+    .confidence-block{will-change:auto}
+    .confidence-block.is-entering{animation:none}
+    @keyframes fadeInOnly{from{opacity:0}to{opacity:1}}
 
     /* Prefers-reduced-motion: minimize or remove transitions/animations */
     @media (prefers-reduced-motion: reduce){
@@ -971,9 +977,16 @@ body::before{
     .loading-card.is-large .progress{ height: 8px; border-radius: 999px; margin-top: 14px; }
     .loading-card.is-large .progress span{ box-shadow: inset 0 0 0 1px rgba(255,255,255,.3); }
 
-    /* Enter/exit helpers for results - no animation */
-    .reveal-up{opacity:1;transform:none;}
-    .reveal-up.is-in{opacity:1;transform:none;}
+    /* Enter/exit helpers for results - completely static to prevent jolt */
+    .reveal-up{opacity:1;transform:none !important;transition:none !important;}
+    .reveal-up.is-in{opacity:1;transform:none !important;transition:none !important;}
+    
+    /* Ensure results stay locked in position during grid mode */
+    .content.is-loading #resultsSection.visible{
+      transform:none !important;
+      opacity:1 !important;
+      transition:none !important;
+    }
 
     /* Reduced motion */
     @media (prefers-reduced-motion: reduce){
@@ -1018,14 +1031,35 @@ body::before{
       }
     }
 
+    /* === JOLT FIXES === */
+    /* Kill vertical movement on results entrance */
+    .results-section.visible{
+      animation: fadeInNoMove .28s ease forwards;
+    }
+    @keyframes fadeInNoMove{
+      from { opacity: 0 }
+      to   { opacity: 1 }
+    }
+
+    /* Once not loading, ensure the loader never affects layout */
+    .content:not(.is-loading) #loadingCard{
+      position: absolute;
+      margin: 0;
+      padding: 0;
+      height: 0;
+      overflow: hidden;
+      border: 0;
+    }
+
     /* --- Loading stage centering --- */
     /* Stage layout that keeps header at top and centers just the loading card */
     .content.is-loading{
       display: grid;
-      grid-template-rows: auto 1fr auto;  /* header | stage | tabs area */
+      grid-template-rows: auto minmax(520px, 1fr) auto;  /* header | STAGE (stable height) | tabs area */
+      row-gap: 20px;  /* match the flex gap for consistent spacing */
       align-items: start;
       justify-items: center;
-      padding: 12px 0 120px;              /* keep your existing vertical rhythm */
+      padding: 12px 0 120px;              /* keep the SAME top pad as .content to avoid vertical shift */
     }
 
     /* Explicit row placement so the logo never moves */
@@ -1037,9 +1071,17 @@ body::before{
     /* Center the loading card in the stage area */
     .content.is-loading #loadingCard{
       grid-row: 2;
-      place-self: center;
-      margin: 0 24px;
+      place-self: start center;  /* align to top, center horizontally */
+      margin: 0 24px;  /* no top margin - keep at natural position */
       width: min(640px, 90%);
+    }
+
+    /* Keep results anchored in the same stage row during handoff */
+    .content.is-loading #resultsSection{
+      grid-row: 2;
+      place-self: start center;  /* same alignment as loading card */
+      margin-top: 0;  /* no top margin - keep at natural position */
+      align-self: start;  /* ensure it stays at top */
     }
 
     /* Short viewports: bias up a bit but keep header pinned */
@@ -1830,11 +1872,27 @@ async function startFlow(product = DEFAULT_PRODUCT){
   // Single smooth animation from 0 to 100% over 2.4 seconds
   await animateProgress(100, 2400);
 
-  // Quick transition to results
-  await wait(100);
-  hideElement(loadingCardEl);
-  await wait(100);
-  showResults();
+  // Wait a moment to let users see the completed progress bar
+  await wait(500);
+
+  // ---- handoff to results (no jolt) ----
+  
+  // show results while we're STILL in grid mode
+  if (contentEl) contentEl.scrollTop = 0;
+  showResults({ keepLoadingCard: true });
+
+  // immediately remove the loader from layout (so it can't collapse later)
+  if (loadingCardEl){
+    loadingCardEl.classList.remove('is-visible');
+    loadingCardEl.style.opacity = '0';
+    loadingCardEl.style.visibility = 'hidden';
+    loadingCardEl.hidden = true;         // <-- moved up (immediate)
+  }
+
+  // next frame: exit grid mode
+  await wait(16);
+  contentEl?.classList.remove('is-loading');
+  if (contentEl) contentEl.scrollTop = 0;
 }
 
 // Minimal mocks if you are still in demo mode
@@ -1860,42 +1918,47 @@ function handlePaste() {
 
   urlInput.focus();
 
-  let index = 0;
-  function typeNext(){
-    if (index <= url.length){
-      urlInput.value = url.slice(0, index++);
-      const slice = urlInput.value;
-      const pause = slice.endsWith('.com/') ? 320
-        : slice.endsWith('/products/') ? 280
-        : 22;
-      setTimeout(typeNext, pause);
-    } else {
-      setTimeout(() => startFlow(DEFAULT_PRODUCT), 420);
-    }
+  // Clear the input first
+  urlInput.value = '';
+  
+  // Type each character with a simple loop
+  for (let i = 0; i < url.length; i++) {
+    setTimeout(() => {
+      urlInput.value = url.slice(0, i + 1);
+      
+      // follow the caret to reveal the whole typed value
+      urlInput.setSelectionRange(urlInput.value.length, urlInput.value.length);
+      urlInput.scrollLeft = urlInput.scrollWidth;
+      
+      // If we've typed the last character, start the flow
+      if (i === url.length - 1) {
+        setTimeout(() => startFlow(DEFAULT_PRODUCT), 300);
+      }
+    }, i * 35); // 35ms delay between each character
   }
-
-  typeNext();
 }
 
-function showResults() {
+function showResults(opts = {}) {
   const resultsSection = document.getElementById('resultsSection');
   const content = document.querySelector('.content');
   const backBtn = document.getElementById('backBtn');
-  const confidenceBlock = document.getElementById('confidenceBlock');
 
-  content?.classList.remove('is-loading');
-
+  // Show results in place (still in grid mode during handoff)
   if (resultsSection){
     resultsSection.hidden = false;
     resultsSection.classList.add('visible', 'is-in'); // Show immediately, no animation
   }
   backBtn?.style.setProperty('display', 'flex');
 
-  // Scroll to top smoothly
-  if (content){
-    setTimeout(() => {
-      content.scrollTo({ top: 0, behavior: 'smooth' });
-    }, 100);
+  // IMPORTANT: Don't remove .is-loading here; startFlow() handles the timing
+  // to prevent layout jolt. Only remove it if called from elsewhere (like DOMContentLoaded).
+  if (!opts.keepLoadingCard) {
+    // If not keeping loading card, we're being called from somewhere else (not startFlow)
+    // so it's safe to remove grid mode and reset scroll immediately
+    if (content) content.scrollTop = 0;
+    requestAnimationFrame(() => {
+      content?.classList.remove('is-loading');
+    });
   }
 
   // Slow scroll is disabled while editing unless explicitly enabled and motion allowed
@@ -1981,9 +2044,7 @@ window.addEventListener('DOMContentLoaded', () => {
   backBtn?.style.setProperty('display', 'flex');
   // Update hero chips using demo twins on load when showing results
   updateHeroChips(DEMO_TWINS);
-  // Entrance animations
-  confidenceBlock?.classList.add('is-entering');
-  setTimeout(()=>confidenceBlock?.classList.remove('is-entering'), 350);
+  // Entrance animations - removed confidence block animation to prevent jolt
   // sticky CTA removed
 });
 
