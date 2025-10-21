@@ -2070,20 +2070,20 @@ async function startFlow(product = DEFAULT_PRODUCT){
 
   // ---- iOS-style overlapping cross-fade (zero blank gap) ----
 
-  // 1. Start fading out loading card (250ms)
+  // 1. Start fading out loading card (350ms for gentler fade)
   if (loadingCardEl){
-    loadingCardEl.style.transition = 'opacity 250ms ease-out';
+    loadingCardEl.style.transition = 'opacity 350ms ease-out';
     loadingCardEl.style.opacity = '0';
   }
 
-  // 2. After 80ms, start fading in results (overlap creates smooth handoff)
-  await wait(80);
+  // 2. After 120ms, start fading in results (longer overlap = smoother)
+  await wait(120);
   contentEl?.classList.remove('is-loading');
   if (contentEl) contentEl.scrollTop = 0;
   showResults();
 
   // 3. Wait for loading fade to complete, then clean up
-  await wait(170); // 250ms total - 80ms already elapsed
+  await wait(230); // 350ms total - 120ms already elapsed
   if (loadingCardEl){
     loadingCardEl.hidden = true;
     loadingCardEl.style.visibility = 'hidden';
