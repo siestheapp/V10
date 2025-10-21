@@ -591,7 +591,7 @@ img {
 }
 .mock-inner iframe {
   width: 430px;
-  height: 932px;
+  height: 2000px;
   border: none;
   display: block;
   background: transparent;
@@ -774,11 +774,9 @@ img {
     width: 270px;
     border-radius: 33px;
   }
-  .how .mock-inner iframe {
-    -webkit-transform: scale(0.62790698);
-            transform: scale(0.62790698);
-  }
+  /* Use default scaling values for iframe; no custom override here */
 }
+
 
 .steps {
   margin: 50px 0 30px;

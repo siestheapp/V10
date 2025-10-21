@@ -67,7 +67,7 @@
     /* Slightly enlarge unified feed mock to match prior hero video presence */
     .hero .mock.unified .mock-inner{transform:scale(1.00);transform-origin:top right}
     /* Slightly reduce large closet mock in HOW section (same proportions) */
-    .how .mock .mock-inner{transform:scale(0.985);transform-origin:top right}
+    .how .mock .mock-inner{transform:scale(0.985);transform-origin:top right; margin-top: 0}
 
     /* HOW: hierarchy + rhythm */
     .how .how-heading { letter-spacing: -0.01em; }
@@ -121,27 +121,70 @@
     @media (min-width: 1024px){
       .how .cols { column-gap: 64px; }
     }
+    /* Top-align the text column with the phone on desktop */
+    @media (min-width: 768px){
+      .how .cols { align-items: flex-start; }
+    }
+    /* Lift the phone mock by 30px on desktop to center with list */
+    @media (min-width: 1024px){
+      .how .mock.mock-how .mock-inner{ margin-top: -30px; }
+    }
 
     /* Right mock: reduce dominance (reads as supporting visual) */
     .how .mock.mock-how .mock-inner{
       position: relative;
       filter: none;
+      background: transparent;
+      /* ensure the scaled iframe isn't clipped by the container */
+      overflow: visible;
+      aspect-ratio: auto;
+      min-height: 720px;
+      padding-bottom: 20px;
     }
-    .how .mock.mock-how .mock-inner::after{
-      content:"";
-      position:absolute; inset:0;
-      pointer-events:none;
-      background: linear-gradient(to bottom, rgba(255,255,255,0.22), rgba(255,255,255,0.0) 30%);
-      /* soft wash to keep text column primary */
+    .how .mock.mock-how .mock-inner iframe{
+      background: transparent;
+      -webkit-transform: scale(0.525);
+              transform: scale(0.525);
+    }
+    @media (min-width: 375px){
+      .how .mock.mock-how .mock-inner iframe{ -webkit-transform: scale(0.615); transform: scale(0.615); }
+    }
+    @media (min-width: 390px){
+      .how .mock.mock-how .mock-inner iframe{ -webkit-transform: scale(0.685); transform: scale(0.685); }
     }
 
-    /* Gentle stagger-in for steps (optional, respects reduced motion) */
-    @media (prefers-reduced-motion: no-preference){
-      .steps .step{ opacity:0; transform: translateY(6px); }
-      .steps .step.step-in{ opacity:1; transform: none; transition: opacity .28s ease, transform .28s ease; }
-      .steps .step:nth-child(2).step-in{ transition-delay:.06s; }
-      .steps .step:nth-child(3).step-in{ transition-delay:.12s; }
-    }
+     /* Gentle stagger-in for steps (optional, respects reduced motion) */
+     @media (prefers-reduced-motion: no-preference){
+       .steps .step{ opacity:0; transform: translateY(6px); }
+       .steps .step.step-in{ opacity:1; transform: none; transition: opacity .28s ease, transform .28s ease; }
+       .steps .step:nth-child(2).step-in{ transition-delay:.06s; }
+       .steps .step:nth-child(3).step-in{ transition-delay:.12s; }
+     }
+
+     /* Ensure steps are visible even if intersection observer doesn't fire */
+     #how .steps .step{ opacity:1; transform:none; }
+
+     /* Hard-kill any decorative pseudo on the list item itself */
+     .steps .step::before,
+     .steps .step::after {
+       content: none !important;
+       display: none !important;
+       width: 0 !important;
+       height: 0 !important;
+       background: none !important;
+       background-image: none !important;
+       -webkit-mask-image: none !important;
+       mask-image: none !important;
+       border: 0 !important;
+       box-shadow: none !important;
+     }
+
+     /* Keep our own badge + number rendering */
+     .steps { list-style: none; padding-left: 0; counter-reset: step; }
+     .steps .step { counter-increment: step; }
+     .step-badge { /* your existing badge styles remain */ }
+     .step-badge .step-num::before { content: counter(step); }
+
   </style>
 </head>
 <body>
