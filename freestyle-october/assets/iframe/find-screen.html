@@ -99,33 +99,34 @@ body::before{
 /* Back Button anchors left but shares the same grid cell */
 .back-btn{
   position:absolute;
-  left:24px;
+  left:20px;
   top:50%;
   transform:translateY(-50%);
   animation:none !important;
-  transition:none !important;
-  
-  width:32px;
-  height:32px;
-  border-radius:50%;
-  background:rgba(255,255,255,.6);
-  border:1px solid rgba(0,0,0,.05);
+
+  width:36px;
+  height:36px;
+  border-radius:8px;  /* Architectural, matches paste button */
+  border:none;
+  background:rgba(255,255,255,.5);
+  backdrop-filter:blur(12px);
+  cursor:pointer;
   display:flex;
   align-items:center;
   justify-content:center;
-  cursor:pointer;
-  color:#666;
+  color:#1C1C1C;
   z-index:10;
-  box-shadow:0 1px 4px rgba(0,0,0,.06);
+  box-shadow:0 1px 3px rgba(0,0,0,.04);
+  transition:background 0.2s ease, color 0.2s ease, box-shadow 0.2s ease;
 }
 .back-btn:hover{
-  background:rgba(255,255,255,.8);
-  transform:translateY(-50%) scale(1.02);
-  box-shadow:0 2px 8px rgba(0,0,0,.08);
-  transition:transform 0.2s ease, background 0.2s ease, box-shadow 0.2s ease;
+  background:rgba(255,255,255,.75);
+  color:#0B0F14;
+  box-shadow:0 2px 6px rgba(0,0,0,.06);
 }
 .back-btn:active{
-  transform:translateY(-50%) scale(0.98);
+  background:rgba(255,255,255,.85);
+  box-shadow:0 1px 2px rgba(0,0,0,.04);
 }
 
     /* Shared card + section system (aligns with feed/closet screens) */
@@ -175,7 +176,7 @@ body::before{
     /* When find screen is visible, center everything vertically */
     .finder-shell:not(.is-hidden){
       position:absolute;
-      top:calc(45% - 10px);  /* Move up slightly to account for header */
+      top:calc(45% - 11px);  /* Move up slightly to account for header */
       left:0;
       right:0;
       transform:translateY(-50%);
@@ -431,12 +432,14 @@ body::before{
       width:100%;
       margin-top:-10px;  /* Pull closer to logo */
       padding-top:10px;
-      opacity:0;               /* start hidden for fade-in */
-      transition:opacity .7s ease .08s;  /* slow overall entrance */
+      opacity:0;
     }
     .results-section.visible{
       display:flex;
+    }
+    .results-section.visible.is-in{
       opacity:1;
+      transition:opacity 250ms ease-out;
     }
 
     .confidence-block{
@@ -1446,7 +1449,7 @@ body::before{
     }
 
     .hero-subtext{
-      font-size:18px;
+      font-size:16px;
       font-weight:600;
       color:#1C1C1C;
       text-align:center;
@@ -2063,24 +2066,28 @@ async function startFlow(product = DEFAULT_PRODUCT){
   // Wait a moment to let users see the completed progress bar
   await wait(750);
 
-  // ---- handoff to results (no jolt) ----
-  
-  // show results while we're STILL in grid mode
-  if (contentEl) contentEl.scrollTop = 0;
-  showResults({ keepLoadingCard: true });
+  // ---- handoff to results (cross-fade) ----
 
-  // immediately remove the loader from layout (so it can't collapse later)
+  // ---- iOS-style overlapping cross-fade (zero blank gap) ----
+
+  // 1. Start fading out loading card (250ms)
   if (loadingCardEl){
-    loadingCardEl.classList.remove('is-visible');
+    loadingCardEl.style.transition = 'opacity 250ms ease-out';
     loadingCardEl.style.opacity = '0';
-    loadingCardEl.style.visibility = 'hidden';
-    loadingCardEl.hidden = true;         // <-- moved up (immediate)
   }
 
-  // next frame: exit grid mode
-  await wait(16);
+  // 2. After 80ms, start fading in results (overlap creates smooth handoff)
+  await wait(80);
   contentEl?.classList.remove('is-loading');
   if (contentEl) contentEl.scrollTop = 0;
+  showResults();
+
+  // 3. Wait for loading fade to complete, then clean up
+  await wait(170); // 250ms total - 80ms already elapsed
+  if (loadingCardEl){
+    loadingCardEl.hidden = true;
+    loadingCardEl.style.visibility = 'hidden';
+  }
 }
 
 // Minimal mocks if you are still in demo mode
@@ -2214,29 +2221,29 @@ function updateHeroChips(twins){
 //   handlePaste();
 // }, 1500);
 
-// While editing: land directly on results
-window.addEventListener('DOMContentLoaded', () => {
-  const findSection = document.getElementById('findSection');
-  const findSectionWrap = document.getElementById('findSectionWrap');
-  const resultsSection = document.getElementById('resultsSection');
-  const backBtn = document.getElementById('backBtn');
-  const confidenceBlock = document.getElementById('confidenceBlock');
-  if (loadingCardEl){
-    loadingCardEl.classList.remove('is-visible');
-    loadingCardEl.hidden = true;
-  }
-  findSection?.classList.add('hidden');
-  findSectionWrap?.classList.add('is-hidden');
-  if (resultsSection){
-    resultsSection.hidden = false;
-    resultsSection.classList.add('visible', 'is-in');
-  }
-  backBtn?.style.setProperty('display', 'flex');
-  // Update hero chips using demo twins on load when showing results
-  updateHeroChips(DEMO_TWINS);
-  // Entrance animations - removed confidence block animation to prevent jolt
-  // sticky CTA removed
-});
+// While editing: land directly on results - DISABLED for demo recording
+// window.addEventListener('DOMContentLoaded', () => {
+//   const findSection = document.getElementById('findSection');
+//   const findSectionWrap = document.getElementById('findSectionWrap');
+//   const resultsSection = document.getElementById('resultsSection');
+//   const backBtn = document.getElementById('backBtn');
+//   const confidenceBlock = document.getElementById('confidenceBlock');
+//   if (loadingCardEl){
+//     loadingCardEl.classList.remove('is-visible');
+//     loadingCardEl.hidden = true;
+//   }
+//   findSection?.classList.add('hidden');
+//   findSectionWrap?.classList.add('is-hidden');
+//   if (resultsSection){
+//     resultsSection.hidden = false;
+//     resultsSection.classList.add('visible', 'is-in');
+//   }
+//   backBtn?.style.setProperty('display', 'flex');
+//   // Update hero chips using demo twins on load when showing results
+//   updateHeroChips(DEMO_TWINS);
+//   // Entrance animations - removed confidence block animation to prevent jolt
+//   // sticky CTA removed
+// });
 
 function toggleWhy(btn){
   const panel = btn.nextElementSibling;
