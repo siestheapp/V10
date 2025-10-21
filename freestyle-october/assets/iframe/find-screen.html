@@ -132,10 +132,10 @@ body::before{
     .section{padding:0 24px;margin-top:0;min-width:0} /* Remove top margin for centered layout */
     .section:first-of-type{margin-top:0}
     .card{
-      background:var(--card);
-      border:1px solid rgba(11,15,20,.08);
-      border-radius:var(--radius-card);
-      box-shadow:var(--shadow-surface);
+      background:#fff;
+      border:none;
+      border-radius:12px;
+      box-shadow:0 2px 6px rgba(0,0,0,0.05);
       overflow:hidden;
       max-width:100%; /* never exceed container width */
     }
@@ -782,36 +782,64 @@ body::before{
 
     .twin-info{padding:20px 20px 20px}
 
-    .twin-header{padding:12px 16px 8px;background:#fff;border-bottom:1px solid #eee}
-    .twin-header-main{display:flex;align-items:center;gap:10px}
+    .twin-header{padding:16px 20px;background:#FAFAFA;border-bottom:1px solid rgba(0,0,0,0.05)}
+    .twin-header-main{display:flex;align-items:center;gap:12px}
     .twin-avatar{width:36px;height:36px;border-radius:50%;object-fit:cover;object-position:center 10%}
-    .twin-name{flex:1;font-weight:700;font-size:16px;color:#262626}
+    .twin-name{flex:1;font-weight:500;font-size:16px;color:#1C1C1C;letter-spacing:-0.01em}
     .twin-pill{padding:6px 10px;background:var(--petrol-100);border-radius:999px;font-size:13px;color:var(--accent);font-weight:700;display:inline-flex;align-items:center}
-    .shared-pill{padding:10px 16px;background:var(--petrol-500);border:1px solid var(--petrol-500);border-radius:20px;font-size:15px;color:#fff;font-weight:600;letter-spacing:0.01em;cursor:pointer;transition:all 0.3s cubic-bezier(0.4, 0, 0.2, 1);display:inline-flex;align-items:center;gap:8px;box-shadow:0 2px 8px rgba(0,163,163,0.2)}
-    .shared-pill:hover{background:var(--petrol-600);border-color:var(--petrol-600);transform:translateY(-2px);box-shadow:0 6px 16px rgba(0,163,163,0.35)}
-    .shared-pill.open{background:var(--petrol-600);color:#fff;border-color:var(--petrol-600);box-shadow:0 8px 20px rgba(0,163,163,0.4)}
-    .chevron{font-size:10px;transition:transform 0.2s ease}
+    .shared-pill{padding:6px 12px;background:#009C9C;border:none;border-radius:16px;font-size:13px;color:#fff;font-weight:500;letter-spacing:0em;cursor:pointer;transition:all 0.2s ease;display:inline-flex;align-items:center;gap:6px;box-shadow:none}
+    .shared-pill:hover{background:#008A8A;transform:translateY(-1px);box-shadow:0 2px 6px rgba(0,156,156,0.2)}
+    .shared-pill.open{background:#008A8A;color:#fff;box-shadow:0 2px 6px rgba(0,156,156,0.25)}
+    .chevron{font-size:9px;transition:transform 0.2s ease}
     .shared-pill.open .chevron{transform:rotate(180deg)}
     .shared-pill:focus-visible{
       outline:2px solid transparent;
       outline-offset:2px;
-      box-shadow:0 0 0 2px rgba(31,174,217,.35), var(--shadow-surface);
+      box-shadow:0 0 0 2px rgba(31,174,217,.35);
     }
 
-    .shared-items-panel{max-height:0;overflow:hidden;transition:max-height 0.35s cubic-bezier(.21,.9,.3,1.17), opacity .25s ease, transform .25s ease, box-shadow .3s ease, margin-top .25s ease;background:var(--petrol-100);margin-top:0;border-radius:12px;border:1px solid rgba(0,163,163,.15);opacity:0;transform:translateY(-4px);box-shadow:none}
-    .shared-items-panel.open{max-height:220px;opacity:1;transform:translateY(0);margin-top:12px;box-shadow:0 4px 12px rgba(0,163,163,.12)}
-    .shared-items-content{padding:14px 16px}
-    .shared-items-label{font-size:11px;font-weight:700;color:#6A7683;text-transform:uppercase;margin-bottom:12px;letter-spacing:0.05em;text-align:center}
-    .shared-item{display:flex;align-items:center;justify-content:space-between;gap:16px;padding:10px 0;border-bottom:1px solid rgba(11,15,20,0.08);opacity:0;transform:translateY(4px);transition:opacity .25s ease, transform .28s cubic-bezier(.18,.89,.32,1.28)}
+    .shared-items-panel{max-height:0;overflow:hidden;transition:max-height 0.35s cubic-bezier(.21,.9,.3,1.17), opacity .25s ease, transform .25s ease;background:#fff;margin-top:0;border-top:1px solid rgba(0,0,0,0.05);opacity:0;transform:translateY(0)}
+    .shared-items-panel.open{max-height:220px;opacity:1;transform:translateY(0);margin-top:0}
+    .shared-items-content{padding:16px 20px}
+    .shared-items-label{font-size:11px;font-weight:600;color:#6A7683;text-transform:uppercase;margin-bottom:14px;letter-spacing:0.05em;text-align:left}
+    .shared-item{display:flex;align-items:center;justify-content:space-between;gap:16px;padding:10px 0;border-bottom:1px solid rgba(0,0,0,0.05);opacity:0;transform:translateY(4px);transition:opacity .25s ease, transform .28s cubic-bezier(.18,.89,.32,1.28)}
     .shared-item:last-child{border-bottom:none}
     .shared-items-panel.open .shared-item{opacity:1;transform:translateY(0)}
     .shared-items-panel.open .shared-item:nth-child(1){transition-delay:.06s}
     .shared-items-panel.open .shared-item:nth-child(2){transition-delay:.12s}
     .shared-items-panel.open .shared-item:nth-child(3){transition-delay:.18s}
-    .shared-item-text{flex:1;font-size:14px;color:#262626;font-weight:500;display:flex;align-items:center;gap:4px}
-    .shared-item-brand{font-weight:700;color:#262626}
-    .shared-item-product{color:var(--muted);font-weight:400}
-    .shared-item-size{padding:2px 8px;background:rgba(11,15,20,0.75);color:#fff;border-radius:8px;font-size:13px;font-weight:700;min-width:32px;text-align:center}
+    .shared-item-text{flex:1;font-size:14px;color:#1C1C1C;font-weight:400;display:flex;align-items:center;gap:6px;line-height:1.4}
+    .shared-item-brand{font-weight:600;color:#1C1C1C}
+    .shared-item-product{color:#1C1C1C;font-weight:400}
+    .shared-item-size{padding:4px 8px;background:#F3F4F6;border-radius:6px;font-size:12px;font-weight:500;color:#6A7683;min-width:32px;text-align:center}
+
+    /* Explore other sizes link */
+    .explore-more {
+      margin: 24px 0 16px;
+      padding: 0 20px;
+      text-align: center;
+      font-size: 18px;
+      font-weight: 500;
+      color: #262626;
+      cursor: pointer;
+      user-select: none;
+      letter-spacing: 0.01em;
+    }
+    .explore-more:hover,
+    .explore-more:focus {
+      color: #0B0F14;
+      outline: none;
+    }
+    .explore-more .explore-arrow {
+      display: inline-block;
+      margin-left: 4px;
+      transform: translateX(0);
+      transition: transform 180ms ease;
+    }
+    .explore-more:hover .explore-arrow,
+    .explore-more:focus .explore-arrow {
+      transform: translateX(3px);
+    }
 
     .twin-photo{position:relative;width:100%;height:600px;object-fit:cover;cursor:pointer}
     .size-badge-float{
@@ -1559,7 +1587,7 @@ body::before{
               <div class="confidence-bridge" aria-live="polite">
                 <div class="bridge-overline">YOUR PROXIES</div>
                 <h2 class="bridge-headline">
-                  <span id="bridgeTwinCount">2</span> of your size twins own this dress
+                  <span id="bridgeTwinCount">2</span> of your fit matches own this dress
                 </h2>
                 <div class="divider"></div>
               </div>
@@ -1702,6 +1730,11 @@ body::before{
                     <button class="shop-btn" onclick="handlePrimaryCTA(event)">Shop Size S →</button>
                   </div>
                 </article>
+              </div>
+
+              <!-- Explore other sizes (global, below both cards) -->
+              <div class="explore-more" role="button" tabindex="0" aria-label="See how it fits in other sizes">
+                See how it fits in other sizes <span class="explore-arrow">→</span>
               </div>
             </section>
 
@@ -2181,37 +2214,28 @@ function updateHeroChips(twins){
 //   handlePaste();
 // }, 1500);
 
-// While editing: land directly on loading screen
+// While editing: land directly on results
 window.addEventListener('DOMContentLoaded', () => {
   const findSection = document.getElementById('findSection');
   const findSectionWrap = document.getElementById('findSectionWrap');
   const resultsSection = document.getElementById('resultsSection');
-  const contentEl = document.querySelector('.content');
-
-  // Hide find section
+  const backBtn = document.getElementById('backBtn');
+  const confidenceBlock = document.getElementById('confidenceBlock');
+  if (loadingCardEl){
+    loadingCardEl.classList.remove('is-visible');
+    loadingCardEl.hidden = true;
+  }
   findSection?.classList.add('hidden');
   findSectionWrap?.classList.add('is-hidden');
-
-  // Hide results
-  if (resultsSection) {
-    resultsSection.hidden = true;
+  if (resultsSection){
+    resultsSection.hidden = false;
+    resultsSection.classList.add('visible', 'is-in');
   }
-
-  // Set up loading state
-  contentEl?.classList.add('is-loading');
-
-  // Populate and show loading card
-  applyHeroCard(DEFAULT_PRODUCT);
-  if (loadingCardEl) {
-    loadingCardEl.hidden = false;
-    loadingCardEl.style.opacity = '1';
-    loadingCardEl.style.display = 'block';
-    loadingCardEl.classList.add('is-visible');
-  }
-
-  // Start progress animation
-  setProgress(0);
-  animateProgress(100, 2700);
+  backBtn?.style.setProperty('display', 'flex');
+  // Update hero chips using demo twins on load when showing results
+  updateHeroChips(DEMO_TWINS);
+  // Entrance animations - removed confidence block animation to prevent jolt
+  // sticky CTA removed
 });
 
 function toggleWhy(btn){
@@ -2243,6 +2267,22 @@ function toggleSharedItems(pill){
   const panel = panelId ? document.getElementById(panelId) : pill.nextElementSibling;
   pill.classList.toggle('open');
   panel?.classList.toggle('open');
+}
+
+// Explore other sizes link
+const exploreMore = document.querySelector('.explore-more');
+if (exploreMore) {
+  const goToOtherSizes = () => {
+    // TODO: wire to your route or modal
+    console.log('Explore other sizes clicked');
+  };
+  exploreMore.addEventListener('click', goToOtherSizes);
+  exploreMore.addEventListener('keydown', (e) => {
+    if (e.key === 'Enter' || e.key === ' ') {
+      e.preventDefault();
+      goToOtherSizes();
+    }
+  });
 }
 
 function handlePrimaryCTA(e){
