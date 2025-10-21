@@ -147,11 +147,63 @@
       -webkit-transform: scale(0.525);
               transform: scale(0.525);
     }
+    /* Make profile mock match closet mock proportions */
+    .profile .mock.mock-profile .mock-inner iframe{ -webkit-transform: scale(0.525); transform: scale(0.525); }
+    @media (min-width: 375px){ .profile .mock.mock-profile .mock-inner iframe{ -webkit-transform: scale(0.615); transform: scale(0.615); } }
+    @media (min-width: 390px){ .profile .mock.mock-profile .mock-inner iframe{ -webkit-transform: scale(0.685); transform: scale(0.685); } }
     @media (min-width: 375px){
       .how .mock.mock-how .mock-inner iframe{ -webkit-transform: scale(0.615); transform: scale(0.615); }
     }
     @media (min-width: 390px){
       .how .mock.mock-how .mock-inner iframe{ -webkit-transform: scale(0.685); transform: scale(0.685); }
+    }
+
+    /* Profile mock: same sizing as closet screen */
+    .profile .mock.mock-profile .mock-inner{
+      position: relative;
+      filter: none;
+      background: transparent;
+      overflow: hidden;
+      aspect-ratio: auto;
+      height: 670px;
+      max-height: 670px;
+      padding-top:30px;
+      padding-bottom: 0;
+    }
+    .profile .mock.mock-profile .mock-inner iframe{
+      background: transparent !important;
+      border-radius: 40px;
+      -webkit-mask-image: radial-gradient(circle at 0 0, transparent 0, transparent 38px, #000 40px),
+                           radial-gradient(circle at 100% 0, transparent 0, transparent 38px, #000 40px),
+                           radial-gradient(circle at 0 100%, transparent 0, transparent 38px, #000 40px),
+                           radial-gradient(circle at 100% 100%, transparent 0, transparent 38px, #000 40px);
+              mask-image: radial-gradient(circle at 0 0, transparent 0, transparent 38px, #000 40px),
+                           radial-gradient(circle at 100% 0, transparent 0, transparent 38px, #000 40px),
+                           radial-gradient(circle at 0 100%, transparent 0, transparent 38px, #000 40px),
+                           radial-gradient(circle at 100% 100%, transparent 0, transparent 38px, #000 40px);
+    }
+    .profile .mock.mock-profile{
+      background: transparent;
+    }
+    .profile{
+      background: transparent;
+    }
+    @media (min-width: 768px) and (max-width: 991.98px) {
+      .profile .mock.mock-profile .mock-inner {
+        width: 270px;
+        border-radius: 33px;
+      }
+    }
+    .profile .mock.mock-profile .mock-inner iframe{
+      background: transparent;
+      -webkit-transform: scale(0.525);
+              transform: scale(0.525);
+    }
+    @media (min-width: 375px){
+      .profile .mock.mock-profile .mock-inner iframe{ -webkit-transform: scale(0.615); transform: scale(0.615); }
+    }
+    @media (min-width: 390px){
+      .profile .mock.mock-profile .mock-inner iframe{ -webkit-transform: scale(0.685); transform: scale(0.685); }
     }
 
      /* Gentle stagger-in for steps (optional, respects reduced motion) */
@@ -301,7 +353,7 @@
         <h2 class="section-heading">See your fit across every brand</h2>
         <p class="section-subheading">Every piece you add makes your profile smarter.</p>
       </header>
-      <div class="mock" aria-hidden="true">
+      <div class="mock mock-profile" aria-hidden="true">
         <div class="mock-inner" data-track="profile-mock">
               <iframe src="assets/iframe/profile-screen.html?v=2" title="Profile mockup" loading="lazy"></iframe>
         </div>
