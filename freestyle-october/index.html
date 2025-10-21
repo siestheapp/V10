@@ -68,6 +68,80 @@
     .hero .mock.unified .mock-inner{transform:scale(1.00);transform-origin:top right}
     /* Slightly reduce large closet mock in HOW section (same proportions) */
     .how .mock .mock-inner{transform:scale(0.985);transform-origin:top right}
+
+    /* HOW: hierarchy + rhythm */
+    .how .how-heading { letter-spacing: -0.01em; }
+    .how .how-arrow { color: #A3AFBA; }                /* lighter arrow for clarity */
+
+    /* Remove native markers completely */
+    .steps { 
+      list-style: none !important; 
+      padding-left: 0 !important; 
+      margin-left: 0 !important;
+      margin-top: 12px; 
+    }
+    .steps .step { 
+      display:flex; 
+      gap:14px; 
+      align-items:flex-start; 
+      padding:18px 0; 
+      list-style: none !important;
+    }
+    .steps .step + .step { border-top:1px solid rgba(0,0,0,0.05); }   /* subtle divider */
+    .steps .step-title { margin:0 0 4px; }
+    .steps .step-copy { margin:0; color:var(--ink-500,#2A3642); }
+
+    /* Simple badge styling with hard-coded numbers - no pseudo-elements */
+    .step-badge {
+      flex: 0 0 28px;
+      height: 28px;
+      border-radius: 999px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: 600;
+      font-size: 14px;
+      color: #fff;
+      background: linear-gradient(135deg, var(--petrol-600,#009090), #35D1AE);
+      box-shadow: 0 6px 18px rgba(0,163,163,.18);
+      font-family: inherit !important;
+      position: static;
+      z-index: auto;
+    }
+    
+    /* Completely disable any pseudo-elements that might be injecting content */
+    .step-badge::before,
+    .step-badge::after {
+      display: none !important;
+      content: none !important;
+    }
+    .step-body{ flex:1; }
+
+    /* Slightly more breathing room between steps list and right mock on large screens */
+    @media (min-width: 1024px){
+      .how .cols { column-gap: 64px; }
+    }
+
+    /* Right mock: reduce dominance (reads as supporting visual) */
+    .how .mock.mock-how .mock-inner{
+      position: relative;
+      filter: none;
+    }
+    .how .mock.mock-how .mock-inner::after{
+      content:"";
+      position:absolute; inset:0;
+      pointer-events:none;
+      background: linear-gradient(to bottom, rgba(255,255,255,0.22), rgba(255,255,255,0.0) 30%);
+      /* soft wash to keep text column primary */
+    }
+
+    /* Gentle stagger-in for steps (optional, respects reduced motion) */
+    @media (prefers-reduced-motion: no-preference){
+      .steps .step{ opacity:0; transform: translateY(6px); }
+      .steps .step.step-in{ opacity:1; transform: none; transition: opacity .28s ease, transform .28s ease; }
+      .steps .step:nth-child(2).step-in{ transition-delay:.06s; }
+      .steps .step:nth-child(3).step-in{ transition-delay:.12s; }
+    }
   </style>
 </head>
 <body>
@@ -124,25 +198,41 @@
         <div class="col">
           <header class="section-header">
             <p class="section-title">How it works</p>
-            <h2 id="section-heading">Your closet &rarr; your proxies</h2>
+            <!-- Clearer transformation headline -->
+            <h2 id="section-heading" class="how-heading">
+              From your closet <span class="how-arrow">→</span> your proxies
+            </h2>
           </header>
+
           <ol class="steps">
-            <li>
-              <p class="step-title"><strong>Add a few pieces</strong></p>
-              <p>Save 1–3 items you already wear to Your Closet. We use the exact size and brand to anchor your fit.</p>
+            <li class="step">
+              <span class="step-badge" aria-hidden="true">1</span>
+              <div class="step-body">
+                <p class="step-title"><strong>Add a few pieces</strong></p>
+                <p class="step-copy">Add 1–3 pieces you already own to your Closet — we'll use their exact size and brand to map your fit.</p>
+              </div>
             </li>
-            <li>
-              <p class="step-title"><strong>Meet your proxies</strong></p>
-              <p>Proxi finds people who wear the same piece (and size) and shows you what sizes they wear in other brands and styles.</p>
+
+            <li class="step">
+              <span class="step-badge" aria-hidden="true">2</span>
+              <div class="step-body">
+                <p class="step-title"><strong>Meet your proxies</strong></p>
+                <p class="step-copy">We find people who wear the same pieces and sizes as you — and show what fits them in other brands and styles.</p>
+              </div>
             </li>
-            <li>
-              <p class="step-title"><strong>Shop with confidence</strong></p>
-              <p>See your recommended size and real-world fit notes&mdash;backed by people who fit like you.</p>
+
+            <li class="step">
+              <span class="step-badge" aria-hidden="true">3</span>
+              <div class="step-body">
+                <p class="step-title"><strong>Shop with confidence</strong></p>
+                <p class="step-copy">See your recommended size and real-world fit notes — from people who wear what you do.</p>
+              </div>
             </li>
           </ol>
         </div>
+
         <div class="col">
-          <div class="mock" aria-hidden="true">
+          <div class="mock mock-how" aria-hidden="true">
             <div class="mock-inner" data-track="how-closet-mock">
               <iframe src="assets/iframe/closet-screen.html?v=1" title="Closet mockup" loading="lazy"></iframe>
             </div>
@@ -393,6 +483,19 @@
         catch(err){ window.scrollTo(0,0); }
       }, { passive: true });
     }
+  })();
+</script>
+<script>
+  (function(){
+    if (window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+    var steps = document.querySelectorAll('#how .steps .step');
+    if(!steps.length) return;
+    var io = new IntersectionObserver((entries)=>{
+      entries.forEach(e=>{
+        if(e.isIntersecting){ e.target.classList.add('step-in'); }
+      });
+    }, { rootMargin: '0px 0px -20% 0px', threshold: 0.1 });
+    steps.forEach(s=> io.observe(s));
   })();
 </script>
 <script defer src="/_vercel/insights/script.js"></script>
