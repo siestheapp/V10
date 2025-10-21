@@ -175,7 +175,7 @@ body::before{
     /* When find screen is visible, center everything vertically */
     .finder-shell:not(.is-hidden){
       position:absolute;
-      top:45%;  /* Move up slightly to account for header */
+      top:calc(45% - 10px);  /* Move up slightly to account for header */
       left:0;
       right:0;
       transform:translateY(-50%);
@@ -266,7 +266,7 @@ body::before{
       font-size:18px;  /* Slightly larger */
       font-weight:400;
       color:#4A5B66;  /* Slightly darker */
-      margin-bottom:32px;  /* More breathing room */
+      margin-bottom:29px;  /* More breathing room */
       line-height:1.6;
       letter-spacing:0.01em;
       max-width:380px;
@@ -1319,7 +1319,7 @@ body::before{
     .hero-image-container{
       position:relative;
       width:100%;
-      height:380px;
+      height:420px;
       background:#F9FAFB;
       overflow:hidden;
       border-radius:12px;
@@ -1352,10 +1352,10 @@ body::before{
       display:inline-flex;
       align-items:center;
       gap:8px;
-      padding:8px 14px;
-      background:rgba(0, 163, 163, 0.08);  /* Consistent with brand color */
-      border-radius:8px;  /* Less round for consistency */
-      font-size:14px;
+      padding:6px 12px;
+      background:#EAF6F4;  /* Softer neutral background */
+      border-radius:6px;  /* Smaller, quieter */
+      font-size:12px;  /* Caption size */
       color:#00A3A3;  /* Brand color */
       font-weight:500;
       margin-bottom:16px;
@@ -1363,16 +1363,16 @@ body::before{
 
     .hero-product-brand{
       font-size:11px;
-      font-weight:600;
+      font-weight:500;  /* Reduced from 600 to semi-bold */
       letter-spacing:0.08em;
       text-transform:uppercase;
-      color:#6A7683;
+      color:#8E98A3;  /* Softer medium gray */
       margin-bottom:2px;
     }
 
     .hero-product-name{
       font-size:18px;
-      font-weight:600;
+      font-weight:400;
       color:#0B0F14;
       line-height:1.3;
       letter-spacing:-0.01em;
@@ -1393,27 +1393,33 @@ body::before{
 
     /* Hero Loading Section */
     .hero-loading-section{
-      padding:18px 20px 20px;
+      padding:16px 20px 20px;
       border-top:1px solid #F3F4F6;
       display:flex;
       flex-direction:column;
       align-items:center;
-      gap:12px;
+      gap:8px;
     }
 
     .hero-loading-text{
       font-size:16px;
-      font-weight:400;  /* Lighter weight for elegance */
-      color:#4A5B66;  /* Slightly darker like subtitle */
+      font-weight:500;
+      color:#3A4652;
       text-align:center;
-      letter-spacing:0.01em;  /* Add slight spacing */
-      margin-bottom:8px;
+      letter-spacing:0.01em;
+      margin-bottom:4px;
+      animation: loadingPulse 2s ease-in-out infinite;
+    }
+
+    @keyframes loadingPulse{
+      0%, 100%{ opacity:1; }
+      50%{ opacity:0.6; }
     }
 
     .hero-subtext{
-      font-size:15px;
-      font-weight:500;
-      color:#2A3642;
+      font-size:17px;
+      font-weight:600;
+      color:#262626;
       text-align:center;
       margin-bottom:12px;
       letter-spacing:0.01em;
@@ -1434,10 +1440,34 @@ body::before{
 
     .hero-progress-fill{
       height:100%;
-      background:#00A3A3;  /* Solid brand color instead of gradient */
+      background:rgba(0, 163, 163, 0.8);  /* Brand teal at 80% opacity */
       border-radius:2px;
       width:0%;
       transition:width 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+      position:relative;
+      overflow:hidden;
+    }
+
+    /* Shimmer animation for progress bar */
+    .hero-progress-fill::before{
+      content:'';
+      position:absolute;
+      top:0;
+      left:-100%;
+      width:100%;
+      height:100%;
+      background:linear-gradient(
+        90deg,
+        transparent 0%,
+        rgba(255, 255, 255, 0.4) 50%,
+        transparent 100%
+      );
+      animation:progressShimmer 1.5s ease-in-out infinite;
+    }
+
+    @keyframes progressShimmer{
+      0%{ left:-100%; }
+      100%{ left:200%; }
     }
 
     /* Skeleton state for hero image */
@@ -1469,8 +1499,8 @@ body::before{
         <div class="content">
           <section class="section finder-shell" id="findSectionWrap">
             <div class="card card-pad find-section" id="findSection">
-              <h1 class="find-title">Find the <span class="accent">right size</span></h1>
-              <p class="find-subtitle">Try on clothes through size twins.</p>
+              <h1 class="find-title">Order one size—<span class="accent">the right one.</span></h1>
+              <p class="find-subtitle">See how clothes fit someone like you.</p>
 
 
               <div class="input-wrapper">
@@ -1478,13 +1508,13 @@ body::before{
                   type="text"
                   class="url-input"
                   id="urlInput"
-                  placeholder="Paste any product link from 500+ premium brands"
+                  placeholder="Paste a product link from 500+ brands"
                   autocomplete="off"
                 >
               </div>
 
               <button class="paste-btn" id="pasteBtn" onclick="handlePaste()">
-                Find Size Twins
+                See how it fits
               </button>
 
               <div class="brand-marquee" aria-hidden="true" role="presentation">
@@ -1523,7 +1553,7 @@ body::before{
             <!-- Loading State -->
             <div class="hero-loading-section">
               <div class="hero-loading-text" id="heroLoadingText">Finding your proxies</div>
-              <div class="hero-subtext">People who wear the same item as you, in the same size as you.</div>
+              <div class="hero-subtext">People who share your size in other pieces.</div>
               <div class="hero-progress-track">
                 <div class="hero-progress-fill" id="heroProgressBar"></div>
               </div>
@@ -1998,12 +2028,12 @@ async function startFlow(product = DEFAULT_PRODUCT){
     console.error('Loading card element not found!');
   }
 
-  // Smooth continuous progress over 2.5 seconds total
+  // Smooth continuous progress over 2.8 seconds total
   // Start immediately after card appears
   await wait(100);
 
-  // Single smooth animation from 0 to 100% over 2.4 seconds
-  await animateProgress(100, 2400);
+  // Single smooth animation from 0 to 100% over 2.7 seconds
+  await animateProgress(100, 2700);
 
   // Wait a moment to let users see the completed progress bar
   await wait(750);
@@ -2159,29 +2189,37 @@ function updateHeroChips(twins){
 //   handlePaste();
 // }, 1500);
 
-// While editing: land directly on results
+// While editing: land directly on loading screen
 window.addEventListener('DOMContentLoaded', () => {
-  if (!window.SHOW_RESULTS_ON_LOAD) return;
   const findSection = document.getElementById('findSection');
   const findSectionWrap = document.getElementById('findSectionWrap');
   const resultsSection = document.getElementById('resultsSection');
-  const backBtn = document.getElementById('backBtn');
-  const confidenceBlock = document.getElementById('confidenceBlock');
-  if (loadingCardEl){
-    loadingCardEl.classList.remove('is-visible');
-    loadingCardEl.hidden = true;
-  }
+  const contentEl = document.querySelector('.content');
+
+  // Hide find section
   findSection?.classList.add('hidden');
   findSectionWrap?.classList.add('is-hidden');
-  if (resultsSection){
-    resultsSection.hidden = false;
-    resultsSection.classList.add('visible', 'is-in');
+
+  // Hide results
+  if (resultsSection) {
+    resultsSection.hidden = true;
   }
-  backBtn?.style.setProperty('display', 'flex');
-  // Update hero chips using demo twins on load when showing results
-  updateHeroChips(DEMO_TWINS);
-  // Entrance animations - removed confidence block animation to prevent jolt
-  // sticky CTA removed
+
+  // Set up loading state
+  contentEl?.classList.add('is-loading');
+
+  // Populate and show loading card
+  applyHeroCard(DEFAULT_PRODUCT);
+  if (loadingCardEl) {
+    loadingCardEl.hidden = false;
+    loadingCardEl.style.opacity = '1';
+    loadingCardEl.style.display = 'block';
+    loadingCardEl.classList.add('is-visible');
+  }
+
+  // Start progress animation
+  setProgress(0);
+  animateProgress(100, 2700);
 });
 
 function toggleWhy(btn){
