@@ -63,7 +63,7 @@
     .page{padding-top:36px}
 
     /* Slightly reduce hero video mock size for extra breathing room */
-    .hero .mock.video .mock-inner{transform:scale(0.985);transform-origin:top right}
+    .hero .mock.video .mock-inner{transform:scale(0.97);transform-origin:top right;margin-top:-24px}
     /* Slightly enlarge unified feed mock to match prior hero video presence */
     .hero .mock.unified .mock-inner{transform:scale(1.00);transform-origin:top right}
     /* Slightly reduce large closet mock in HOW section (same proportions) */
@@ -127,7 +127,7 @@
     }
     /* Lift the phone mock by 30px on desktop to center with list */
     @media (min-width: 1024px){
-      .how .mock.mock-how .mock-inner{ margin-top: -30px; }
+      .how .mock.mock-how .mock-inner{ margin-top: -48px; }
     }
 
     /* Right mock: reduce dominance (reads as supporting visual) */
@@ -135,11 +135,12 @@
       position: relative;
       filter: none;
       background: transparent;
-      /* ensure the scaled iframe isn't clipped by the container */
-      overflow: visible;
+      /* clip the iframe to prevent extra space */
+      overflow: hidden;
       aspect-ratio: auto;
-      min-height: 720px;
-      padding-bottom: 20px;
+      height: 1000px;
+      max-height: 700px;
+      padding-bottom: 200px;
     }
     .how .mock.mock-how .mock-inner iframe{
       background: transparent;
@@ -163,6 +164,15 @@
 
      /* Ensure steps are visible even if intersection observer doesn't fire */
      #how .steps .step{ opacity:1; transform:none; }
+
+     /* Reduce spacing between how and profile sections */
+     .how { padding-bottom: 24px; }
+     @media (min-width: 768px) { .how { padding-bottom: 32px; } }
+     @media (min-width: 1280px) { .how { padding-bottom: 40px; } }
+     
+     .profile { padding-top: 24px; }
+     @media (min-width: 768px) { .profile { padding-top: 32px; } }
+     @media (min-width: 1280px) { .profile { padding-top: 40px; } }
 
      /* Hard-kill any decorative pseudo on the list item itself */
      .steps .step::before,
