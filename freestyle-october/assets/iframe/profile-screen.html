@@ -130,6 +130,10 @@ body{
   animation: brandGlimmer 3s ease-in-out infinite;
 }
 
+/* Proxi wavy icon (match closet card pill icon) */
+.icon-proxi{ width:18px; height:18px; color: var(--petrol-600); display:block }
+.icon-proxi path{ fill: currentColor }
+
 @keyframes brandGlimmer {
   0%, 100% { filter: drop-shadow(0 2px 4px rgba(0,0,0,0.15)) drop-shadow(0 0 8px rgba(155,122,173,0.3)) drop-shadow(0 0 4px rgba(255,255,255,0.4)); }
   50% { filter: drop-shadow(0 2px 4px rgba(0,0,0,0.15)) drop-shadow(0 0 12px rgba(155,122,173,0.5)) drop-shadow(0 0 6px rgba(255,255,255,0.6)); }
@@ -560,7 +564,13 @@ body{
       <div class="island"></div>
       <div class="status"><div>9:41</div><div class="right"><img src="../img/cellular-connection.svg" alt="cell"/><img src="../img/wifi.svg" alt="wifi"/><img src="../img/battery.svg" alt="battery"/></div></div>
       <div class="appbar">
-        <div class="left"><div class="brand-dot"><span class="brand-letter">p</span></div></div>
+        <div class="left"><div class="brand-dot" aria-hidden="true">
+          <svg class="icon-proxi" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+            <rect x="1" y="4" width="22" height="2.48" rx="1"></rect>
+            <rect x="1" y="11" width="22" height="2.48" rx="1"></rect>
+            <rect x="1" y="18" width="22" height="2.48" rx="1"></rect>
+          </svg>
+        </div></div>
         <div class="title">Fit Profile</div>
         <div class="right">
           <button class="icon-btn" aria-label="Settings">
