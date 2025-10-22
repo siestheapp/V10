@@ -86,17 +86,15 @@
     /* Align HOW section columns to the top (avoid vertical centering) */
     @media (min-width: 768px){ .how .cols{ align-items: flex-start; } }
     @media (min-width: 1024px){ .how .cols{ column-gap: 64px; } }
-    @media (min-width: 1024px){ #how .cols .col:first-child{ margin-top: 70px; } }
-    /* Divider position above PROFILE: add 15px more above divider */
-    .how { padding-bottom: 65px; }
-    @media (min-width: 768px) { .how { padding-bottom: 65px; } }
-    @media (min-width: 1280px) { .how { padding-bottom: 65px; } }
-    /* PROFILE: add 15px more below divider (top padding) */
-    .profile { padding-top: 39px; }
-    @media (min-width: 768px) { .profile { padding-top: 47px; } }
-    @media (min-width: 1280px) { .profile { padding-top: 55px; } }
-    /* Add 20px extra space between subheading and profile mock */
-    .profile .section-header{ padding-bottom: 20px; }
+    @media (min-width: 1024px){ #how .cols .col:first-child{ margin-top: 80px; } }
+    /* Match landingpage-cloned spacing around the PROFILE divider */
+    .how { padding-bottom: 48px; }
+    @media (min-width: 768px) { .how { padding-bottom: 64px; } }
+    @media (min-width: 1280px) { .how { padding-bottom: 80px; } }
+    /* PROFILE top padding (space below divider) */
+    .profile { padding-top: 48px; }
+    @media (min-width: 768px) { .profile { padding-top: 64px; } }
+    @media (min-width: 1280px) { .profile { padding-top: 80px; } }
     /* HOW mock: collapse layout to scaled size to remove large gap */
     :root{ --how-scale: 0.53648069; }
     #how .mock .mock-inner{
