@@ -95,12 +95,17 @@
     .how { padding-bottom: 28px; }
     @media (min-width: 768px) { .how { padding-bottom: 36px; } }
     @media (min-width: 1280px) { .how { padding-bottom: 44px; } }
+    /* FAQ: tighten top spacing and center header with mock */
+    .faq { padding-top: 20px; }
+    @media (min-width: 768px) { .faq { padding-top: 28px; } }
+    @media (min-width: 1280px) { .faq { padding-top: 36px; } }
+    .faq .section-header{ text-align: center; }
     /* PROFILE spacing: reduce space below mockup */
-    .profile { padding-top: 43px; padding-bottom: 18px; }
-    @media (min-width: 768px) { .profile { padding-top: 59px; padding-bottom: 30px; } }
-    @media (min-width: 1280px) { .profile { padding-top: 75px; padding-bottom: 42px; } }
+    .profile { padding-top: 43px; padding-bottom: 12px; }
+    @media (min-width: 768px) { .profile { padding-top: 59px; padding-bottom: 20px; } }
+    @media (min-width: 1280px) { .profile { padding-top: 75px; padding-bottom: 28px; } }
     /* Space between subheading and mock (tighter) */
-    .profile .section-header{ padding-bottom: 18px; }
+    .profile .section-header{ padding-bottom: 14px; }
     /* HOW mock: collapse layout to scaled size to remove large gap */
     :root{ --how-scale: 0.53648069; }
     #how .mock .mock-inner{
@@ -328,7 +333,107 @@
         track('mock_button_click', { key: data.key, meta: data.meta || {} });
       }
     }, { passive: true });
+    // Expose for other trackers on this page
+    try{ window.__track = track; }catch(_e){}
   })();
+</script>
+
+<script>
+  (function(){
+    var track = window.__track || function(){};
+
+    // Section dwell time (hero/how/profile/faq/join)
+    var sections = [
+      { el: document.querySelector('header.hero'), key: 'hero' },
+      { el: document.querySelector('#how'), key: 'how' },
+      { el: document.querySelector('#profile'), key: 'profile' },
+      { el: document.querySelector('#faq'), key: 'faq' },
+      { el: document.querySelector('#join'), key: 'join' }
+    ].filter(function(s){ return !!s.el; });
+    var visibleSinceByKey = {};
+    var io = new IntersectionObserver(function(entries){
+      entries.forEach(function(entry){
+        var key = entry.target.getAttribute('data-track-section');
+        if(entry.isIntersecting){
+          if(!visibleSinceByKey[key]) visibleSinceByKey[key] = Date.now();
+        } else {
+          if(visibleSinceByKey[key]){
+            var dur = Date.now() - visibleSinceByKey[key];
+            delete visibleSinceByKey[key];
+            track('section_dwell', { key: key, meta: { ms: dur } });
+          }
+        }
+      });
+    }, { threshold: 0.5 });
+    sections.forEach(function(s){ s.el.setAttribute('data-track-section', s.key); io.observe(s.el); });
+
+    // Scroll depth milestones
+    var firedDepth = { 25:false, 50:false, 75:false, 100:false };
+    function checkDepth(){
+      var scrollTop = window.pageYOffset || document.documentElement.scrollTop || 0;
+      var docHeight = Math.max(document.body.scrollHeight, document.documentElement.scrollHeight);
+      var winHeight = window.innerHeight || document.documentElement.clientHeight;
+      var percent = Math.min(100, Math.round(((scrollTop + winHeight) / docHeight) * 100));
+      [25,50,75,100].forEach(function(d){
+        if(!firedDepth[d] && percent >= d){ firedDepth[d] = true; track('scroll_depth', { key: String(d), meta: { percent: d } }); }
+      });
+    }
+    window.addEventListener('scroll', checkDepth, { passive: true });
+    window.addEventListener('load', checkDepth);
+
+    // Hover duration on trackable elements
+    var hoverStartByEl = new WeakMap();
+    function onEnter(e){ hoverStartByEl.set(e.currentTarget, Date.now()); }
+    function onLeave(e){
+      var start = hoverStartByEl.get(e.currentTarget);
+      var key = e.currentTarget.getAttribute('data-track') || e.currentTarget.id || (e.currentTarget.tagName || '').toLowerCase();
+      if(start){
+        var dur = Date.now() - start;
+        track('hover', { key: key, meta: { ms: dur } });
+        hoverStartByEl.delete(e.currentTarget);
+      }
+    }
+    document.querySelectorAll('[data-track]').forEach(function(el){
+      el.addEventListener('mouseenter', onEnter, { passive: true });
+      el.addEventListener('mouseleave', onLeave, { passive: true });
+    });
+
+    // FAQ open/close events
+    document.querySelectorAll('#faq details').forEach(function(d){
+      d.addEventListener('toggle', function(){
+        var sum = (d.querySelector('summary') && d.querySelector('summary').textContent) || '';
+        track('faq_toggle', { key: sum, meta: { open: d.open } });
+      });
+    });
+
+    // Nav clicks
+    document.querySelectorAll('.nav a').forEach(function(a){
+      a.addEventListener('click', function(){ track('nav_click', { key: a.getAttribute('href') || '' }); }, { passive: true });
+    });
+
+    // Outbound link clicks (new tab)
+    document.addEventListener('click', function(e){
+      var t = e.target && (e.target.closest ? e.target.closest('a[target="_blank"]') : null);
+      if(t){ track('outbound_click', { key: t.href }); }
+    }, { passive: true });
+
+    // Page dwell on unload
+    var pageStart = Date.now();
+    function flushDwell(){
+      Object.keys(visibleSinceByKey).forEach(function(key){
+        var started = visibleSinceByKey[key];
+        if(started){
+          var dur = Date.now() - started;
+          track('section_dwell', { key: key, meta: { ms: dur, end: true } });
+          delete visibleSinceByKey[key];
+        }
+      });
+      track('page_dwell', { key: 'all', meta: { ms: (Date.now() - pageStart) } });
+    }
+    window.addEventListener('pagehide', flushDwell);
+    window.addEventListener('beforeunload', flushDwell);
+  })();
+  
 </script>
 
 <style>
