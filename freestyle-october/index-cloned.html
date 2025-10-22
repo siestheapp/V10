@@ -83,8 +83,13 @@
       #how .steps li:nth-child(2).step-in{ transition-delay:.06s; }
       #how .steps li:nth-child(3).step-in{ transition-delay:.12s; }
     }
+    /* Align HOW section columns to the top (avoid vertical centering) */
+    @media (min-width: 768px){ .how .cols{ align-items: flex-start; } }
+    @media (min-width: 1024px){ .how .cols{ column-gap: 64px; } }
+    @media (min-width: 1024px){ #how .mock .mock-inner{ margin-top: -48px; } }
+    @media (min-width: 1024px){ #how .cols .col:first-child{ margin-top: 60px; } }
     /* Prevent bottom clip on closet mock without changing size */
-    .how .mock .mock-inner{ padding-bottom: 14px; }
+    .how .mock .mock-inner{ padding-bottom: 6px; overflow: visible; }
     #how .mock .mock-inner iframe{
       -webkit-transform: scale(0.53648069) translateY(1px);
               transform: scale(0.53648069) translateY(1px);
