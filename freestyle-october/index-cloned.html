@@ -86,28 +86,33 @@
     /* Align HOW section columns to the top (avoid vertical centering) */
     @media (min-width: 768px){ .how .cols{ align-items: flex-start; } }
     @media (min-width: 1024px){ .how .cols{ column-gap: 64px; } }
-    @media (min-width: 1024px){ #how .mock .mock-inner{ margin-top: -48px; } }
-    @media (min-width: 1024px){ #how .cols .col:first-child{ margin-top: 60px; } }
-    /* Prevent bottom clip on closet mock without changing size */
-    .how .mock .mock-inner{ padding-bottom: 6px; overflow: visible; }
+    @media (min-width: 1024px){ #how .cols .col:first-child{ margin-top: 80px; } }
+    /* Divider position above PROFILE: move slightly down via padding */
+    .how { padding-bottom: 50px; }
+    @media (min-width: 768px) { .how { padding-bottom: 50px; } }
+    @media (min-width: 1280px) { .how { padding-bottom: 50px; } }
+    /* Trim top padding on PROFILE to remove big gap */
+    .profile { padding-top: 24px; }
+    @media (min-width: 768px) { .profile { padding-top: 32px; } }
+    @media (min-width: 1280px) { .profile { padding-top: 40px; } }
+    /* HOW mock: collapse layout to scaled size to remove large gap */
+    :root{ --how-scale: 0.53648069; }
+    #how .mock .mock-inner{
+      width: calc(430px * var(--how-scale));
+      height: calc(987px * var(--how-scale));
+      padding-bottom: 0;
+      overflow: visible;
+    }
     #how .mock .mock-inner iframe{
-      -webkit-transform: scale(0.53648069) translateY(1px);
-              transform: scale(0.53648069) translateY(1px);
+      width: 430px;
+      height: 987px;
       -webkit-transform-origin: top left;
               transform-origin: top left;
+      -webkit-transform: scale(var(--how-scale)) translateY(0);
+              transform: scale(var(--how-scale)) translateY(0);
     }
-    @media (min-width: 375px){
-      #how .mock .mock-inner iframe{
-        -webkit-transform: scale(0.62790698) translateY(1px);
-                transform: scale(0.62790698) translateY(1px);
-      }
-    }
-    @media (min-width: 390px){
-      #how .mock .mock-inner iframe{
-        -webkit-transform: scale(0.69767442) translateY(1px);
-                transform: scale(0.69767442) translateY(1px);
-      }
-    }
+    @media (min-width: 375px){ :root{ --how-scale: 0.62790698; } }
+    @media (min-width: 390px){ :root{ --how-scale: 0.69767442; } }
   </style>
 </head>
 <body>
@@ -337,6 +342,43 @@
     }, { passive: true });
   })();
 </script>
+
+<style>
+  /* --- Fix: ensure scaled phone fits entirely --- */
+  /* never clip in/around the HOW mock */
+  #how, #how .cols, #how .col, #how .mock, #how .mock .mock-inner {
+    overflow: visible !important;
+  }
+
+  /* give the container extra room for sub-pixel rounding */
+  #how .mock .mock-inner{
+    height: calc(987px * var(--how-scale)) !important;
+    padding-bottom: 0 !important;
+    position: relative;
+    z-index: 3;
+    overflow: visible !important;
+    margin-top: -35px !important;
+  }
+
+  /* Desktop: move up an additional 5px */
+  @media (min-width: 1024px){
+    #how .mock .mock-inner{
+      margin-top: -45px !important;
+    }
+  }
+
+  /* remove the downward nudge so the frame stays inside the box */
+  #how .mock .mock-inner iframe{
+    width: 430px;
+    height: 987px;
+    -webkit-transform-origin: top left;
+            transform-origin: top left;
+    -webkit-transform: scale(var(--how-scale)) translateY(0) !important;
+            transform: scale(var(--how-scale)) translateY(0) !important;
+    display: block;
+    border-radius: 55px;
+  }
+</style>
 
 <script>
   (function(){
