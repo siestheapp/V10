@@ -5,248 +5,155 @@
   <meta http-equiv="X-UA-Compatible" content="IE=edge">
   <meta name="viewport" content="width=device-width, initial-scale=1">
 
-  <title>Proxi — Online Shopping Is a Group Project</title>
-  <meta name="description" content="See how clothes fit on people like you. Shop with confidence using real fit data from your community.">
+  <title>Sies — In Your Size • Join the Waitlist</title>
+  <meta name="description" content="Sies predicts your best-fitting size across brands using the clothes you already own. Join the waitlist to get early access.">
   <meta name="copyright" content="Copyright © 2025 Sean Davey. All rights reserved.">
   <meta name="author" content="Sean Davey">
 
-  <meta property="og:site_name" content="Proxi">
-  <meta property="og:title" content="Proxi — Online Shopping Is a Group Project">
-  <meta property="og:description" content="See how clothes fit on people like you. Shop with confidence using real fit data from your community.">
-  <meta property="og:type" content="website">
-  <meta property="og:url" content="https://proxitheapp.com">
+  <meta property="og:site_name" content="Sies by Sean Davey">
 
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
-
   <link rel="stylesheet" href="freestyle-tokens.css">
   <link rel="stylesheet" href="assets/css/style.css">
   <style>
-    /* Fallback tokens in case the external tokens file fails to load */
-    :root{
-      --petrol-600:#009090; --petrol-500:#00A3A3; --petrol-400:#16B5B5;
-      --canvas-100:#E9EEF1; --ink-900:#0B0F14; --ink-500:#2A3642;
-      --brand-sheen: linear-gradient(135deg,#009090 0%,#1FAED9 42%,#00A3A3 62%,#35D1AE 100%);
-    }
-    /* Freestyle overrides for branding without rebuilding CSS */
     .header .logo a,
     .header .logo{background:var(--brand-sheen);-webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent;text-decoration:none}
-    .brand-text{background:var(--brand-sheen);-webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent}
-    .btn{background:var(--petrol-500, #00A3A3);color:#fff;border:1px solid var(--petrol-400, #16B5B5)}
-    .btn:hover{background:var(--petrol-600, #009090)}
-    .section-title{border-bottom-color:var(--canvas-100, #E9EEF1)}
-
-    /* Inputs & forms */
-    .form-input{border:1px solid var(--canvas-100)}
-    .form-input:focus{outline:2px solid var(--ice-300);outline-offset:2px;border-color:var(--petrol-500)}
-
-    /* Copy colors for hierarchy */
-    .section-heading{color:var(--ink-900, #0B0F14)}
-    .section-subheading{color:var(--ink-500, #2A3642)}
-
-    /* Nav & links */
-    .nav a:hover{color:var(--petrol-500)}
-
-    /* FAQ details */
-    #faq summary{color:var(--ink-900)}
-    #faq details:hover summary{color:var(--petrol-500)}
-    /* Override the purple bullet to match teal numbers */
-    #faq .faq-list details summary::before{background:linear-gradient(135deg, var(--petrol-600, #009090), #35D1AE); box-shadow:0 4px 12px rgba(0,163,163,.22)}
-
-    /* Tighten site header height and reduce top spacing */
     .header{padding:.5em 0}
     @media (min-width:1280px){ .header{padding-top:.75em} }
     .header .logo{font-size:2em;line-height:1;font-weight:600;letter-spacing:-.01em}
     @media (min-width:1280px){ .header .logo{font-size:2.2em} }
     @media (prefers-contrast: more){ .header .logo a, .header .logo{background:none;-webkit-text-fill-color:#0B0F14;-webkit-text-stroke:0;text-shadow:none;color:#0B0F14} }
-    .page{padding-top:36px}
 
-    /* Slightly reduce hero video mock size for extra breathing room */
-    .hero .mock.video .mock-inner{transform:scale(0.97);transform-origin:top right;margin-top:-24px}
-    /* Slightly enlarge unified feed mock to match prior hero video presence */
-    .hero .mock.unified .mock-inner{transform:scale(1.00);transform-origin:top right}
-    /* Slightly reduce large closet mock in HOW section (same proportions) */
-    .how .mock .mock-inner{transform:scale(0.985);transform-origin:top right; margin-top: 0}
-
-    /* HOW: hierarchy + rhythm */
-    .how .how-heading { letter-spacing: -0.01em; }
-    .how .how-arrow { color: #A3AFBA; }                /* lighter arrow for clarity */
-
-    /* Remove native markers completely */
-    .steps { 
-      list-style: none !important; 
-      padding-left: 0 !important; 
-      margin-left: 0 !important;
-      margin-top: 12px; 
-    }
-    .steps .step { 
-      display:flex; 
-      gap:14px; 
-      align-items:flex-start; 
-      padding:18px 0; 
-      list-style: none !important;
-    }
-    .steps .step + .step { border-top:1px solid rgba(0,0,0,0.05); }   /* subtle divider */
-    .steps .step-title { margin:0 0 4px; }
-    .steps .step-copy { margin:0; color:var(--ink-500,#2A3642); }
-
-    /* Simple badge styling with hard-coded numbers - no pseudo-elements */
-    .step-badge {
-      flex: 0 0 28px;
-      height: 28px;
-      border-radius: 999px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      font-weight: 600;
-      font-size: 14px;
-      color: #fff;
-      background: linear-gradient(135deg, var(--petrol-600,#009090), #35D1AE);
-      box-shadow: 0 6px 18px rgba(0,163,163,.18);
-      font-family: inherit !important;
-      position: static;
-      z-index: auto;
-    }
-    
-    /* Completely disable any pseudo-elements that might be injecting content */
-    .step-badge::before,
-    .step-badge::after {
-      display: none !important;
-      content: none !important;
-    }
-    .step-body{ flex:1; }
-
-    /* Slightly more breathing room between steps list and right mock on large screens */
-    @media (min-width: 1024px){
-      .how .cols { column-gap: 64px; }
-    }
-    /* Top-align the text column with the phone on desktop */
-    @media (min-width: 768px){
-      .how .cols { align-items: flex-start; }
-    }
-    /* Lift the phone mock by 30px on desktop to center with list */
-    @media (min-width: 1024px){
-      .how .mock.mock-how .mock-inner{ margin-top: -48px; }
-    }
-
-    /* Right mock: reduce dominance (reads as supporting visual) */
-    .how .mock.mock-how .mock-inner{
-      position: relative;
-      filter: none;
-      background: transparent;
-      /* clip the iframe to prevent extra space */
+    /* Match landingpage-cloned hero video dimensions */
+    .hero .mock.video .mock-inner{
+      width: calc(231px * 1.01);
+      max-width: 100%;
+      border-radius: 30px;
+      margin: -33px auto 0;
+      aspect-ratio: 430/932;
       overflow: hidden;
-      aspect-ratio: auto;
-      height: 1000px;
-      max-height: 700px;
-      padding-bottom: 200px;
-    }
-    .how .mock.mock-how .mock-inner iframe{
+      position: relative;
+      z-index: 1;
       background: transparent;
-      -webkit-transform: scale(0.525);
-              transform: scale(0.525);
+      -webkit-box-shadow: 0 16px 48px -8px rgba(0, 0, 0, 0.1);
+              box-shadow: 0 16px 48px -8px rgba(0, 0, 0, 0.1);
+      pointer-events: none;
     }
-    /* Make profile mock match closet mock proportions */
-    .profile .mock.mock-profile .mock-inner iframe{ -webkit-transform: scale(0.525); transform: scale(0.525); }
-    @media (min-width: 375px){ .profile .mock.mock-profile .mock-inner iframe{ -webkit-transform: scale(0.615); transform: scale(0.615); } }
-    @media (min-width: 390px){ .profile .mock.mock-profile .mock-inner iframe{ -webkit-transform: scale(0.685); transform: scale(0.685); } }
     @media (min-width: 375px){
-      .how .mock.mock-how .mock-inner iframe{ -webkit-transform: scale(0.615); transform: scale(0.615); }
+      .hero .mock.video .mock-inner{ width: calc(270px * 1.01); border-radius: 33px; }
     }
     @media (min-width: 390px){
-      .how .mock.mock-how .mock-inner iframe{ -webkit-transform: scale(0.685); transform: scale(0.685); }
+      .hero .mock.video .mock-inner{ width: calc(300px * 1.01); border-radius: 38px; }
     }
-
-    /* Profile mock: same sizing as closet screen */
-    .profile .mock.mock-profile .mock-inner{
+    .hero .mock.video a.mock-inner{ display:block; pointer-events:auto !important; cursor:pointer; }
+    .hero .mock.video video{
+      width: 100%;
+      height: 100%;
+      -o-object-fit: cover;
+         object-fit: cover;
       position: relative;
-      filter: none;
-      background: transparent;
-      overflow: hidden;
-      aspect-ratio: auto;
-      height: 670px;
-      max-height: 670px;
-      padding-top:30px;
+      z-index: 1;
+      -webkit-transform: scale(1.011) translateY(1px);
+              transform: scale(1.011) translateY(1px);
+      -webkit-transform-origin: center;
+              transform-origin: center;
+    }
+    /* Ensure the entire phone frame (black outline) is visible */
+    .hero .mock.video video{
+      -webkit-transform: none;
+              transform: none;
+      -o-object-fit: contain;
+         object-fit: contain;
+    }
+    /* Button color to match freestyle-october */
+    .btn{background:var(--petrol-500, #00A3A3);color:#fff;border:1px solid var(--petrol-400, #16B5B5)}
+    .btn:hover{background:var(--petrol-600, #009090)}
+    /* FAQ: adopt same overrides as index.html */
+    #faq summary{color:var(--ink-900, #0B0F14)}
+    #faq details:hover summary{color:var(--petrol-500, #00A3A3)}
+    #faq .faq-list details summary::before{background:linear-gradient(135deg, var(--petrol-600, #009090), #35D1AE); box-shadow:0 4px 12px rgba(0,163,163,.22)}
+    /* Steps badges: match freestyle-october teal gradient */
+    .steps li::before{
+      background: linear-gradient(135deg, var(--petrol-600, #009090), #35D1AE);
+      -webkit-box-shadow: 0 6px 18px rgba(0,163,163,.18);
+              box-shadow: 0 6px 18px rgba(0,163,163,.18);
+    }
+    /* Scroll-in effect for steps (match freestyle-october) */
+    @media (prefers-reduced-motion: no-preference){
+      #how .steps li{ opacity:0; -webkit-transform: translateY(6px); transform: translateY(6px); }
+      #how .steps li.step-in{ opacity:1; -webkit-transform:none; transform:none; transition: opacity .28s ease, transform .28s ease; }
+      #how .steps li:nth-child(2).step-in{ transition-delay:.06s; }
+      #how .steps li:nth-child(3).step-in{ transition-delay:.12s; }
+    }
+    /* Align HOW section columns to the top (avoid vertical centering) */
+    @media (min-width: 768px){ .how .cols{ align-items: flex-start; } }
+    @media (min-width: 1024px){ .how .cols{ column-gap: 64px; } }
+    @media (min-width: 1024px){ #how .cols .col:first-child{ margin-top: 80px; } }
+    /* Match landingpage-cloned spacing around the PROFILE divider */
+    .how { padding-bottom: 28px; }
+    @media (min-width: 768px) { .how { padding-bottom: 36px; } }
+    @media (min-width: 1280px) { .how { padding-bottom: 44px; } }
+    /* FAQ: tighten top spacing and center header with mock */
+    .faq { padding-top: 20px; }
+    @media (min-width: 768px) { .faq { padding-top: 28px; } }
+    @media (min-width: 1280px) { .faq { padding-top: 36px; } }
+    .faq .section-header{ text-align: center; }
+    /* PROFILE spacing: reduce space below mockup */
+    .profile { padding-top: 43px; padding-bottom: 12px; }
+    @media (min-width: 768px) { .profile { padding-top: 59px; padding-bottom: 20px; } }
+    @media (min-width: 1280px) { .profile { padding-top: 75px; padding-bottom: 28px; } }
+    /* Space between subheading and mock (tighter) */
+    .profile .section-header{ padding-bottom: 14px; }
+    /* HOW mock: collapse layout to scaled size to remove large gap */
+    :root{ --how-scale: 0.53648069; }
+    #how .mock .mock-inner{
+      width: calc(430px * var(--how-scale));
+      height: calc(987px * var(--how-scale));
       padding-bottom: 0;
+      overflow: visible;
     }
-    .profile .mock.mock-profile .mock-inner iframe{
-      background: transparent !important;
-      border-radius: 40px;
-      -webkit-mask-image: radial-gradient(circle at 0 0, transparent 0, transparent 38px, #000 40px),
-                           radial-gradient(circle at 100% 0, transparent 0, transparent 38px, #000 40px),
-                           radial-gradient(circle at 0 100%, transparent 0, transparent 38px, #000 40px),
-                           radial-gradient(circle at 100% 100%, transparent 0, transparent 38px, #000 40px);
-              mask-image: radial-gradient(circle at 0 0, transparent 0, transparent 38px, #000 40px),
-                           radial-gradient(circle at 100% 0, transparent 0, transparent 38px, #000 40px),
-                           radial-gradient(circle at 0 100%, transparent 0, transparent 38px, #000 40px),
-                           radial-gradient(circle at 100% 100%, transparent 0, transparent 38px, #000 40px);
+    #how .mock .mock-inner iframe{
+      width: 430px;
+      height: 987px;
+      -webkit-transform-origin: top left;
+              transform-origin: top left;
+      -webkit-transform: scale(var(--how-scale)) translateY(0);
+              transform: scale(var(--how-scale)) translateY(0);
     }
-    .profile .mock.mock-profile{
-      background: transparent;
+    /* PROFILE mock: match HOW mock proportions and framing */
+    #profile .mock .mock-inner{
+      width: calc(430px * var(--how-scale));
+      height: calc(987px * var(--how-scale));
+      padding-bottom: 0;
+      overflow: visible;
+      margin: 0 auto; /* ensure perfect horizontal centering */
     }
-    .profile{
-      background: transparent;
+    /* Center the mock container explicitly */
+    #profile .mock{ display:flex; justify-content:center; }
+    #profile .mock .mock-inner iframe{
+      width: 430px;
+      height: 987px;
+      -webkit-transform-origin: top left;
+              transform-origin: top left;
+      -webkit-transform: scale(var(--how-scale)) translateY(0);
+              transform: scale(var(--how-scale)) translateY(0);
     }
-    @media (min-width: 768px) and (max-width: 991.98px) {
-      .profile .mock.mock-profile .mock-inner {
-        width: 270px;
-        border-radius: 33px;
-      }
+    @media (min-width: 375px){ :root{ --how-scale: 0.62790698; } }
+    @media (min-width: 390px){ :root{ --how-scale: 0.69767442; } }
+  </style>
+  <style>
+    /* Restore roomier spacing on mobile only */
+    @media (max-width: 767.98px){
+      .header{ padding: 0.75em 0; }
+      .mock-inner{ margin: 0 auto; }
+      .hero .mock.video .mock-inner{ margin: 0 auto; }
     }
-    .profile .mock.mock-profile .mock-inner iframe{
-      background: transparent;
-      -webkit-transform: scale(0.525);
-              transform: scale(0.525);
-    }
-    @media (min-width: 375px){
-      .profile .mock.mock-profile .mock-inner iframe{ -webkit-transform: scale(0.615); transform: scale(0.615); }
-    }
-    @media (min-width: 390px){
-      .profile .mock.mock-profile .mock-inner iframe{ -webkit-transform: scale(0.685); transform: scale(0.685); }
-    }
-
-     /* Gentle stagger-in for steps (optional, respects reduced motion) */
-     @media (prefers-reduced-motion: no-preference){
-       .steps .step{ opacity:0; transform: translateY(6px); }
-       .steps .step.step-in{ opacity:1; transform: none; transition: opacity .28s ease, transform .28s ease; }
-       .steps .step:nth-child(2).step-in{ transition-delay:.06s; }
-       .steps .step:nth-child(3).step-in{ transition-delay:.12s; }
-     }
-
-     /* Ensure steps are visible even if intersection observer doesn't fire */
-     #how .steps .step{ opacity:1; transform:none; }
-
-     /* Reduce spacing between how and profile sections */
-     .how { padding-bottom: 24px; }
-     @media (min-width: 768px) { .how { padding-bottom: 32px; } }
-     @media (min-width: 1280px) { .how { padding-bottom: 40px; } }
-     
-     .profile { padding-top: 24px; }
-     @media (min-width: 768px) { .profile { padding-top: 32px; } }
-     @media (min-width: 1280px) { .profile { padding-top: 40px; } }
-
-     /* Hard-kill any decorative pseudo on the list item itself */
-     .steps .step::before,
-     .steps .step::after {
-       content: none !important;
-       display: none !important;
-       width: 0 !important;
-       height: 0 !important;
-       background: none !important;
-       background-image: none !important;
-       -webkit-mask-image: none !important;
-       mask-image: none !important;
-       border: 0 !important;
-       box-shadow: none !important;
-     }
-
-     /* Keep our own badge + number rendering */
-     .steps { list-style: none; padding-left: 0; counter-reset: step; }
-     .steps .step { counter-increment: step; }
-     .step-badge { /* your existing badge styles remain */ }
-     .step-badge .step-num::before { content: counter(step); }
-
+  </style>
+  <style>
+    /* Move entire HOW section up globally by 10px */
+    #how{ margin-top: -10px; }
   </style>
 </head>
 <body>
@@ -265,7 +172,7 @@
   <div class="container">
 
     <!-- HERO -->
-      <header class="hero">
+    <header class="hero">
       <div class="cols">
         <div class="col">
           <header class="section-header">
@@ -280,7 +187,7 @@
               <input class="form-input" type="email" name="email" placeholder="Enter your email" required inputmode="email" autocomplete="email" autocapitalize="off" spellcheck="false">
               <button class="btn" type="submit">Get early access &rarr;</button>
             </div>
-            <small class="form-note" style="display:block; margin-top:0.5rem; margin-left:18px">Join 1,000+ early users</small>
+            <small class="form-note">Join 1,000+ early users</small>
           </form>
         </div>
         <div class="col">
@@ -303,41 +210,25 @@
         <div class="col">
           <header class="section-header">
             <p class="section-title">How it works</p>
-            <!-- Clearer transformation headline -->
-            <h2 id="section-heading" class="how-heading">
-              From your closet <span class="how-arrow">→</span> your proxies
-            </h2>
+            <h2 id="section-heading">From your closet &rarr; your proxies</h2>
           </header>
-
           <ol class="steps">
-            <li class="step">
-              <span class="step-badge" aria-hidden="true">1</span>
-              <div class="step-body">
-                <p class="step-title"><strong>Add a few pieces</strong></p>
-                <p class="step-copy">Add 1–3 pieces you already own to your Closet — we'll use their exact size and brand to map your fit.</p>
-              </div>
+            <li>
+              <p class="step-title"><strong>Add a few pieces</strong></p>
+              <p>Add 1–3 pieces you already own to your Closet — we'll use their exact size and brand to map your fit.</p>
             </li>
-
-            <li class="step">
-              <span class="step-badge" aria-hidden="true">2</span>
-              <div class="step-body">
-                <p class="step-title"><strong>Meet your proxies</strong></p>
-                <p class="step-copy">We find people who wear the same pieces and sizes as you — and show what fits them in other brands and styles.</p>
-              </div>
+            <li>
+              <p class="step-title"><strong>Meet your proxies</strong></p>
+              <p>We find people who wear the same pieces and sizes as you — and show what fits them in other brands and styles.</p>
             </li>
-
-            <li class="step">
-              <span class="step-badge" aria-hidden="true">3</span>
-              <div class="step-body">
-                <p class="step-title"><strong>Shop with confidence</strong></p>
-                <p class="step-copy">See your recommended size and real-world fit notes — from people who wear what you do.</p>
-              </div>
+            <li>
+              <p class="step-title"><strong>Shop with confidence</strong></p>
+              <p>See your recommended size and real-world fit notes — from people who wear what you do.</p>
             </li>
           </ol>
         </div>
-
         <div class="col">
-          <div class="mock mock-how" aria-hidden="true">
+          <div class="mock" aria-hidden="true">
             <div class="mock-inner" data-track="how-closet-mock">
               <iframe src="assets/iframe/closet-screen.html?v=1" title="Closet mockup" loading="lazy"></iframe>
             </div>
@@ -350,17 +241,19 @@
     <section id="profile" class="section profile">
       <header class="section-header">
         <p class="section-title">Your fit profile</p>
-        <h2 class="section-heading">See your fit across every brand</h2>
+        <h2 class="section-heading">Your closet, brought to life</h2>
         <p class="section-subheading">Every piece you add makes your profile smarter.</p>
       </header>
-      <div class="mock mock-profile" aria-hidden="true">
+      <div class="mock" aria-hidden="true">
         <div class="mock-inner" data-track="profile-mock">
-              <iframe src="assets/iframe/profile-screen.html?v=2" title="Profile mockup" loading="lazy"></iframe>
+          <iframe src="assets/iframe/profile-screen.html?v=2" title="Profile mockup" loading="lazy"></iframe>
         </div>
       </div>
     </section>
 
-    <!-- FAQ -->
+    
+
+    <!-- FAQ (copied from index.html) -->
     <section id="faq" class="section faq">
       <div class="wrapper">
         <header class="section-header">
@@ -401,7 +294,7 @@
           <input class="form-input" type="email" name="email" placeholder="Enter your email" required inputmode="email" autocomplete="email" autocapitalize="off" spellcheck="false">
           <button class="btn" type="submit">Get early access &rarr;</button>
         </div>
-        <small class="form-note" style="display:block; margin-top:0.5rem; margin-left:18px">Join 1,000+ early users</small>
+        <small class="form-note">Join 1,000+ early users</small>
       </form>
     </section>
 
@@ -410,9 +303,7 @@
 
 <footer class="footer">
   <div class="container">
-    <p class="copyright">
-      &copy; 2025 Oona Holdings LLC &nbsp;&nbsp;|&nbsp;&nbsp; <a href="privacy-policy.html" style="color:inherit;text-decoration:underline">Privacy Policy</a>
-    </p>
+    <p class="copyright">&copy; 2025 Oona Holdings LLC &nbsp;&nbsp;|&nbsp;&nbsp; <a href="privacy-policy.html" style="color:inherit;text-decoration:underline">Privacy Policy</a></p>
   </div>
 </footer>
 
@@ -420,15 +311,53 @@
   // Simple analytics tracker for mockup clicks (sends to Formspree)
   (function () {
     const COLLECT_URL = 'https://formspree.io/f/meorpayo';
+    const START_TS = Date.now();
+
+    function uuid(){ try{ return (crypto && crypto.randomUUID && crypto.randomUUID()) || '' }catch(_e){ return '' } }
+
+    // Persist a lightweight session id for correlation
+    var SESSION_ID = sessionStorage.getItem('sess_id');
+    if(!SESSION_ID){ SESSION_ID = uuid() || String(Math.random()).slice(2); sessionStorage.setItem('sess_id', SESSION_ID); }
+
+    function getUtm(){
+      try{ var cached = sessionStorage.getItem('utm_cache'); if(cached){ return JSON.parse(cached); } }catch(_e){}
+      var p = new URLSearchParams(location.search || '');
+      var utm = {
+        source: p.get('utm_source') || '',
+        medium: p.get('utm_medium') || '',
+        campaign: p.get('utm_campaign') || '',
+        term: p.get('utm_term') || '',
+        content: p.get('utm_content') || ''
+      };
+      try{ sessionStorage.setItem('utm_cache', JSON.stringify(utm)); }catch(_e){}
+      return utm;
+    }
+    var UTM = getUtm();
 
     function track(eventName, detail) {
       try {
         if(!navigator.sendBeacon) return;
+        var baseMeta = (detail && detail.meta) || {};
+        var meta = Object.assign({}, baseMeta, {
+          utm: UTM,
+          referrer: document.referrer || '',
+          session: SESSION_ID
+        });
         const fd = new FormData();
         fd.append('type', eventName);
         fd.append('key', (detail && detail.key) || '');
-        fd.append('meta', JSON.stringify((detail && detail.meta) || {}));
+        fd.append('meta', JSON.stringify(meta));
         fd.append('path', location.pathname);
+        fd.append('url', location.href);
+        fd.append('referrer', document.referrer || '');
+        fd.append('session', SESSION_ID);
+        if(UTM && (UTM.source || UTM.medium || UTM.campaign || UTM.term || UTM.content)){
+          if(UTM.source) fd.append('utm_source', UTM.source);
+          if(UTM.medium) fd.append('utm_medium', UTM.medium);
+          if(UTM.campaign) fd.append('utm_campaign', UTM.campaign);
+          if(UTM.term) fd.append('utm_term', UTM.term);
+          if(UTM.content) fd.append('utm_content', UTM.content);
+        }
         fd.append('ts', String(Date.now()));
         fd.append('_subject', 'Proxi click');
         navigator.sendBeacon(COLLECT_URL, fd);
@@ -454,6 +383,170 @@
         track('mock_button_click', { key: data.key, meta: data.meta || {} });
       }
     }, { passive: true });
+    // Expose for other trackers on this page
+    try{ window.__track = track; }catch(_e){}
+    // Initial view + heartbeat
+    try{ track('page_view', { key: 'landing', meta: { url: location.href } }); }catch(_e){}
+    var __hbId = null;
+    function __startHb(){ if(__hbId) return; __hbId = setInterval(function(){ track('heartbeat', { key: 'landing', meta: { ms: Date.now() - START_TS, vis: document.visibilityState } }); }, 20000); }
+    function __stopHb(){ if(__hbId){ clearInterval(__hbId); __hbId = null; } }
+    __startHb();
+    document.addEventListener('visibilitychange', function(){ if(document.visibilityState === 'hidden'){ __stopHb(); } else { __startHb(); } });
+    window.addEventListener('pagehide', function(){ track('heartbeat_final', { key: 'landing', meta: { ms: Date.now() - START_TS } }); }, { passive: true });
+  })();
+</script>
+
+<script>
+  (function(){
+    var track = window.__track || function(){};
+
+    // Section dwell time (hero/how/profile/faq/join)
+    var sections = [
+      { el: document.querySelector('header.hero'), key: 'hero' },
+      { el: document.querySelector('#how'), key: 'how' },
+      { el: document.querySelector('#profile'), key: 'profile' },
+      { el: document.querySelector('#faq'), key: 'faq' },
+      { el: document.querySelector('#join'), key: 'join' }
+    ].filter(function(s){ return !!s.el; });
+    var visibleSinceByKey = {};
+    var io = new IntersectionObserver(function(entries){
+      entries.forEach(function(entry){
+        var key = entry.target.getAttribute('data-track-section');
+        if(entry.isIntersecting){
+          if(!visibleSinceByKey[key]) visibleSinceByKey[key] = Date.now();
+        } else {
+          if(visibleSinceByKey[key]){
+            var dur = Date.now() - visibleSinceByKey[key];
+            delete visibleSinceByKey[key];
+            track('section_dwell', { key: key, meta: { ms: dur } });
+          }
+        }
+      });
+    }, { threshold: 0.5 });
+    sections.forEach(function(s){ s.el.setAttribute('data-track-section', s.key); io.observe(s.el); });
+
+    // Scroll depth milestones
+    var firedDepth = { 25:false, 50:false, 75:false, 100:false };
+    function checkDepth(){
+      var scrollTop = window.pageYOffset || document.documentElement.scrollTop || 0;
+      var docHeight = Math.max(document.body.scrollHeight, document.documentElement.scrollHeight);
+      var winHeight = window.innerHeight || document.documentElement.clientHeight;
+      var percent = Math.min(100, Math.round(((scrollTop + winHeight) / docHeight) * 100));
+      [25,50,75,100].forEach(function(d){
+        if(!firedDepth[d] && percent >= d){ firedDepth[d] = true; track('scroll_depth', { key: String(d), meta: { percent: d } }); }
+      });
+    }
+    window.addEventListener('scroll', checkDepth, { passive: true });
+    window.addEventListener('load', checkDepth);
+
+    // Hover duration on trackable elements
+    var hoverStartByEl = new WeakMap();
+    function onEnter(e){ hoverStartByEl.set(e.currentTarget, Date.now()); }
+    function onLeave(e){
+      var start = hoverStartByEl.get(e.currentTarget);
+      var key = e.currentTarget.getAttribute('data-track') || e.currentTarget.id || (e.currentTarget.tagName || '').toLowerCase();
+      if(start){
+        var dur = Date.now() - start;
+        track('hover', { key: key, meta: { ms: dur } });
+        hoverStartByEl.delete(e.currentTarget);
+      }
+    }
+    document.querySelectorAll('[data-track]').forEach(function(el){
+      el.addEventListener('mouseenter', onEnter, { passive: true });
+      el.addEventListener('mouseleave', onLeave, { passive: true });
+    });
+
+    // FAQ open/close events
+    document.querySelectorAll('#faq details').forEach(function(d){
+      d.addEventListener('toggle', function(){
+        var sum = (d.querySelector('summary') && d.querySelector('summary').textContent) || '';
+        track('faq_toggle', { key: sum, meta: { open: d.open } });
+      });
+    });
+
+    // Nav clicks
+    document.querySelectorAll('.nav a').forEach(function(a){
+      a.addEventListener('click', function(){ track('nav_click', { key: a.getAttribute('href') || '' }); }, { passive: true });
+    });
+
+    // Outbound link clicks (new tab)
+    document.addEventListener('click', function(e){
+      var t = e.target && (e.target.closest ? e.target.closest('a[target="_blank"]') : null);
+      if(t){ track('outbound_click', { key: t.href }); }
+    }, { passive: true });
+
+    // Page dwell on unload
+    var pageStart = Date.now();
+    function flushDwell(){
+      Object.keys(visibleSinceByKey).forEach(function(key){
+        var started = visibleSinceByKey[key];
+        if(started){
+          var dur = Date.now() - started;
+          track('section_dwell', { key: key, meta: { ms: dur, end: true } });
+          delete visibleSinceByKey[key];
+        }
+      });
+      track('page_dwell', { key: 'all', meta: { ms: (Date.now() - pageStart) } });
+    }
+    window.addEventListener('pagehide', flushDwell);
+    window.addEventListener('beforeunload', flushDwell);
+  })();
+  
+</script>
+
+<style>
+  /* --- Fix: ensure scaled phone fits entirely --- */
+  /* never clip in/around the HOW mock */
+  #how, #how .cols, #how .col, #how .mock, #how .mock .mock-inner {
+    overflow: visible !important;
+  }
+
+  /* give the container extra room for sub-pixel rounding */
+  #how .mock .mock-inner{
+    height: calc(987px * var(--how-scale)) !important;
+    padding-bottom: 0 !important;
+    position: relative;
+    z-index: 3;
+    overflow: visible !important;
+    margin-top: -35px !important;
+  }
+
+  /* Desktop: move up an additional 5px and 1px to the left */
+  @media (min-width: 1024px){
+    #how .mock .mock-inner{
+      margin-top: -45px !important;
+      margin-left: 70px !important;
+    }
+  }
+
+  /* remove the downward nudge so the frame stays inside the box */
+  #how .mock .mock-inner iframe{
+    width: 430px;
+    height: 987px;
+    -webkit-transform-origin: top left;
+            transform-origin: top left;
+    -webkit-transform: scale(var(--how-scale)) translateY(0) !important;
+            transform: scale(var(--how-scale)) translateY(0) !important;
+    display: block;
+    border-radius: 55px;
+  }
+</style>
+<style>
+  /* Mobile-only: neutralize negative top margin on HOW mock */
+  @media (max-width: 767.98px){
+    #how .mock .mock-inner{ margin-top: 0 !important; }
+  }
+</style>
+
+<script>
+  (function(){
+    if (window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+    var steps = document.querySelectorAll('#how .steps li');
+    if(!steps.length) return;
+    var io = new IntersectionObserver((entries)=>{
+      entries.forEach(e=>{ if(e.isIntersecting){ e.target.classList.add('step-in'); } });
+    }, { rootMargin: '0px 0px -20% 0px', threshold: 0.1 });
+    steps.forEach(s=> io.observe(s));
   })();
 </script>
 
@@ -578,32 +671,9 @@
     });
   })();
 </script>
-<script>
-  (function(){
-    var logoLink = document.querySelector('.header .logo a');
-    if(logoLink){
-      logoLink.addEventListener('click', function(e){
-        e.preventDefault();
-        try{ window.scrollTo({ top: 0, behavior: 'smooth' }); }
-        catch(err){ window.scrollTo(0,0); }
-      }, { passive: true });
-    }
-  })();
-</script>
-<script>
-  (function(){
-    if (window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
-    var steps = document.querySelectorAll('#how .steps .step');
-    if(!steps.length) return;
-    var io = new IntersectionObserver((entries)=>{
-      entries.forEach(e=>{
-        if(e.isIntersecting){ e.target.classList.add('step-in'); }
-      });
-    }, { rootMargin: '0px 0px -20% 0px', threshold: 0.1 });
-    steps.forEach(s=> io.observe(s));
-  })();
-</script>
 <script defer src="/_vercel/insights/script.js"></script>
 <script>window.va = window.va || function(){(window.vaq = window.vaq || []).push(arguments)}</script>
 </body>
 </html>
+
+
