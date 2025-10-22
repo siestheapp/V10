@@ -299,15 +299,53 @@
   // Simple analytics tracker for mockup clicks (sends to Formspree)
   (function () {
     const COLLECT_URL = 'https://formspree.io/f/meorpayo';
+    const START_TS = Date.now();
+
+    function uuid(){ try{ return (crypto && crypto.randomUUID && crypto.randomUUID()) || '' }catch(_e){ return '' } }
+
+    // Persist a lightweight session id for correlation
+    var SESSION_ID = sessionStorage.getItem('sess_id');
+    if(!SESSION_ID){ SESSION_ID = uuid() || String(Math.random()).slice(2); sessionStorage.setItem('sess_id', SESSION_ID); }
+
+    function getUtm(){
+      try{ var cached = sessionStorage.getItem('utm_cache'); if(cached){ return JSON.parse(cached); } }catch(_e){}
+      var p = new URLSearchParams(location.search || '');
+      var utm = {
+        source: p.get('utm_source') || '',
+        medium: p.get('utm_medium') || '',
+        campaign: p.get('utm_campaign') || '',
+        term: p.get('utm_term') || '',
+        content: p.get('utm_content') || ''
+      };
+      try{ sessionStorage.setItem('utm_cache', JSON.stringify(utm)); }catch(_e){}
+      return utm;
+    }
+    var UTM = getUtm();
 
     function track(eventName, detail) {
       try {
         if(!navigator.sendBeacon) return;
+        var baseMeta = (detail && detail.meta) || {};
+        var meta = Object.assign({}, baseMeta, {
+          utm: UTM,
+          referrer: document.referrer || '',
+          session: SESSION_ID
+        });
         const fd = new FormData();
         fd.append('type', eventName);
         fd.append('key', (detail && detail.key) || '');
-        fd.append('meta', JSON.stringify((detail && detail.meta) || {}));
+        fd.append('meta', JSON.stringify(meta));
         fd.append('path', location.pathname);
+        fd.append('url', location.href);
+        fd.append('referrer', document.referrer || '');
+        fd.append('session', SESSION_ID);
+        if(UTM && (UTM.source || UTM.medium || UTM.campaign || UTM.term || UTM.content)){
+          if(UTM.source) fd.append('utm_source', UTM.source);
+          if(UTM.medium) fd.append('utm_medium', UTM.medium);
+          if(UTM.campaign) fd.append('utm_campaign', UTM.campaign);
+          if(UTM.term) fd.append('utm_term', UTM.term);
+          if(UTM.content) fd.append('utm_content', UTM.content);
+        }
         fd.append('ts', String(Date.now()));
         fd.append('_subject', 'Proxi click');
         navigator.sendBeacon(COLLECT_URL, fd);
@@ -335,6 +373,14 @@
     }, { passive: true });
     // Expose for other trackers on this page
     try{ window.__track = track; }catch(_e){}
+    // Initial view + heartbeat
+    try{ track('page_view', { key: 'landing', meta: { url: location.href } }); }catch(_e){}
+    var __hbId = null;
+    function __startHb(){ if(__hbId) return; __hbId = setInterval(function(){ track('heartbeat', { key: 'landing', meta: { ms: Date.now() - START_TS, vis: document.visibilityState } }); }, 20000); }
+    function __stopHb(){ if(__hbId){ clearInterval(__hbId); __hbId = null; } }
+    __startHb();
+    document.addEventListener('visibilitychange', function(){ if(document.visibilityState === 'hidden'){ __stopHb(); } else { __startHb(); } });
+    window.addEventListener('pagehide', function(){ track('heartbeat_final', { key: 'landing', meta: { ms: Date.now() - START_TS } }); }, { passive: true });
   })();
 </script>
 
