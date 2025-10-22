@@ -105,7 +105,7 @@ body{
 
 /* Tiny brand "tile" (subtle anchor, not a logo) */
 .brand-dot{
-  width:22px; height:22px; border-radius:6px;
+  width:33px; height:33px; border-radius:8px;
   display:grid; place-items:center;
 }
 
@@ -131,8 +131,8 @@ body{
 }
 
 /* Proxi wavy icon (match closet card pill icon) */
-.icon-proxi{ width:18px; height:18px; color: var(--petrol-600); display:block }
-.icon-proxi path{ fill: currentColor }
+.icon-proxi{ width:27px; height:27px; display:block }
+.icon-proxi path{ fill: url(#proxi-gradient) }
 
 @keyframes brandGlimmer {
   0%, 100% { filter: drop-shadow(0 2px 4px rgba(0,0,0,0.15)) drop-shadow(0 0 8px rgba(155,122,173,0.3)) drop-shadow(0 0 4px rgba(255,255,255,0.4)); }
@@ -559,6 +559,16 @@ body{
 </style>
 </head>
 <body>
+  <!-- SVG gradient definition to match closet-screen cards -->
+  <svg style="position:absolute;width:0;height:0" aria-hidden="true">
+    <defs>
+      <linearGradient id="proxi-gradient" x1="0%" y1="0%" x2="100%" y2="100%">
+        <stop offset="0%" style="stop-color:#008888;stop-opacity:1"/>
+        <stop offset="46%" style="stop-color:#34C3CC;stop-opacity:1"/>
+        <stop offset="100%" style="stop-color:#9BFFCF;stop-opacity:1"/>
+      </linearGradient>
+    </defs>
+  </svg>
   <div class="phone">
     <div class="screen">
       <div class="island"></div>
