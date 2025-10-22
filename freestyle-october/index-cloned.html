@@ -111,6 +111,21 @@
       -webkit-transform: scale(var(--how-scale)) translateY(0);
               transform: scale(var(--how-scale)) translateY(0);
     }
+    /* PROFILE mock: match HOW mock proportions and framing */
+    #profile .mock .mock-inner{
+      width: calc(430px * var(--how-scale));
+      height: calc(987px * var(--how-scale));
+      padding-bottom: 0;
+      overflow: visible;
+    }
+    #profile .mock .mock-inner iframe{
+      width: 430px;
+      height: 987px;
+      -webkit-transform-origin: top left;
+              transform-origin: top left;
+      -webkit-transform: scale(var(--how-scale)) translateY(0);
+              transform: scale(var(--how-scale)) translateY(0);
+    }
     @media (min-width: 375px){ :root{ --how-scale: 0.62790698; } }
     @media (min-width: 390px){ :root{ --how-scale: 0.69767442; } }
   </style>
