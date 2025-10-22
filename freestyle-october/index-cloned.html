@@ -28,10 +28,10 @@
 
     /* Match landingpage-cloned hero video dimensions */
     .hero .mock.video .mock-inner{
-      width: 231px;
+      width: calc(231px * 1.01);
       max-width: 100%;
       border-radius: 30px;
-      margin: 0 auto;
+      margin: -33px auto 0;
       aspect-ratio: 430/932;
       overflow: hidden;
       position: relative;
@@ -42,10 +42,10 @@
       pointer-events: none;
     }
     @media (min-width: 375px){
-      .hero .mock.video .mock-inner{ width: 270px; border-radius: 33px; }
+      .hero .mock.video .mock-inner{ width: calc(270px * 1.01); border-radius: 33px; }
     }
     @media (min-width: 390px){
-      .hero .mock.video .mock-inner{ width: 300px; border-radius: 38px; }
+      .hero .mock.video .mock-inner{ width: calc(300px * 1.01); border-radius: 38px; }
     }
     .hero .mock.video a.mock-inner{ display:block; pointer-events:auto !important; cursor:pointer; }
     .hero .mock.video video{
@@ -360,10 +360,11 @@
     margin-top: -35px !important;
   }
 
-  /* Desktop: move up an additional 5px */
+  /* Desktop: move up an additional 5px and 1px to the left */
   @media (min-width: 1024px){
     #how .mock .mock-inner{
       margin-top: -45px !important;
+      margin-left: 70px !important;
     }
   }
 
