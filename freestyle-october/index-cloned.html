@@ -70,6 +70,10 @@
     /* Button color to match freestyle-october */
     .btn{background:var(--petrol-500, #00A3A3);color:#fff;border:1px solid var(--petrol-400, #16B5B5)}
     .btn:hover{background:var(--petrol-600, #009090)}
+    /* FAQ: adopt same overrides as index.html */
+    #faq summary{color:var(--ink-900, #0B0F14)}
+    #faq details:hover summary{color:var(--petrol-500, #00A3A3)}
+    #faq .faq-list details summary::before{background:linear-gradient(135deg, var(--petrol-600, #009090), #35D1AE); box-shadow:0 4px 12px rgba(0,163,163,.22)}
     /* Steps badges: match freestyle-october teal gradient */
     .steps li::before{
       background: linear-gradient(135deg, var(--petrol-600, #009090), #35D1AE);
@@ -229,7 +233,7 @@
 
     
 
-    <!-- FAQ -->
+    <!-- FAQ (copied from index.html) -->
     <section id="faq" class="section faq">
       <div class="wrapper">
         <header class="section-header">
@@ -237,24 +241,20 @@
         </header>
         <div class="faq-list">
           <details>
-            <summary>Do I need to measure myself?</summary>
-            <div>No. Sies learns your fit from the clothes you already own. Snap a couple tag photos or paste product links and we’ll extract measurements automatically.</div>
+            <summary>What is a "proxi"?</summary>
+            <div>A proxi is a real person who wears the same item in the same size as you. We surface their photos and sizes so you can shop "by proxi" with confidence.</div>
           </details>
           <details>
-            <summary>Are my sizes public?</summary>
-            <div>No. Sizes and measurements are private by default. You can share with Close Friends; creators can opt-in to share.</div>
+            <summary>When will Proxi launch?</summary>
+            <div>Public launch is December 2025. Join now to get early access before then.</div>
           </details>
           <details>
-            <summary>Will this work across different brands?</summary>
-            <div>Yes. We standardize brand size guides and map them to your fit profile, so an XS in one brand can be compared to an S in another.</div>
+            <summary>Does Proxi work for men's clothing?</summary>
+            <div>Not yet. We're starting with women's fashion for early access, with plans to add men's clothing after public launch.</div>
           </details>
           <details>
-            <summary>What if I like different fits?</summary>
-            <div>Choose a fit zone – sleek, perfect, or relaxed – and Sies adapts by garment type. You’ll also see a short “why it fits” explanation on each item.</div>
-          </details>
-          <details>
-            <summary>How is my data used?</summary>
-            <div>Only to improve your recommendations. We don’t sell personal data. You can remove your info anytime from Settings.</div>
+            <summary>How many items do I need to start?</summary>
+            <div>Just one. Add a single piece you already wear and you'll see proxi matches and recommended sizes on similar items right away. More items = better matches.</div>
           </details>
         </div>
       </div>
