@@ -17,6 +17,20 @@
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="freestyle-tokens.css">
   <link rel="stylesheet" href="assets/css/style.css">
+  
+  <!-- TikTok Pixel Code -->
+  <script>
+    !function (w, d, t) {
+      w.TiktokAnalyticsObject=t;var ttq=w[t]=w[t]||[];ttq.methods=["page","track","identify","instances","debug","on","off","once","ready","alias","group","enableCookie","disableCookie"],ttq.setAndDefer=function(t,e){t[e]=function(){t.push([e].concat(Array.prototype.slice.call(arguments,0)))}};for(var i=0;i<ttq.methods.length;i++)ttq.setAndDefer(ttq,ttq.methods[i]);ttq.instance=function(t){for(var e=ttq._i[t]||[],n=0;n<ttq.methods.length;n++)ttq.setAndDefer(e,ttq.methods[n]);return e},ttq.load=function(e,n){var i="https://analytics.tiktok.com/i18n/pixel/events.js";ttq._i=ttq._i||{},ttq._i[e]=[],ttq._i[e]._u=i,ttq._t=ttq._t||{},ttq._t[e]=+new Date,ttq._o=ttq._o||{},ttq._o[e]=n||{};var o=document.createElement("script");o.type="text/javascript",o.async=!0,o.src=i+"?sdkid="+e+"&lib="+t;var a=document.getElementsByTagName("script")[0];a.parentNode.insertBefore(o,a)};
+      
+      // TODO: Replace 'YOUR_TIKTOK_PIXEL_ID' with your actual TikTok Pixel ID
+      // Get this from TikTok Ads Manager > Assets > Events
+      ttq.load('YOUR_TIKTOK_PIXEL_ID');
+      ttq.page();
+    }(window, document, 'ttq');
+  </script>
+  <!-- End TikTok Pixel Code -->
+  
   <style>
     .header .logo a,
     .header .logo{background:var(--brand-sheen);-webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent;text-decoration:none}
@@ -327,12 +341,34 @@
         medium: p.get('utm_medium') || '',
         campaign: p.get('utm_campaign') || '',
         term: p.get('utm_term') || '',
-        content: p.get('utm_content') || ''
+        content: p.get('utm_content') || '',
+        ttclid: p.get('ttclid') || '',  // TikTok Click ID
+        fbclid: p.get('fbclid') || '',  // Facebook Click ID
+        gclid: p.get('gclid') || ''     // Google Click ID
       };
       try{ sessionStorage.setItem('utm_cache', JSON.stringify(utm)); }catch(_e){}
       return utm;
     }
+    
+    // Get device and context information
+    function getDeviceContext(){
+      try{
+        return {
+          screen: window.screen.width + 'x' + window.screen.height,
+          viewport: window.innerWidth + 'x' + window.innerHeight,
+          devicePixelRatio: window.devicePixelRatio || 1,
+          platform: navigator.platform || '',
+          language: navigator.language || '',
+          touchEnabled: ('ontouchstart' in window) || (navigator.maxTouchPoints > 0),
+          connectionType: (navigator.connection && navigator.connection.effectiveType) || 'unknown',
+          timezone: Intl.DateTimeFormat().resolvedOptions().timeZone || ''
+        };
+      }catch(_e){
+        return {};
+      }
+    }
     var UTM = getUtm();
+    var DEVICE_CTX = getDeviceContext();
 
     function track(eventName, detail) {
       try {
@@ -340,6 +376,7 @@
         var baseMeta = (detail && detail.meta) || {};
         var meta = Object.assign({}, baseMeta, {
           utm: UTM,
+          device: DEVICE_CTX,
           referrer: document.referrer || '',
           session: SESSION_ID
         });
@@ -393,6 +430,254 @@
     __startHb();
     document.addEventListener('visibilitychange', function(){ if(document.visibilityState === 'hidden'){ __stopHb(); } else { __startHb(); } });
     window.addEventListener('pagehide', function(){ track('heartbeat_final', { key: 'landing', meta: { ms: Date.now() - START_TS } }); }, { passive: true });
+  })();
+</script>
+
+<script>
+  // VIDEO ENGAGEMENT TRACKING
+  (function(){
+    var track = window.__track || function(){};
+    var heroVideo = document.querySelector('.hero video');
+    if(heroVideo){
+      var videoTracked = { play: false, 25: false, 50: false, 75: false, complete: false };
+      
+      heroVideo.addEventListener('play', function(){ 
+        if(!videoTracked.play){ 
+          track('video_play', { key: 'hero', meta: { autoplay: heroVideo.autoplay } });
+          if(window.ttq) ttq.track('ViewContent', { content_type: 'video', content_name: 'hero_demo' });
+          videoTracked.play = true; 
+        }
+      }, { passive: true });
+      
+      heroVideo.addEventListener('pause', function(){
+        var pct = Math.round((heroVideo.currentTime / heroVideo.duration) * 100) || 0;
+        track('video_pause', { key: 'hero', meta: { percent: pct, currentTime: heroVideo.currentTime } });
+      }, { passive: true });
+      
+      heroVideo.addEventListener('timeupdate', function(){
+        if(!heroVideo.duration) return;
+        var pct = (heroVideo.currentTime / heroVideo.duration) * 100;
+        if(pct >= 25 && !videoTracked[25]){ 
+          track('video_progress', { key: 'hero', meta: { percent: 25 } }); 
+          videoTracked[25] = true; 
+        }
+        if(pct >= 50 && !videoTracked[50]){ 
+          track('video_progress', { key: 'hero', meta: { percent: 50 } }); 
+          videoTracked[50] = true; 
+        }
+        if(pct >= 75 && !videoTracked[75]){ 
+          track('video_progress', { key: 'hero', meta: { percent: 75 } }); 
+          videoTracked[75] = true; 
+        }
+      }, { passive: true });
+      
+      heroVideo.addEventListener('ended', function(){
+        if(!videoTracked.complete){ 
+          track('video_complete', { key: 'hero' }); 
+          videoTracked.complete = true; 
+        }
+      }, { passive: true });
+    }
+  })();
+</script>
+
+<script>
+  // CTA BUTTON TRACKING
+  (function(){
+    var track = window.__track || function(){};
+    
+    // Track all CTA button clicks with location context
+    document.querySelectorAll('.btn[type="submit"]').forEach(function(btn){
+      btn.addEventListener('click', function(e){
+        var formParent = btn.closest('form');
+        var formLocation = 'unknown';
+        
+        if(formParent){
+          if(formParent.closest('header.hero')){
+            formLocation = 'hero';
+          } else if(formParent.closest('#join')){
+            formLocation = 'bottom';
+          }
+        }
+        
+        track('cta_click', { 
+          key: 'get_early_access', 
+          meta: { 
+            location: formLocation,
+            buttonText: btn.textContent.trim()
+          } 
+        });
+        
+        // Track to TikTok Pixel
+        if(window.ttq) ttq.track('ClickButton', { 
+          content_name: 'get_early_access',
+          content_category: formLocation
+        });
+      }, { passive: true });
+    });
+  })();
+</script>
+
+<script>
+  // FORM INTERACTION TRACKING
+  (function(){
+    var track = window.__track || function(){};
+    var forms = document.querySelectorAll('form[name="waitlist"]');
+    var formInteractions = {};
+    
+    forms.forEach(function(form, formIdx){
+      var formId = 'form_' + formIdx;
+      formInteractions[formId] = {
+        focused: false,
+        fieldFocusTimes: {},
+        fieldBlurTimes: {},
+        errors: [],
+        startTime: null
+      };
+      
+      var emailInput = form.querySelector('input[type="email"]');
+      
+      if(emailInput){
+        // Track first focus (form engagement start)
+        emailInput.addEventListener('focus', function(){
+          if(!formInteractions[formId].focused){
+            formInteractions[formId].focused = true;
+            formInteractions[formId].startTime = Date.now();
+            track('form_start', { 
+              key: formId, 
+              meta: { 
+                location: form.closest('header.hero') ? 'hero' : 'bottom' 
+              } 
+            });
+          }
+          
+          // Track individual field focus
+          if(!formInteractions[formId].fieldFocusTimes.email){
+            formInteractions[formId].fieldFocusTimes.email = Date.now();
+          }
+        }, { passive: true });
+        
+        // Track field blur and time spent
+        emailInput.addEventListener('blur', function(){
+          if(formInteractions[formId].fieldFocusTimes.email){
+            var focusTime = formInteractions[formId].fieldFocusTimes.email;
+            var dwellMs = Date.now() - focusTime;
+            formInteractions[formId].fieldBlurTimes.email = Date.now();
+            
+            track('form_field_blur', { 
+              key: formId, 
+              meta: { 
+                field: 'email',
+                dwellMs: dwellMs,
+                hasValue: !!emailInput.value,
+                valueLength: emailInput.value.length
+              } 
+            });
+          }
+        }, { passive: true });
+        
+        // Track input changes
+        var lastValue = '';
+        emailInput.addEventListener('input', function(){
+          var currentValue = emailInput.value;
+          if(currentValue && !lastValue){
+            track('form_field_input', { 
+              key: formId, 
+              meta: { field: 'email', action: 'first_character' } 
+            });
+          }
+          lastValue = currentValue;
+        }, { passive: true });
+        
+        // Track validation errors
+        emailInput.addEventListener('invalid', function(e){
+          formInteractions[formId].errors.push({
+            field: 'email',
+            time: Date.now(),
+            message: emailInput.validationMessage
+          });
+          
+          track('form_error', { 
+            key: formId, 
+            meta: { 
+              field: 'email',
+              error: emailInput.validationMessage 
+            } 
+          });
+        });
+      }
+      
+      // Track form abandonment (user leaves without submitting)
+      var formAbandoned = false;
+      window.addEventListener('beforeunload', function(){
+        if(formInteractions[formId].focused && formInteractions[formId].startTime && !formAbandoned){
+          var timeSpent = Date.now() - formInteractions[formId].startTime;
+          track('form_abandon', { 
+            key: formId, 
+            meta: { 
+              timeSpent: timeSpent,
+              hadErrors: formInteractions[formId].errors.length > 0,
+              fieldValue: emailInput ? (emailInput.value.length > 0) : false
+            } 
+          });
+        }
+      });
+      
+      // Track successful form submission start
+      form.addEventListener('submit', function(e){
+        formAbandoned = false; // Mark as not abandoned
+        var timeToSubmit = formInteractions[formId].startTime 
+          ? Date.now() - formInteractions[formId].startTime 
+          : 0;
+        
+        track('form_submit', { 
+          key: formId, 
+          meta: { 
+            location: form.closest('header.hero') ? 'hero' : 'bottom',
+            timeToSubmit: timeToSubmit,
+            errorCount: formInteractions[formId].errors.length
+          } 
+        });
+        
+        // Track to TikTok Pixel - this is a conversion!
+        if(window.ttq){
+          ttq.track('SubmitForm', {
+            content_name: 'waitlist_signup',
+            value: 1,
+            currency: 'USD'
+          });
+        }
+      });
+    });
+    
+    // Track form abandonment by scroll-away (user scrolls past without engaging)
+    var heroFormInView = false;
+    var heroFormViewed = false;
+    var heroForm = document.querySelector('header.hero form');
+    
+    if(heroForm){
+      var formIO = new IntersectionObserver(function(entries){
+        entries.forEach(function(entry){
+          if(entry.isIntersecting){
+            heroFormInView = true;
+            if(!heroFormViewed){
+              heroFormViewed = true;
+              track('form_view', { key: 'form_0', meta: { location: 'hero' } });
+            }
+          } else {
+            if(heroFormInView && !formInteractions.form_0.focused){
+              track('form_scroll_past', { 
+                key: 'form_0', 
+                meta: { location: 'hero', engaged: false } 
+              });
+            }
+            heroFormInView = false;
+          }
+        });
+      }, { threshold: 0.3 });
+      
+      formIO.observe(heroForm);
+    }
   })();
 </script>
 
@@ -619,6 +904,10 @@
             </div>
           `;
 
+          // Track diagnostic view
+          if(window.__track) window.__track('diagnostic_view', { key: 'brand_struggle' });
+          if(window.ttq) ttq.track('ViewContent', { content_name: 'diagnostic_question' });
+
           // Show/hide "Other" text input
           const otherRadio = form.querySelector('input[value="Other"]');
           const otherInput = form.querySelector('#other_brand');
@@ -629,6 +918,11 @@
               } else {
                 otherInput.style.display = 'none';
               }
+              // Track brand selection
+              if(window.__track) window.__track('diagnostic_select', { 
+                key: 'brand_struggle', 
+                meta: { brand: radio.value } 
+              });
             });
           });
 
@@ -639,6 +933,22 @@
 
             if (brandValue === 'Other' && otherInput.value.trim()) {
               brandValue = 'Other: ' + otherInput.value.trim();
+            }
+
+            // Track diagnostic completion
+            if(window.__track) window.__track('diagnostic_complete', { 
+              key: 'brand_struggle', 
+              meta: { brand: brandValue } 
+            });
+            
+            // Track completed registration to TikTok Pixel
+            if(window.ttq){
+              ttq.track('CompleteRegistration', {
+                content_name: 'waitlist_complete',
+                value: 1,
+                currency: 'USD',
+                contents: [{ content_name: brandValue }]
+              });
             }
 
             // Send diagnostic data
