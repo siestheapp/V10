@@ -54,3 +54,10 @@ database/dumps/
 *.ipa
 *.dSYM.zip
 DerivedData/
+ 
+# Node/Expo
+node_modules/
+**/node_modules/
+**/.expo/
+**/dist/
+**/build/

@@ -1,0 +1,354 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Autocrop — Proxi Hero</title>
+    <style>
+      :root{ --ink-900:#0B0F14; --ink-500:#2A3642; --canvas:#fff; --border: rgba(11,15,20,.08); }
+      body{ margin:0; font-family: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial, "Apple Color Emoji", "Segoe UI Emoji"; color:var(--ink-900); background:var(--canvas); }
+      .wrap{ max-width:960px; margin:0 auto; padding:24px; }
+      h1{ font-size:22px; margin:0 0 12px; }
+      .meta{ color:var(--ink-500); margin-bottom:16px; }
+      .drop{ border:2px dashed var(--border); border-radius:12px; padding:28px; text-align:center; background:#fafbfc; transition:background .15s ease; min-height:220px; display:flex; align-items:center; justify-content:center; }
+      .drop.dragover{ background:#f0f4f8; }
+      .drop input{ display:none; }
+      .btn{ display:inline-block; padding:10px 14px; border-radius:10px; background:#0b0f14; color:#fff; text-decoration:none; font-weight:600; }
+      .section{ margin-top:18px; }
+      .pairs{ display:flex; flex-direction:column; gap:16px; }
+      .pair{ border:1px solid var(--border); border-radius:12px; padding:12px; background:#fff; }
+      .pair-grid{ display:grid; grid-template-columns: 1fr 1fr; gap:12px; align-items:start; }
+      .hero{ width:354px; height:520px; object-fit:cover; border-radius:10px; display:block; background:#eee; }
+      .original{ width:auto; height:auto; max-width:100%; border-radius:10px; display:block; background:#eee; }
+      .notes{ margin-top:10px; display:flex; gap:8px; align-items:center; }
+      .notes label{ font-size:12px; color:var(--ink-500); }
+      .notes input{ flex:1; padding:10px 12px; border:1px solid var(--border); border-radius:10px; font-size:14px; }
+      .row{ display:flex; gap:8px; align-items:center; margin-top:8px; }
+      .danger{ color:#b00020; cursor:pointer; border:1px solid rgba(176,0,32,.2); padding:8px 12px; border-radius:10px; background:#fff; font-weight:700; font-size:12px; }
+      /* Crop modal */
+      .modal{ position:fixed; inset:0; background:rgba(0,0,0,.5); display:none; align-items:center; justify-content:center; }
+      .modal.open{ display:flex; }
+      .sheet{ background:#fff; border-radius:12px; padding:12px; width:min(92vw, 960px); max-height:92vh; display:flex; flex-direction:column; gap:10px; }
+      .crop-wrap{ position:relative; width:100%; aspect-ratio: 3 / 2; background:#000; overflow:hidden; border-radius:10px; }
+      .crop-img{ position:absolute; left:50%; top:50%; transform:translate(-50%, -50%) scale(1); user-select:none; -webkit-user-drag:none; cursor:grab; }
+      .crop-wrap.dragging .crop-img{ cursor:grabbing; }
+      .frame{ position:absolute; left:50%; top:50%; width:354px; height:520px; transform:translate(-50%, -50%); border:2px dashed rgba(255,255,255,.9); border-radius:10px; pointer-events:none; }
+      .controls{ display:flex; gap:8px; align-items:center; justify-content:space-between; }
+      .controls .lhs{ display:flex; gap:8px; align-items:center; }
+      .btn{ padding:10px 12px; border:1px solid var(--border); border-radius:10px; background:#0b0f14; color:#fff; cursor:pointer; font-weight:700; font-size:14px; }
+      .form{ display:flex; gap:8px; flex-wrap:wrap; align-items:center; }
+      .form .field{ display:flex; flex-direction:column; gap:6px; }
+      .form label{ font-size:12px; color:var(--ink-500); }
+      .form input{ padding:10px 12px; border:1px solid var(--border); border-radius:10px; font-size:14px; min-width:140px; }
+    </style>
+  </head>
+  <body>
+    <div class="wrap">
+      <h1>Autocrop — Proxi Hero</h1>
+      <div class="meta">Drag images here to generate 2:3 crops (1x/2x/3x). Originals are kept.</div>
+      <div id="drop" class="drop">
+        <p>Drop images to open the crop editor · <label class="btn"><input id="file" type="file" accept="image/*" multiple />Choose files</label></p>
+      </div>
+
+      <div class="section">
+        <div id="pairs" class="pairs" aria-label="Uploads"></div>
+      </div>
+    </div>
+
+    <!-- Crop Modal -->
+    <div id="modal" class="modal" role="dialog" aria-modal="true" aria-label="Crop editor">
+      <div class="sheet">
+        <div class="crop-wrap">
+          <img id="cropImg" class="crop-img" alt="crop source" />
+          <div class="frame" aria-hidden="true"></div>
+        </div>
+          <form id="metaForm" class="form" onsubmit="return false;">
+            <div class="field"><label for="metaUser">User</label><input id="metaUser" required /></div>
+            <div class="field"><label for="metaBrand">Brand</label><input id="metaBrand" required /></div>
+            <div class="field"><label for="metaItem">Item</label><input id="metaItem" required /></div>
+            <div class="field"><label for="metaSize">Size</label><input id="metaSize" required /></div>
+            <div class="field"><label for="metaSource">Source</label><input id="metaSource" required /></div>
+          </form>
+        <div class="controls">
+          <div class="lhs">
+            <button id="zoomOut" class="btn">-</button>
+            <button id="zoomIn" class="btn">+</button>
+            <button id="reset" class="btn">Reset</button>
+          </div>
+          <div class="rhs">
+            <button id="saveCrop" class="btn">Save crop</button>
+            <button id="closeModal" class="btn">Close</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <script>
+      const drop = document.getElementById('drop');
+      const input = document.getElementById('file');
+      const pairs = document.getElementById('pairs');
+
+      function preventDefaults(e){ e.preventDefault(); e.stopPropagation(); }
+      ['dragenter','dragover','dragleave','drop'].forEach(evt => {
+        drop.addEventListener(evt, preventDefaults, false);
+      });
+      drop.addEventListener('dragover', () => drop.classList.add('dragover'));
+      drop.addEventListener('dragleave', () => drop.classList.remove('dragover'));
+      drop.addEventListener('drop', (e) => { drop.classList.remove('dragover'); handleFiles(e.dataTransfer.files); });
+      input.addEventListener('change', () => handleFiles(input.files));
+
+      // Load persisted items on start
+      window.addEventListener('DOMContentLoaded', async () => {
+        try {
+          const res = await fetch('/list');
+          const data = await res.json();
+          if (data.ok && Array.isArray(data.results)) {
+            data.results.forEach(addPair);
+          }
+        } catch (e) { /* noop */ }
+      });
+
+      async function handleFiles(files){
+        if(!files || !files.length) return;
+        const fd = new FormData();
+        [...files].forEach(f => fd.append('files', f));
+        const res = await fetch('/upload-original', { method:'POST', body: fd });
+        const data = await res.json();
+        if(!data.ok){ alert('Upload failed'); return; }
+        // Open editor for the first file immediately
+        const first = data.results[0];
+        if(first){ openCrop(first.base, first.original); }
+        // Also list them in the page
+        data.results.forEach(r => addPair({ original: r.original, outputs: [] }));
+      }
+      let activeBase = null;
+      function openCrop(base, src){
+        activeBase = base;
+        const modal = document.getElementById('modal');
+        const img = document.getElementById('cropImg');
+        img.src = src;
+        img.setAttribute('draggable','false');
+        img.addEventListener('dragstart', (e)=> e.preventDefault());
+        state = { scale:1, x:0, y:0, dragging:false, startX:0, startY:0 };
+        modal.classList.add('open');
+        layout();
+      }
+
+      function closeCrop(){ document.getElementById('modal').classList.remove('open'); }
+
+      function addPair(result){
+        const pair = document.createElement('div');
+        pair.className = 'pair';
+
+        // Determine app-sized output
+        const byName = Object.fromEntries((result.outputs||[]).map(o => [o.target, o]));
+        const o1 = byName['proxy-hero@1x'] || (result.outputs||[]).find(o => o.width===354 && o.height===520);
+        const o2 = byName['proxy-hero@2x'] || (result.outputs||[]).find(o => o.width===708 && o.height===1040);
+        const o3 = byName['proxy-hero@3x'] || (result.outputs||[]).find(o => o.width===1062 && o.height===1560);
+        const src = (o1 && (o1.url)) || result.original;
+        const srcset = [
+          o1 ? `${o1.url} 354w` : null,
+          o2 ? `${o2.url} 708w` : null,
+          o3 ? `${o3.url} 1062w` : null
+        ].filter(Boolean).join(', ');
+
+        const grid = document.createElement('div');
+        grid.className = 'pair-grid';
+
+        const left = document.createElement('div');
+        const limg = document.createElement('img');
+        limg.className = 'hero';
+        limg.width = 354; limg.height = 520;
+        limg.alt = 'app output';
+        limg.src = src;
+        if (srcset) { limg.setAttribute('srcset', srcset); limg.setAttribute('sizes', '354px'); }
+        left.appendChild(limg);
+
+        const right = document.createElement('div');
+        const rimg = document.createElement('img');
+        rimg.className = 'original';
+        rimg.alt = 'original (natural size)';
+        rimg.src = result.original; // displayed scaled; we constrain by CSS
+        rimg.style.maxHeight = '520px';
+        rimg.style.width = 'auto';
+        right.appendChild(rimg);
+
+        grid.appendChild(left);
+        grid.appendChild(right);
+        pair.appendChild(grid);
+
+        // Notes field (persist to localStorage)
+        const notes = document.createElement('div');
+        notes.className = 'notes';
+        const label = document.createElement('label');
+        label.textContent = 'Notes';
+        label.htmlFor = `notes-${Date.now()}`;
+        const inputNotes = document.createElement('input');
+        inputNotes.type = 'text';
+        inputNotes.placeholder = 'Product name and size';
+        const key = `autocrop:notes:${result.original}`;
+        try { inputNotes.value = localStorage.getItem(key) || ''; } catch {}
+        inputNotes.addEventListener('input', () => {
+          try { localStorage.setItem(key, inputNotes.value || ''); } catch {}
+        });
+        notes.appendChild(label);
+        notes.appendChild(inputNotes);
+        pair.appendChild(notes);
+
+        // Controls row (Delete)
+        const controls = document.createElement('div');
+        controls.className = 'row';
+        const del = document.createElement('button');
+        del.className = 'danger';
+        del.textContent = 'Delete';
+        del.addEventListener('click', async () => {
+          try{
+            const base = (result.original.split('/').pop() || '').replace(/\.[^.]+$/, '');
+            const r = await fetch(`/delete/${encodeURIComponent(base)}`, { method:'DELETE' });
+            const dj = await r.json();
+            if(dj && dj.ok){ pair.remove(); }
+          }catch(_e){}
+        });
+        controls.appendChild(del);
+
+        const edit = document.createElement('button');
+        edit.className = 'btn';
+        edit.textContent = 'Manual crop';
+        edit.addEventListener('click', ()=>{
+          const base = (result.original.split('/').pop() || '').replace(/\.[^.]+$/, '');
+          openCrop(base, result.original);
+        });
+        controls.appendChild(edit);
+        pair.appendChild(controls);
+
+        pairs.prepend(pair);
+      }
+
+      // Crop editor logic
+      let state = { scale:1, x:0, y:0, dragging:false, startX:0, startY:0 };
+      const imgEl = () => document.getElementById('cropImg');
+      function layout(){
+        const el = imgEl(); if(!el) return;
+        el.style.transform = `translate(calc(-50% + ${state.x}px), calc(-50% + ${state.y}px)) scale(${state.scale})`;
+      }
+      function startDrag(e){
+        state.dragging = true;
+        const cx = (e.touches?e.touches[0].clientX:e.clientX);
+        const cy = (e.touches?e.touches[0].clientY:e.clientY);
+        state.startX = cx - state.x; state.startY = cy - state.y;
+        document.querySelector('.crop-wrap').classList.add('dragging');
+      }
+      function moveDrag(e){
+        if(!state.dragging) return;
+        const cx=(e.touches?e.touches[0].clientX:e.clientX);
+        const cy=(e.touches?e.touches[0].clientY:e.clientY);
+        state.x = cx - state.startX; state.y = cy - state.startY; layout();
+      }
+      function endDrag(){ state.dragging = false; document.querySelector('.crop-wrap').classList.remove('dragging'); }
+      function zoom(d){ state.scale = Math.max(0.2, Math.min(8, state.scale * d)); layout(); }
+
+      // Zoom at cursor (wheel)
+      function zoomAt(factor, clientX, clientY){
+        const wrap = document.querySelector('.crop-wrap');
+        const rect = wrap.getBoundingClientRect();
+        const ux = clientX - rect.left - rect.width/2; // wrap-centered coords
+        const uy = clientY - rect.top  - rect.height/2;
+        const old = state.scale; const next = Math.max(0.2, Math.min(8, old * factor));
+        const k = next / old;
+        state.x = ux - k * (ux - state.x);
+        state.y = uy - k * (uy - state.y);
+        state.scale = next;
+        layout();
+      }
+
+      document.getElementById('zoomIn').addEventListener('click', ()=> zoomAt(1.1, window.innerWidth/2, window.innerHeight/2));
+      document.getElementById('zoomOut').addEventListener('click', ()=> zoomAt(1/1.1, window.innerWidth/2, window.innerHeight/2));
+      document.getElementById('reset').addEventListener('click', ()=> { state = { scale:1, x:0, y:0, dragging:false, startX:0, startY:0 }; layout(); });
+      document.getElementById('closeModal').addEventListener('click', closeCrop);
+
+      const wrap = document.querySelector('.crop-wrap');
+      wrap.addEventListener('mousedown', startDrag);
+      window.addEventListener('mousemove', moveDrag);
+      window.addEventListener('mouseup', endDrag);
+      wrap.addEventListener('touchstart', startDrag, { passive:true });
+      window.addEventListener('touchmove', moveDrag, { passive:true });
+      window.addEventListener('touchend', endDrag, { passive:true });
+
+      // Wheel zoom
+      document.querySelector('.crop-wrap').addEventListener('wheel', (e)=>{
+        e.preventDefault();
+        const factor = e.deltaY < 0 ? 1.08 : 1/1.08;
+        zoomAt(factor, e.clientX, e.clientY);
+      }, { passive:false });
+
+      // Pinch zoom (two-finger)
+      let pinchDist = null;
+      const wrapEl = document.querySelector('.crop-wrap');
+      wrapEl.addEventListener('touchmove', (e)=>{
+        if(e.touches && e.touches.length === 2){
+          const [a,b] = e.touches; const dx=a.clientX-b.clientX, dy=a.clientY-b.clientY; const d=Math.hypot(dx,dy);
+          if(pinchDist==null) { pinchDist = d; return; }
+          const factor = Math.max(0.5, Math.min(2, d / pinchDist));
+          zoomAt(factor, (a.clientX+b.clientX)/2, (a.clientY+b.clientY)/2);
+          pinchDist = d;
+          e.preventDefault();
+        }
+      }, { passive:false });
+      wrapEl.addEventListener('touchend', ()=>{ pinchDist = null; }, { passive:true });
+
+      document.getElementById('saveCrop').addEventListener('click', async ()=>{
+        try{
+          const mf = document.getElementById('metaForm');
+          if(!mf.reportValidity()) return;
+          const meta = {
+            user: document.getElementById('metaUser').value.trim(),
+            brand: document.getElementById('metaBrand').value.trim(),
+            item: document.getElementById('metaItem').value.trim(),
+            size: document.getElementById('metaSize').value.trim(),
+            source: document.getElementById('metaSource').value.trim()
+          };
+          // Compute crop rect in original pixel coords
+          const base = activeBase; if(!base) return;
+          const img = imgEl();
+          const natural = { w: img.naturalWidth, h: img.naturalHeight };
+          const frame = document.querySelector('.frame');
+          const wrap = document.querySelector('.crop-wrap');
+          const wrapRect = wrap.getBoundingClientRect();
+          const frameRect = frame.getBoundingClientRect();
+          const imgRect = img.getBoundingClientRect(); // includes CSS transform scale
+
+          // Image top-left in wrap coords
+          const imgLeft = (wrapRect.width/2 + state.x) - imgRect.width/2;
+          const imgTop  = (wrapRect.height/2 + state.y) - imgRect.height/2;
+
+          // Frame top-left in wrap coords
+          const frameLeft = frameRect.left - wrapRect.left;
+          const frameTop  = frameRect.top  - wrapRect.top;
+
+          // Offset from image TL to frame TL in display pixels
+          const offX = frameLeft - imgLeft;
+          const offY = frameTop  - imgTop;
+
+          // Convert display pixels -> natural pixels using current displayed size
+          const pxPerDispX = natural.w / imgRect.width;
+          const pxPerDispY = natural.h / imgRect.height;
+          const rect = {
+            x: Math.round(offX * pxPerDispX),
+            y: Math.round(offY * pxPerDispY),
+            width: Math.round(frameRect.width * pxPerDispX),
+            height: Math.round(frameRect.height * pxPerDispY)
+          };
+
+          const res = await fetch('/crop', {
+            method:'POST', headers:{ 'Content-Type':'application/json' },
+            body: JSON.stringify({ base, rect, meta })
+          });
+          const data = await res.json();
+          if(data && data.ok){ closeCrop(); location.reload(); }
+        }catch(_e){}
+      });
+    </script>
+  </body>
+  </html>
+
+

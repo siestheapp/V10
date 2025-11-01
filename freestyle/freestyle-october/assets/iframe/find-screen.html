@@ -1,0 +1,2404 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Proxi — Find Your Size</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=optional" rel="stylesheet">
+  <link rel="stylesheet" href="../../../freestyle-tokens.css">
+  <style>
+    :root{
+      --bg: var(--canvas-0);
+      --ink: var(--ink-900);
+      --muted: var(--ink-300);
+      --accent: var(--petrol-600);
+      --card: #FFFFFF;
+      --track: var(--canvas-100);
+      --focus-gradient: var(--brand-sheen);
+      --shadow-surface: var(--elev-1);
+      --shadow-elevated: var(--elev-2);
+      --radius-thumb: 12px;
+    }
+*{margin:0;padding:0;box-sizing:border-box}
+html{background:var(--bg)}
+body{font-family:Inter,system-ui,-apple-system,"Segoe UI",Roboto,Helvetica,Arial;background:var(--bg);color:var(--ink);
+  min-height:100vh;display:flex;align-items:center;justify-content:center;padding:0;position:relative}
+/* Warm page glow behind app content */
+body::before{
+  content:""; position:fixed; inset:-20% -10% auto -10%; height:60vh; pointer-events:none;
+  background:
+    radial-gradient(900px 380px at 50% -120px, rgba(0,163,163,.05), transparent 60%),
+    radial-gradient(1200px 520px at 10% -80px, rgba(166,255,203,.05), transparent 65%);
+  filter:saturate(115%);
+}
+
+/* iPhone Frame */
+.phone{width:430px;height:932px;border-radius:55px;background:transparent;border:2px solid #000;position:relative;box-shadow:none}
+.screen{position:absolute;inset:2px;background:#fff;border-radius:53px;overflow:hidden;display:flex;flex-direction:column}
+/* Remove content overlay so background is visible */
+.content{position:relative}
+.content::before{content:"";display:none}
+.content > *{position:relative;z-index:1}
+/* Ensure UI renders above the background */
+.screen > *{ position:relative; z-index:1 }
+.screen,
+.phone,
+.device,
+.feed-viewport{
+  overflow-x:hidden;
+}
+
+/* Dynamic Island */
+.island{position:absolute;top:11px;left:50%;transform:translateX(-50%);width:126px;height:37px;background:#000;border-radius:19px;z-index:5}
+
+/* Status Bar */
+.status{height:54px;margin-top:4px;display:flex;align-items:center;justify-content:space-between;padding:0 30px;font-weight:600;color:#000;font-size:17px;letter-spacing:-.02em}
+.status .right{display:flex;align-items:center;gap:6px}
+.status .right img{height:13px;width:auto;display:block}
+
+    /* App Content */
+    /* Header never animates, never shifts */
+    .header{
+      /* constant size */
+      min-height:48px;
+      padding:3px 0 0;
+      margin-top:7px;
+
+      /* center the logo with flex, not transforms */
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      position:relative;
+      z-index:10;
+
+      /* kill any inherited animation/transition */
+      animation:none !important;
+      transition:none !important;
+    }
+
+    /* Logo always centered; no absolute, no transforms, no fades */
+    .logo{
+      position:static !important;
+      transform:none !important;
+      opacity:1 !important;
+      animation:none !important;
+      transition:none !important;
+      margin:0 auto;
+      
+      font-weight:600;
+      font-size:32px;
+      letter-spacing:-.01em;
+      background:var(--brand-sheen);
+      -webkit-background-clip:text;
+      background-clip:text;
+      -webkit-text-fill-color:transparent;
+    }
+
+/* Back Button anchors left but shares the same grid cell */
+.back-btn{
+  position:absolute;
+  left:20px;
+  top:50%;
+  transform:translateY(-50%);
+  animation:none !important;
+
+  width:36px;
+  height:36px;
+  border-radius:8px;  /* Architectural, matches paste button */
+  border:none;
+  background:rgba(255,255,255,.5);
+  backdrop-filter:blur(12px);
+  cursor:pointer;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  color:#1C1C1C;
+  z-index:10;
+  box-shadow:0 1px 3px rgba(0,0,0,.04);
+  transition:background 0.2s ease, color 0.2s ease, box-shadow 0.2s ease;
+}
+.back-btn:hover{
+  background:rgba(255,255,255,.75);
+  color:#0B0F14;
+  box-shadow:0 2px 6px rgba(0,0,0,.06);
+}
+.back-btn:active{
+  background:rgba(255,255,255,.85);
+  box-shadow:0 1px 2px rgba(0,0,0,.04);
+}
+
+    /* Shared card + section system (aligns with feed/closet screens) */
+    .section{padding:0 24px;margin-top:0;min-width:0} /* Remove top margin for centered layout */
+    .section:first-of-type{margin-top:0}
+    .card{
+      background:#fff;
+      border:none;
+      border-radius:12px;
+      box-shadow:0 2px 6px rgba(0,0,0,0.05);
+      overflow:hidden;
+      max-width:100%; /* never exceed container width */
+    }
+    .card.is-loose,
+    .card.is-tight{
+      box-shadow:var(--shadow-surface);
+    }
+    .card-pad{padding:20px 24px}
+    .finder-shell.is-hidden{
+      opacity:0;
+      pointer-events:none;
+      position:absolute;
+      visibility:hidden;
+    }
+    .loading-shell{display:none;}
+    .loading-shell.is-visible{display:block;}
+
+    /* Content Container - default layout for results/loading screens */
+    .content{
+      flex:1;
+      overflow-y:auto;
+      overflow-x:hidden;
+      /* Reserve space for vertical scrollbar to prevent width shift */
+      scrollbar-gutter: stable both-edges;
+      scrollbar-width:none;
+      -ms-overflow-style:none;
+      position:relative;
+      display:grid;
+      grid-template-rows:auto 1fr auto;
+      row-gap:0px;
+      align-items:start;
+      padding:12px 0 120px;
+      /* Ensure content doesn't affect header */
+      min-height:0;
+    }
+
+    /* When find screen is visible, center everything vertically */
+    .finder-shell:not(.is-hidden){
+      position:absolute;
+      top:calc(45% - 11px);  /* Move up slightly to account for header */
+      left:0;
+      right:0;
+      transform:translateY(-50%);
+    }
+
+    /* Only center the find section horizontally */
+    .find-section{
+      margin:0 auto;
+      max-width:400px;
+    }
+    .content::-webkit-scrollbar{display:none}
+
+    /* Fallback for browsers without scrollbar-gutter support */
+    @supports not (scrollbar-gutter: stable){
+      .content{ overflow-y:scroll; }
+    }
+
+    /* Loading card vertical offset (only affects loading state) */
+    #loadingCard{ margin-top:0; }
+
+    /* Find Input Section */
+    .find-section{
+      display:flex;
+      flex-direction:column;
+      gap:12px;  /* Tighter spacing for Google-style centered layout */
+      min-width:0; /* prevent children (like marquee) from forcing horizontal growth */
+      opacity:1;
+      transform:translateY(0);
+      transition:opacity 0.3s ease, transform 0.3s ease;
+      animation:fadeInUp 0.8s cubic-bezier(0.34, 1.56, 0.64, 1);
+    }
+    @keyframes fadeInUp{
+      from{
+        opacity:0;
+        transform:translateY(20px);
+      }
+      to{
+        opacity:1;
+        transform:translateY(0);
+      }
+    }
+    .find-section.is-leaving{
+      opacity:0;
+      transform:translateY(-12px);
+    }
+    .find-section.hidden{display:none;}
+    .card.card-pad.find-section{
+      background:#FFFFFF;  /* Pure white for premium feel */
+      border:none;  /* Remove border for cleaner look */
+      box-shadow:none;  /* Let content speak for itself */
+      /* Use default .card-pad padding: 20px 24px */
+    }
+
+    /* Success metrics for social proof */
+    .success-metrics{
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      gap:12px;
+      margin-top:20px;
+      font-size:13px;
+      color:#6A7683;
+    }
+    .success-metrics .metric strong{
+      color:#00A3A3;
+      font-weight:600;
+    }
+    .success-metrics .divider{
+      color:#D1D5DB;
+      margin:0 4px;
+    }
+
+    .find-title{
+      font-weight:500;  /* Lighter weight for premium feel */
+      font-size:42px;  /* Much larger for impact */
+      line-height:1.1;
+      letter-spacing:-0.03em;  /* Tighter for elegance */
+      color:var(--ink);
+      margin-bottom:12px;
+    }
+    .find-title .accent{
+      background: linear-gradient(135deg, #009090 0%, #00A3A3 100%);
+      -webkit-background-clip: text;
+      background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+    .find-subtitle{
+      font-size:18px;  /* Slightly larger */
+      font-weight:400;
+      color:#4A5B66;  /* Slightly darker */
+      margin-bottom:29px;  /* More breathing room */
+      line-height:1.6;
+      letter-spacing:0.01em;
+      max-width:380px;
+    }
+    .trust-logos{
+      display:flex;
+      gap:16px;  /* More space between brands */
+      flex-wrap:wrap;
+      margin:24px 0 32px;  /* More breathing room */
+      opacity:1;  /* Full opacity for confidence */
+    }
+    .logo-chip{
+      font-size:13px;
+      font-weight:500;  /* Not too bold */
+      color:#0B0F14;  /* Dark text for premium feel */
+      letter-spacing:0.08em;  /* Wide tracking like luxury brands */
+      text-transform:uppercase;
+      background:transparent;
+      border:1px solid #E9EEF1;
+      border-radius:4px;  /* Less round, more architectural */
+      padding:8px 16px;
+      transition:all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+      cursor:pointer;
+    }
+    .logo-chip:hover{
+      border-color:#00A3A3;
+      color:#00A3A3;
+      box-shadow:0 2px 8px rgba(0,163,163,0.15);
+    }
+
+    /* Brand marquee under primary CTA */
+    .brand-marquee{
+      position:relative;
+      width:100%;
+      min-width:0; /* allow shrinking within flex parent */
+      overflow:hidden;
+      margin:14px 0 0;
+    }
+    .brand-track{
+      display:inline-flex;
+      align-items:center;
+      gap:16px;
+      white-space:nowrap;
+      animation:brandScroll 18s linear infinite;
+      will-change:transform;
+    }
+    @keyframes brandScroll{
+      0%{ transform:translateX(0) }
+      100%{ transform:translateX(-50%) }
+    }
+
+    .input-wrapper{position:relative;margin-bottom:24px}
+    .input-icon{
+      display:none;  /* Remove the emoji - too juvenile */
+    }
+    .url-input{
+      width:100%;
+      padding:20px 24px;  /* More generous padding */
+      border:1px solid #E9EEF1;  /* Thinner, more subtle */
+      border-radius:12px;  /* Slightly less round */
+      font-size:16px;
+      font-weight:400;
+      color:var(--ink);
+      background:#FFFFFF;
+      font-family:inherit;
+      transition:all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+      outline:none;
+      box-shadow:0 2px 8px rgba(0, 0, 0, 0.04);  /* Subtle depth */
+    }
+    /* when long, shrink slightly so more fits */
+    .url-input.is-long{ font-size:14px; }
+    .url-input.has-icon{padding-left:24px;padding-right:24px}  /* Equal padding now */
+    .url-input:hover{
+      border-color:#B8C5D0;
+      box-shadow:0 4px 12px rgba(0, 0, 0, 0.08);
+    }
+    .url-input:focus{
+      border-color:#00A3A3;
+      box-shadow:0 0 0 4px rgba(0, 163, 163, 0.1);  /* Soft focus ring */
+    }
+    .url-input::placeholder{
+      color:#A6B0BF;
+      font-style:italic;  /* Subtle elegance */
+    }
+    .url-input.is-drag{
+      border-color:transparent;
+      background:
+        linear-gradient(#fff,#fff) padding-box,
+        var(--focus-gradient) border-box;
+      background-clip:padding-box, border-box;
+      box-shadow:var(--shadow-elevated);
+    }
+    .paste-pill{
+      display:none;  /* Remove the paste pill - redundant */
+    }
+
+    .paste-btn{
+      width:100%;
+      padding:14px 32px;  /* Reduced vertical padding for shorter button */
+      background:#0B0F14;  /* Dark, premium */
+      border:none;
+      border-radius:8px;  /* Less round, more architectural */
+      color:#FFFFFF;
+      font-weight:500;  /* Not too heavy */
+      font-size:16px;
+      letter-spacing:0.02em;
+      cursor:pointer;
+      transition:all 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
+      position:relative;
+      overflow:hidden;
+    }
+    /* Remove ALL shine animations - they look cheap */
+    .paste-btn::before,
+    .paste-btn::after{
+      display:none;
+    }
+    /* Sophisticated hover state */
+    .paste-btn:hover{
+      background:#00A3A3;  /* Brand color on hover */
+      transform:translateY(-3px);
+      box-shadow:0 12px 32px rgba(0, 163, 163, 0.25);
+    }
+    .paste-btn:active{
+      transform:translateY(-1px);
+      box-shadow:0 8px 20px rgba(0, 163, 163, 0.2);
+    }
+
+    /* Loading State */
+    .loading-state{display:none;text-align:center}
+    .loading-state.visible{
+      display:flex;
+      flex-direction:column;
+      align-items:center;
+      gap:18px;
+      animation:fadeIn 0.3s ease;
+    }
+    .spinner{
+      position:relative;
+      width:56px;
+      height:56px;
+      border:5px solid var(--petrol-100);
+      border-top-color:var(--petrol-500);
+      border-radius:50%;
+      animation:spin 0.8s linear infinite;
+    }
+    .spinner::before{
+      content:"";
+      position:absolute;
+      inset:-14px;
+      border-radius:50%;
+      background:linear-gradient(135deg, rgba(0,144,144,.12), rgba(127,225,255,.1));
+      z-index:-1;
+      pointer-events:none;
+    }
+    @keyframes spin{to{transform:rotate(360deg)}}
+    .loading-text{font-size:17px;color:var(--muted);font-weight:600}
+
+    /* Results Section - container only, children handle their own animations */
+    .results-section{
+      display:none;
+      flex-direction:column;
+      width:100%;
+      margin-top:-10px;  /* Pull closer to logo */
+      padding-top:10px;
+      opacity:0;
+    }
+    .results-section.visible{
+      display:flex;
+    }
+    .results-section.visible.is-in{
+      opacity:1;
+      transition:opacity 250ms ease-out;
+    }
+
+    .confidence-block{
+      padding:0 24px;
+      margin:4px 0 20px;
+      background:none;
+      border:none;
+      box-shadow:none;
+      display:block;
+    }
+    /* Ensure hidden attribute truly hides the ribbon regardless of base styles */
+    .confidence-block[hidden]{
+      display:none !important;
+      margin:0 !important;
+      padding:0 !important;
+    }
+    .confidence-bridge{
+      margin:0 0 20px 0;
+      padding:15px 0 0 12px;
+      text-align:left;
+      display:flex;
+      flex-direction:column;
+      gap:4px;
+      border-bottom:1px solid rgba(11,15,20,.08);
+    }
+
+    /* Product Confirmation + Recommendation Card */
+    .product-card{
+      display:flex;
+      flex-direction:column;
+      overflow:hidden;
+      margin-bottom:0;
+    }
+
+    /* Product confirmation section */
+    .product-found{
+      padding:20px 24px;
+      display:flex;
+      align-items:center;
+      gap:16px;
+      margin-bottom:0;
+      background:linear-gradient(135deg, rgba(0,163,163,0.15) 0%, rgba(127,225,255,0.1) 50%, rgba(0,0,0,0.1) 100%), #3A4652;
+      border-radius:var(--radius-card);
+      border:1px solid rgba(0,163,163,0.3);
+      box-shadow:0 8px 32px rgba(0,163,163,0.15), inset 0 1px 0 rgba(255,255,255,0.2);
+      flex:1;
+      position:relative;
+      overflow:hidden;
+    }
+    .product-found::before{
+      content:"";
+      position:absolute;
+      top:0;
+      left:0;
+      right:0;
+      height:50%;
+      background:linear-gradient(180deg, rgba(255,255,255,0.15) 0%, rgba(255,255,255,0) 100%);
+      pointer-events:none;
+    }
+    .product-thumb{
+      flex-shrink:0;
+      width:100px;
+      height:100px;
+      background:var(--canvas-100);
+      border-radius:var(--radius-thumb);
+      overflow:hidden;
+    }
+    .product-thumb img{
+      width:100%;
+      height:100%;
+      object-fit:cover;
+      object-position:center 25%;
+      display:block;
+    }
+    .product-meta{
+      flex:1;
+      display:flex;
+      flex-direction:column;
+      justify-content:center;
+      gap:8px;
+    }
+    .product-kicker{
+      font-size:11px;
+      font-weight:700;
+      letter-spacing:.08em;
+      text-transform:uppercase;
+      color:var(--muted);
+    }
+    .product-title{
+      display:flex;
+      flex-direction:column;
+      gap:4px;
+      margin:0;
+    }
+    .found-label{
+      font-size:11px;
+      font-weight:800;
+      letter-spacing:.08em;
+      text-transform:uppercase;
+      color:#FFFFFF;
+      display:flex;
+      align-items:center;
+      gap:6px;
+    }
+    .found-label::before{
+      content:'✓';
+      display:inline-flex;
+      align-items:center;
+      justify-content:center;
+      width:16px;
+      height:16px;
+      background:var(--petrol-100);
+      border-radius:50%;
+      font-size:10px;
+      color:#00A3A3;
+      box-shadow: inset 0 0 0 1px rgba(0,163,163,.18);
+    }
+    .product-name{
+      font-size:18.5px;
+      font-weight:700;
+      color:#E0F7F7;
+      letter-spacing:-.012em;
+    }
+    .product-subtitle{
+      font-size:14px;
+      font-weight:600;
+      color:#B8C5D1;
+    }
+
+    .smart-toggle{
+      width:100%;
+      padding:16px 20px;
+      background:var(--focus-gradient);
+      color:#fff;
+      border:none;
+      border-top:1px solid rgba(255,255,255,.35);
+      font-size:15px;
+      font-weight:700;
+      text-align:left;
+      display:flex;
+      justify-content:space-between;
+      align-items:center;
+      gap:12px;
+      cursor:pointer;
+      box-shadow:var(--shadow-surface);
+      transition:transform 0.2s ease, box-shadow 0.2s ease;
+    }
+    .smart-toggle:focus-visible{
+      outline:2px solid transparent;
+      outline-offset:2px;
+      box-shadow:0 0 0 2px rgba(31,174,217,.35), var(--shadow-surface);
+    }
+    .smart-toggle-text{
+      flex:1;
+    }
+    .smart-toggle:hover{transform:translateY(-1px);box-shadow:var(--shadow-elevated)}
+    .smart-toggle:active{transform:scale(.98)}
+    .smart-toggle::after{
+      content:'+';
+      font-size:18px;
+      font-weight:800;
+    }
+    .smart-panel{
+      display:flex;
+      flex-direction:column;
+      gap:12px;
+      padding:18px 20px 20px;
+      background:#FAF8F6;
+      border-top:1px solid rgba(11,15,20,.08);
+      transition:max-height .25s ease, opacity .25s ease, transform .25s ease;
+      transform:translateY(-4px);
+    }
+    .smart-panel[hidden]{display:none;}
+    .smart-cta.open .smart-panel{
+      transform:translateY(0);
+    }
+    .smart-metric{
+      display:flex;
+      flex-direction:column;
+      gap:8px;
+    }
+    .smart-metric-head{
+      display:flex;
+      justify-content:space-between;
+      font-size:13px;
+      font-weight:700;
+      color:var(--accent);
+    }
+    .smart-meter{
+      height:6px;
+      background:var(--petrol-100);
+      border-radius:999px;
+      overflow:hidden;
+    }
+    .smart-meter span{
+      display:block;
+      height:100%;
+      background:var(--petrol-500);
+      border-radius:999px;
+    }
+    .smart-list{
+      margin:0;
+      padding-left:18px;
+      display:flex;
+      flex-direction:column;
+      gap:8px;
+    }
+    .smart-list li{
+      font-size:13px;
+      color:#374151;
+      line-height:1.5;
+    }
+    .smart-note{
+      font-size:13px;
+      color:var(--muted);
+    }
+
+    /* Size Recommendation Section */
+    .size-rec-section{
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      gap:12px;
+      padding-top:16px;
+      border-top:1px solid rgba(0,0,0,.06);
+      width:100%;
+    }
+    .size-rec-left{
+      flex:1;
+      display:flex;
+      flex-direction:column;
+      gap:6px;
+    }
+    .size-rec-title{
+      font-size:24px;
+      font-weight:800;
+      color:var(--ink);
+      margin:0;
+    }
+    .size-highlight{
+      color:transparent;
+      background:var(--focus-gradient);
+      -webkit-background-clip:text;
+      background-clip:text;
+      -webkit-text-fill-color:transparent;
+    }
+    .size-meta{
+      display:flex;
+      align-items:center;
+      gap:8px;
+      font-size:13px;
+    }
+    .confidence{
+      font-weight:700;
+      color:var(--accent);
+    }
+    .separator{
+      color:#d1d5db;
+    }
+    .twins-agree{
+      color:var(--muted);
+      font-weight:600;
+    }
+    .cta-button{
+      padding:12px 20px;
+      border:none;
+      border-radius:var(--radius-btn);
+      background:var(--focus-gradient);
+      color:#fff;
+      font-weight:700;
+      font-size:14px;
+      box-shadow:var(--shadow-surface);
+      cursor:pointer;
+      transition:transform 0.2s ease, box-shadow 0.2s ease;
+      white-space:nowrap;
+      flex-shrink:0;
+    }
+    .cta-button:hover{transform:translateY(-2px);box-shadow:var(--shadow-elevated)}
+    .cta-button:active{transform:scale(.98)}
+
+    /* Section heading pattern */
+    .section-head{
+      display:flex;
+      flex-direction:column;
+      gap:4px;
+      margin-bottom:8px;
+    }
+    .section-title{
+      font-size:22px;
+      font-weight:800;
+      color:var(--ink);
+      letter-spacing:-.01em;
+    }
+    .section-subtitle{
+      font-size:14px;
+      color:var(--accent);
+      font-weight:600;
+    }
+
+    /* Results: slight delay for content below the bridge */
+    .twins-feed{
+      display:flex;
+      flex-direction:column;
+      gap:16px;
+      opacity:0;                 /* start hidden */
+      transform:none;
+      transition: opacity .35s ease .22s; /* fade in after bridge */
+    }
+    .results-section.visible .twins-feed{opacity:1;transform:none}
+    .twins-feed .proxy-card-feed{opacity:1;transform:none;transition:none}
+    .twin-card{
+      overflow:hidden;
+      transition:transform 0.2s ease, box-shadow 0.2s ease;
+    }
+    .twin-card:hover{transform:translateY(-2px);box-shadow:0 18px 40px rgba(17,25,40,.16)}
+    @keyframes slideUp{from{opacity:0;transform:translateY(20px)}to{opacity:1;transform:translateY(0)}}
+
+    .twin-image-wrapper{position:relative;overflow:hidden}
+    .twin-image-wrapper::before{content:"";position:absolute;inset:0;pointer-events:none;opacity:.02;mix-blend-mode:overlay;background-image:radial-gradient(rgba(0,0,0,.35) 1px, transparent 1px);background-size:2px 2px;border-radius:inherit}
+    .twin-img{width:100%;height:460px;object-fit:cover;object-position:center 25%;display:block}
+    .twin-image-wrapper::after{content:"";position:absolute;left:0;right:0;bottom:0;height:15%;
+      background:linear-gradient(180deg,rgba(255,255,255,0) 0%,rgba(250,248,246,.4) 50%,rgba(255,255,255,.95) 100%);pointer-events:none}
+
+    .size-badge{position:absolute;left:18px;bottom:18px;display:inline-flex;align-items:center;gap:10px;
+      padding:10px 16px;background:rgba(255,255,255,.92);backdrop-filter:blur(12px);border:1px solid rgba(0,0,0,.08);
+      border-radius:12px;font-weight:600;font-size:16px;color:#0B0F14;z-index:2;
+      box-shadow:0 4px 16px rgba(0,0,0,.08)}
+    .size-badge .label{font-size:13px;font-weight:500;color:#4A5B66;letter-spacing:0.02em}
+
+    .kept-badge{position:absolute;right:18px;top:18px;padding:8px 14px;background:rgba(34,197,94,.95);
+      backdrop-filter:blur(12px);border:1px solid rgba(255,255,255,.3);border-radius:999px;
+      font-weight:700;font-size:13px;color:#fff;z-index:2;box-shadow:0 4px 12px rgba(34,197,94,.3)}
+    .returned-badge{position:absolute;right:18px;top:18px;padding:8px 14px;background:rgba(239,68,68,.92);
+      backdrop-filter:blur(12px);border:1px solid rgba(255,255,255,.3);border-radius:999px;
+      font-weight:700;font-size:13px;color:#fff;z-index:2;box-shadow:0 4px 12px rgba(239,68,68,.3)}
+
+    .fit-note{margin-top:14px;padding:14px 16px;background:rgba(0,144,144,.05);border:1px solid rgba(31,174,217,.18);
+      border-radius:12px;position:relative;padding-left:34px}
+    .fit-note::before{content:"";position:absolute;left:12px;top:14px;width:16px;height:16px;border-radius:50%;background:var(--focus-gradient);opacity:.9}
+    .fit-note-header{font-size:12px;font-weight:700;color:var(--petrol-600);margin-bottom:6px;
+      text-transform:uppercase;letter-spacing:.05em}
+    .fit-note-text{font-size:14px;color:var(--ink);line-height:1.5;font-weight:500;font-style:italic}
+
+    .twin-info{padding:20px 20px 20px}
+
+    .twin-header{padding:16px 20px;background:#FAFAFA;border-bottom:1px solid rgba(0,0,0,0.05)}
+    .twin-header-main{display:flex;align-items:center;gap:12px}
+    .twin-avatar{width:36px;height:36px;border-radius:50%;object-fit:cover;object-position:center 10%}
+    .twin-name{flex:1;font-weight:500;font-size:16px;color:#1C1C1C;letter-spacing:-0.01em}
+    .twin-pill{padding:6px 10px;background:var(--petrol-100);border-radius:999px;font-size:13px;color:var(--accent);font-weight:700;display:inline-flex;align-items:center}
+    .shared-pill{padding:6px 12px;background:#009C9C;border:none;border-radius:16px;font-size:13px;color:#fff;font-weight:500;letter-spacing:0em;cursor:pointer;transition:all 0.2s ease;display:inline-flex;align-items:center;gap:6px;box-shadow:none}
+    .shared-pill:hover{background:#008A8A;transform:translateY(-1px);box-shadow:0 2px 6px rgba(0,156,156,0.2)}
+    .shared-pill.open{background:#008A8A;color:#fff;box-shadow:0 2px 6px rgba(0,156,156,0.25)}
+    .chevron{font-size:9px;transition:transform 0.2s ease}
+    .shared-pill.open .chevron{transform:rotate(180deg)}
+    .shared-pill:focus-visible{
+      outline:2px solid transparent;
+      outline-offset:2px;
+      box-shadow:0 0 0 2px rgba(31,174,217,.35);
+    }
+
+    .shared-items-panel{max-height:0;overflow:hidden;transition:max-height 0.35s cubic-bezier(.21,.9,.3,1.17), opacity .25s ease, transform .25s ease;background:#fff;margin-top:0;border-top:1px solid rgba(0,0,0,0.05);opacity:0;transform:translateY(0)}
+    .shared-items-panel.open{max-height:220px;opacity:1;transform:translateY(0);margin-top:0}
+    .shared-items-content{padding:16px 20px}
+    .shared-items-label{font-size:11px;font-weight:600;color:#6A7683;text-transform:uppercase;margin-bottom:14px;letter-spacing:0.05em;text-align:left}
+    .shared-item{display:flex;align-items:center;justify-content:space-between;gap:16px;padding:10px 0;border-bottom:1px solid rgba(0,0,0,0.05);opacity:0;transform:translateY(4px);transition:opacity .25s ease, transform .28s cubic-bezier(.18,.89,.32,1.28)}
+    .shared-item:last-child{border-bottom:none}
+    .shared-items-panel.open .shared-item{opacity:1;transform:translateY(0)}
+    .shared-items-panel.open .shared-item:nth-child(1){transition-delay:.06s}
+    .shared-items-panel.open .shared-item:nth-child(2){transition-delay:.12s}
+    .shared-items-panel.open .shared-item:nth-child(3){transition-delay:.18s}
+    .shared-item-text{flex:1;font-size:14px;color:#1C1C1C;font-weight:400;display:flex;align-items:center;gap:6px;line-height:1.4}
+    .shared-item-brand{font-weight:600;color:#1C1C1C}
+    .shared-item-product{color:#1C1C1C;font-weight:400}
+    .shared-item-size{padding:4px 8px;background:#F3F4F6;border-radius:6px;font-size:12px;font-weight:500;color:#6A7683;min-width:32px;text-align:center}
+
+    /* Explore other sizes link */
+    .explore-more {
+      margin: 24px 0 16px;
+      padding: 0 20px;
+      text-align: center;
+      font-size: 18px;
+      font-weight: 500;
+      color: #262626;
+      cursor: pointer;
+      user-select: none;
+      letter-spacing: 0.01em;
+    }
+    .explore-more:hover,
+    .explore-more:focus {
+      color: #0B0F14;
+      outline: none;
+    }
+    .explore-more .explore-arrow {
+      display: inline-block;
+      margin-left: 4px;
+      transform: translateX(0);
+      transition: transform 180ms ease;
+    }
+    .explore-more:hover .explore-arrow,
+    .explore-more:focus .explore-arrow {
+      transform: translateX(3px);
+    }
+
+    .twin-photo{position:relative;width:100%;height:600px;object-fit:cover;cursor:pointer}
+    .size-badge-float{
+      position:absolute;
+      top:14px;
+      right:14px;
+      padding:5px 11px;
+      font-size:16px;
+      font-weight:700;
+      color:#fff;
+      background:rgba(11,15,20,0.75);
+      backdrop-filter:blur(10px);
+      border:1px solid rgba(11,15,20,0.1);
+      border-radius:999px;
+      box-shadow:0 4px 12px rgba(0,0,0,0.15);
+      letter-spacing:-0.02em;
+      transition:all 0.25s ease;
+    }
+    .size-badge-float:hover{transform:translateY(-1px);box-shadow:0 6px 18px rgba(0,0,0,0.12)}
+
+    .star-rating{display:flex;align-items:center;gap:12px;margin-bottom:14px}
+    .stars{display:flex;gap:2px;font-size:16px}
+    .star{color:#262626}
+    .star.empty{color:#d1d5db}
+    .review-title{font-size:13px;font-weight:700;text-transform:uppercase;color:#262626;letter-spacing:0.02em}
+
+    .twin-stats{display:flex;gap:20px;margin-bottom:8px;padding-bottom:8px;border-bottom:1px solid #f0f0f0}
+    .stat-item{display:flex;flex-direction:column;gap:2px}
+    .stat-label{font-size:13px;font-weight:600;text-transform:uppercase;color:var(--muted);letter-spacing:0.05em}
+    .stat-value{font-size:16px;font-weight:600;color:#262626}
+
+    .review-section{margin-bottom:18px}
+    .review-text{font-size:14px;line-height:1.6;color:#262626;position:relative}
+    .review-text::before,.review-text::after{content:'"';display:inline;font-size:14px;color:#262626;font-weight:400}
+    .review-text::after{margin-left:0}
+    .review-text::before{margin-right:-2px}
+
+    .shop-btn{display:flex;align-items:center;justify-content:center;gap:10px;width:100%;padding:16px;background:var(--focus-gradient);border:none;border-radius:var(--radius-btn);color:#fff;font-weight:700;font-size:16px;cursor:pointer;transition:transform 0.3s ease, box-shadow 0.3s ease;box-shadow:var(--shadow-surface);position:relative;overflow:hidden;min-height:44px}
+    .shop-btn::before{content:"";position:absolute;inset:1px 1px auto 1px;height:40%;border-radius:11px;background:linear-gradient(180deg,rgba(255,255,255,.12),rgba(255,255,255,0));pointer-events:none}
+    .shop-btn:hover{transform:translateY(-2px);box-shadow:var(--shadow-elevated)}
+    .shop-btn:active{transform:scale(.98)}
+    .shop-btn:focus-visible{
+      outline:2px solid transparent;
+      outline-offset:2px;
+      box-shadow:0 0 0 2px rgba(31,174,217,.35), var(--shadow-surface);
+    }
+
+    /* Tab bar */
+    .tabs{position:absolute;left:0;right:0;bottom:0;height:83px;background:#fff;border-top:1px solid rgba(0,0,0,.08);
+      display:flex;justify-content:space-around;align-items:flex-start;padding-top:8px;padding-bottom:34px;z-index:100}
+    .tab{display:flex;flex-direction:column;align-items:center;gap:6px;text-decoration:none;color:#8e8e93;font-size:11px;font-weight:500;transition:color 0.2s ease}
+    .tab.active{color:var(--petrol-400);font-weight:600}
+    .ico{width:28px;height:28px;display:block}
+
+    /* Pulse animation for visual interest */
+    @keyframes pulse{0%,100%{transform:scale(1)}50%{transform:scale(1.02)}}
+
+
+    /* Sticky action bar removed */
+
+    /* In-App Image Modal */
+    .image-modal{
+      position:absolute;
+      top:0;
+      left:0;
+      right:0;
+      bottom:0;
+      background:rgba(0,0,0,.3);
+      backdrop-filter:blur(8px);
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      z-index:200;
+      opacity:0;
+      visibility:hidden;
+      transition:opacity 0.4s ease, visibility 0.4s ease;
+      border-radius:53px;
+    }
+    .image-modal.open{
+      opacity:1;
+      visibility:visible;
+    }
+    .modal-content{
+      position:relative;
+      width:100%;
+      height:100%;
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      padding:60px 20px 20px;
+      transform:scale(0.9);
+      transition:transform 0.4s ease;
+    }
+    .image-modal.open .modal-content{
+      transform:scale(1);
+    }
+    .modal-image{
+      width:100%;
+      height:100%;
+      object-fit:contain;
+      border-radius:12px;
+      box-shadow:0 20px 40px rgba(0,0,0,.2);
+    }
+    .modal-close{
+      position:absolute;
+      top:20px;
+      right:20px;
+      width:40px;
+      height:40px;
+      background:rgba(255,255,255,.2);
+      border:none;
+      border-radius:50%;
+      color:#fff;
+      font-size:20px;
+      cursor:pointer;
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      transition:background 0.2s ease;
+      z-index:10;
+    }
+    .modal-close:hover{
+      background:rgba(255,255,255,.3);
+    }
+
+    /* Results: show immediately (no animation) */
+    .confidence-bridge{padding:15px 0 0 12px;margin:0 0 20px;text-align:left;opacity:1;transform:none;transition:none}
+    .results-section.visible .confidence-bridge{opacity:1;transform:none}
+    @keyframes fadeSlide{
+      to{
+        opacity:1;
+        transform:translateY(0);
+      }
+    }
+    .bridge-overline{
+      font-size:11px;
+      font-weight:600;
+      letter-spacing:.1em;
+      text-transform:uppercase;
+      color:#6A7683;
+      margin-bottom:2px;
+    }
+    .bridge-headline{
+      font-size:22px;
+      line-height:1.3;
+      font-weight:500;
+      letter-spacing:-0.02em;
+      color:#0B0F14;
+      margin:0;
+      max-width:100%;
+      padding-bottom:8px;
+    }
+    .divider{
+      margin:8px 0 0;
+      width:60px;
+      height:3px;
+      border-radius:9999px;
+      background:var(--focus-gradient);
+      background-size:200% 200%;
+      animation:gradientSlide 3s ease-in-out infinite;
+      opacity:0.85;
+    }
+    .sparkle{display:none!important}
+    @keyframes gradientSlide{
+      0%{background-position:0% 50%}
+      100%{background-position:100% 50%}
+    }
+    /* Confidence block: fade in slightly after the bridge */
+    .confidence-block{opacity:0;transform:none;transition:opacity .35s ease .26s}
+    .results-section.visible .confidence-block{opacity:1;transform:none}
+    @keyframes fadeInOnly{from{opacity:0}to{opacity:1}}
+
+    /* Prefers-reduced-motion: minimize or remove transitions/animations */
+    @media (prefers-reduced-motion: reduce){
+      *{scroll-behavior:auto!important}
+      .results-section.visible{animation:none!important}
+      .confidence-bridge{transition:none!important;opacity:1!important;transform:none!important}
+      .twins-feed{transition:none!important;opacity:1!important;transform:none!important}
+      .confidence-block{transition:none!important;opacity:1!important;transform:none!important}
+      .twins-feed .proxy-card-feed{transition:none!important;opacity:1!important;transform:none!important}
+      .twin-card{animation:none!important}
+      .sticky-cta{transition:none!important;transform:none!important;opacity:1!important}
+      .smart-panel{transition:none!important}
+      .shared-items-panel{transition:none!important}
+      .shared-item{transition:none!important}
+    }
+
+    /* === Hierarchy Fix: Bridge first, Product ribbon second === */
+
+    /* Pull the insight up and reduce vertical rhythm */
+    .section{margin-top:0px;}
+    .divider{display:none;}  /* Hide the petrol accent bar */
+
+    /* Convert the product "card" into a subtle ribbon */
+    .product-card{
+      box-shadow:none!important;
+      border:none!important;
+      background:transparent!important;
+    }
+
+    .product-found{
+      display:flex;
+      align-items:center;
+      gap:12px;
+      padding:12px 14px;
+      margin:0 24px 6px;
+      border-radius:12px;
+      background:linear-gradient(135deg, rgba(0,163,163,.10), rgba(127,225,255,.08));
+      border:1px solid rgba(0,163,163,.22);
+      box-shadow:none;
+    }
+
+    .product-found::before{display:none!important;}
+    .product-thumb{width:56px;height:56px;border-radius:10px;}
+    .product-meta{gap:4px;}
+
+    .found-label{font-size:10px;color:var(--petrol-600);opacity:.9;}
+    .product-name{font-size:15px;font-weight:800;color:var(--ink);}
+    .product-subtitle{font-size:12.5px;color:var(--ink-300);}
+
+    /* Slightly lift twins feed closer to the insight */
+    .twins-feed{margin-top:6px;}
+
+    /* Tweak the confidence-block wrapper so the ribbon doesn't add extra offset */
+    .confidence-block{margin:0 0 8px;padding:0;}
+
+    /* ====== LOADING CARD ====== */
+    /* Loading Card — compact, quiet */
+    .loading-card{
+      margin:16px 24px 8px;
+      padding:16px 14px 12px;
+      background:#fff;
+      border:1px solid rgba(11,15,20,.06);
+      border-radius:14px;
+      box-shadow:var(--shadow-surface);
+      opacity:0; transform:translateY(6px);
+      transition:opacity .22s ease, transform .22s ease;
+    }
+    .loading-card.is-visible{opacity:1;transform:none}
+    .load-rows{display:flex;flex-direction:column;gap:8px}
+    .load-row{display:flex;align-items:center;gap:8px;font:600 15px/1.2 Inter;color:#3A4652}
+    .load-row .text{flex:0 0 auto}
+    .load-row .mini-chip{margin-left:auto}
+    .dot{width:18px;height:18px;border-radius:50%;display:grid;place-items:center;font-weight:900;font-size:12px;background:#CFF3E1;color:#0E8A62}
+    .loading-card .spinner{width:18px;height:18px;border-radius:50%;border:2px solid #E6F5F5;border-top-color:#16B5B5;animation:spin .9s linear infinite}
+    .mini-chip{display:flex;align-items:center;gap:10px;padding:6px 8px;border-radius:12px;background:linear-gradient(135deg, rgba(0,163,163,.06), rgba(127,225,255,.05));border:1px solid rgba(0,163,163,.16)}
+    .mini-thumb{width:32px;height:32px;border-radius:8px;object-fit:cover;background:#f2f4f6}
+    .mini-meta .brand{font-weight:800;font-size:12.5px;letter-spacing:.02em;color:#24323a;line-height:1}
+    .mini-meta .title{font-size:12px;color:#6A7683;line-height:1.1}
+    .progress{position:relative;height:4px;border-radius:999px;background:rgba(0,0,0,.06);margin-top:10px;overflow:hidden}
+    .progress span{position:absolute;inset:0 auto 0 0;width:0%;background:var(--focus-gradient);border-radius:inherit;transition:width .1s linear}
+    @keyframes spin{to{transform:rotate(360deg)}}
+
+    /* ——— Loading Card: Large preset ——— */
+    .loading-card.is-large{
+      margin: 24px 24px 16px;
+      padding: 20px 16px 16px;
+      border-radius: 18px;
+      box-shadow: var(--shadow-elevated);
+    }
+    .loading-card.is-large .load-row{ font: 700 17px/1.2 Inter, system-ui; gap: 12px; }
+    .loading-card.is-large .dot{ width: 22px; height: 22px; font-size: 13px; }
+    .loading-card.is-large .spinner{ width: 24px; height: 24px; border-width: 3px; }
+    .loading-card.is-large .mini-chip{
+      gap: 12px;
+      padding: 8px 10px;
+      border-radius: 14px;
+    }
+    .loading-card.is-large .mini-thumb{ width: 40px; height: 40px; border-radius: 10px; }
+    .loading-card.is-large .mini-meta .brand{ font-size: 13.5px; }
+    .loading-card.is-large .mini-meta .title{ font-size: 12.5px; }
+    .loading-card.is-large .progress{ height: 8px; border-radius: 999px; margin-top: 14px; }
+    .loading-card.is-large .progress span{ box-shadow: inset 0 0 0 1px rgba(255,255,255,.3); }
+
+    /* Ensure results stay locked in position during grid mode */
+    .content.is-loading #resultsSection.visible{
+      transform:none !important;
+      opacity:1 !important;
+      transition:none !important;
+    }
+
+    /* Reduced motion */
+    @media (prefers-reduced-motion: reduce){
+      .loading-card,
+      .reveal-up,
+      .confidence-bridge,
+      .twins-feed,
+      .confidence-block{transition:none!important;transform:none!important;opacity:1!important;}
+      .spinner{animation:none!important;}
+    }
+
+    /* Stepper states */
+    .load-row[aria-hidden="true"] { opacity: .35; }
+    .load-row.is-active { opacity: 1; }
+    .load-row.is-done   { opacity: 1; }
+    .load-row.is-done .dot { transform: scale(1); }
+    .load-row .dot { transform: scale(.8); transition: transform .18s ease; }
+
+    /* Shimmered track */
+    .progress--shimmer { position:relative; overflow:hidden; }
+    .progress--shimmer::before{
+      content:""; position:absolute; inset:0;
+      background:linear-gradient(90deg, rgba(255,255,255,0), rgba(255,255,255,.25), rgba(255,255,255,0));
+      animation:trackShimmer 2.2s ease-in-out infinite;
+      opacity:.35;
+    }
+    @keyframes trackShimmer { 0%{transform:translateX(-60%)} 100%{transform:translateX(60%)} }
+
+    /* Focus ring for back button while loading */
+    #backBtn:focus-visible{
+      outline:2px solid transparent; outline-offset:2px;
+      box-shadow:0 0 0 2px rgba(31,174,217,.35);
+    }
+
+    /* Reduced motion: freeze shimmer & transforms */
+    @media (prefers-reduced-motion: reduce){
+      .progress--shimmer::before{ animation:none !important; }
+      .load-row .dot{ transform:none !important; }
+      .hero-image-container,
+      .hero-product-info,
+      .hero-loading-section{
+        opacity: 1 !important;
+        transform: none !important;
+        transition: none !important;
+      }
+    }
+
+    /* === JOLT FIXES === */
+    /* Results entrance handled by child elements now */
+
+    /* Once not loading, ensure the loader never affects layout */
+    .content:not(.is-loading) #loadingCard{
+      position: absolute;
+      margin: 0;
+      padding: 0;
+      height: 0;
+      overflow: hidden;
+      border: 0;
+    }
+
+    /* --- Loading stage centering --- */
+    /* Loading layout: same grid, just taller middle row for centering */
+    .content.is-loading{
+      grid-template-rows: auto minmax(520px, 1fr) auto;  /* expand middle row */
+      justify-items: center;
+      padding-top: 24px;  /* More top padding to prevent clipping */
+    }
+
+    /* Explicit row placement so header never moves in loading mode */
+    .content.is-loading .header{ 
+      grid-row: 1; 
+      justify-self: stretch; 
+    }
+
+    /* Center ONLY the loading card in the stage row */
+    .content.is-loading #loadingCard{
+      grid-row: 2;
+      place-self: center;
+      margin: 0 24px 0; /* no negative margin to prevent clipping */
+      width: min(640px, 90%);
+    }
+
+    /* Keep results anchored in the same stage row during handoff */
+    .content.is-loading #resultsSection{
+      grid-row: 2;
+      place-self: start center;  /* same alignment as loading card */
+      margin-top: 0;  /* no top margin - keep at natural position */
+      align-self: start;  /* ensure it stays at top */
+    }
+
+    /* Short viewports: bias up a bit but keep header pinned */
+    @media (max-height: 740px){
+      .content.is-loading{
+        align-items: start;
+      }
+    }
+
+    /* ——— Promote the confirmation chip to a big, primary element ——— */
+    .loading-card.is-large .load-row[data-step="confirm"]{
+      align-items: stretch;        /* let the chip breathe */
+    }
+
+    .loading-card.is-large .mini-chip{
+      /* Big, tappable card look */
+      flex: 1 1 auto;
+      display: grid;
+      grid-template-columns: 72px 1fr auto;  /* image | text | check */
+      align-items: center;
+      gap: 14px;
+      padding: 12px 14px;
+      border-radius: 16px;
+      background: #fff;
+      border: 1px solid rgba(0,0,0,.06);
+      box-shadow: 0 10px 28px rgba(17,25,40,.10);
+      min-height: 80px;
+    }
+
+    .loading-card.is-large .mini-thumb{
+      width: 72px; height: 72px;
+      border-radius: 12px;
+      object-fit: cover;
+      background: #eef3f6;
+    }
+
+    .loading-card.is-large .mini-meta{
+      display: flex; flex-direction: column; gap: 4px;
+      min-width: 0; /* allow text wrap */
+    }
+
+    .loading-card.is-large .mini-meta .brand{
+      font-size: 16px; line-height: 1.1;
+      font-weight: 900;
+      color: #0f2430;
+      letter-spacing: -.01em;
+      white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+    }
+
+    .loading-card.is-large .mini-meta .title{
+      font-size: 14px; line-height: 1.2;
+      font-weight: 600; color: #4a5b66;
+      overflow: hidden; text-overflow: ellipsis;
+    }
+
+    .loading-card.is-large .mini-chip::after{
+      /* strong confirmation check */
+      content: "✓";
+      display: inline-grid; place-items: center;
+      width: 28px; height: 28px;
+      border-radius: 999px;
+      background: #D1F6E6;
+      color: #0E8A62; font-weight: 900;
+    }
+
+    /* So the text label doesn't compete with the big card */
+    .loading-card.is-large .load-row[data-step="confirm"] .text{
+      display: none;
+    }
+
+    /* Entrance polish */
+    .mini-chip[data-state="ready"]{
+      animation: chipIn .22s cubic-bezier(.21,.9,.3,1.17);
+    }
+    @keyframes chipIn{
+      from{ opacity:0; transform: translateY(4px) scale(.98); }
+      to{   opacity:1; transform: translateY(0)    scale(1);   }
+    }
+
+    /* Skeleton state keeps size stable until image is ready */
+    .mini-chip[data-state="loading"] .mini-thumb{
+      background: linear-gradient(90deg,#eef4f6 0%,#f6fbfc 40%,#eef4f6 80%);
+      background-size: 200% 100%;
+      animation: miniShimmer 1.2s ease-in-out infinite;
+    }
+    @keyframes miniShimmer { 0%{background-position:0% 0} 100%{background-position:200% 0} }
+
+    /* Don't show placeholder "—" text */
+    .mini-meta .brand:empty, .mini-meta .title:empty { display:none; }
+
+    /* ——— Hero Product Card (for loading) ——— */
+    .hero-product-card{
+      width:100%;
+      max-width:380px;
+      background:#fff;
+      border-radius:28px;
+      overflow:hidden;
+      box-shadow:
+        0 4px 6px -1px rgba(0,0,0,0.03),
+        0 10px 15px -3px rgba(0,0,0,0.04),
+        0 20px 25px -5px rgba(0,0,0,0.03);
+    }
+
+    /* Staggered entrance animations for each section */
+    .hero-image-container{
+      opacity: 0;
+      transform: translateY(20px);
+      transition: opacity 0.4s ease, transform 0.4s ease;
+    }
+
+    .hero-product-info{
+      opacity: 0;
+      transform: translateY(20px);
+      transition: opacity 0.4s ease 0.1s, transform 0.4s ease 0.1s;
+    }
+
+    .hero-loading-section{
+      opacity: 0;
+      transform: translateY(20px);
+      transition: opacity 0.4s ease 0.2s, transform 0.4s ease 0.2s;
+    }
+
+    /* Show elements when card is visible */
+    .hero-product-card.is-visible .hero-image-container,
+    .hero-product-card.is-visible .hero-product-info,
+    .hero-product-card.is-visible .hero-loading-section{
+      opacity: 1;
+      transform: translateY(0);
+    }
+
+    @keyframes slideUp{
+      from{opacity:0;transform:translateY(30px)}
+      to{opacity:1;transform:translateY(0)}
+    }
+
+    /* Hero Product Image */
+    .hero-image-container{
+      position:relative;
+      width:100%;
+      height:420px;
+      background:#F9FAFB;
+      overflow:hidden;
+      border-radius:12px;
+    }
+
+    .hero-product-image{
+      width:100%;
+      height:100%;
+      object-fit:cover;
+      object-position:center;
+    }
+
+    /* Gradient overlay for better text readability */
+    .hero-image-overlay{
+      position:absolute;
+      bottom:0;
+      left:0;
+      right:0;
+      height:80px;
+      background:linear-gradient(to top, rgba(255,255,255,0.9), transparent);
+      pointer-events:none;
+    }
+
+    /* Hero Product Info Section */
+    .hero-product-info{
+      padding:18px 20px 20px;
+    }
+
+    .hero-product-status{
+      display:inline-flex;
+      align-items:center;
+      gap:8px;
+      padding:6px 12px;
+      background:#EAF6F4;  /* Softer neutral background */
+      border-radius:6px;  /* Smaller, quieter */
+      font-size:12px;  /* Caption size */
+      color:#00A3A3;  /* Brand color */
+      font-weight:500;
+      margin-bottom:16px;
+    }
+
+    .hero-product-brand{
+      font-size:11px;
+      font-weight:500;  /* Reduced from 600 to semi-bold */
+      letter-spacing:0.08em;
+      text-transform:uppercase;
+      color:#8E98A3;  /* Softer medium gray */
+      margin-bottom:2px;
+    }
+
+    .hero-product-name{
+      font-size:18px;
+      font-weight:400;
+      color:#0B0F14;
+      line-height:1.3;
+      letter-spacing:-0.01em;
+    }
+
+    .hero-status-check{
+      width:16px;
+      height:16px;
+      background:#0E8A62;
+      border-radius:50%;
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      color:white;
+      font-size:10px;
+      font-weight:bold;
+    }
+
+    /* Hero Loading Section */
+    .hero-loading-section{
+      padding:18px 20px 20px;
+      border-top:1px solid rgba(0,0,0,0.05);
+      display:flex;
+      flex-direction:column;
+      align-items:center;
+      gap:8px;
+    }
+
+    .hero-loading-text{
+      font-size:14px;
+      font-weight:600;
+      color:#008A8A;
+      text-align:center;
+      letter-spacing:0.05em;
+      text-transform:uppercase;
+      margin-bottom:4px;
+      animation: loadingPulse 2s ease-in-out infinite;
+    }
+
+    @keyframes loadingPulse{
+      0%, 100%{ opacity:1; }
+      50%{ opacity:0.6; }
+    }
+
+    .hero-subtext{
+      font-size:16px;
+      font-weight:600;
+      color:#1C1C1C;
+      text-align:center;
+      margin-bottom:18px;
+      letter-spacing:-0.01em;
+      line-height:1.35;
+      max-width:320px;
+      margin-left:auto;
+      margin-right:auto;
+    }
+
+    /* Hero Progress Indicator */
+    .hero-progress-track{
+      width:100%;
+      height:4px;  /* Thinner for elegance */
+      background:#E9EEF1;  /* Consistent with input border color */
+      border-radius:2px;
+      overflow:hidden;
+    }
+
+    .hero-progress-fill{
+      height:100%;
+      background:var(--brand-sheen);  /* Proxi logo gradient */
+      background-size:200% 200%;
+      border-radius:2px;
+      width:0%;
+      transition:width 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+      position:relative;
+      overflow:hidden;
+      animation:progressPulse 2s ease-in-out infinite;
+    }
+
+    @keyframes progressPulse{
+      0%, 100%{
+        opacity:1;
+        background-position:0% 50%;
+      }
+      50%{
+        opacity:0.85;
+        background-position:100% 50%;
+      }
+    }
+
+    /* Skeleton state for hero image */
+    .hero-product-image[data-state="loading"]{
+      background: linear-gradient(90deg,#eef4f6 0%,#f6fbfc 40%,#eef4f6 80%);
+      background-size: 200% 100%;
+      animation: heroImageShimmer 1.2s ease-in-out infinite;
+    }
+    @keyframes heroImageShimmer { 0%{background-position:0% 0} 100%{background-position:200% 0} }
+  </style>
+</head>
+<body>
+  <div class="phone">
+      <div class="screen">
+        <div class="island"></div>
+        <div class="status"><div>9:41</div><div class="right"><img src="../img/cellular-connection.svg" alt="cell"/><img src="../img/wifi.svg" alt="wifi"/><img src="../img/battery.svg" alt="battery"/></div></div>
+
+        <!-- Header (outside scroll container to avoid scrollbar centering shifts) -->
+        <div class="header">
+          <button class="back-btn" id="backBtn" onclick="goBack()" style="display: none;">
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <path d="M19 12H5M12 19L5 12L12 5" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+            </svg>
+          </button>
+          <div class="logo">proxi</div>
+        </div>
+
+        <!-- Main Content -->
+        <div class="content">
+          <section class="section finder-shell" id="findSectionWrap">
+            <div class="card card-pad find-section" id="findSection">
+              <h1 class="find-title">Order one size—<span class="accent">the right one.</span></h1>
+              <p class="find-subtitle">See how clothes fit someone like you.</p>
+
+
+              <div class="input-wrapper">
+                <input
+                  type="text"
+                  class="url-input"
+                  id="urlInput"
+                  placeholder="Paste a product link from 500+ brands"
+                  autocomplete="off"
+                >
+              </div>
+
+              <button class="paste-btn" id="pasteBtn" onclick="handlePaste()">
+                See how it fits
+              </button>
+
+              <div class="brand-marquee" aria-hidden="true" role="presentation">
+                <div class="brand-track">
+                  <span class="logo-chip">Reformation</span>
+                  <span class="logo-chip">Aritzia</span>
+                  <span class="logo-chip">Lulus</span>
+                  <span class="logo-chip">The Row</span>
+                  <!-- duplicate set for seamless loop -->
+                  <span class="logo-chip">Reformation</span>
+                  <span class="logo-chip">Aritzia</span>
+                  <span class="logo-chip">Lulus</span>
+                  <span class="logo-chip">The Row</span>
+                </div>
+              </div>
+            </div>
+          </section>
+
+          <section id="loadingCard" class="hero-product-card" aria-live="polite" hidden style="opacity: 0;">
+            <!-- Large Hero Image -->
+            <div class="hero-image-container">
+              <img class="hero-product-image" id="heroImage" data-state="loading" alt="" />
+              <div class="hero-image-overlay"></div>
+            </div>
+
+            <!-- Product Details -->
+            <div class="hero-product-info">
+              <div class="hero-product-status">
+                <span class="hero-status-check">✓</span>
+                <span>Product matched</span>
+              </div>
+              <div class="hero-product-brand" id="heroBrand">—</div>
+              <h2 class="hero-product-name" id="heroName">—</h2>
+            </div>
+
+            <!-- Loading State -->
+            <div class="hero-loading-section">
+              <div class="hero-loading-text" id="heroLoadingText">Finding your proxies</div>
+              <div class="hero-subtext">People who share your size in other pieces.</div>
+              <div class="hero-progress-track">
+                <div class="hero-progress-fill" id="heroProgressBar"></div>
+              </div>
+            </div>
+          </section>
+
+
+          <div class="results-section reveal-up" id="resultsSection">
+            <!-- BRIDGE FIRST -->
+            <section class="section">
+              <div class="confidence-bridge" aria-live="polite">
+                <div class="bridge-overline">YOUR PROXIES</div>
+                <h2 class="bridge-headline">
+                  <span id="bridgeTwinCount">2</span> of your fit matches own this dress
+                </h2>
+                <div class="divider"></div>
+              </div>
+              <div class="twins-feed">
+                <article class="card proxy-card-feed">
+                  <div class="twin-header">
+                    <div class="twin-header-main">
+                      <img class="twin-avatar" src="../img/u1.jpg" alt="bellag22">
+                      <div class="twin-name">bellag22</div>
+                      <div class="shared-pill" data-panel="sharedPanel" onclick="toggleSharedItems(this)">
+                        <span>2 shared sizes</span>
+                        <span class="chevron">▼</span>
+                      </div>
+                    </div>
+
+                    <div class="shared-items-panel" id="sharedPanel">
+                      <div class="shared-items-content">
+                        <div class="shared-items-label">You both own these in the same size</div>
+
+                        <div class="shared-item">
+                          <div class="shared-item-text">
+                            <span class="shared-item-brand">J.Crew</span>
+                            <span class="shared-item-product">Halter Mixy Dress</span>
+                          </div>
+                          <div class="shared-item-size">S</div>
+                        </div>
+
+                        <div class="shared-item">
+                          <div class="shared-item-text">
+                            <span class="shared-item-brand">AYR</span>
+                            <span class="shared-item-product">The Secret Sauce Jeans</span>
+                          </div>
+                          <div class="shared-item-size">26</div>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+
+                  <div style="position: relative;">
+                    <img class="twin-photo" src="../img/pnpreal.png" alt="Petal & Pup dress on bellag22" onclick="openImageModal(this.src, this.alt)">
+                    <div class="size-badge-float">S</div>
+                  </div>
+
+                    <div class="twin-info">
+                    <div class="star-rating">
+                      <div class="stars" aria-label="4 out of 5">
+                        <svg width="16" height="16" viewBox="0 0 24 24" class="star" style="fill:#262626"><path d="M12 17.27L18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21z"/></svg>
+                        <svg width="16" height="16" viewBox="0 0 24 24" class="star" style="fill:#262626"><path d="M12 17.27L18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21z"/></svg>
+                        <svg width="16" height="16" viewBox="0 0 24 24" class="star" style="fill:#262626"><path d="M12 17.27L18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21z"/></svg>
+                        <svg width="16" height="16" viewBox="0 0 24 24" class="star" style="fill:#262626"><path d="M12 17.27L18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21z"/></svg>
+                        <svg width="16" height="16" viewBox="0 0 24 24" class="star" style="fill:#d1d5db"><path d="M12 17.27L18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21z"/></svg>
+                      </div>
+                      <div class="review-title">Actually true to size</div>
+                    </div>
+
+                    <div class="twin-stats">
+                      <div class="stat-item">
+                        <div class="stat-label">Size</div>
+                        <div class="stat-value">S</div>
+                      </div>
+                      <div class="stat-item">
+                        <div class="stat-label">Height</div>
+                        <div class="stat-value">5'3"</div>
+                      </div>
+                      <div class="stat-item">
+                        <div class="stat-label">Usually wears</div>
+                        <div class="stat-value">S</div>
+                      </div>
+                    </div>
+
+                    <div class="review-section">
+                      <div class="review-text">
+                        A lot of reviews say it runs small so I went up a size to M, which was way too big. I exchanged for an S for a better fit around my waist.
+                      </div>
+                    </div>
+
+                    <button class="shop-btn" onclick="handlePrimaryCTA(event)">Shop Size S →</button>
+                  </div>
+                </article>
+                
+                <!-- Optional second card: AYR jeans 26S (kept minimal for demo) -->
+                <article class="card proxy-card-feed">
+                  <div class="twin-header">
+                    <div class="twin-header-main">
+                      <img class="twin-avatar" src="../img/u2.jpg" alt="freepppl131">
+                      <div class="twin-name">freepppl131</div>
+                      <div class="shared-pill" data-panel="sharedPanel2" onclick="toggleSharedItems(this)">
+                        <span>1 shared size</span>
+                        <span class="chevron">▼</span>
+                      </div>
+                    </div>
+
+                    <div class="shared-items-panel" id="sharedPanel2">
+                      <div class="shared-items-content">
+                        <div class="shared-items-label">You both own these in the same size</div>
+
+                        <div class="shared-item">
+                          <div class="shared-item-text">
+                            <span class="shared-item-brand">Reformation</span>
+                            <span class="shared-item-product">Taryn Two Piece</span>
+                          </div>
+                          <div class="shared-item-size">S</div>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                  <div style="position: relative;">
+                    <img class="twin-photo" src="../img/pic3.png" alt="AYR The Secret Sauce Jeans on freepppl131" onclick="openImageModal(this.src, this.alt)">
+                    <div class="size-badge-float">S</div>
+                  </div>
+                  <div class="twin-info">
+                    <div class="star-rating">
+                      <div class="stars" aria-label="5 out of 5">
+                        <svg width="16" height="16" viewBox="0 0 24 24" class="star" style="fill:#262626"><path d="M12 17.27L18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21z"/></svg>
+                        <svg width="16" height="16" viewBox="0 0 24 24" class="star" style="fill:#262626"><path d="M12 17.27L18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21z"/></svg>
+                        <svg width="16" height="16" viewBox="0 0 24 24" class="star" style="fill:#262626"><path d="M12 17.27L18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21z"/></svg>
+                        <svg width="16" height="16" viewBox="0 0 24 24" class="star" style="fill:#262626"><path d="M12 17.27L18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21z"/></svg>
+                        <svg width="16" height="16" viewBox="0 0 24 24" class="star" style="fill:#262626"><path d="M12 17.27L18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21z"/></svg>
+                      </div>
+                      <div class="review-title">Loved the fit</div>
+                    </div>
+
+                    <div class="twin-stats">
+                      <div class="stat-item">
+                        <div class="stat-label">Size</div>
+                        <div class="stat-value">S</div>
+                      </div>
+                      <div class="stat-item">
+                        <div class="stat-label">Height</div>
+                        <div class="stat-value">5'6"</div>
+                      </div>
+                      <div class="stat-item">
+                        <div class="stat-label">Usually wears</div>
+                        <div class="stat-value">S</div>
+                      </div>
+                    </div>
+                    <div class="review-section">
+                      <div class="review-text">This dress is stunning on. The pattern is so cute, the material could be a little bit better for the price but overall I am happy! Size small fits perfectly, 5' 6", 120lb 34C.</div>
+                    </div>
+                    <button class="shop-btn" onclick="handlePrimaryCTA(event)">Shop Size S →</button>
+                  </div>
+                </article>
+              </div>
+
+              <!-- Explore other sizes (global, below both cards) -->
+              <div class="explore-more" role="button" tabindex="0" aria-label="See how it fits in other sizes">
+                See how it fits in other sizes <span class="explore-arrow">→</span>
+              </div>
+            </section>
+
+            <!-- PRODUCT CONFIRMATION REMOVED PER REQUEST -->
+            <section class="section confidence-block" id="confidenceBlock" hidden>
+              <article class="card product-card">
+                <div class="product-found">
+                  <div class="product-thumb">
+                    <img src="../img/pnpdress.png" alt="Petal & Pup Botanique Midi Dress"/>
+                  </div>
+                  <div class="product-meta">
+                    <span class="found-label">Product found</span>
+                    <div class="product-name">PETAL & PUP</div>
+                    <div class="product-subtitle">Botanique Midi Dress</div>
+                  </div>
+                </div>
+              </article>
+            </section>
+
+          </div>
+        </div>
+
+        <!-- Bottom Navigation -->
+        <div class="tabs">
+          <a class="tab active" href="#">
+            <svg class="ico" viewBox="0 0 256 256" aria-hidden="true"><path fill="currentColor" d="M241,150.65s0,0,0-.05a51.33,51.33,0,0,0-2.53-5.9L196.93,50.18a12,12,0,0,0-2.5-3.65,36,36,0,0,0-50.92,0A12,12,0,0,0,140,55V76H116V55a12,12,0,0,0-3.51-8.48,36,36,0,0,0-50.92,0,12,12,0,0,0-2.5,3.65L17.53,144.7A51.33,51.33,0,0,0,15,150.6s0,0,0,.05A52,52,0,1,0,116,168V100h24v68a52,52,0,1,0,101-17.35ZM80,62.28a12,12,0,0,1,12-1.22v63.15a51.9,51.9,0,0,0-35.9-7.62ZM64,196a28,28,0,1,1,28-28A28,28,0,0,1,64,196ZM164,61.06a12.06,12.06,0,0,1,12,1.22l23.87,54.31a51.9,51.9,0,0,0-35.9,7.62ZM192,196a28,28,0,1,1,28-28A28,28,0,0,1,192,196Z"/></svg>
+            <span>Find</span>
+          </a>
+          <a class="tab" href="#">
+            <svg class="ico" viewBox="0 0 256 256" aria-hidden="true"><path fill="currentColor" d="M225.24,174.74a12,12,0,0,1-1.58,16.89C205.49,206.71,189.06,212,174.15,212c-19.76,0-36.86-9.29-51.88-17.44-25.06-13.62-44.86-24.37-74.61.3a12,12,0,1,1-15.32-18.48c42.25-35,75-17.23,101.39-2.92,25.06,13.61,44.86,24.37,74.61-.3A12,12,0,0,1,225.24,174.74Zm-16.9-57.59c-29.75,24.67-49.55,13.91-74.61.3-26.35-14.3-59.14-32.11-101.39,2.92a12,12,0,0,0,15.32,18.48c29.75-24.67,49.55-13.92,74.61-.3,15,8.15,32.12,17.44,51.88,17.44,14.91,0,31.34-5.29,49.51-20.36a12,12,0,0,0-15.32-18.48ZM47.66,82.84c29.75-24.67,49.55-13.92,74.61-.3,15,8.15,32.12,17.44,51.88,17.44,14.91,0,31.34-5.29,49.51-20.36a12,12,0,0,0-15.32-18.48c-29.75,24.67-49.55,13.92-74.61.3-26.35-14.3-59.14-32.11-101.39,2.93A12,12,0,1,0,47.66,82.84Z"/></svg>
+            <span>Feed</span>
+          </a>
+          <a class="tab" href="closet-screen.html">
+            <svg class="ico" viewBox="0 0 256 256" aria-hidden="true"><path fill="currentColor" d="M244,168,148,96l19.2-14.4A12,12,0,0,0,172,72a44,44,0,0,0-87.66-5.48,12,12,0,1,0,23.82,3,20,20,0,0,1,39.09-2.92L121,86.24c-.15.1-.29.21-.43.32L12,168a20,20,0,0,0,12,36H232a20,20,0,0,0,12-36ZM36,180l92-69,92,69Z"/></svg>
+            <span>Closet</span>
+          </a>
+          <a class="tab" href="#">
+            <svg class="ico" viewBox="0 0 256 256" aria-hidden="true"><path fill="currentColor" d="M234.38,210a123.36,123.36,0,0,0-60.78-53.23,76,76,0,1,0-91.2,0A123.36,123.36,0,0,0,21.62,210a12,12,0,1,0,20.77,12c18.12-31.32,50.12-50,85.61-50s67.49,18.69,85.61,50a12,12,0,0,0,20.77-12ZM76,96a52,52,0,1,1,52,52A52.06,52.06,0,0,1,76,96Z"/></svg>
+            <span>Profile</span>
+          </a>
+        </div>
+
+        <!-- In-App Image Modal -->
+        <div class="image-modal" id="imageModal">
+          <div class="modal-content">
+            <button class="modal-close" onclick="closeImageModal()">×</button>
+            <img class="modal-image" id="modalImage" src="" alt="">
+          </div>
+        </div>
+      </div>
+</div>
+
+<script>
+/*
+ * RULE-BASED RECOMMENDATION ENGINE (Zero AI API Costs!)
+ *
+ * This generates personalized recommendations using simple logic.
+ * No LLM calls needed - just count, compare, and template.
+ *
+ * Example logic for generating the recommendation:
+ */
+
+function generateRecommendation(twins, userProfile) {
+  // 1. Count size distribution
+  const sizeCounts = {};
+  twins.forEach(twin => {
+    sizeCounts[twin.size] = (sizeCounts[twin.size] || 0) + 1;
+  });
+
+  // 2. Find modal size (most common)
+  const modalSize = Object.keys(sizeCounts).reduce((a, b) =>
+    sizeCounts[a] > sizeCounts[b] ? a : b
+  );
+  const modalCount = sizeCounts[modalSize];
+  const consensus = modalCount / twins.length;
+
+  // 3. Find strongest match (twin with most shared items)
+  const strongestMatch = twins.reduce((strongest, current) =>
+    current.sharedItemsCount > strongest.sharedItemsCount ? current : strongest
+  );
+
+  // 4. Generate recommendation based on rules
+  let recommendation = {
+    size: modalSize,
+    title: `We recommend size ${modalSize}`,
+    reason: ''
+  };
+
+  // Rule 1: Strong consensus (80%+)
+  if (consensus >= 0.8) {
+    recommendation.reason = `<span class="stat">${modalCount} out of ${twins.length}</span> of your size twins bought size ${modalSize}.`;
+  }
+  // Rule 2: Closest match insight
+  else if (strongestMatch) {
+    recommendation.size = strongestMatch.size;
+    recommendation.title = `We recommend size ${strongestMatch.size}`;
+    recommendation.reason = `Your closest match (@${strongestMatch.username}) sized ${getSizingDirection(userProfile.size, strongestMatch.size)} to ${strongestMatch.size} in this dress.`;
+  }
+  // Rule 3: Split decision
+  else {
+    recommendation.title = `Most twins bought size ${modalSize}`;
+    recommendation.reason = `<span class="stat">${modalCount} out of ${twins.length}</span> twins bought size ${modalSize}, but sizes vary. Check the details below.`;
+  }
+
+  return recommendation;
+}
+
+function getSizingDirection(userSize, twinSize) {
+  const sizeOrder = ['XXS', 'XS', 'S', 'M', 'L', 'XL', 'XXL'];
+  const userIdx = sizeOrder.indexOf(userSize);
+  const twinIdx = sizeOrder.indexOf(twinSize);
+  if (twinIdx > userIdx) return 'up';
+  if (twinIdx < userIdx) return 'down';
+  return 'true to size';
+}
+
+// Total cost: $0. Zero API calls. Instant results.
+
+// Auto-play demo sequence for screen recording
+let isPlaying = false;
+// Work-mode flags (no recording):
+window.SHOW_RESULTS_ON_LOAD = true;
+window.ENABLE_AUTOSCROLL = false;
+
+// Clipboard functionality disabled to prevent permission popups
+async function maybeShowPastePill(){
+  // Disabled to prevent clipboard permission popups
+  return;
+}
+
+async function pasteFromClipboard(){
+  // Disabled to prevent clipboard permission popups
+  return;
+}
+
+document.addEventListener('visibilitychange', maybeShowPastePill);
+window.addEventListener('focus', maybeShowPastePill);
+maybeShowPastePill();
+
+const urlInputEl = document.getElementById('urlInput');
+const pastePillEl = document.getElementById('pastePill');
+  if (urlInputEl){
+    ['dragenter','dragover'].forEach(eventName => {
+      urlInputEl.addEventListener(eventName, event => {
+        event.preventDefault();
+        urlInputEl.classList.add('is-drag');
+    });
+  });
+  ['dragleave','drop'].forEach(eventName => {
+    urlInputEl.addEventListener(eventName, event => {
+      event.preventDefault();
+      urlInputEl.classList.remove('is-drag');
+    });
+  });
+  urlInputEl.addEventListener('drop', event => {
+    const data = event.dataTransfer?.getData('text');
+    if (data){
+      urlInputEl.value = data.trim();
+      urlInputEl.focus();
+      urlInputEl.dispatchEvent(new Event('input', { bubbles: true }));
+    }
+  });
+  urlInputEl.addEventListener('input', () => {
+    if (!pastePillEl) return;
+    if (urlInputEl.value.trim()){
+      pastePillEl.style.display = 'none';
+    } else {
+      maybeShowPastePill();
+    }
+  });
+}
+
+const DEFAULT_PRODUCT = {
+  thumb: '../img/pnpdress.png',
+  brand: 'PETAL & PUP',
+  title: 'Botanique Midi Dress'
+};
+
+// Loading card refs
+const loadingCardEl = document.getElementById('loadingCard');
+const progressEl = document.getElementById('heroProgressBar');
+const heroImageEl = document.getElementById('heroImage');
+const heroBrandEl = document.getElementById('heroBrand');
+const heroNameEl = document.getElementById('heroName');
+const heroLoadingTextEl = document.getElementById('heroLoadingText');
+const resultsSectionEl = document.getElementById('resultsSection');
+
+if (resultsSectionEl && !resultsSectionEl.classList.contains('reveal-up')){
+  resultsSectionEl.classList.add('reveal-up');
+}
+
+function showElement(el){
+  if (!el) return;
+  el.hidden = false;
+  requestAnimationFrame(() => el.classList.add('is-visible'));
+}
+
+function hideElement(el){
+  if (!el) return;
+  el.classList.remove('is-visible');
+  setTimeout(() => {
+    el.hidden = true;
+  }, 260);
+}
+
+function setProgress(p){ if(progressEl) progressEl.style.width = `${p}%`; }
+
+// Populate hero card with product data
+function applyHeroCard(data){
+  if (!heroImageEl || !heroBrandEl || !heroNameEl) return;
+
+  // Set copy now
+  if (heroBrandEl) heroBrandEl.textContent = data.brand || '';
+  if (heroNameEl) heroNameEl.textContent = data.title || '';
+
+  // Show skeleton image while preloading
+  heroImageEl.setAttribute('data-state','loading');
+
+  if (!data.thumb){
+    heroImageEl.setAttribute('data-state','ready');
+    return;
+  }
+
+  // Preload image completely before showing
+  const img = new Image();
+  img.onload = () => {
+    if (heroImageEl){
+      heroImageEl.src = data.thumb;
+      heroImageEl.alt = data.title || '';
+      heroImageEl.setAttribute('data-state','ready');
+    }
+  };
+  img.onerror = () => {
+    heroImageEl.setAttribute('data-state','ready');
+  };
+  img.src = data.thumb;
+}
+
+const PARSE_MS = 500;
+const FETCH_MS = 1100;
+
+// ---- Timing for smooth 2.5 second loading
+const DURATIONS = { match: 600, confirm: 600, twins: 800 }; // ms total per stage (2s total)
+const BAR_MIN_START = 0; // start at 0%
+const BAR_END_BEFORE = 100; // complete to 100%
+
+function setProgress(p){ if(progressEl) progressEl.style.width = `${p}%`; }
+
+// Smooth fake-progress that eases toward a target
+function animateProgress(to, ms){
+  return new Promise(resolve=>{
+    const from = Math.min(parseFloat(progressEl.style.width) || 0, to);
+    const start = performance.now();
+    (function tick(now){
+      const t = Math.min((now - start)/ms, 1);
+      // linear progress - consistent speed throughout
+      setProgress(from + (to - from)*t);
+      if (t < 1) requestAnimationFrame(tick); else resolve();
+    })(start);
+  });
+}
+
+function markStep(step, state){ // state: 'active' | 'done'
+  const row = document.querySelector(`.load-row[data-step="${step}"]`);
+  if (!row) return;
+  row.classList.remove('is-active','is-done');
+  row.setAttribute('aria-hidden', state === 'active' ? 'false' : 'true');
+  if (state === 'active') row.classList.add('is-active');
+  if (state === 'done')  row.classList.add('is-done');
+}
+
+async function startFlow(product = DEFAULT_PRODUCT){
+  const wrap = document.getElementById('findSectionWrap');
+  const find = document.getElementById('findSection');
+  const contentEl = document.querySelector('.content');
+
+  console.log('Starting flow...');
+
+  // Parse product and populate hero card FIRST (while input is still visible)
+  const parsed = await parseProduct(product);
+  applyHeroCard(parsed);
+  setProgress(0);
+  
+  // Ensure loading card is completely hidden initially and reset any previous state
+  if (loadingCardEl) {
+    loadingCardEl.hidden = true;
+    loadingCardEl.style.opacity = '0';
+    loadingCardEl.style.display = '';
+    loadingCardEl.style.visibility = '';
+    loadingCardEl.classList.remove('is-visible');
+    console.log('Reset loading card state');
+  }
+  
+  // Switch to loading mode and hide input simultaneously
+  contentEl?.classList.add('is-loading');
+  find?.classList.add('is-leaving');
+  
+  await wait(180);
+  
+  // Hide input section
+  wrap?.classList.add('is-hidden');
+  
+  // Wait a frame to ensure layout is settled, then show loading card
+  await wait(16);
+  if (loadingCardEl) {
+    console.log('Showing loading card');
+    loadingCardEl.hidden = false;
+    loadingCardEl.style.opacity = '1';
+    loadingCardEl.style.display = 'block';
+    // Add is-visible class to trigger staggered animations
+    requestAnimationFrame(() => {
+      loadingCardEl.classList.add('is-visible');
+      console.log('Loading card should be visible now');
+    });
+  } else {
+    console.error('Loading card element not found!');
+  }
+
+  // Smooth continuous progress over 2.8 seconds total
+  // Start immediately after card appears
+  await wait(100);
+
+  // Single smooth animation from 0 to 100% over 2.7 seconds
+  await animateProgress(100, 2700);
+
+  // Wait a moment to let users see the completed progress bar
+  await wait(750);
+
+  // ---- handoff to results (cross-fade) ----
+
+  // ---- iOS-style overlapping cross-fade (zero blank gap) ----
+
+  // 1. Start fading out loading card (350ms for gentler fade)
+  if (loadingCardEl){
+    loadingCardEl.style.transition = 'opacity 350ms ease-out';
+    loadingCardEl.style.opacity = '0';
+  }
+
+  // 2. After 120ms, start fading in results (longer overlap = smoother)
+  await wait(120);
+  contentEl?.classList.remove('is-loading');
+  if (contentEl) contentEl.scrollTop = 0;
+  showResults();
+
+  // 3. Wait for loading fade to complete, then clean up
+  await wait(230); // 350ms total - 120ms already elapsed
+  if (loadingCardEl){
+    loadingCardEl.hidden = true;
+    loadingCardEl.style.visibility = 'hidden';
+  }
+}
+
+// Minimal mocks if you are still in demo mode
+async function parseProduct(candidate){
+  await wait(PARSE_MS);
+  // Derive from URL or reuse your current default product
+  // return { brand: 'PETAL & PUP', title: 'Botanique Midi Dress', thumb: '../img/pnpdress.png' };
+  return DEFAULT_PRODUCT; // consistent with your current demo
+}
+async function fetchTwins(parsed){ await wait(FETCH_MS); return DEMO_TWINS; }
+
+function wait(ms){
+  return new Promise(resolve => setTimeout(resolve, ms));
+}
+
+function handlePaste() {
+  if (isPlaying) return;
+  isPlaying = true;
+
+  const urlInput = document.getElementById('urlInput');
+  if (!urlInput) return;
+  const url = 'https://petalandpup.com/products/botanique-midi-dress-floral';
+
+  urlInput.focus();
+
+  // Clear the input first
+  urlInput.value = '';
+  
+  // Type each character with a simple loop
+  for (let i = 0; i < url.length; i++) {
+    setTimeout(() => {
+      urlInput.value = url.slice(0, i + 1);
+      
+      // follow the caret to reveal the whole typed value
+      urlInput.setSelectionRange(urlInput.value.length, urlInput.value.length);
+      urlInput.scrollLeft = urlInput.scrollWidth;
+      
+      // If we've typed the last character, start the flow
+      if (i === url.length - 1) {
+        setTimeout(() => startFlow(DEFAULT_PRODUCT), 300);
+      }
+    }, i * 35); // 35ms delay between each character
+  }
+}
+
+function showResults(opts = {}) {
+  const resultsSection = document.getElementById('resultsSection');
+  const content = document.querySelector('.content');
+  const backBtn = document.getElementById('backBtn');
+
+  // Show results in place (still in grid mode during handoff)
+  if (resultsSection){
+    resultsSection.hidden = false;
+    // Trigger smooth fade-in after a brief delay
+    requestAnimationFrame(() => {
+      resultsSection.classList.add('visible', 'is-in');
+    });
+  }
+  backBtn?.style.setProperty('display', 'flex');
+
+  // IMPORTANT: Don't remove .is-loading here; startFlow() handles the timing
+  // to prevent layout jolt. Only remove it if called from elsewhere (like DOMContentLoaded).
+  if (!opts.keepLoadingCard) {
+    // If not keeping loading card, we're being called from somewhere else (not startFlow)
+    // so it's safe to remove grid mode and reset scroll immediately
+    if (content) content.scrollTop = 0;
+    requestAnimationFrame(() => {
+      content?.classList.remove('is-loading');
+    });
+  }
+
+  // Slow scroll is disabled while editing unless explicitly enabled and motion allowed
+  const prefersReduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  if (window.ENABLE_AUTOSCROLL && !prefersReduced) {
+    setTimeout(() => {
+      const scrollHeight = content.scrollHeight - content.clientHeight;
+      const duration = 4000; // 4 seconds to scroll through
+      const startTime = performance.now();
+
+      function animateScroll(currentTime) {
+        const elapsed = currentTime - startTime;
+        const progress = Math.min(elapsed / duration, 1);
+
+        // Ease in-out function
+        const easeProgress = progress < 0.5
+          ? 2 * progress * progress
+          : 1 - Math.pow(-2 * progress + 2, 2) / 2;
+
+        content.scrollTop = scrollHeight * easeProgress;
+
+        if (progress < 1) {
+          requestAnimationFrame(animateScroll);
+        }
+      }
+
+      requestAnimationFrame(animateScroll);
+    }, 800);
+  }
+
+  isPlaying = false;
+}
+
+function handleShop() {
+  // Visual feedback
+  const btn = event.target;
+  btn.style.transform = 'scale(0.95)';
+  setTimeout(() => {
+    btn.style.transform = '';
+  }, 150);
+}
+
+// Demo data for chips + recommendation
+const DEMO_TWINS = [
+  { size: 'S', kept: true, username: 'sarah_chen', sharedItemsCount: 3, notes: ['Runs slightly small in bust'] },
+  { size: 'S', kept: true, username: 'emma_rose', sharedItemsCount: 2, notes: ['True to size, perfect at waist'] },
+  { size: 'L', kept: false, username: 'maya_patel', sharedItemsCount: 1, notes: ['Runs small, consider sizing up'] }
+];
+
+function updateHeroChips(twins){
+  const twinCount = twins.length;
+  const noteCount = twins.reduce((sum, t) => sum + (t.notes?.length || 1), 0);
+  const twinsEl = document.getElementById('chipTwins');
+  const notesEl = document.getElementById('chipNotes');
+  if (twinsEl) twinsEl.textContent = String(twinCount);
+  if (notesEl) notesEl.textContent = String(noteCount);
+}
+
+// Auto-start demo after 1.5 seconds
+// DISABLED FOR EDITING - Uncomment for screen recording
+// setTimeout(() => {
+//   handlePaste();
+// }, 1500);
+
+// While editing: land directly on results - DISABLED for demo recording
+// window.addEventListener('DOMContentLoaded', () => {
+//   const findSection = document.getElementById('findSection');
+//   const findSectionWrap = document.getElementById('findSectionWrap');
+//   const resultsSection = document.getElementById('resultsSection');
+//   const backBtn = document.getElementById('backBtn');
+//   const confidenceBlock = document.getElementById('confidenceBlock');
+//   if (loadingCardEl){
+//     loadingCardEl.classList.remove('is-visible');
+//     loadingCardEl.hidden = true;
+//   }
+//   findSection?.classList.add('hidden');
+//   findSectionWrap?.classList.add('is-hidden');
+//   if (resultsSection){
+//     resultsSection.hidden = false;
+//     resultsSection.classList.add('visible', 'is-in');
+//   }
+//   backBtn?.style.setProperty('display', 'flex');
+//   // Update hero chips using demo twins on load when showing results
+//   updateHeroChips(DEMO_TWINS);
+//   // Entrance animations - removed confidence block animation to prevent jolt
+//   // sticky CTA removed
+// });
+
+function toggleWhy(btn){
+  const panel = btn.nextElementSibling;
+  const expanded = btn.getAttribute('aria-expanded') === 'true';
+  btn.setAttribute('aria-expanded', !expanded);
+  panel.hidden = expanded;
+}
+
+function toggleSmartRec(button){
+  const container = button.closest('.smart-cta');
+  if(!container) return;
+  const panel = container.querySelector('.smart-panel');
+  const expanded = button.getAttribute('aria-expanded') === 'true';
+  button.setAttribute('aria-expanded', String(!expanded));
+  container.classList.toggle('open', !expanded);
+  if(panel){
+    panel.hidden = expanded;
+  }
+  const label = button.querySelector('.smart-toggle-text');
+  if(label){
+    label.textContent = expanded ? 'View size insight' : 'Hide size insight';
+  }
+}
+
+function toggleSharedItems(pill){
+  if(!pill) return;
+  const panelId = pill.dataset.panel;
+  const panel = panelId ? document.getElementById(panelId) : pill.nextElementSibling;
+  pill.classList.toggle('open');
+  panel?.classList.toggle('open');
+}
+
+// Explore other sizes link
+const exploreMore = document.querySelector('.explore-more');
+if (exploreMore) {
+  const goToOtherSizes = () => {
+    // TODO: wire to your route or modal
+    console.log('Explore other sizes clicked');
+  };
+  exploreMore.addEventListener('click', goToOtherSizes);
+  exploreMore.addEventListener('keydown', (e) => {
+    if (e.key === 'Enter' || e.key === ' ') {
+      e.preventDefault();
+      goToOtherSizes();
+    }
+  });
+}
+
+function handlePrimaryCTA(e){
+  // Copy size to clipboard with visual feedback (disabled to prevent popups)
+  const sizeText = 'Size S';
+  // navigator.clipboard?.writeText(sizeText).then(() => {
+    // Update button text temporarily to show it was copied
+    const buttons = document.querySelectorAll('.cta-button, .sticky-btn');
+    buttons.forEach(btn => {
+      const originalText = btn.textContent;
+      btn.textContent = '✓ Copied!';
+      setTimeout(() => {
+        btn.textContent = originalText;
+      }, 1500);
+    });
+  // });
+
+  // Micro-interaction: glow + haptic
+  const targetBtn = e?.currentTarget;
+  if (targetBtn) {
+    targetBtn.classList.add('pulse');
+    setTimeout(()=>targetBtn.classList.remove('pulse'), 180);
+  }
+  if (navigator.vibrate) {
+    navigator.vibrate(10);
+  }
+
+  // Open product in new tab after brief delay
+  setTimeout(() => {
+    window.open('https://petalandpup.com/products/botanique-midi-dress-floral', '_blank');
+  }, 300);
+}
+
+function goBack(){
+  // Hide results and show input screen
+  const findSection = document.getElementById('findSection');
+  const findSectionWrap = document.getElementById('findSectionWrap');
+  const resultsSection = document.getElementById('resultsSection');
+  const backBtn = document.getElementById('backBtn');
+  const urlInput = document.getElementById('urlInput');
+  
+  document.querySelector('.content')?.classList.remove('is-loading');
+  
+  // Hide results
+  if (resultsSection){
+    resultsSection.classList.remove('visible', 'is-in');
+    resultsSection.hidden = true;
+  }
+  if (loadingCardEl){
+    loadingCardEl.classList.remove('is-visible');
+    loadingCardEl.hidden = true;
+    loadingCardEl.style.opacity = '0';
+    loadingCardEl.style.display = '';
+    loadingCardEl.style.visibility = '';
+  }
+  if (heroImageEl){
+    heroImageEl.removeAttribute('src');
+    heroImageEl.alt = '';
+    heroImageEl.setAttribute('data-state', 'loading');
+  }
+  if (heroBrandEl) heroBrandEl.textContent = '—';
+  if (heroNameEl) heroNameEl.textContent = '—';
+  setProgress(0);
+  backBtn?.style.setProperty('display', 'none');
+  isPlaying = false;
+  
+  // Show input screen
+  setTimeout(() => {
+    findSection?.classList.remove('hidden');
+    findSectionWrap?.classList.remove('is-hidden');
+    requestAnimationFrame(() => findSection?.classList.remove('is-leaving'));
+    
+    // Clear the input and focus it
+    if (urlInput) {
+      urlInput.value = '';
+      urlInput.focus();
+    }
+  }, 100);
+}
+
+function openImageModal(imageSrc, imageAlt) {
+  const modal = document.getElementById('imageModal');
+  const modalImage = document.getElementById('modalImage');
+  
+  modalImage.src = imageSrc;
+  modalImage.alt = imageAlt;
+  modal.classList.add('open');
+}
+
+function closeImageModal() {
+  const modal = document.getElementById('imageModal');
+  modal.classList.remove('open');
+}
+
+// Close modal when clicking outside the image
+document.getElementById('imageModal').addEventListener('click', function(e) {
+  if (e.target === this) {
+    closeImageModal();
+  }
+});
+
+// Close modal with Escape key
+document.addEventListener('keydown', function(e) {
+  if (e.key === 'Escape') {
+    closeImageModal();
+  }
+});
+
+</script>
+
+</body>
+</html>

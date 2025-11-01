@@ -1,0 +1,68 @@
+@use '../base/var' as *;
+@use '../base/breakpoints' as *;
+
+/* ===== FAQ ===== */
+.faq {
+  &::after {display: none;}
+
+  &-list {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    margin-top: 14px;
+
+    details {
+      border: 1px solid $color-stone;
+      border-radius: 14px;
+      overflow: hidden;
+      background: white;
+
+      summary {
+        padding: 14px 16px;
+        font: 600 16px/1.3 $font-default;
+        color: $color-ink;
+        list-style: none;
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        cursor: pointer;
+
+        &::-webkit-details-marker {
+          display: none;
+        }
+
+        &::before {
+          @include pseudo;
+          width: 8px;
+          height: 8px;
+          border-radius: 50%;
+          background: linear-gradient(135deg, $color-blue, $color-orchid);
+          box-shadow: 0 4px 12px rgba($color-orchid, .25);
+        }
+
+        &::after {
+          @include pseudo;
+          width: 10px;
+          height: 10px;
+          border-right: 2px solid $color-lavender;
+          border-bottom: 2px solid $color-lavender;
+          margin-left: auto;
+          transform: rotate(-45deg);
+          transition: transform $effect-s;
+        }
+      }
+
+      &[open] summary::after {
+        transform: rotate(45deg);
+      }
+
+      > div {
+        padding: 8px 16px 14px;
+        border-top: 1px solid rgba(0, 0, 0, 0.06);
+        font-size: 15px;
+        line-height: 1.5;
+        color: $color-dark;
+      }
+    }
+  }
+}

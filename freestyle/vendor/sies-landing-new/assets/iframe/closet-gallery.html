@@ -1,0 +1,234 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Sies — Your Closet (Visual‑First)</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <style>
+    :root{
+      --bg:#FAF8F6; --ink:#1F1F1F; --muted:#6F6F74; --accent:#8F6AAE;
+      --card:#fff; --border:#E8E4DE; --shadow:0 12px 30px rgba(0,0,0,.08);
+      --g1:#667eea; --g2:#764ba2;
+      --r:16px; --r-lg:22px; --r-xl:28px;
+    }
+    *{box-sizing:border-box;margin:0;padding:0}
+    body{font-family:Inter,system-ui,-apple-system,"Segoe UI",Roboto,Helvetica,Arial;background:var(--bg);color:var(--ink);min-height:100vh;display:flex;align-items:center;justify-content:center;padding:0}
+
+    /* Phone shell */
+    .phone{width:430px;height:932px;border-radius:55px;background:#000;padding:2px}
+    .screen{height:100%;background:#fff;border-radius:53px;overflow:hidden;position:relative;display:flex;flex-direction:column}
+    .island{position:absolute;top:11px;left:50%;transform:translateX(-50%);width:126px;height:37px;background:#000;border-radius:19px;z-index:5}
+    .status{height:54px;margin-top:5px;display:flex;align-items:center;justify-content:space-between;padding:0 30px;font-weight:600;color:#000;font-size:17px;letter-spacing:-.02em}
+    .status .right{display:flex;align-items:center;gap:6px}
+    .status .right img{height:13px;width:auto;display:block}
+
+    /* Header */
+    .header{padding:4px 24px 2px;display:flex;align-items:center;justify-content:center;position:relative}
+    .logo{font-weight:600;font-size:32px;letter-spacing:-.01em;background:linear-gradient(180deg,#F1DCE3 0%,#8B7F83 100%);
+      -webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent}
+
+
+    /* Top chips / filters */
+    .filters{position:sticky;top:54px;z-index:4;background:#fff;padding:10px 20px;border-bottom:1px solid rgba(0,0,0,.06)}
+    .chips{display:flex;gap:8px;overflow-x:auto;-webkit-overflow-scrolling:touch;scrollbar-width:none}
+    .chips::-webkit-scrollbar{display:none}
+    .chip{border:1px solid var(--border);background:#fff;color:#1F1F1F;border-radius:999px;padding:8px 12px;font-size:12px;white-space:nowrap}
+    .chip.active{background:rgba(143,106,174,.12);color:#8F6AAE;border-color:transparent;font-weight:700}
+
+    /* View toggle */
+    .view-toggle{margin-left:auto;display:flex;gap:6px}
+    .switch{border:1px solid var(--border);background:#fff;padding:6px 10px;border-radius:999px;font:600 12px/1 Inter;color:#4C4C50;cursor:pointer}
+    .switch.active{color:#8F6AAE;border-color:#d9cfe6;background:rgba(143,106,174,.10)}
+
+    /* Content */
+    .content{flex:1;overflow:auto;padding:0 24px 96px}
+    .title{font:800 26px/1.1 Inter;margin:6px 0 8px}
+    .section{margin-top:14px}
+
+    /* Item cards */
+    .list{display:grid;grid-template-columns:1fr;gap:14px}
+    .grid{display:grid;grid-template-columns:repeat(2,1fr);gap:12px}
+
+    .card{position:relative;overflow:hidden;border-radius:18px;background:#f8f8fb;border:1px solid #eee6;box-shadow:0 10px 30px rgba(0,0,0,.08), 0 4px 12px rgba(0,0,0,.03);transition:transform 0.2s ease, box-shadow 0.2s ease}
+    .card:hover{transform:translateY(-2px);box-shadow:0 15px 40px rgba(0,0,0,.12), 0 6px 16px rgba(0,0,0,.04)}
+    .img{width:100%;height:400px;object-fit:cover;object-position:center}
+    .img.tall{height:400px}
+    .overlay{position:absolute;inset:auto 0 0 0;padding:10px 10px 12px;background:linear-gradient(180deg,rgba(0,0,0,0) 0%,rgba(0,0,0,.55) 60%,rgba(0,0,0,.75) 100%);color:#fff}
+    .brand{font:700 11px/1 Inter;letter-spacing:.04em;opacity:.95}
+    .name{font:600 14px/1.2 Inter;margin-top:2px}
+    .size{position:absolute;top:10px;left:10px;padding:6px 10px;border-radius:999px;background:rgba(0,0,0,.45);backdrop-filter:blur(2px);color:#fff;font:700 12px/1 Inter}
+
+    /* Tab bar */
+    .tabs{position:absolute;left:0;right:0;bottom:0;height:83px;background:#fff;border-top:1px solid rgba(0,0,0,.06);display:flex;justify-content:space-around;align-items:flex-start;padding-top:8px;padding-bottom:34px}
+    .tab{display:flex;flex-direction:column;align-items:center;gap:6px;text-decoration:none;color:#8e8e93;font-size:11px;font-weight:500}
+    .tab.active{color:#8F6AAE}
+    .ico{width:28px;height:28px}
+
+    /* Modal preview */
+    .modal{position:fixed;inset:0;background:rgba(0,0,0,.58);display:none;align-items:center;justify-content:center;z-index:50}
+    .modal.open{display:flex}
+    .sheet{width:92%;max-width:420px;background:#fff;border-radius:22px;overflow:hidden;box-shadow:0 30px 80px rgba(0,0,0,.35)}
+    .sheet .hero{position:relative}
+    .sheet img{width:100%;height:420px;object-fit:cover}
+    .sheet .pill{position:absolute;top:12px;left:12px;background:rgba(0,0,0,.5);color:#fff;padding:6px 10px;border-radius:999px;font:700 12px/1 Inter}
+    .sheet .body{padding:14px 16px}
+    .sheet h3{font:700 18px/1.2 Inter}
+    .meta{margin-top:2px;color:#6F6F74;font-size:12px}
+    .why{margin-top:10px;background:#fff;border:1px solid #eee6;border-radius:14px;padding:12px}
+    .cta{margin-top:12px;display:flex;gap:8px}
+    .btn{flex:1;display:inline-flex;align-items:center;justify-content:center;padding:12px 14px;border-radius:16px;border:1px solid var(--border);font:700 14px/1 Inter;cursor:pointer}
+    .btn.primary{color:#fff;border:none;background:linear-gradient(135deg,var(--g1),var(--g2));box-shadow:0 10px 24px rgba(118,75,162,.25)}
+  </style>
+</head>
+<body>
+  <div class="phone">
+    <div class="screen" data-view="list">
+      <div class="island"></div>
+      <div class="status"><div>9:41</div><div class="right"><img src="../img/cellular-connection.svg" alt="cell"/><img src="../img/wifi.svg" alt="wifi"/><img src="../img/battery.svg" alt="battery"/></div></div>
+
+      <div class="header">
+        <div class="logo">sies</div>
+      </div>
+
+      <div class="filters">
+        <div style="display:flex;align-items:center;gap:10px">
+          <div class="chips" id="chips">
+            <button class="chip active" data-filter="all">All</button>
+            <button class="chip" data-filter="tops">Tops</button>
+            <button class="chip" data-filter="bottoms">Bottoms</button>
+            <button class="chip" data-filter="dresses">Dresses</button>
+          </div>
+          <div class="view-toggle" style="margin-left:auto">
+            <button class="switch" id="listBtn">List</button>
+            <button class="switch active" id="gridBtn">Grid</button>
+          </div>
+        </div>
+      </div>
+
+      <div class="content">
+        <h1 class="title">Your Closet</h1>
+
+        <div id="items" class="grid">
+          <!-- Cards (use data-category for filtering) -->
+          <article class="card" data-category="dresses" data-name="GEORGIA HARDINGE Relic Dress" data-size="UK 8">
+            <img class="img tall" src="https://cdn.modaoperandi.com/assets/images/products/1048452/695474/c2/large_georgia-hardinge-gold-relic-dress.jpg?_v=1755324586" alt="Georgia Hardinge Relic Pleated Metallic‑Knit Maxi Dress">
+            <span class="size">UK 8</span>
+            <div class="overlay"><div class="brand">GEORGIA HARDINGE</div><div class="name">Relic Pleated Metallic‑Knit Maxi Dress</div></div>
+          </article>
+
+          <article class="card" data-category="tops" data-name="Reformation Taryn Two Piece" data-size="2">
+            <img class="img" src="https://media.thereformation.com/image/upload/f_auto,q_auto:eco,dpr_2.0/w_500/PRD-SFCC/1314122/BLACK/1314122.1.BLACK?_s=RAABAB0" alt="Reformation Taryn Two Piece">
+            <span class="size">2</span>
+            <div class="overlay"><div class="brand">REFORMATION</div><div class="name">Taryn Two Piece</div></div>
+          </article>
+
+          <article class="card" data-category="tops" data-name="ALFIE Open Back Cotton Poplin Top" data-size="Small">
+            <img class="img" src="https://cdn.modaoperandi.com/assets/images/products/1028958/674197/c/large_alfie-white-backless-top.jpg?_v=1755087491" alt="ALFIE Open Back Cotton Poplin Top">
+            <span class="size">Small</span>
+            <div class="overlay"><div class="brand">ALFIE</div><div class="name">Open Back Cotton Poplin Top</div></div>
+          </article>
+
+          <article class="card" data-category="bottoms" data-name="AYR The Secret Sauce" data-size="26S">
+            <img class="img" src="https://www.ayr.com/cdn/shop/files/secretsauce-goodmood_CAT_d634f664-cb49-4e61-abef-5d94b707075e.jpg?crop=center&height=1440&v=1755036845&width=950" alt="AYR The Secret Sauce">
+            <span class="size">26S</span>
+            <div class="overlay"><div class="brand">AYR</div><div class="name">The Secret Sauce</div></div>
+          </article>
+
+          <article class="card" data-category="bottoms" data-name="ZARA Flare Pants" data-size="M">
+            <img class="img" src="https://static.zara.net/assets/public/a4e8/d8da/2c3b44728736/7e4b4c39762b/03152505800-a1/03152505800-a1.jpg?ts=1753971869534&w=1900" alt="ZARA Flare Pants">
+            <span class="size">M</span>
+            <div class="overlay"><div class="brand">ZARA</div><div class="name">Flare Pants</div></div>
+          </article>
+
+          <article class="card" data-category="tops" data-name="COS Shrunken T-shirt" data-size="XS">
+            <img class="img" src="https://media.cos.com/assets/001/6e/d0/6ed0142c6e69ad42e826224d9a8d013f6d3f4685_xxl-1.jpg?imwidth=2160" alt="COS Shrunken T-shirt">
+            <span class="size">XS</span>
+            <div class="overlay"><div class="brand">COS</div><div class="name">Shrunken T‑shirt</div></div>
+          </article>
+
+          <article class="card" data-category="dresses" data-name="ALEXIS Briette Satin Maxi Dress" data-size="S">
+            <img class="img tall" src="https://cdn.modaoperandi.com/assets/images/products/1039207/685257/c/large_alexis-blue-briette-dress.jpg?_v=1755195214" alt="ALEXIS Briette Satin Maxi Dress">
+            <span class="size">S</span>
+            <div class="overlay"><div class="brand">ALEXIS</div><div class="name">Briette Satin Maxi Dress</div></div>
+          </article>
+        </div>
+      </div>
+
+      <div class="tabs">
+        <a class="tab" href="#"><svg class="ico" viewBox="0 0 256 256" aria-hidden="true"><path fill="currentColor" d="M241,150.65s0,0,0-.05a51.33,51.33,0,0,0-2.53-5.9L196.93,50.18a12,12,0,0,0-2.5-3.65,36,36,0,0,0-50.92,0A12,12,0,0,0,140,55V76H116V55a12,12,0,0,0-3.51-8.48,36,36,0,0,0-50.92,0,12,12,0,0,0-2.5,3.65L17.53,144.7A51.33,51.33,0,0,0,15,150.6s0,0,0,.05A52,52,0,1,0,116,168V100h24v68a52,52,0,1,0,101-17.35ZM80,62.28a12,12,0,0,1,12-1.22v63.15a51.9,51.9,0,0,0-35.9-7.62ZM64,196a28,28,0,1,1,28-28A28,28,0,0,1,64,196ZM164,61.06a12.06,12.06,0,0,1,12,1.22l23.87,54.31a51.9,51.9,0,0,0-35.9,7.62ZM192,196a28,28,0,1,1,28-28A28,28,0,0,1,192,196Z"/></svg><span>Find</span></a>
+        <a class="tab" href="#"><svg class="ico" viewBox="0 0 256 256" aria-hidden="true"><path fill="currentColor" d="M225.24,174.74a12,12,0,0,1-1.58,16.89C205.49,206.71,189.06,212,174.15,212c-19.76,0-36.86-9.29-51.88-17.44-25.06-13.62-44.86-24.37-74.61.3a12,12,0,1,1-15.32-18.48c42.25-35,75-17.23,101.39-2.92,25.06,13.61,44.86,24.37,74.61-.3A12,12,0,0,1,225.24,174.74Zm-16.9-57.59c-29.75,24.67-49.55,13.91-74.61.3-26.35-14.3-59.14-32.11-101.39,2.92a12,12,0,0,0,15.32,18.48c29.75-24.67,49.55-13.92,74.61-.3,15,8.15,32.12,17.44,51.88,17.44,14.91,0,31.34-5.29,49.51-20.36a12,12,0,0,0-15.32-18.48ZM47.66,82.84c29.75-24.67,49.55-13.92,74.61-.3,15,8.15,32.12,17.44,51.88,17.44,14.91,0,31.34-5.29,49.51-20.36a12,12,0,0,0-15.32-18.48c-29.75,24.67-49.55,13.92-74.61.3-26.35-14.3-59.14-32.11-101.39,2.93A12,12,0,1,0,47.66,82.84Z"/></svg><span>Feed</span></a>
+        <a class="tab active" href="#"><svg class="ico" viewBox="0 0 256 256" aria-hidden="true"><path fill="currentColor" d="M244,168,148,96l19.2-14.4A12,12,0,0,0,172,72a44,44,0,0,0-87.66-5.48,12,12,0,1,0,23.82,3,20,20,0,0,1,39.09-2.92L121,86.24c-.15.1-.29.21-.43.32L12,168a20,20,0,0,0,12,36H232a20,20,0,0,0,12-36ZM36,180l92-69,92,69Z"/></svg><span>Closet</span></a>
+        <a class="tab" href="#"><svg class="ico" viewBox="0 0 256 256" aria-hidden="true"><path fill="currentColor" d="M234.38,210a123.36,123.36,0,0,0-60.78-53.23,76,76,0,1,0-91.2,0A123.36,123.36,0,0,0,21.62,210a12,12,0,1,0,20.77,12c18.12-31.32,50.12-50,85.61-50s67.49,18.69,85.61,50a12,12,0,0,0,20.77-12ZM76,96a52,52,0,1,1,52,52A52.06,52.06,0,0,1,76,96Z"/></svg><span>Profile</span></a>
+      </div>
+    </div>
+  </div>
+
+  <!-- Modal preview -->
+  <div id="modal" class="modal" role="dialog" aria-modal="true" aria-label="Garment details">
+    <div class="sheet">
+      <div class="hero"><img id="mImg" alt=""><span id="mSize" class="pill"></span></div>
+      <div class="body">
+        <h3 id="mTitle">Title</h3>
+        <div id="mBrand" class="meta">Brand</div>
+        <div class="why">
+          <strong>Why it fits:</strong>
+          <div id="mWhy" style="font-size:14px;color:#1F1F1F;margin-top:6px">We’ll compare this to similar items in your closet and show chest/waist/hips context here.</div>
+        </div>
+        <div class="cta">
+          <button class="btn" id="closeBtn">Close</button>
+          <button class="btn primary">View item</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    // View toggle (list vs grid)
+    const screen = document.querySelector('.screen');
+    const items = document.getElementById('items');
+    const listBtn = document.getElementById('listBtn');
+    const gridBtn = document.getElementById('gridBtn');
+    listBtn?.addEventListener('click',()=>{listBtn.classList.add('active');gridBtn.classList.remove('active');items.className='list'});
+    gridBtn?.addEventListener('click',()=>{gridBtn.classList.add('active');listBtn.classList.remove('active');items.className='grid'});
+
+    // Filter chips
+    const chips = document.getElementById('chips');
+    chips?.addEventListener('click', (e)=>{
+      const btn = e.target.closest('.chip');
+      if(!btn) return;
+      chips.querySelectorAll('.chip').forEach(c=>c.classList.remove('active'));
+      btn.classList.add('active');
+      const filter = btn.dataset.filter;
+      document.querySelectorAll('#items .card').forEach(card=>{
+        const match = filter==='all' || card.dataset.category===filter;
+        card.style.display = match ? '' : 'none';
+      });
+      try{ parent.postMessage({ type:'mock_button_click', key:`closet-chip-${filter}` }, '*'); }catch(err){}
+    });
+
+    // Modal preview
+    const modal = document.getElementById('modal');
+    const mImg = document.getElementById('mImg');
+    const mTitle = document.getElementById('mTitle');
+    const mBrand = document.getElementById('mBrand');
+    const mSize = document.getElementById('mSize');
+    const closeBtn = document.getElementById('closeBtn');
+
+    document.getElementById('items').addEventListener('click',(e)=>{
+      const card = e.target.closest('.card');
+      if(!card) return;
+      const imgEl = card.querySelector('img');
+      mImg.src = imgEl.src; mImg.alt = imgEl.alt;
+      mTitle.textContent = card.dataset.name;
+      mBrand.textContent = card.querySelector('.brand').textContent;
+      mSize.textContent = card.dataset.size;
+      modal.classList.add('open');
+    });
+    modal.addEventListener('click',(e)=>{ if(e.target===modal) modal.classList.remove('open'); });
+    closeBtn.addEventListener('click',()=> modal.classList.remove('open'));
+  </script>
+</body>
+</html>
