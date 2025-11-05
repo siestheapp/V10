@@ -12,6 +12,7 @@ import {
 import ProductSummary from '../../components/Scan/ProductSummary';
 import supabase from '../../lib/supabase';
 import { fetchProductByUrl, normalizeUrl, ProductResult } from '../../lib/product';
+import { SafeAreaView } from 'react-native-safe-area-context';
 
 export default function ScanScreen() {
   const [inputUrl, setInputUrl] = useState('');
@@ -34,7 +35,7 @@ export default function ScanScreen() {
   const showNotFound = lookup.isSuccess && (!lookup.data || lookup.data.length === 0);
 
   return (
-    <View style={styles.container}>
+    <SafeAreaView style={styles.container} edges={['top']}>
       <Text style={styles.heading}>Paste a product link to start a try-on.</Text>
       <TextInput
         value={inputUrl}
@@ -59,7 +60,7 @@ export default function ScanScreen() {
       {showNotFound ? <Text style={styles.feedback}>We couldn’t find that product. Double-check the link and try again.</Text> : null}
 
       {product ? <ProductSummary product={product} /> : null}
-    </View>
+    </SafeAreaView>
   );
 }
 

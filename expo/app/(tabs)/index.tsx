@@ -1,6 +1,7 @@
 import { useInfiniteQuery } from '@tanstack/react-query';
 import { supabase } from '../../lib/supabase';
 import { View, Text, TouchableOpacity } from 'react-native';
+import { SafeAreaView } from 'react-native-safe-area-context';
 import { FlashList } from '@shopify/flash-list';
 import { Image } from 'expo-image';
 import { Link } from 'expo-router';
@@ -37,6 +38,7 @@ getNextPageParam: (last, pages) => (last.length === PAGE ? pages.length : undefi
 const items = (data?.pages || []).flat();
 
 return (
+<SafeAreaView style={{ flex: 1, backgroundColor: '#fff' }} edges={['top']}>
 <View style={{ flex: 1, padding: 12 }}>
 <Link href="/camera/capture" asChild>
 <TouchableOpacity style={{ padding: 14, backgroundColor: '#111', borderRadius: 10, marginBottom: 12 }}>
@@ -67,6 +69,7 @@ return (
     )}
   />
 </View>
+</SafeAreaView>
 
 
 );

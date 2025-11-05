@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react';
 import { View, Text, RefreshControl, ScrollView } from 'react-native';
+import { SafeAreaView } from 'react-native-safe-area-context';
 import { Image } from 'expo-image';
 import { supabase } from '../../lib/supabase';
 
@@ -24,13 +25,19 @@ export default function TryOns() {
   useEffect(() => { load(); }, []);
 
   if (!rows.length && !loading) {
-    return <View style={{ flex:1, alignItems:'center', justifyContent:'center' }}>
+    return <SafeAreaView style={{ flex:1, backgroundColor:'#fff' }} edges={['top']}>
+      <View style={{ flex:1, alignItems:'center', justifyContent:'center' }}>
       <Text style={{ color:'#888' }}>No try-ons yet.</Text>
-    </View>;
+      </View>
+    </SafeAreaView>;
   }
 
   return (
-    <ScrollView style={{ flex:1, padding:12 }}
+    <SafeAreaView style={{ flex:1, backgroundColor:'#fff' }} edges={['top']}>
+    <ScrollView
+      style={{ flex:1 }}
+      contentInsetAdjustmentBehavior="automatic"
+      contentContainerStyle={{ padding:12 }}
       refreshControl={<RefreshControl refreshing={loading} onRefresh={load} />}
     >
       <Text style={{ color:'#666', marginBottom:8 }}>Loaded {rows.length} photos</Text>
@@ -52,5 +59,6 @@ export default function TryOns() {
         );
       })}
     </ScrollView>
+    </SafeAreaView>
   );
 }
