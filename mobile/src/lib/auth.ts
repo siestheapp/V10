@@ -1,47 +1,21 @@
 import { User } from '@supabase/supabase-js';
 import { supabase } from './supabase';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 /**
- * Links a real Supabase auth user to a demo profile.
- * Creates a demo profile if one doesn't exist for this user ID.
+ * Links a real Supabase auth user to a profile.
+ * Profile is auto-created when user first adds an item via api_claim.
  */
 export async function linkToDemoProfile(user: User): Promise<void> {
+  // Profile will be auto-created on first api_claim call
+  // No need to do anything here - just keeping function for backward compatibility
+  console.log('User signed in:', user.email);
+  // Keep app-level login check consistent with Supabase session
+  // so the router can redirect immediately on next launch.
   try {
-    // Check if demo profile already exists for this user
-    const { data: existing, error: fetchError } = await supabase
-      .from('user_profile')
-      .select('*')
-      .eq('id', user.id)
-      .single();
-
-    if (fetchError && fetchError.code !== 'PGRST116') {
-      // PGRST116 is "no rows returned", which is expected for new users
-      console.error('Error checking existing profile:', fetchError);
-      return;
-    }
-
-    if (existing) {
-      // Profile already exists, no need to create
-      console.log('Demo profile already exists for user:', user.id);
-      return;
-    }
-
-    // Create demo profile with real auth user ID
-    const username = user.email?.split('@')[0] || `user${Math.floor(Math.random() * 900) + 100}`;
-    
-    const { data, error } = await supabase.rpc('api_signup', {
-      p_username: username,
-      p_user_id: user.id
-    });
-
-    if (error) {
-      console.error('Error creating demo profile:', error);
-      return;
-    }
-
-    console.log('Demo profile created:', data);
+    await AsyncStorage.setItem('demo:user', JSON.stringify({ id: user.id, email: user.email }));
   } catch (err) {
-    console.error('Unexpected error in linkToDemoProfile:', err);
+    // Non-fatal; routing will still work based on Supabase session
   }
 }
 
