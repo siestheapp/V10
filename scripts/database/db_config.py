@@ -10,13 +10,13 @@ from dotenv import load_dotenv
 # Load environment variables
 load_dotenv()
 
-# Database configuration - using Supabase pooler (works reliably)
+# Database configuration - values must come from environment (no hardcoded defaults)
 DB_CONFIG = {
-    "database": os.getenv("DB_NAME", "postgres"),
-    "user": os.getenv("DB_USER", "postgres.lbilxlkchzpducggkrxx"),
-    "password": os.getenv("DB_PASSWORD", "efvTower12"),
-    "host": os.getenv("DB_HOST", "aws-0-us-east-2.pooler.supabase.com"),
-    "port": os.getenv("DB_PORT", "6543")
+    "database": os.getenv("DB_NAME", ""),
+    "user": os.getenv("DB_USER", ""),
+    "password": os.getenv("DB_PASSWORD", ""),
+    "host": os.getenv("DB_HOST", ""),
+    "port": os.getenv("DB_PORT", ""),
 }
 
 # For psql commands - export these environment variables
