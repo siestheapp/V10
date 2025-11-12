@@ -92,3 +92,4 @@ database_dump_*.sql
  
 # MacOS system files
 .DS_Store
+mobile/node_modules/
