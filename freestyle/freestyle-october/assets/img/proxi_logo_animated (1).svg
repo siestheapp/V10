@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 760 200">
+  <defs>
+    <linearGradient id="brandSheen" gradientUnits="userSpaceOnUse" x1="0" y1="0" x2="760" y2="200">
+      <stop offset="0%" stop-color="#009090">
+        <animate attributeName="offset" from="0%" to="20%" dur="3s" repeatCount="indefinite"/>
+      </stop>
+      <stop offset="42%" stop-color="#1FAED9">
+        <animate attributeName="offset" values="42%;62%;42%" dur="3s" repeatCount="indefinite"/>
+      </stop>
+      <stop offset="62%" stop-color="#00A3A3">
+        <animate attributeName="offset" values="62%;82%;62%" dur="3s" repeatCount="indefinite"/>
+      </stop>
+      <stop offset="100%" stop-color="#35D1AE">
+        <animate attributeName="offset" from="100%" to="120%" dur="3s" repeatCount="indefinite"/>
+      </stop>
+    </linearGradient>
+    <style>
+      @font-face {
+        font-family: 'Inter';
+        font-style: normal;
+        font-weight: 600;
+        src: local('Inter'), local('Inter-SemiBold');
+      }
+      .wordmark{ font: 600 140px/1 Inter, system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial, sans-serif; }
+    </style>
+  </defs>
+  <text x="0" y="150" class="wordmark" fill="url(#brandSheen)">proxi</text>
+</svg>

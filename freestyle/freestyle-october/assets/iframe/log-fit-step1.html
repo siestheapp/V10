@@ -1,0 +1,380 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Proxi — Add Item</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <style>
+    :root{
+      /* Neutrals */
+      --ink-900:#0B0F14; --ink-700:#121A22; --ink-500:#2A3642; --ink-300:#6A7683;
+      --canvas-0:#F7F9FB; --canvas-50:#EFF3F6; --canvas-100:#E9EEF1;
+
+      /* Brand & Accents */
+      --petrol-600:#009090; --petrol-500:#00A3A3; --petrol-400:#16B5B5; --petrol-100:#E0F7F7;
+      --mint-400:#A6FFCB; --mint-500:#35D1AE; --ice-300:#BFE7EF; --coral-500:#FF6B5A;
+      --aqua-500:#1FAED9;
+
+      /* Gradients */
+      --brand-sheen:linear-gradient(135deg,#009090 0%,#1FAED9 42%,#00A3A3 62%,#35D1AE 100%);
+
+      /* Radii */
+      --radius-card:16px; --radius-btn:12px; --radius-pill:999px;
+
+      /* Shadows */
+      --elev-0:0 1px 2px rgba(0,0,0,.06); --elev-1:0 8px 24px rgba(11,15,20,.08); --elev-2:0 20px 60px rgba(0,0,0,.18);
+    }
+    *{box-sizing:border-box;margin:0;padding:0}
+    html{background:#f5f5f5}
+    body{font-family:Inter,system-ui,-apple-system,"Segoe UI",Roboto,Helvetica,Arial;background:#f5f5f5;color:#fff;min-height:100vh;display:flex;align-items:center;justify-content:center;padding:0;position:relative}
+    /* Warm page glow behind app content */
+    body::before{content:"";position:fixed;inset:-20% -10% auto -10%;height:60vh;pointer-events:none;background:radial-gradient(800px 350px at 50% -120px, rgba(0,163,163,.08), transparent 60%),radial-gradient(1200px 500px at 10% -80px, rgba(166,255,203,.08), transparent 65%);filter:saturate(105%)}
+
+    /* Phone shell */
+    .phone{width:430px;height:932px;border-radius:55px;background:transparent;border:2px solid #000;position:relative}
+    .screen{position:absolute;inset:2px;background:#1A2430;border-radius:53px;overflow:hidden;display:flex;flex-direction:column}
+    .island{position:absolute;top:11px;left:50%;transform:translateX(-50%);width:126px;height:37px;background:#000;border-radius:19px;z-index:5}
+    .status{height:54px;margin-top:3px;display:flex;align-items:center;justify-content:space-between;padding:0 30px;font-weight:600;color:#fff;font-size:17px;letter-spacing:-.02em}
+    .status .right{display:flex;align-items:center;gap:6px}
+    .status .right img{height:13px;width:auto;display:block;filter:invert(1)}
+
+    /* Header with back button */
+    .header{padding:16px 24px;display:flex;align-items:center;justify-content:space-between;border-bottom:1px solid rgba(255,255,255,.1);margin-top:-16px}
+    .back-btn{width:36px;height:36px;border:none;background:transparent;cursor:pointer;display:flex;align-items:center;justify-content:center;border-radius:50%;transition:background .2s;color:#fff}
+    .back-btn:hover{background:rgba(255,255,255,.1)}
+    .header-title{font:700 18px/1.2 Inter;color:#fff;flex:1;text-align:center;margin-right:36px}
+
+    /* Content area */
+    .content{flex:1;overflow-y:auto;padding:80px 24px 120px;display:flex;flex-direction:column;gap:20px;align-items:center;justify-content:flex-start}
+
+    /* Hero text */
+    .hero-text{text-align:center;max-width:280px}
+    .hero-title{font:700 24px/1.2 Inter;color:#fff;margin-bottom:8px}
+    .hero-subtitle{font:500 16px/1.4 Inter;color:rgba(255,255,255,.7)}
+
+    /* Action buttons */
+    .actions{display:flex;flex-direction:column;gap:12px;width:100%;max-width:340px;margin-top:20px}
+    .action-btn{padding:20px 24px;border:2px solid #D8D3C8;background:#E8E5E0;border-radius:var(--radius-btn);font:700 16px/1.2 Inter;color:var(--ink-700);cursor:pointer;transition:all .2s;display:flex;align-items:center;gap:12px}
+    .action-btn:hover{border-color:#C8C3B8;background:#F0EDE8}
+    .action-btn.primary{background:var(--brand-sheen);border:none;color:#fff;box-shadow:0 8px 24px rgba(0,163,163,.4)}
+    .action-btn.primary:hover{transform:translateY(-2px);box-shadow:0 12px 32px rgba(0,163,163,.5)}
+    .action-icon{width:24px;height:24px;flex-shrink:0}
+    .action-label{flex:1;text-align:left}
+    .action-hint{font:500 13px/1.3 Inter;opacity:.7;margin-top:2px}
+
+    /* URL input (hidden by default) */
+    .url-input-container{display:none;width:100%;max-width:340px;margin-top:20px}
+    .url-input-container.visible{display:flex;flex-direction:column;gap:12px}
+    .url-input{padding:16px 18px;background:rgba(255,255,255,.08);border:2px solid rgba(255,255,255,.15);border-radius:var(--radius-btn);font:500 15px/1.4 Inter;color:#fff;width:100%;transition:all .2s}
+    .url-input::placeholder{color:rgba(255,255,255,.5)}
+    .url-input:focus{outline:none;border-color:var(--petrol-400);background:rgba(255,255,255,.12)}
+    .url-submit{padding:16px 24px;background:var(--brand-sheen);color:#fff;border:none;border-radius:var(--radius-btn);font:700 16px/1 Inter;cursor:pointer;transition:all .3s;box-shadow:0 8px 24px rgba(0,163,163,.4);display:flex;align-items:center;justify-content:center;gap:10px}
+    .url-submit:hover{transform:translateY(-2px);box-shadow:0 12px 32px rgba(0,163,163,.5)}
+    .url-submit:disabled{opacity:.8;cursor:not-allowed;transform:none;box-shadow:0 4px 16px rgba(0,163,163,.3)}
+
+    /* Loading spinner */
+    .spinner{width:18px;height:18px;border:2.5px solid rgba(255,255,255,.3);border-top-color:#fff;border-radius:50%;animation:spin .8s linear infinite;display:none}
+    .url-submit.loading .spinner{display:block}
+    @keyframes spin{to{transform:rotate(360deg)}}
+
+    /* Loading message */
+    .loading-message{text-align:center;font:500 14px/1.4 Inter;color:rgba(255,255,255,.7);margin-top:12px;opacity:0;transition:opacity .3s;height:0;overflow:hidden}
+    .loading-message.visible{opacity:1;height:auto}
+
+    /* Camera placeholder */
+    .camera-placeholder{width:100%;max-width:340px;aspect-ratio:3/4;background:rgba(255,255,255,.05);border:2px dashed rgba(255,255,255,.2);border-radius:20px;display:flex;align-items:center;justify-content:center;margin-top:20px}
+    .camera-placeholder-content{text-align:center;color:rgba(255,255,255,.5)}
+    .camera-placeholder-icon{width:48px;height:48px;margin:0 auto 12px}
+
+    /* Data table graphic */
+    .data-graphic{width:100%;max-width:340px;margin-top:40px;position:relative;pointer-events:none}
+    .data-table{width:100%;border-collapse:collapse;opacity:.45;position:relative}
+    .data-table thead th{font:600 11px/1.2 Inter;color:rgba(255,255,255,.9);text-align:left;padding:8px 6px;border-bottom:1px solid rgba(255,255,255,.35);text-transform:uppercase;letter-spacing:.05em}
+    .data-table thead th:first-child{width:50px;padding-left:10px;position:relative;left:7px}
+    .data-table thead th:nth-child(2){padding-right:0;position:relative;left:7px}
+    .data-table thead th:nth-child(3){width:60px;text-align:center;padding-left:0;padding-right:8px;position:relative;left:-17px}
+    .data-table tbody td{font:500 13px/1.3 Inter;color:rgba(255,255,255,.85);padding:10px 6px;border-bottom:1px solid rgba(255,255,255,.12)}
+    .data-table tbody td:first-child{padding-left:10px;position:relative;left:7px}
+    .data-table tbody td:nth-child(2){padding-right:0;position:relative;left:7px}
+    .data-table tbody td:nth-child(3){text-align:center;padding-left:0;padding-right:8px;position:relative;left:-17px}
+    .data-table tbody tr{opacity:.95}
+    .data-table .brand{font:600 11px/1.2 Inter;color:rgba(255,255,255,.6);text-transform:uppercase;letter-spacing:.03em;display:block;margin-bottom:2px}
+    .data-table .checkmark{color:#35D1AE;font-size:16px;line-height:1}
+    .table-fade{position:absolute;inset:0;pointer-events:none;background:linear-gradient(to bottom, transparent 0%, transparent 25%, #1A2430 95%),linear-gradient(to right, #1A2430 0%, transparent 3%, transparent 97%, #1A2430 100%)}
+  </style>
+</head>
+<body>
+  <div class="phone">
+    <div class="island"></div>
+    <div class="screen">
+      <!-- Status bar -->
+      <div class="status"><div>9:41</div><div class="right"><img src="../img/cellular-connection.svg" alt="cell"/><img src="../img/wifi.svg" alt="wifi"/><img src="../img/battery.svg" alt="battery"/></div></div>
+
+      <!-- Header -->
+      <div class="header">
+        <button class="back-btn" aria-label="Go back">
+          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M15 18l-6-6 6-6"/>
+          </svg>
+        </button>
+        <h1 class="header-title">Add item</h1>
+      </div>
+
+      <!-- Content -->
+      <div class="content">
+        <!-- Hero text -->
+        <div class="hero-text">
+          <h2 class="hero-title">Log a fit</h2>
+          <p class="hero-subtitle">Add an item from your closet to track fit and find size twins</p>
+        </div>
+
+        <!-- Action buttons -->
+        <div class="actions">
+          <button class="action-btn primary" id="cameraBtn">
+            <svg class="action-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"/>
+              <circle cx="12" cy="13" r="4"/>
+            </svg>
+            <div class="action-label">
+              <div>Take photo</div>
+              <div class="action-hint">Snap a pic of the tag or product</div>
+            </div>
+          </button>
+
+          <button class="action-btn" id="urlBtn">
+            <svg class="action-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"/>
+              <path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"/>
+            </svg>
+            <div class="action-label">
+              <div>Paste link</div>
+              <div class="action-hint">From retailer website</div>
+            </div>
+          </button>
+        </div>
+
+        <!-- URL input (hidden initially) -->
+        <div class="url-input-container" id="urlInputContainer">
+          <input type="url" class="url-input" id="urlInput" placeholder="https://jcrew.com/..." value="" />
+          <button class="url-submit" id="urlSubmit">
+            <span class="spinner"></span>
+            <span class="button-text">Continue</span>
+          </button>
+          <div class="loading-message" id="loadingMessage">Finding product details...</div>
+        </div>
+
+        <!-- Data table graphic -->
+        <div class="data-graphic" id="dataGraphic">
+          <table class="data-table">
+            <thead>
+              <tr>
+                <th>Size</th>
+                <th>Item</th>
+                <th>Bought</th>
+                <th>Fit</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>M</td>
+                <td><span class="brand">J.Crew</span>Halter Dress</td>
+                <td><span class="checkmark">✓</span></td>
+                <td>Just right</td>
+              </tr>
+              <tr>
+                <td>32</td>
+                <td><span class="brand">Levi's</span>Slim Jeans</td>
+                <td></td>
+                <td>Too tight</td>
+              </tr>
+              <tr>
+                <td>M</td>
+                <td><span class="brand">Everlane</span>Cotton Tee</td>
+                <td><span class="checkmark">✓</span></td>
+                <td>Just right</td>
+              </tr>
+              <tr>
+                <td>6</td>
+                <td><span class="brand">COS</span>Linen Blazer</td>
+                <td></td>
+                <td>Too big</td>
+              </tr>
+              <tr>
+                <td>S</td>
+                <td><span class="brand">Zara</span>Midi Skirt</td>
+                <td><span class="checkmark">✓</span></td>
+                <td>Just right</td>
+              </tr>
+              <tr>
+                <td>8</td>
+                <td><span class="brand">Madewell</span>Ankle Boots</td>
+                <td><span class="checkmark">✓</span></td>
+                <td>Just right</td>
+              </tr>
+              <tr>
+                <td>4</td>
+                <td><span class="brand">Aritzia</span>Wide Pants</td>
+                <td></td>
+                <td>Just right</td>
+              </tr>
+            </tbody>
+          </table>
+          <div class="table-fade"></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    // Camera button - navigate to confirmation
+    document.getElementById('cameraBtn').addEventListener('click', () => {
+      console.log('Open camera interface');
+      // In production: trigger device camera or file picker, then navigate
+      window.location.href = 'log-fit-confirm.html';
+    });
+
+    // URL button - toggle input
+    const urlBtn = document.getElementById('urlBtn');
+    const urlInputContainer = document.getElementById('urlInputContainer');
+    const actions = document.querySelector('.actions');
+    const heroText = document.querySelector('.hero-text');
+    const dataGraphic = document.getElementById('dataGraphic');
+
+    urlBtn.addEventListener('click', () => {
+      actions.style.display = 'none';
+      heroText.style.display = 'none';
+      dataGraphic.style.display = 'none';
+      urlInputContainer.classList.add('visible');
+      document.getElementById('urlInput').focus();
+    });
+
+    // URL submit - fetch product data and navigate to confirmation
+    document.getElementById('urlSubmit').addEventListener('click', async () => {
+      const url = document.getElementById('urlInput').value;
+      if (!url) return;
+
+      const submitBtn = document.getElementById('urlSubmit');
+      const buttonText = submitBtn.querySelector('.button-text');
+      const loadingMessage = document.getElementById('loadingMessage');
+
+      // Show loading state
+      submitBtn.disabled = true;
+      submitBtn.classList.add('loading');
+      buttonText.textContent = 'Loading...';
+      loadingMessage.classList.add('visible');
+
+      try {
+        // Call Microlink API to extract product metadata
+        const apiUrl = `https://api.microlink.io?url=${encodeURIComponent(url)}`;
+        const response = await fetch(apiUrl);
+        const data = await response.json();
+
+        if (data.status === 'success' && data.data) {
+          const title = data.data.title || '';
+          const description = data.data.description || '';
+
+          // Check for error pages (Cloudflare, bot protection, etc.)
+          const isErrorPage =
+            title.toLowerCase().includes('cloudflare') ||
+            title.toLowerCase().includes('attention required') ||
+            title.toLowerCase().includes('just a moment') ||
+            title.toLowerCase().includes('access denied') ||
+            title.toLowerCase().includes('403') ||
+            title.toLowerCase().includes('404') ||
+            description.toLowerCase().includes('cloudflare');
+
+          if (isErrorPage) {
+            alert('This website is blocking automated access. Please try:\n\n1. Copy the product name manually\n2. Use the "Take a photo" option instead\n3. Try a different retailer');
+            // Reset loading state
+            submitBtn.disabled = false;
+            submitBtn.classList.remove('loading');
+            buttonText.textContent = 'Continue';
+            loadingMessage.classList.remove('visible');
+            return;
+          }
+
+          // Extract product information from metadata
+          const productData = {
+            url: url,
+            title: title || 'Unknown Product',
+            image: data.data.image?.url || data.data.logo?.url || '',
+            brand: data.data.publisher || extractBrandFromUrl(url),
+            description: description
+          };
+
+          // Store in localStorage to pass to confirmation screen
+          localStorage.setItem('pendingProduct', JSON.stringify(productData));
+
+          // Navigate to confirmation
+          window.location.href = 'log-fit-confirm.html';
+        } else {
+          alert('Could not fetch product details. Please try another URL.');
+          // Reset loading state
+          submitBtn.disabled = false;
+          submitBtn.classList.remove('loading');
+          buttonText.textContent = 'Continue';
+          loadingMessage.classList.remove('visible');
+        }
+      } catch (error) {
+        console.error('Error fetching product:', error);
+        alert('Error loading product. Please try again.');
+        // Reset loading state
+        submitBtn.disabled = false;
+        submitBtn.classList.remove('loading');
+        buttonText.textContent = 'Continue';
+        loadingMessage.classList.remove('visible');
+      }
+    });
+
+    // Helper function to extract brand from URL
+    function extractBrandFromUrl(url) {
+      try {
+        const hostname = new URL(url).hostname.replace('www.', '');
+        const domain = hostname.split('.')[0].toLowerCase();
+
+        // Map known brands to their proper names
+        const brandMap = {
+          'thereformation': 'Reformation',
+          'reformation': 'Reformation',
+          'jcrew': 'J.Crew',
+          'aritzia': 'Aritzia',
+          'everlane': 'Everlane',
+          'madewell': 'Madewell',
+          'anthropologie': 'Anthropologie',
+          'freepeople': 'Free People',
+          'urbanoutfitters': 'Urban Outfitters',
+          'zara': 'Zara',
+          'hm': 'H&M'
+        };
+
+        return brandMap[domain] || domain.charAt(0).toUpperCase() + domain.slice(1);
+      } catch {
+        return 'Unknown Brand';
+      }
+    }
+
+    // Back button - return to previous state
+    document.querySelector('.back-btn').addEventListener('click', () => {
+      // If URL input is visible, hide it and show buttons again
+      if (urlInputContainer.classList.contains('visible')) {
+        urlInputContainer.classList.remove('visible');
+        actions.style.display = 'flex';
+        heroText.style.display = 'block';
+        dataGraphic.style.display = 'block';
+        document.getElementById('urlInput').value = ''; // Clear input
+      } else {
+        // Otherwise, navigate back to closet
+        window.location.href = 'closet-screen.html';
+      }
+    });
+
+    // Enable submit button only when URL is entered
+    document.getElementById('urlInput').addEventListener('input', (e) => {
+      document.getElementById('urlSubmit').disabled = !e.target.value.trim();
+    });
+  </script>
+</body>
+</html>

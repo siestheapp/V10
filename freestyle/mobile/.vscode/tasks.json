@@ -1,0 +1,10 @@
+{
+  "version": "2.0.0",
+  "tasks": [
+    { "label": "Start Expo (clear cache)", "type": "shell", "command": "npx expo start -c" },
+    { "label": "iOS Simulator", "type": "shell", "command": "npx expo run:ios" },
+    { "label": "Android", "type": "shell", "command": "npx expo run:android" }
+  ]
+}
+
+

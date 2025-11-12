@@ -1,0 +1,282 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  <title>Sies — In Your Size • Join the Waitlist</title>
+  <meta name="description" content="Sies predicts your best-fitting size across brands using the clothes you already own. Join the waitlist to get early access.">
+  <meta name="copyright" content="Copyright © 2025 Sean Davey. All rights reserved.">
+  <meta name="author" content="Sean Davey">
+
+  <meta property="og:site_name" content="Sies by Sean Davey">
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+
+  <link rel="stylesheet" href="assets/css/style.css">
+</head>
+<body>
+
+<header class="header">
+  <div class="container">
+    <div class="logo"><a href="#top">sies</a></div>
+    <ul class="nav">
+      <li><a href="#how">How it works</a></li>
+      <li><a href="#faq">FAQ</a></li>
+    </ul>
+  </div>
+</header>
+
+<main id="top" class="page">
+  <div class="container">
+
+    <!-- HERO -->
+    <header class="hero">
+      <div class="cols">
+        <div class="col">
+          <header class="section-header">
+            <h1 class="section-heading">Find clothes that fit &mdash; every time.</h1>
+            <p class="section-subheading">No&nbsp;measuring. No&nbsp;guesswork. No&nbsp;surprises.</p>
+          </header>
+          <form class="form" method="POST" action="/thanks" name="waitlist" data-netlify="true" netlify-honeypot="bot-field" autocomplete="on">
+            <input type="hidden" name="form-name" value="waitlist">
+            <p class="hidden"><label>Don't fill this out: <input name="bot-field"></label></p>
+            <div class="form-space">
+              <input class="form-input" type="email" name="email" placeholder="Enter your email" required inputmode="email" autocomplete="email" autocapitalize="off" spellcheck="false">
+              <button class="btn" type="submit">Join the waitlist &rarr;</button>
+            </div>
+            <small class="form-note">Join 1000+ early users. No spam, ever.</small>
+          </form>
+        </div>
+        <div class="col">
+          <div class="mock video" aria-hidden="true">
+            <a class="mock-inner" href="https://www.anthropologie.com/shop/the-jocelyn-sleeveless-slip-midi-dress-by-maeve?category=top-rated-dresses&color=256&type=STANDARD&quantity=1" target="_blank" rel="noopener noreferrer" data-track="hero-mock">
+              <video preload="metadata" autoplay muted loop playsinline poster="assets/video/mockup.jpg">
+                <source src="assets/video/mockup.mp4" type="video/mp4">
+                Your browser does not support the video tag.
+              </video>
+              <div class="click-overlay" data-track="hero-mock"></div>
+            </a>
+          </div>
+        </div>
+      </div>
+    </header>
+
+    <!-- HOW IT WORKS -->
+    <section id="how" class="section how">
+      <div class="cols">
+        <div class="col">
+          <header class="section-header">
+            <p class="section-title">How it works</p>
+            <h2 id="section-heading">Your sizes &rarr; your measurements</h2>
+          </header>
+          <ol class="steps">
+            <li>
+              <p class="step-title"><strong>Add a few favorites</strong></p>
+              <p>Add 1–3 pieces you already own. Sies pulls the exact measurements automatically.</p>
+            </li>
+            <li>
+              <p class="step-title"><strong>Sit back while Sies does the math</strong></p>
+              <p>Sies builds your fit profile from size guides and spec sheets — no measuring tape needed.</p>
+            </li>
+            <li>
+              <p class="step-title"><strong>Shop with confidence</strong></p>
+              <p>See your recommended size and a short "why it fits" note. No guesswork, just clothes that feel made for you.</p>
+            </li>
+          </ol>
+        </div>
+        <div class="col">
+          <div class="mock" aria-hidden="true">
+            <div class="mock-inner" data-track="how-closet-mock">
+              <iframe src="assets/iframe/closet-screen.html" title="Closet mockup" loading="lazy"></iframe>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- PROFILE -->
+    <section id="profile" class="section profile">
+      <header class="section-header">
+        <p class="section-title">Your fit profile</p>
+        <h2 class="section-heading">Your closet, brought to life</h2>
+        <p class="section-subheading">Every piece you add makes your profile smarter.</p>
+      </header>
+      <div class="mock" aria-hidden="true">
+        <div class="mock-inner" data-track="profile-mock">
+          <iframe src="assets/iframe/profile-screen.html" title="Profile mockup" loading="lazy"></iframe>
+        </div>
+      </div>
+    </section>
+
+    <!-- DEMO -->
+    <section id="demo" class="section demo">
+      <header class="section-header">
+        <h2 class="section-heading">Everything in one place.</h2>
+        <p class="section-subheading">Your sizes, your measurements, your shopping.</p>
+      </header>
+
+      <div class="three">
+        <div class="mockup-item">
+          <div class="mockup-label">Your Closet</div>
+          <div class="mock">
+            <div class="mock-inner" data-track="gallery-closet">
+              <iframe src="assets/iframe/closet-gallery.html" title="Closet mockup" loading="lazy"></iframe>
+            </div>
+          </div>
+        </div>
+        <div class="mockup-item">
+          <div class="mockup-label">Your Profile</div>
+          <div class="mock">
+            <div class="mock-inner" data-track="gallery-profile">
+              <iframe src="assets/iframe/profile-gallery.html" title="Profile mockup" loading="lazy"></iframe>
+            </div>
+          </div>
+        </div>
+        <div class="mockup-item">
+          <div class="mockup-label">Your Feed</div>
+          <div class="mock">
+            <div class="mock-inner" data-track="gallery-feed">
+              <iframe src="assets/iframe/feed-gallery.html" title="Feed mockup" loading="lazy"></iframe>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="testimonial">
+        <blockquote>
+          <p>“I used to order two sizes every time I shopped for a dress online. With Sies, I have a much better idea of how each size will fit.”</p>
+          <cite>&mdash; Emily, NYC</cite>
+        </blockquote>
+      </div>
+    </section>
+
+    <!-- FAQ -->
+    <section id="faq" class="section faq">
+      <div class="wrapper">
+        <header class="section-header">
+          <h2 class="section-heading">FAQ</h2>
+        </header>
+        <div class="faq-list">
+          <details>
+            <summary>Do I need to measure myself?</summary>
+            <div>No. Sies learns your fit from the clothes you already own. Snap a couple tag photos or paste product links and we’ll extract measurements automatically.</div>
+          </details>
+          <details>
+            <summary>Are my sizes public?</summary>
+            <div>No. Sizes and measurements are private by default. You can share with Close Friends; creators can opt-in to share.</div>
+          </details>
+          <details>
+            <summary>Will this work across different brands?</summary>
+            <div>Yes. We standardize brand size guides and map them to your fit profile, so an XS in one brand can be compared to an S in another.</div>
+          </details>
+          <details>
+            <summary>What if I like different fits?</summary>
+            <div>Choose a fit zone – sleek, perfect, or relaxed – and Sies adapts by garment type. You’ll also see a short “why it fits” explanation on each item.</div>
+          </details>
+          <details>
+            <summary>How is my data used?</summary>
+            <div>Only to improve your recommendations. We don’t sell personal data. You can remove your info anytime from Settings.</div>
+          </details>
+        </div>
+      </div>
+    </section>
+
+    <!-- JOIN -->
+    <section id="join" class="section join">
+      <header class="section-header">
+        <h2 class="section-heading">Be first to try Sies</h2>
+        <p class="section-subheading">Join the waitlist for early access and updates.</p>
+      </header>
+      <form class="form" method="POST" action="/thanks" name="waitlist" data-netlify="true" netlify-honeypot="bot-field" autocomplete="on">
+        <input type="hidden" name="form-name" value="waitlist">
+        <p class="hidden"><label>Don't fill this out: <input name="bot-field"></label></p>
+        <div class="form-space">
+          <input class="form-input" type="email" name="email" placeholder="Enter your email" required inputmode="email" autocomplete="email" autocapitalize="off" spellcheck="false">
+          <button class="btn" type="submit">Join the waitlist &rarr;</button>
+        </div>
+        <small class="form-note">No spam &mdash; opt out anytime.</small>
+      </form>
+    </section>
+
+  </div>
+</main>
+
+<footer class="footer">
+  <div class="container">
+    <p class="copyright">&copy; 2025 Sies by Oona Holdings LLC. <br>All rights reserved.</p>
+  </div>
+</footer>
+
+<script>
+  // Simple analytics tracker for mockup clicks
+  (function () {
+    const COLLECT_URL = '/.netlify/functions/collect';
+
+    function track(eventName, detail) {
+      try {
+        navigator.sendBeacon && navigator.sendBeacon(COLLECT_URL, new Blob([JSON.stringify({ event: eventName, detail, ts: Date.now(), path: location.pathname })], { type: 'application/json' }));
+      } catch (e) {
+        // no-op
+      }
+    }
+
+    function handleClick(e) {
+      const key = e.currentTarget.getAttribute('data-track');
+      track('mock_click', { key });
+    }
+
+    // Attach to all click overlays and any .mock with data-track
+    document.querySelectorAll('.click-overlay, .mock[data-track]').forEach(el => {
+      el.addEventListener('click', handleClick, { passive: true });
+    });
+
+    // Listen for button-level events coming from iframes (mock internals)
+    window.addEventListener('message', (e) => {
+      const data = e.data || {};
+      if (data && data.type === 'mock_button_click') {
+        track('mock_button_click', { key: data.key, meta: data.meta || {} });
+      }
+    }, { passive: true });
+  })();
+</script>
+
+<script>
+  (function () {
+    const forms = document.querySelectorAll('form[name="waitlist"][data-netlify="true"]');
+
+    function encode(data) {
+      return Object.keys(data).map(k => encodeURIComponent(k) + "=" + encodeURIComponent(data[k])).join("&");
+    }
+
+    forms.forEach(form => {
+      form.addEventListener('submit', async (e) => {
+        e.preventDefault();
+        const data = Object.fromEntries(new FormData(form));
+        data['form-name'] = form.getAttribute('name');
+        try {
+          const res = await fetch('/', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+            body: encode(data)
+          });
+          if (!res.ok) throw new Error('Network');
+          // Optional: fire analytics here
+          // window.gtag?.('event','waitlist_signup');
+          // fbq?.('track','Lead');
+
+          form.innerHTML = `<p style="margin:0.5rem 0 0; font-weight:600">You're in 🎉 We'll email you soon.</p>`;
+          history.replaceState(null, '', location.pathname + '?joined=1'); // keeps a clean URL state
+        } catch (err) {
+          // Fallback to normal redirect if something fails
+          window.location.href = '/thanks';
+        }
+      });
+    });
+  })();
+</script>
+</body>
+</html>

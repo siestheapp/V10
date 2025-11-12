@@ -1,0 +1,144 @@
+{
+  "reformation_size_guide": {
+    "bryson_dress": {
+      "0": { "bust": 33, "waist": 25, "hips": 36 },
+      "2": { "bust": 34, "waist": 26, "hips": 37 },
+      "4": { "bust": 35, "waist": 27, "hips": 38 },
+      "6": { "bust": 36, "waist": 28, "hips": 39 },
+      "8": { "bust": 37.5, "waist": 29.5, "hips": 40.5 },
+      "10": { "bust": 39.5, "waist": 31.5, "hips": 42.5 },
+      "12": { "bust": 41.5, "waist": 33.5, "hips": 44.5 }
+    }
+  },
+  "alexis_size_guide": {
+    "briette_dress": {
+      "XS": { "bust": 31.5, "waist": 25.5, "hips": 35.5 },
+      "S": { "bust": 33, "waist": 27, "hips": 37 },
+      "M": { "bust": 35.5, "waist": 28.5, "hips": 38.5 },
+      "L": { "bust": 37, "waist": 30, "hips": 40 },
+      "XL": { "bust": 38.5, "waist": 31.5, "hips": 41.5 }
+    }
+  },
+  "users": {
+    "lily": {
+      "id": "lily_001",
+      "name": "Lily",
+      "height": "5'6\"",
+      "weight": "122 lbs",
+      "actualItems": [
+        {
+          "item": "Reformation Bryson Dress",
+          "size": "2",
+          "measurements": { "bust": 34, "waist": 26, "hips": 37 },
+          "fit": "perfect",
+          "isAnchor": true
+        },
+        {
+          "item": "ALEXIS Briette Dress",
+          "size": "S",
+          "measurements": { "bust": 33, "waist": 27, "hips": 37 },
+          "fit": "perfect",
+          "notes": "Slightly tighter bust, looser waist vs Bryson"
+        },
+        {
+          "item": "ALFIE Open Back Top",
+          "size": "S",
+          "measurements": { "bust": 34, "waist": 30, "hips": 38 },
+          "fit": "perfect"
+        },
+        {
+          "item": "AYR The Secret Sauce Jeans",
+          "size": "26S",
+          "measurements": { "waist": 27, "hips": 37, "inseam": 28 },
+          "fit": "perfect"
+        }
+      ],
+      "inferredRanges": {
+        "bust": { "min": 33, "ideal": 34, "max": 35 },
+        "waist": { "min": 26, "ideal": 26, "max": 27 },
+        "hips": { "min": 37, "ideal": 37, "max": 38 }
+      }
+    },
+    "emma": {
+      "id": "emma_001",
+      "name": "Emma",
+      "height": "5'6\"",
+      "weight": "118 lbs",
+      "actualItems": [
+        {
+          "item": "Reformation Bryson Dress",
+          "size": "2",
+          "measurements": { "bust": 34, "waist": 26, "hips": 37 },
+          "fit": "perfect",
+          "isAnchor": true
+        },
+        {
+          "item": "Anthropologie Fleur Strapless Satin Maxi Slip Dress",
+          "size": "S",
+          "measurements": { "bust": "35-36", "waist": "27-28", "hips": "37-38" },
+          "fit": "slightly loose in bust/waist, perfect in hips",
+          "isAnchor": true,
+          "notes": "Sized up to S for hips (37). XS would be too tight. Strapless style with elastic at bust helps accommodate the looser top."
+        },
+        {
+          "item": "Ganni Cotton Poplin Dress",
+          "size": "36",
+          "measurements": { "bust": 34, "waist": 26.5, "hips": 37 },
+          "fit": "perfect"
+        },
+        {
+          "item": "Rouje Gabin Dress",
+          "size": "36",
+          "measurements": { "bust": 35, "waist": 28, "hips": 38 },
+          "fit": "slightly loose",
+          "notes": "Could size down to 34"
+        },
+        {
+          "item": "Dôen Clea Top",
+          "size": "S",
+          "measurements": { "bust": 34, "waist": "n/a" },
+          "fit": "perfect"
+        },
+        {
+          "item": "Sézane Christie Cardigan",
+          "size": "S",
+          "measurements": { "bust": 34 },
+          "fit": "perfect"
+        },
+        {
+          "item": "Realisation Par Naomi Skirt",
+          "size": "S",
+          "measurements": { "waist": 25, "hips": 36 },
+          "fit": "runs small",
+          "notes": "Tight at waist"
+        }
+      ],
+      "inferredRanges": {
+        "bust": { "min": 33, "ideal": 34, "max": 35 },
+        "waist": { "min": 25, "ideal": 26, "max": 27 },
+        "hips": { "min": 36, "ideal": 37, "max": 38 }
+      }
+    }
+  },
+  "matchAnalysis": {
+    "lily_emma": {
+      "matchScore": 98,
+      "sharedAnchor": "Reformation Bryson Dress Size 2 (34/26/37)",
+      "emmaAnchors": "Bryson 2 + Anthropologie Fleur S",
+      "comparison": {
+        "bust": "Both ideal at 34\"",
+        "waist": "Both ideal at 26\"",
+        "hips": "Both ideal at 37\""
+      },
+      "confidence": "Very High - identical Bryson fit",
+      "sizePredictions": {
+        "Anthropologie": "S (Emma confirmed - Fleur Dress anchor)",
+        "Ganni": "36 (Emma confirmed)",
+        "Rouje": "34 or 36 (Emma wears 36 loose)",
+        "Dôen": "S (Emma confirmed)",
+        "Sézane": "S (Emma confirmed)",
+        "Realisation Par": "S or M (Emma's S runs small)"
+      }
+    }
+  }
+}

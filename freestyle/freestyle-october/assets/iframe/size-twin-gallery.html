@@ -1,0 +1,372 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Proxi — Proxy</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <style>
+    :root{
+      --bg:#F7F9FB; --ink:#1F1F1F; --muted:#6F6F74;
+      --petrol-600:#009090; --petrol-500:#00A3A3; --petrol-400:#16B5B5; --petrol-100:#E0F7F7;
+      --mint-400:#A6FFCB; --ice-300:#7FE1FF;
+      --cta-start:#008888; --cta-mid:#34C3CC; --cta-end:#9BFFCF;
+      --card:#fff; --border:#E8E4DE; --shadow:0 12px 30px rgba(0,0,0,.08);
+      --r:16px; --r-lg:22px; --r-xl:28px;
+    }
+    *{box-sizing:border-box;margin:0;padding:0}
+    body{font-family:Inter,system-ui,-apple-system,"Segoe UI",Roboto,Helvetica,Arial;background:var(--bg);color:var(--ink);min-height:100vh;display:flex;align-items:center;justify-content:center}
+
+    .phone{width:430px;height:932px;border-radius:55px;background:#000;padding:2px}
+    .screen{height:100%;background:#fff;border-radius:53px;overflow:hidden;position:relative;display:flex;flex-direction:column}
+    .island{position:absolute;top:11px;left:50%;transform:translateX(-50%);width:126px;height:37px;background:#000;border-radius:19px;z-index:5}
+    .status{height:54px;margin-top:5px;display:flex;align-items:center;justify-content:space-between;padding:0 30px;font-weight:600;color:#000;font-size:17px;letter-spacing:-.02em}
+    .status .right{display:flex;align-items:center;gap:6px}
+    .status .right img{height:13px;width:auto;display:block}
+
+    .header{padding:4px 24px 2px;display:flex;align-items:center;justify-content:center;position:relative}
+    .logo{font-weight:600;font-size:32px;letter-spacing:-.01em;background:linear-gradient(135deg,var(--cta-start),var(--cta-mid) 46%,var(--cta-end));-webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent}
+
+    .content{flex:1;overflow:auto;padding:8px 24px 96px}
+    .content::-webkit-scrollbar{display:none}
+    .title{font:800 26px/1.1 Inter;margin:12px 0 10px}
+
+    /* Attention card under the title */
+    .info-card{position:relative;background:var(--card);border:1px solid rgba(0,0,0,.06);border-radius:18px;padding:12px 14px;box-shadow:0 12px 28px rgba(0,0,0,.08);margin:6px 0 14px}
+    .info-card::before{content:"";position:absolute;left:0;top:0;bottom:0;width:4px;border-radius:18px 0 0 18px;background:linear-gradient(180deg,var(--cta-start),var(--cta-end))}
+    .info-card .k{display:inline-block;font:700 10px/1 Inter;letter-spacing:.18em;text-transform:uppercase;color:var(--petrol-600);margin-bottom:6px}
+    .info-card p{font:600 14px/1.5 Inter;color:#2F2F33}
+
+    .picker{position:static;background:#fff;margin:0 -24px 18px;padding:10px 24px;border-bottom:1px solid rgba(0,0,0,.06);display:flex;align-items:center;gap:12px;flex-wrap:wrap}
+    .picker .kicker{font:600 11px/1 Inter;letter-spacing:.18em;text-transform:uppercase;color:#6F6F74}
+    .picker .select{display:flex;align-items:center;gap:10px;border:1px solid var(--border);background:#fff;border-radius:999px;padding:8px 14px;font:600 13px/1.2 Inter;color:#1F1F1F;cursor:pointer;box-shadow:0 4px 14px rgba(0,0,0,.06);transition:transform .2s ease, box-shadow .2s ease;flex:1 1 100%;min-width:240px}
+    .picker .select:hover{transform:translateY(-1px);box-shadow:0 10px 22px rgba(0,0,0,.08)}
+    .picker .select .caret{margin-left:auto;width:14px;height:14px;color:#6F6F74;flex-shrink:0}
+    .picker .select[aria-expanded="true"] .caret{transform:rotate(180deg)}
+    .ellipsis{max-width:100%;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;display:block}
+    .piece-size{display:inline-flex;align-items:center;justify-content:center;padding:6px 12px;border-radius:999px;border:1px solid rgba(0,0,0,.12);font:600 12px/1 Inter;color:#1F1F1F;background:#fff;white-space:nowrap;flex-shrink:0}
+    .desktop-only{display:none}
+    .picker .count{margin-left:0;font:600 12px/1.2 Inter;color:var(--muted);display:block}
+    .picker .count .product{color:var(--petrol-600);font-weight:700}
+
+    .feed{display:flex;flex-direction:column;gap:18px;margin-top:4px}
+    .look-card{background:var(--card);border:1px solid rgba(0,0,0,.05);border-radius:26px;padding:18px 18px 20px;box-shadow:0 14px 34px rgba(0,0,0,.08);transition:transform .25s ease, box-shadow .25s ease}
+    .look-card:hover{transform:translateY(-3px);box-shadow:0 22px 50px rgba(0,0,0,.12)}
+    .look-h{display:flex;align-items:center;gap:12px;margin-bottom:16px}
+    .avatar{width:48px;height:48px;border-radius:16px;object-fit:cover;border:2px solid rgba(0,0,0,.05);box-shadow:0 6px 18px rgba(0,0,0,.12)}
+    .avatar--circle{border-radius:50%}
+    .name{font:700 15px/1.2 Inter}
+    .bads{display:flex;flex-wrap:wrap;gap:6px;margin-left:auto}
+    .badge{background:var(--petrol-100);color:var(--petrol-600);font:600 11px/1 Inter;padding:6px 10px;border-radius:999px;border:1px solid rgba(0,163,163,.25);white-space:nowrap}
+
+    .hero-wrap{position:relative;border-radius:22px;overflow:hidden;border:1px solid rgba(0,0,0,.04);background:#f5f6f8}
+    .hero-img{width:100%;height:520px;object-fit:cover;display:block}
+    .hero-img--tight{object-position:center 60%;transform:scale(1)}
+    .carousel{position:relative;height:520px}
+    .carousel .slide{position:absolute;inset:0;opacity:0;transition:opacity .35s ease}
+    .carousel .slide.active{opacity:1}
+    .carousel .nav{position:absolute;top:50%;transform:translateY(-50%);width:32px;height:32px;border-radius:999px;background:rgba(0,0,0,.35);color:#fff;display:flex;align-items:center;justify-content:center;border:none;cursor:pointer}
+    .carousel .nav.left{left:10px}
+    .carousel .nav.right{right:10px}
+    /* Center chevrons visually within circular buttons */
+    .carousel .nav{font-size:0}
+    .carousel .nav::before{display:block;font-size:18px;line-height:1;color:#fff}
+    .carousel .nav.left::before{content:"\2039";transform:translateX(-1px)}
+    .carousel .nav.right::before{content:"\203A";transform:translateX(1px)}
+    .carousel .dots{position:absolute;left:50%;bottom:6px;transform:translateX(-50%);display:flex;gap:6px;align-items:center;justify-content:center;background:rgba(255,255,255,.76);padding:3px 6px;border-radius:999px}
+    .carousel .dot{width:6px;height:6px;border-radius:999px;background:#c2c7cc;border:none;padding:0}
+    .carousel .dot.active{background:var(--petrol-600)}
+    .hero-img--no-head{object-position:center 40%;transform:scale(1)}
+
+    .alt-strip{margin-top:14px;display:flex;gap:12px;overflow-x:auto;-webkit-overflow-scrolling:touch;padding-bottom:4px}
+    .alt-strip::-webkit-scrollbar{height:0}
+    .alt-item{min-width:82px;text-align:center}
+    .alt-thumb{width:82px;height:92px;object-fit:cover;border-radius:18px;border:1px solid rgba(0,0,0,.08);background:#f0f3f6;display:block;margin-bottom:6px}
+    .alt-label{font:600 11px/1.2 Inter;color:#2F2F33;white-space:nowrap}
+
+    .look-actions{margin-top:18px;display:flex;align-items:center;gap:12px}
+    .pill{display:inline-flex;align-items:center;justify-content:center;padding:10px 18px;border-radius:999px;border:1px solid rgba(0,0,0,.12);font:600 12px/1 Inter;color:#1F1F1F;background:#fff;word-spacing:0.12em}
+    .btn-primary{flex:1;display:inline-flex;align-items:center;justify-content:center;padding:12px 14px;border:none;border-radius:16px;font:700 14px/1 Inter;color:#fff;background:linear-gradient(135deg,var(--cta-start),var(--cta-mid) 40%,var(--cta-end));box-shadow:0 12px 28px rgba(0,163,163,.25);cursor:pointer;transition:transform .2s ease, box-shadow .2s ease}
+    .btn-primary:hover{transform:translateY(-1px);box-shadow:0 18px 40px rgba(0,163,163,.28)}
+    .btn-outline{flex:1;display:inline-flex;align-items:center;justify-content:center;padding:12px 14px;border-radius:16px;font:700 14px/1 Inter;color:#1F1F1F;background:#fff;border:1px solid rgba(0,0,0,.12);box-shadow:0 4px 12px rgba(0,0,0,.04);cursor:pointer;transition:background .2s ease, box-shadow .2s ease}
+    .btn-outline:hover{background:#f7f9fb;box-shadow:0 8px 18px rgba(0,0,0,.08)}
+    /* Comment teaser styles */
+    .comment-teaser{display:block;width:100%;text-align:left;margin-top:12px;border-radius:16px;border:1px solid rgba(0,0,0,.08);background:#fff;padding:10px 12px;box-shadow:0 2px 6px rgba(0,0,0,.03);cursor:pointer;transition:background .2s ease, box-shadow .2s ease}
+    .comment-teaser:hover{background:#f7f9fb;box-shadow:0 6px 16px rgba(0,0,0,.06)}
+    .comment-teaser .k{font:600 11px/1.2 Inter;color:var(--muted);margin-bottom:6px}
+    .comment-teaser .row{font:600 13px/1.45 Inter;color:#2F2F33}
+    .comment-teaser .row .q,.comment-teaser .row .a{font-weight:700}
+    .comment-teaser .row .sep{margin:0 8px;color:#c4c7cc}
+    .comment-teaser .link{margin-top:6px;font:600 12px/1.2 Inter;color:var(--petrol-600)}
+    .comment-teaser .link-inline{margin-top:0;margin-left:8px;display:none;font:600 13px/1.45 Inter;color:var(--petrol-600);white-space:nowrap}
+
+    /* Caption and helper copy under main image */
+    .look-caption{margin-top:14px}
+    .look-caption p{font:600 14px/1.45 Inter;color:#2F2F33}
+    .look-caption .sub{margin-top:6px;font:500 13px/1.4 Inter;color:var(--muted)}
+    .look-caption .user{margin-right:8px}
+    .look-actions--center{justify-content:center}
+    .btn-primary--fit{flex:0 0 auto}
+
+    .tabs{position:absolute;left:0;right:0;bottom:0;height:83px;background:#fff;border-top:1px solid rgba(0,0,0,.06);display:flex;justify-content:space-around;align-items:flex-start;padding-top:8px;padding-bottom:34px}
+    .tab{display:flex;flex-direction:column;align-items:center;gap:6px;text-decoration:none;color:#8e8e93;font-size:11px;font-weight:500}
+    .tab.active{color:var(--petrol-600)}
+    .ico{width:28px;height:28px}
+
+    button{background:none;border:none}
+    button:focus-visible{outline:2px solid var(--petrol-500);outline-offset:3px}
+    .picker .select:focus-visible{outline-offset:4px}
+    .btn-primary:focus-visible{outline-offset:4px}
+
+    @media (min-width:520px){
+      .desktop-only{display:flex}
+      .ellipsis{max-width:100%}
+      .picker .select{min-width:280px}
+    }
+    @media (prefers-reduced-motion:reduce){
+      *,*::before,*::after{animation-duration:.01ms!important;animation-iteration-count:1!important;transition-duration:.01ms!important;scroll-behavior:auto!important}
+    }
+  </style>
+</head>
+<body>
+  <div class="phone">
+    <div class="screen">
+      <div class="island"></div>
+      <div class="status">
+        <div>9:41</div>
+        <div class="right"><img src="../img/cellular-connection.svg" alt="cellular connection"/><img src="../img/wifi.svg" alt="wifi strength"/><img src="../img/battery.svg" alt="battery level"/></div>
+      </div>
+
+      <div class="header">
+        <div class="logo">proxi</div>
+      </div>
+
+      <div class="content">
+        <h1 class="title">Proxy</h1>
+        <div class="info-card" role="note" aria-live="polite">
+          <p>A proxy is someone who wears the exact same piece as you, down to the size. Check out their other sizes – they’ll probably fit you too.</p>
+        </div>
+
+        <div class="picker">
+          <span class="kicker">Selected piece</span>
+          <button class="select" type="button" aria-live="polite" aria-haspopup="listbox" aria-expanded="false">
+            <span class="ellipsis">Anthropologie &bull; Somerset Maxi Dress</span>
+            <span class="piece-size">Size XS</span>
+            <svg class="caret" viewBox="0 0 256 256" aria-hidden="true"><path fill="currentColor" d="M128 166a6 6 0 0 1-4.24-1.76l-56-56a6 6 0 0 1 8.48-8.48L128 151.51l51.76-51.75a6 6 0 0 1 8.48 8.48l-56 56A6 6 0 0 1 128 166Z"/></svg>
+          </button>
+          <span class="count"><span>23 users also wear </span><span class="product">Somerset Maxi Dress — XS</span></span>
+        </div>
+
+        <div class="feed">
+          <article class="look-card" data-fit="90" data-overlap="6">
+            <header class="look-h">
+              <img class="avatar avatar--circle" src="../img/videoframe_611.png" alt="ellaa76 profile photo">
+              <div class="name">ellaa76</div>
+              <div class="bads">
+                <span class="badge">Exact match in Selected Piece</span>
+              </div>
+            </header>
+            <div class="hero-wrap">
+              <div class="carousel" data-index="0">
+                <img
+                  class="hero-img hero-img--tight slide active"
+                  src="https://images.unsplash.com/photo-1503342217505-b0a15cf70489?q=80&w=1200&auto=format&fit=crop"
+                  data-local-src="../img/videoframe_6964.png"
+                  data-fallback-src="https://images.unsplash.com/photo-1503342217505-b0a15cf70489?q=80&w=1200&auto=format&fit=crop"
+                  alt="ellaa76 wearing floral halter dress"
+                  data-brand="Anthropologie"
+                  data-title="Somerset Maxi Dress"
+                  data-size="XS"
+                  data-comments="12"
+                  data-q="Is this petite or regular?"
+                  data-a="Regular!"
+                >
+                <img
+                  class="hero-img hero-img--tight slide"
+                  src="https://images.unsplash.com/photo-1512436991641-6745cdb1723f?q=80&w=1200&auto=format&fit=crop"
+                  data-local-src="../img/videoframe_33023.png"
+                  data-fallback-src="https://images.unsplash.com/photo-1512436991641-6745cdb1723f?q=80&w=1200&auto=format&fit=crop"
+                  alt="ellaa76 in a floral v-neck dress"
+                  data-brand="Anthropologie"
+                  data-title="Peregrine Midi Dress"
+                  data-size="XS Petite"
+                  data-comments="7"
+                  data-q="How long is the skirt?"
+                >
+                <img
+                  class="hero-img hero-img--no-head slide"
+                  src="https://images.unsplash.com/photo-1520975688810-00f17fb6c03a?q=80&w=1200&auto=format&fit=crop"
+                  data-local-src="../img/videoframe_66962.png"
+                  data-fallback-src="https://images.unsplash.com/photo-1520975688810-00f17fb6c03a?q=80&w=1200&auto=format&fit=crop"
+                  alt="brown blazer outfit, head cropped"
+                  data-brand="LOFT"
+                  data-title="Versa Crepe Blazer"
+                  data-size="XXS Petite"
+                  data-comments="4"
+                  data-q="Sleeve length true petite?"
+                >
+                <button class="nav left" type="button" aria-label="Previous slide">‹</button>
+                <button class="nav right" type="button" aria-label="Next slide">›</button>
+                <div class="dots" aria-label="Slide position">
+                  <button class="dot active" type="button" aria-label="Slide 1"></button>
+                  <button class="dot" type="button" aria-label="Slide 2"></button>
+                  <button class="dot" type="button" aria-label="Slide 3"></button>
+                </div>
+              </div>
+            </div>
+            <div class="look-caption">
+              <p><strong class="user" id="brand">Anthropologie</strong><span id="title">Somerset Maxi Dress</span> — <span id="size">XS</span></p>
+              <button class="comment-teaser" type="button" aria-label="View comments" id="commentTeaser">
+                <div class="k">Comments · <span id="cCount">12</span></div>
+                <div class="row"><span class="q">Q:</span> <span id="cQ">Is this petite or regular?</span> <span class="sep">·</span> <span class="a">A:</span> <span id="cA">Regular!</span><span class="link link-inline" id="cLinkInline" aria-hidden="true">See full thread &gt;</span></div>
+                <div class="link" id="cLinkBlock">See full thread &gt;</div>
+              </button>
+              <div class="look-actions">
+                <button class="btn-primary btn-primary--fit" type="button">Shop this item</button>
+                <button class="btn-outline" type="button">See more from ellaa76</button>
+              </div>
+            </div>
+          </article>
+
+          <article class="look-card" data-fit="88" data-overlap="5">
+            <header class="look-h">
+              <img class="avatar" src="https://i.pravatar.cc/64?img=47" alt="Vera profile photo">
+              <div class="name">Vera</div>
+              <div class="bads">
+                <span class="badge">Exact match in Selected Piece</span>
+                <span class="badge">88% fit match</span>
+              </div>
+            </header>
+            <div class="hero-wrap">
+              <img
+                class="hero-img"
+                src="https://images.unsplash.com/photo-1512436991641-6745cdb1723f?q=80&w=1200&auto=format&fit=crop"
+                data-local-src="/images/size-twin-look-3.jpg"
+                data-fallback-src="https://images.unsplash.com/photo-1512436991641-6745cdb1723f?q=80&w=1200&auto=format&fit=crop"
+                alt="Vera pairing the Tempest Dress with boots"
+              >
+            </div>
+            <div class="alt-strip" aria-label="Closet overlap preview">
+              <div class="alt-item">
+                <img class="alt-thumb" src="https://images.unsplash.com/photo-1521572267360-ee0c2909d518?q=80&w=400&auto=format&fit=crop" alt="Aritzia dress detail thumbnail">
+                <span class="alt-label">Aritzia · S</span>
+              </div>
+              <div class="alt-item">
+                <img class="alt-thumb" src="https://images.unsplash.com/photo-1520975688810-00f17fb6c03a?q=80&w=400&auto=format&fit=crop" alt="Reformation wrap dress thumbnail">
+                <span class="alt-label">Reformation · 2</span>
+              </div>
+              <div class="alt-item">
+                <img class="alt-thumb" src="https://images.unsplash.com/photo-1512436991641-6745cdb1723f?q=80&w=400&auto=format&fit=crop" alt="Babaton knit dress thumbnail">
+                <span class="alt-label">Babaton · S</span>
+              </div>
+            </div>
+            <div class="look-actions">
+              <span class="pill">5 overlapping brands</span>
+              <button class="btn-primary" type="button">Shop this look (S)</button>
+            </div>
+          </article>
+        </div>
+      </div>
+
+      <div class="tabs">
+        <a class="tab active" href="#"><svg class="ico" viewBox="0 0 256 256" aria-hidden="true"><path fill="currentColor" d="M225.24,174.74a12,12,0,0,1-1.58,16.89C205.49,206.71,189.06,212,174.15,212c-19.76,0-36.86-9.29-51.88-17.44-25.06-13.62-44.86-24.37-74.61.3a12,12,0,1,1-15.32-18.48c42.25-35,75-17.23,101.39-2.92,25.06,13.61,44.86,24.37,74.61-.3A12,12,0,0,1,225.24,174.74Zm-16.9-57.59c-29.75,24.67-49.55,13.91-74.61.3-26.35-14.3-59.14-32.11-101.39,2.92a12,12,0,0,0,15.32,18.48c29.75-24.67,49.55-13.92,74.61-.3,15,8.15,32.12,17.44,51.88,17.44,14.91,0,31.34-5.29,49.51-20.36a12,12,0,0,0-15.32-18.48ZM47.66,82.84c29.75-24.67,49.55-13.92,74.61-.3,15,8.15,32.12,17.44,51.88,17.44,14.91,0,31.34-5.29,49.51-20.36a12,12,0,0,0-15.32-18.48c-29.75,24.67-49.55,13.92-74.61.3-26.35-14.3-59.14-32.11-101.39,2.93A12,12,0,1,0,47.66,82.84Z"/></svg><span>Proxy</span></a>
+        <a class="tab" href="#"><svg class="ico" viewBox="0 0 256 256" aria-hidden="true"><path fill="currentColor" d="M225.24,174.74a12,12,0,0,1-1.58,16.89C205.49,206.71,189.06,212,174.15,212c-19.76,0-36.86-9.29-51.88-17.44-25.06-13.62-44.86-24.37-74.61.3a12,12,0,1,1-15.32-18.48c42.25-35,75-17.23,101.39-2.92,25.06,13.61,44.86,24.37,74.61-.3A12,12,0,0,1,225.24,174.74Zm-16.9-57.59c-29.75,24.67-49.55,13.91-74.61.3-26.35-14.3-59.14-32.11-101.39,2.92a12,12,0,0,0,15.32,18.48c29.75-24.67,49.55-13.92,74.61-.3,15,8.15,32.12,17.44,51.88,17.44,14.91,0,31.34-5.29,49.51-20.36a12,12,0,0,0-15.32-18.48ZM47.66,82.84c29.75-24.67,49.55-13.92,74.61-.3,15,8.15,32.12,17.44,51.88,17.44,14.91,0,31.34-5.29,49.51-20.36a12,12,0,0,0-15.32-18.48c-29.75,24.67-49.55,13.92-74.61.3-26.35-14.3-59.14-32.11-101.39,2.93A12,12,0,1,0,47.66,82.84Z"/></svg><span>Feed</span></a>
+        <a class="tab" href="#"><svg class="ico" viewBox="0 0 256 256" aria-hidden="true"><path fill="currentColor" d="M244,168,148,96l19.2-14.4A12,12,0,0,0,172,72a44,44,0,0,0-87.66-5.48,12,12,0,1,0,23.82,3,20,20,0,0,1,39.09-2.92L121,86.24c-.15.1-.29.21-.43.32L12,168a20,20,0,0,0,12,36H232a20,20,0,0,0,12-36ZM36,180l92-69,92,69Z"/></svg><span>Closet</span></a>
+        <a class="tab" href="#"><svg class="ico" viewBox="0 0 256 256" aria-hidden="true"><path fill="currentColor" d="M234.38,210a123.36,123.36,0,0,0-60.78-53.23,76,76,0,1,0-91.2,0A123.36,123.36,0,0,0,21.62,210a12,12,0,1,0,20.77,12c18.12-31.32,50.12-50,85.61-50s67.49,18.69,85.61,50a12,12,0,0,0,20.77-12ZM76,96a52,52,0,1,1,52,52A52.06,52.06,0,0,1,76,96Z"/></svg><span>Profile</span></a>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    const heroImages = document.querySelectorAll('.hero-img[data-local-src]');
+    heroImages.forEach((img)=>{
+      const localSrc = img.dataset.localSrc;
+      const fallback = img.dataset.fallbackSrc || img.src;
+      if(!localSrc) return;
+      const probe = new Image();
+      probe.onload = ()=>{img.src = localSrc;};
+      probe.onerror = ()=>{img.src = fallback;};
+      probe.src = localSrc;
+    });
+
+    // Lightweight carousel controls + dynamic caption/teaser updates
+    document.querySelectorAll('.carousel').forEach((car)=>{
+      const slides = Array.from(car.querySelectorAll('.slide'));
+      const dots = Array.from(car.querySelectorAll('.dot'));
+      let index = 0;
+
+      const brandEl = document.getElementById('brand');
+      const titleEl = document.getElementById('title');
+      const sizeEl = document.getElementById('size');
+      const cCountEl = document.getElementById('cCount');
+      const cQEl = document.getElementById('cQ');
+      const cAEl = document.getElementById('cA');
+
+      const applyFromSlide = (slide)=>{
+        if(!slide) return;
+        const { brand, title, size, comments, q, a } = slide.dataset;
+        if(brandEl) brandEl.textContent = brand || '';
+        if(titleEl) titleEl.textContent = title || '';
+        if(sizeEl) sizeEl.textContent = size || '';
+        if(cCountEl) cCountEl.textContent = comments || '0';
+        if(cQEl) cQEl.textContent = q || '';
+        if(cAEl){
+          cAEl.textContent = a || '';
+          // Hide the A/sep when no answer is provided
+          const aLabel = cAEl.previousElementSibling; // the 'A:' label span
+          const sep = aLabel?.previousElementSibling; // the separator dot span
+          const linkInline = document.getElementById('cLinkInline');
+          const linkBlock = document.getElementById('cLinkBlock');
+          if(!a){
+            // Hide A: label entirely and use inline link for a clean professional layout
+            if(aLabel && aLabel.classList.contains('a')) aLabel.style.display = 'none';
+            if(sep && sep.classList.contains('sep')) sep.style.display = 'none';
+            cAEl.style.display = 'none';
+            if(linkInline) linkInline.style.display = 'inline';
+            if(linkBlock) linkBlock.style.display = 'none';
+          }else{
+            if(aLabel && aLabel.classList.contains('a')) aLabel.style.display = '';
+            if(sep && sep.classList.contains('sep')) sep.style.display = '';
+            cAEl.style.display = '';
+            if(linkInline) linkInline.style.display = 'none';
+            if(linkBlock) linkBlock.style.display = '';
+          }
+        }
+      };
+
+      const setIndex = (i)=>{
+        index = (i + slides.length) % slides.length;
+        slides.forEach((s,si)=>s.classList.toggle('active', si===index));
+        dots.forEach((d,di)=>d.classList.toggle('active', di===index));
+        applyFromSlide(slides[index]);
+      };
+
+      const next = ()=> setIndex(index+1);
+      const prev = ()=> setIndex(index-1);
+
+      car.querySelector('.nav.right')?.addEventListener('click', next);
+      car.querySelector('.nav.left')?.addEventListener('click', prev);
+      dots.forEach((d,di)=>d.addEventListener('click', ()=>setIndex(di)));
+
+      // Swipe support
+      let startX = null;
+      const onStart = (e)=>{ startX = (e.touches? e.touches[0].clientX : e.clientX); };
+      const onEnd = (e)=>{
+        if(startX===null) return;
+        const endX = (e.changedTouches? e.changedTouches[0].clientX : e.clientX);
+        const dx = endX - startX;
+        if(Math.abs(dx) > 30){ dx < 0 ? next() : prev(); }
+        startX = null;
+      };
+      car.addEventListener('mousedown', onStart);
+      car.addEventListener('mouseup', onEnd);
+      car.addEventListener('touchstart', onStart, {passive:true});
+      car.addEventListener('touchend', onEnd);
+      // Initial apply
+      applyFromSlide(slides[index]);
+    });
+  </script>
+</body>
+</html>

@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Proxi - Shared Sizes Modal</title>
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <!-- Demo trigger button -->
+  <div class="demo-container">
+    <button id="openModalBtn" class="demo-button">Open Shared Sizes</button>
+  </div>
+
+  <!-- Modal backdrop and structure -->
+  <div id="sharedSizesModal" class="modal-backdrop" role="dialog" aria-modal="true" aria-labelledby="modalTitle" hidden>
+    <div class="modal-overlay"></div>
+
+    <div class="modal-card">
+      <!-- Close button -->
+      <button class="modal-close" aria-label="Close modal">
+        <svg width="20" height="20" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round">
+          <path d="M5 5L15 15M5 15L15 5"/>
+        </svg>
+      </button>
+
+      <!-- Header -->
+      <header class="modal-header">
+        <h2 id="modalTitle" class="modal-title">
+          You & <span id="matchHandle">ellaa76</span> share <span id="sizeCount">1</span> size!
+        </h2>
+      </header>
+
+      <!-- Two-column comparison grid -->
+      <div class="comparison-grid">
+        <!-- Left card: Current user (no photos) -->
+        <div class="user-card">
+          <div class="card-avatar">
+            <div id="currentUserAvatar" class="avatar avatar--initial">
+              <span class="avatar-initial">R</span>
+            </div>
+          </div>
+
+          <div class="card-image-wrapper">
+            <div class="card-pill">Your size</div>
+
+            <div class="product-image product-image--placeholder">
+              <!-- Mint gradient overlay -->
+              <div class="product-image-overlay"></div>
+              <!-- Placeholder image or fallback -->
+              <img id="currentUserImage" src="" alt="Product placeholder" />
+              <!-- Fallback icon if no image -->
+              <div class="image-fallback" hidden>
+                <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+                  <rect x="3" y="3" width="18" height="18" rx="2"/>
+                  <circle cx="8.5" cy="8.5" r="1.5"/>
+                  <path d="M21 15l-5-5L5 21"/>
+                </svg>
+              </div>
+            </div>
+
+            <!-- Size chips -->
+            <div id="currentUserSizes" class="size-chips"></div>
+          </div>
+        </div>
+
+        <!-- Right card: Match user (has photos) -->
+        <div class="user-card">
+          <div class="card-avatar">
+            <img id="matchUserAvatar" class="avatar" src="" alt="Match user avatar" />
+          </div>
+
+          <div class="card-image-wrapper">
+            <div class="card-pill">From <span id="matchHandlePill">ellaa76</span>'s closet</div>
+
+            <div class="product-image">
+              <img id="matchUserImage" src="" alt="Match user's item" />
+              <!-- Community badge if using placeholder -->
+              <div class="community-badge" hidden>Community photo</div>
+            </div>
+
+            <!-- Size chips -->
+            <div id="matchUserSizes" class="size-chips"></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Product info -->
+      <div class="product-info">
+        <div id="productBrand" class="product-brand">Anthropologie</div>
+        <div id="productName" class="product-name">Somerset Chiffon Maxi Dress</div>
+      </div>
+
+      <!-- Footer actions -->
+      <footer class="modal-footer">
+        <button id="seeClosetBtn" class="btn-primary">
+          See <span id="matchHandleBtn">ellaa76</span>'s closet
+        </button>
+        <button id="findMoreBtn" class="btn-link">Find more size twins</button>
+      </footer>
+    </div>
+  </div>
+
+  <script src="script.js"></script>
+</body>
+</html>

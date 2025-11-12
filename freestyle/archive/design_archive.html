@@ -1,0 +1,263 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Design Archive • Visual</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <style>
+    :root{
+      /* Tokens from index.html (Sies — Marketing/Landing) */
+      --bg:#FAF8F6; --ink:#1F1F1F; --muted:#6F6F74; --accent:#8F6AAE;
+      --card:#FFFFFF; --track:#ECECEC; --shadow:0 10px 30px rgba(0,0,0,.06);
+      --g1:#667eea; --g2:#764ba2;
+      --radius:16px; --radius-lg:22px; --radius-xl:28px; --radius-2xl:36px;
+      --space: clamp(12px, 2vw, 20px);
+      --maxw: 1200px;
+      /* From Part 3 (Sies Original) used on the landing: */
+      --logo-grad: linear-gradient(180deg, #F1DCE3, #8B7F83);
+      --status-success:#2ECC71; --status-warning:#F39C12; --status-error:#E74C3C;
+      --legacy-cta:#7C4DFF; --legacy-cta-hover:#693ACC; --legacy-cta-press:#5B2FD6;
+    }
+
+    *{ box-sizing:border-box; margin:0; padding:0 }
+    body{ font-family:Inter,system-ui,-apple-system,"Segoe UI",Roboto,Helvetica,Arial; background:var(--bg); color:var(--ink) }
+    a{ color:inherit }
+
+    .container{ max-width:var(--maxw); margin:0 auto; padding:32px 20px }
+    .header{ text-align:center; margin-bottom:24px }
+    .display{ font-size:40px; font-weight:800; letter-spacing:-.02em; line-height:1.08; }
+    .kicker{ font:600 12px/1 Inter; letter-spacing:.12em; text-transform:uppercase; color:var(--muted); margin-bottom:8px }
+    .lead{ color:#4C4C50; margin-top:6px }
+
+    .section{ background:#fff; border:1px solid rgba(0,0,0,.08); border-radius:16px; padding:20px; margin-bottom:20px }
+    .section-title{ font-size:24px; font-weight:700; letter-spacing:-.01em; margin-bottom:6px }
+    .block{ margin-top:12px }
+    .block-title{ font:600 14px/1.2 Inter; color:#6F6F74; letter-spacing:.06em; text-transform:uppercase; margin:8px 0 10px }
+    .subtle{ color:var(--muted); font-size:13px }
+
+    .grid{ display:grid; grid-template-columns:repeat(auto-fit,minmax(260px,1fr)); gap:16px }
+    .grid-3{ display:grid; grid-template-columns:repeat(3, minmax(0, 1fr)); gap:16px }
+    .grid-2{ display:grid; grid-template-columns:repeat(2, minmax(0, 1fr)); gap:16px }
+    @media (max-width: 960px){ .grid-3, .grid-2{ grid-template-columns:1fr } }
+    .card{ background:#fff; border:1px solid rgba(0,0,0,.06); border-radius:14px; padding:16px; box-shadow:var(--shadow) }
+    .h3{ font:600 16px/1.2 Inter; margin-bottom:10px }
+    .swatch{ display:flex; align-items:center; gap:12px; padding:10px; background:#fafafa; border:1px solid rgba(0,0,0,.06); border-radius:10px; margin:6px 0 }
+    .box{ width:40px; height:40px; border-radius:8px; border:1px solid rgba(0,0,0,.08) }
+    .mono{ font:12px/1.4 ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace; color:#6F6F74 }
+
+    .row{ display:flex; align-items:center; gap:12px }
+    .pill{ display:inline-flex; align-items:center; gap:8px; padding:8px 12px; border-radius:999px; background:#EFF3F6; color:#2A3642; font:600 12px/1 Inter }
+
+    .btn{ display:inline-flex; align-items:center; justify-content:center; gap:10px; padding:12px 18px; border-radius:var(--radius-lg); font:700 15px/1 Inter; color:#fff; border:none; cursor:pointer; background:linear-gradient(135deg,var(--g1),var(--g2)); box-shadow:0 10px 24px rgba(118,75,162,.25) }
+    .input{ width:100%; background:#fff; border:1px solid #E8E4DE; border-radius:var(--radius-lg); padding:12px 14px; font:500 15px/1.2 Inter; box-shadow:0 10px 24px rgba(118,75,162,.12) }
+    .eyebrow{ font:700 12px/1 Inter; letter-spacing:.1em; text-transform:uppercase; color:#6F6F74 }
+
+    /* Step preview */
+    .step{ display:grid; grid-template-columns:30px 1fr; column-gap:12px; align-items:start }
+    .step::before{ content:"1"; width:26px; height:26px; border-radius:999px; display:flex; align-items:center; justify-content:center; font:700 12px/1 Inter; color:#fff; background:linear-gradient(135deg,var(--g1),var(--g2)); box-shadow:0 10px 24px rgba(118,75,162,.25) }
+    .step .title{ font-weight:650; font-size:16px }
+    .step .text{ font: 400 13px/1.5 Inter; color:#4C4C50 }
+    .type-h1-sample{ font-weight:800; letter-spacing:-.02em; line-height:1.06; font-size:clamp(28px, 3.8vw, 40px); max-width:18ch }
+
+    /* Mock preview */
+    .mock{ border-radius:20px; background:#000; box-shadow:0 30px 80px rgba(0,0,0,.25); padding:10px; max-width:100% }
+    .mock-inner{ background:#fff; border-radius:12px; aspect-ratio:9/16 }
+
+    /* Elevation samples */
+    .elevation{ height:60px; border-radius:12px; background:#fff; border:1px solid rgba(0,0,0,.06) }
+    .e-0{ box-shadow:0 10px 30px rgba(0,0,0,.06) }
+    .e-cta{ box-shadow:0 10px 24px rgba(118,75,162,.25) }
+    .e-device{ box-shadow:0 30px 80px rgba(0,0,0,.25) }
+    .dot{ width:10px; height:10px; border-radius:999px; box-shadow:0 4px 12px rgba(118,75,162,.25); background:linear-gradient(135deg,var(--g1),var(--g2)) }
+
+    /* Grid showcase */
+    .how-grid-demo{ display:grid; grid-template-columns:1.35fr 1fr; gap:16px }
+    @media (max-width:960px){ .how-grid-demo{ grid-template-columns:1fr } }
+
+    /* Spacing & Radius demo */
+    .spacing-demo{ display:flex; gap:12px; flex-wrap:wrap }
+    .sp{ height:32px; background:#16B5B5; color:#fff; display:flex; align-items:center; justify-content:center; border-radius:6px; font:600 12px/1 Inter; padding:0 8px }
+    .r-demo{ display:flex; gap:12px; align-items:center; flex-wrap:wrap }
+    .r{ width:48px; height:32px; background:#F1DCE3; border:1px solid rgba(0,0,0,.08) }
+
+    /* Gradient blocks */
+    .g{ height:60px; border-radius:12px; border:1px solid rgba(0,0,0,.06) }
+    .g-logo{ background:var(--logo-grad) }
+    .g-cta{ background:linear-gradient(135deg,var(--g1),var(--g2)) }
+    .g-profile{ background:radial-gradient(1200px 420px at 50% -120px, rgba(255,255,255,.9), rgba(255,255,255,0)) }
+
+    .list{ margin:8px 0 0 18px; color:#4C4C50 }
+    .list li{ margin:4px 0 }
+    .wordmark{ font-weight:600; font-size:32px; letter-spacing:-.01em; background:linear-gradient(180deg,#F1DCE3 0%, #8B7F83 100%); -webkit-background-clip:text; background-clip:text; -webkit-text-fill-color:transparent }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <div class="header">
+      <div class="kicker">Design Archive</div>
+      <h1 class="display">Visual Reference</h1>
+      <p class="lead">A browsable gallery of the design systems documented in <code>DESIGN_ARCHIVE.md</code>.</p>
+    </div>
+
+    <div class="section">
+      <div class="kicker">SECTION 1</div>
+      <h2 class="section-title">Sies — Marketing/Landing (from <code>index.html</code>)</h2>
+
+      <div class="block">
+        <div class="block-title">Overview</div>
+        <div class="grid-3">
+          <div class="card">
+            <div class="h3">Tokens & Palette</div>
+            <div class="swatch"><div class="box" style="background:var(--bg)"></div><div><div>Background</div><div class="mono">var(--bg) #FAF8F6</div></div></div>
+            <div class="swatch"><div class="box" style="background:var(--ink)"></div><div><div>Ink</div><div class="mono">var(--ink) #1F1F1F</div></div></div>
+            <div class="swatch"><div class="box" style="background:var(--muted)"></div><div><div>Muted</div><div class="mono">var(--muted) #6F6F74</div></div></div>
+            <div class="swatch"><div class="box" style="background:var(--card)"></div><div><div>Card</div><div class="mono">var(--card) #FFFFFF</div></div></div>
+            <div class="swatch"><div class="box" style="background:var(--track)"></div><div><div>Track</div><div class="mono">var(--track) #ECECEC</div></div></div>
+            <div class="swatch"><div class="box" style="background:var(--accent)"></div><div><div>Accent (subtle)</div><div class="mono">var(--accent) #8F6AAE</div></div></div>
+            <div class="row" style="margin-top:8px"><span class="pill" style="background:#EAF7F3; color:#134E4A; border:1px solid rgba(0,163,163,.28)">Status</span><span class="pill" style="background:#EAF7F3"><span class="box" style="width:10px;height:10px;border-radius:999px;background:var(--status-success);border:none"></span><span class="mono">#2ECC71</span></span><span class="pill" style="background:#FFF6E5"><span class="box" style="width:10px;height:10px;border-radius:999px;background:var(--status-warning);border:none"></span><span class="mono">#F39C12</span></span><span class="pill" style="background:#FFECEC"><span class="box" style="width:10px;height:10px;border-radius:999px;background:var(--status-error);border:none"></span><span class="mono">#E74C3C</span></span></div>
+          </div>
+
+          <div class="card">
+            <div class="h3">Gradients</div>
+            <div class="g g-logo" style="margin-bottom:8px"></div>
+            <div class="mono">Logo text: linear-gradient(180deg, #F1DCE3, #8B7F83)</div>
+            <div class="g g-cta" style="margin:12px 0 8px"></div>
+            <div class="mono">CTA: linear-gradient(135deg, var(--g1), var(--g2))</div>
+            <div class="g g-profile" style="margin:12px 0 8px"></div>
+            <div class="mono">Profile spotlight radial</div>
+          </div>
+
+          <div class="card">
+            <div class="h3">Typography</div>
+            <div class="eyebrow" style="margin-bottom:8px">Eyebrow / 12px / 700</div>
+            <div class="type-h1-sample">Find clothes that fit — every time.</div>
+            <div style="font-size:15px; color:#4C4C50; margin-top:6px">Subhead sample text showing rhythm and width.</div>
+            <div class="mono" style="margin-top:8px">H1 clamp(32, 5vw, 54) • H2 clamp(26, 3.4vw, 36)</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="block">
+        <div class="block-title">Components</div>
+        <div class="grid-3">
+          <div class="card">
+            <div class="h3">Wordmark Logo</div>
+            <div class="wordmark">sies</div>
+            <div class="mono" style="margin-top:8px">linear-gradient(180deg, #F1DCE3 0%, #8B7F83 100%)</div>
+          </div>
+
+          <div class="card">
+            <div class="h3">Form Primitives</div>
+            <div style="display:grid; gap:8px">
+              <input class="input" placeholder="Enter your email" />
+              <button class="btn">Join the waitlist →</button>
+              <div class="mono">.input + .btn with gradient and soft shadow</div>
+            </div>
+          </div>
+
+          <div class="card">
+            <div class="h3">Step Item</div>
+            <div class="step">
+              <div style="grid-column:2" class="title">Add a few favorites</div>
+              <div style="grid-column:2" class="text">Sies pulls measurements automatically from your pieces.</div>
+            </div>
+          </div>
+
+          <div class="card">
+            <div class="h3">Mock Container</div>
+            <div class="mock"><div class="mock-inner"></div></div>
+            <div class="mono" style="margin-top:8px">Framed device, soft radius, strong depth</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="block">
+        <div class="block-title">Elevation & Layout</div>
+        <div class="grid-3">
+          <div class="card">
+            <div class="h3">Elevation</div>
+            <div class="mono" style="margin-bottom:6px">Base</div>
+            <div class="elevation e-0"></div>
+            <div class="mono" style="margin:10px 0 6px">CTA / Button</div>
+            <div class="elevation e-cta"></div>
+            <div class="mono" style="margin:10px 0 6px">Device / Mock</div>
+            <div class="elevation e-device"></div>
+            <div class="mono" style="margin:10px 0 6px">FAQ Dot</div>
+            <div class="row"><div class="dot"></div><div class="mono">0 4px 12px rgba(118,75,162,.25)</div></div>
+          </div>
+
+          <div class="card">
+            <div class="h3">How Grid (layout)</div>
+            <div class="how-grid-demo">
+              <div style="background:#fafafa; border:1px dashed #ddd; border-radius:10px; padding:12px">Left column (header + steps)</div>
+              <div style="background:#fafafa; border:1px dashed #ddd; border-radius:10px; padding:12px">Right column (device)</div>
+            </div>
+            <ul class="list">
+              <li>Two columns: 1.35fr / 1fr; stacks ≤ 960px</li>
+              <li>Container max width ≈ 1120–1200px</li>
+            </ul>
+          </div>
+
+          <div class="card">
+            <div class="h3">Scales</div>
+            <div class="mono" style="margin-bottom:6px">Spacing</div>
+            <div class="spacing-demo">
+              <div class="sp" style="width:4px">4</div>
+              <div class="sp" style="width:8px">8</div>
+              <div class="sp" style="width:12px">12</div>
+              <div class="sp" style="width:16px">16</div>
+              <div class="sp" style="width:24px">24</div>
+              <div class="sp" style="width:32px">32</div>
+            </div>
+            <div class="mono" style="margin:10px 0 6px">Radius</div>
+            <div class="r-demo">
+              <div class="r" style="border-radius:8px"></div>
+              <div class="r" style="border-radius:10px"></div>
+              <div class="r" style="border-radius:12px"></div>
+              <div class="r" style="border-radius:16px"></div>
+              <div class="r" style="border-radius:20px"></div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="block">
+        <div class="grid-2">
+          <div class="card">
+            <div class="h3">FAQ Preview</div>
+            <div style="border:1px solid #E8E4DE; border-radius:14px; overflow:hidden">
+              <div style="display:flex; align-items:center; gap:10px; padding:12px 14px; background:#fff">
+                <div class="dot" style="min-width:8px; min-height:8px; box-shadow:0 4px 12px rgba(118,75,162,.25)"></div>
+                <div style="font:600 16px/1.3 Inter; color:var(--ink)">Do I need to measure myself?</div>
+              </div>
+              <div style="padding:10px 14px; border-top:1px solid rgba(0,0,0,.06); color:#4C4C50; font-size:15px">No. Sies learns your fit from the clothes you already own.</div>
+            </div>
+          </div>
+
+          <div class="card">
+            <div class="h3">Notes & Behavior</div>
+            <ul class="list">
+              <li>Smooth anchor scrolling with header offset.</li>
+              <li>Analytics for mock clicks via overlay and postMessage from iframes.</li>
+              <li>Netlify form enhanced to async submit, with graceful fallback.</li>
+              <li>Reduced motion swaps video for static poster.</li>
+            </ul>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="section">
+      <div class="kicker">Future</div>
+      <h2 class="section-title">SECTION 2 — Social (Peer Size Matches)</h2>
+      <p class="subtle">Reserved for the second system. Not documented here.</p>
+    </div>
+
+  </div>
+</body>
+</html>
+
+

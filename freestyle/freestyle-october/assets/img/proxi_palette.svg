@@ -1,0 +1,9 @@
+<svg width="1500" height="500" viewBox="0 0 1500 500" xmlns="http://www.w3.org/2000/svg">
+  <!-- Proxi brand palette: petrol, mint, ice, ink -->
+  <rect x="0" y="0" width="375" height="500" fill="#00A3A3"/>
+  <rect x="375" y="0" width="375" height="500" fill="#A6FFCB"/>
+  <rect x="750" y="0" width="375" height="500" fill="#7FE1FF"/>
+  <rect x="1125" y="0" width="375" height="500" fill="#0B0F14"/>
+</svg>
+
+
