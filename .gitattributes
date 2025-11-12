@@ -1,0 +1,16 @@
+* text=auto eol=lf
+
+# Treat vendored/third-party content as such on GitHub
+expo/node_modules/** linguist-vendored
+expo/ios/Pods/** linguist-vendored
+**/*.min.js linguist-vendored
+
+# Normalize common doc files
+*.md text eol=lf
+*.yml text eol=lf
+*.yaml text eol=lf
+*.json text eol=lf
+*.ts text eol=lf
+*.tsx text eol=lf
+*.py text eol=lf
+

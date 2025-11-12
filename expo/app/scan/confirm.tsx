@@ -3,14 +3,15 @@ import { useMemo, useState } from 'react';
 import { Image } from 'expo-image';
 import { ScrollView, Text, TouchableOpacity, View } from 'react-native';
 
-const FITS = ['Classic', 'Slim', 'Slim Untucked', 'Tall', 'Relaxed'] as const;
-const SIZES = ['XS', 'S', 'M', 'L', 'XL', 'XXL'] as const;
+// Dynamic options are provided via product payload (fit_options, size_options)
 
 type Product = {
   brand: string;
   style_name: string;
   style_code: string | null;
   image_url?: string | null;
+  fit_options?: string[];
+  size_options?: string[];
 };
 
 export default function ConfirmTryOn() {
@@ -56,7 +57,7 @@ export default function ConfirmTryOn() {
         <Text style={{ fontSize: 18, fontWeight: '700' }}>Select Fit Type</Text>
         <Text style={{ color: '#666' }}>Which fit are you trying on? This affects the measurements.</Text>
         <View style={{ flexDirection: 'row', flexWrap: 'wrap', gap: 10 }}>
-          {FITS.map((f) => (
+          {(product?.fit_options && product.fit_options.length ? product.fit_options : ['Classic']).map((f) => (
             <TouchableOpacity
               key={f}
               onPress={() => setFit(f)}
@@ -84,7 +85,7 @@ export default function ConfirmTryOn() {
         <Text style={{ fontSize: 18, fontWeight: '700' }}>What Size Are You Trying On?</Text>
         <Text style={{ color: '#666' }}>Select the size on the tag you're about to try on</Text>
         <View style={{ flexDirection: 'row', flexWrap: 'wrap', gap: 10 }}>
-          {SIZES.map((s) => (
+          {(product?.size_options && product.size_options.length ? product.size_options : ['XS','S','M','L','XL','XXL']).map((s) => (
             <TouchableOpacity
               key={s}
               onPress={() => setSize(s)}

@@ -54,3 +54,41 @@ database/dumps/
 *.ipa
 *.dSYM.zip
 DerivedData/
+ 
+# Package managers and environments
+venv/
+.venv/
+ 
+# Editor and tooling
+.vscode/
+.idea/
+.cursor/
+.ruff_cache/
+.mypy_cache/
+.pytest_cache/
+.coverage
+coverage.xml
+htmlcov/
+ 
+# Node / Expo
+expo/node_modules/
+expo/.expo/
+expo/.expo-shared/
+expo/android/app/build/
+expo/android/build/
+expo/ios/Pods/
+expo/ios/build/
+ 
+# Additional environment patterns
+.env.local
+.env.*.local
+ 
+# Database dumps (explicit patterns to avoid accidental commits)
+*_dump_*.sql
+*_dump_*.txt
+fs_core_dump_*.sql
+tailor3_dump_*.sql
+database_dump_*.sql
+ 
+# MacOS system files
+.DS_Store

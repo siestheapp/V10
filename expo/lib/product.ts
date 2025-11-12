@@ -11,6 +11,9 @@ export type ProductResult = {
   variant_code: string | null;
   product_url: string;
   image_url?: string | null;
+  // Optional enrichment used by the Confirm screen
+  fit_options?: string[];
+  size_options?: string[];
 };
 
 const IMAGE_VIEW = 'v_product_variants_img';
@@ -108,7 +111,57 @@ export async function fetchProductByUrl(
 
   // Final safety net: use cache when variants don't exist yet
   const cache = await selectFromCache(client, normalized, trailing);
-  return cache;
+
+  const base = cache;
+
+  // Enrich with dynamic fit/size options when possible (by style_code)
+  try {
+    const target = base?.[0];
+    const styleCode = target?.style_code ?? null;
+    if (styleCode) {
+      // Aggregate distinct fits for this style across variants
+      const fitsQuery = await client
+        .from(IMAGE_VIEW)
+        .select('fit')
+        .eq('style_code', styleCode);
+      const fits = Array.from(
+        new Set(
+          (fitsQuery.data ?? [])
+            .map((r: any) => r.fit)
+            .filter((x: any) => typeof x === 'string' && x.trim().length > 0),
+        ),
+      ) as string[];
+
+      // Derive sizes from product_variants.sizes_available when available
+      let sizes: string[] = [];
+      const pm = await client.from('product_master').select('id').eq('product_code', styleCode).limit(1);
+      const masterId = !pm.error && pm.data && pm.data[0] ? (pm.data[0] as any).id : null;
+      if (masterId != null) {
+        const pv = await client
+          .from('product_variants')
+          .select('sizes_available')
+          .eq('product_master_id', masterId);
+        if (!pv.error && pv.data) {
+          const sizeSet = new Set<string>();
+          for (const row of pv.data as any[]) {
+            const arr = Array.isArray(row.sizes_available) ? (row.sizes_available as string[]) : [];
+            for (const s of arr) sizeSet.add(String(s));
+          }
+          sizes = Array.from(sizeSet);
+        }
+      }
+
+      const sizeDefaults = ['XS', 'S', 'M', 'L', 'XL', 'XXL'];
+      if (target) {
+        target.fit_options = fits;
+        target.size_options = sizes.length ? sizes : sizeDefaults;
+      }
+    }
+  } catch {
+    // Best-effort enrichment only; ignore errors
+  }
+
+  return base;
 }
 
 async function selectFromView(
