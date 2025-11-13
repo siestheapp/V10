@@ -1,16 +1,23 @@
+// For Uniqlo product scanning
 struct Product: Codable {
     let id: String
+    let brand: String
     let name: String
-    let category: String
-    let subcategory: String?
-    let price: Double?
-    let scanned_size: String?
-    let measurements: MeasurementsData
-    let imageUrl: String
-    let productUrl: String
+    let size: String
+    let price: Double
+    let measurements: ProductMeasurements  // Renamed to avoid conflict
+    let productUrl: String?
+    let imageUrl: String?
 }
 
-struct MeasurementsData: Codable {
+struct ProductMeasurements: Codable {  // Renamed from Measurements
+    let chest: String?
+    let length: String?
+    let sleeve: String?
+}
+
+// For size guide data (if still needed)
+struct SizeGuideData: Codable {  // Renamed from MeasurementsData
     let units: String
     let measurement_type: String?
     let sizes: [String: SizeData]

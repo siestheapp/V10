@@ -8,3 +8,8 @@
 __pycache__/
 
 freestyle-old/
+__pycache__/
+*.pyc
+*.sql
+*.txt
+*.zip

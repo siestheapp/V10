@@ -1,0 +1,22 @@
+{
+    "sqltools.connections": [
+        {
+            "previewLimit": 50,
+            "server": "localhost",
+            "port": 5432,
+            "driver": "PostgreSQL",
+            "name": "tailor3",
+            "database": "tailor3",
+            "username": "seandavey"
+        },
+        {
+            "previewLimit": 50,
+            "server": "localhost",
+            "port": 5432,
+            "driver": "PostgreSQL",
+            "name": "tailor2",
+            "database": "tailor2",
+            "username": "seandavey"
+        }
+    ]
+}

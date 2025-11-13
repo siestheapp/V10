@@ -1,0 +1,224 @@
+import SwiftUI
+
+struct ClosetGarment: Identifiable, Codable {
+    let id: Int
+    let brand: String
+    let category: String
+    let size: String
+    let measurements: [String: String]
+    let fitFeedback: String?
+    let chestFit: String?
+    let sleeveFit: String?
+    let neckFit: String?
+    let waistFit: String?
+    let createdAt: String?
+    let ownsGarment: Bool
+    let productName: String?
+    
+    enum CodingKeys: String, CodingKey {
+        case id, brand, category, size, measurements
+        case fitFeedback = "fitFeedback"
+        case chestFit = "chestFit"
+        case sleeveFit = "sleeveFit"
+        case neckFit = "neckFit"
+        case waistFit = "waistFit"
+        case createdAt = "createdAt"
+        case ownsGarment = "ownsGarment"
+        case productName = "productName"
+    }
+}
+
+struct ClosetListView: View {
+    @State private var garments: [ClosetGarment] = []
+    @State private var isLoading = true
+    @State private var errorMessage: String?
+    @State private var showingDetail = false
+    @State private var selectedGarment: ClosetGarment?
+    @State private var showingFinds = false
+    
+    // Group garments by category
+    private var garmentsByCategory: [String: [ClosetGarment]] {
+        Dictionary(grouping: garments) { $0.category }
+    }
+    
+    var body: some View {
+        NavigationView {
+            Group {
+                if isLoading {
+                    ProgressView("Loading your closet...")
+                } else if let error = errorMessage {
+                    Text(error)
+                        .foregroundColor(.red)
+                } else {
+                    List {
+                        ForEach(Array(garmentsByCategory.keys.sorted()), id: \.self) { category in
+                            Section {
+                                ForEach(garmentsByCategory[category] ?? []) { garment in
+                                    GarmentRow(garment: garment)
+                                        .contentShape(Rectangle())
+                                        .onTapGesture {
+                                            selectedGarment = garment
+                                        }
+                                }
+                            } header: {
+                                Text(category)
+                                    .font(.title2)
+                                    .fontWeight(.bold)
+                                    .foregroundColor(.primary)
+                                    .textCase(nil)
+                                    .padding(.vertical, 8)
+                            }
+                        }
+                    }
+                    .listStyle(PlainListStyle())
+                }
+            }
+            .navigationTitle("My Closet")
+            .toolbar {
+                ToolbarItem(placement: .navigationBarTrailing) {
+                    Button(action: {
+                        showingFinds = true
+                    }) {
+                        HStack {
+                            Image(systemName: "list.bullet")
+                            Text("Finds")
+                        }
+                    }
+                }
+            }
+            .sheet(item: $selectedGarment) { garment in
+                GarmentDetailView(
+                    garment: garment,
+                    isPresented: Binding(
+                        get: { selectedGarment != nil },
+                        set: { if !$0 { selectedGarment = nil } }
+                    )
+                )
+            }
+            .sheet(isPresented: $showingFinds) {
+                NavigationView {
+                    ScanHistoryView()
+                        .navigationTitle("Recent Finds")
+                        .toolbar {
+                            ToolbarItem(placement: .navigationBarTrailing) {
+                                Button("Done") {
+                                    showingFinds = false
+                                }
+                            }
+                        }
+                }
+            }
+            .onAppear {
+                loadGarments()
+            }
+        }
+    }
+    
+    private func loadGarments() {
+        guard let url = URL(string: "\(Config.baseURL)/user/\(Config.defaultUserId)/closet") else {
+            errorMessage = "Invalid URL"
+            return
+        }
+        
+        URLSession.shared.dataTask(with: url) { data, response, error in
+            DispatchQueue.main.async {
+                self.isLoading = false
+                
+                if let error = error {
+                    self.errorMessage = error.localizedDescription
+                    return
+                }
+                
+                guard let data = data else {
+                    self.errorMessage = "No data received"
+                    return
+                }
+                
+                // Add debug logging
+                if let rawString = String(data: data, encoding: .utf8) {
+                    print("Raw response data: \(rawString)")
+                }
+                
+                do {
+                    let garments = try JSONDecoder().decode([ClosetGarment].self, from: data)
+                    self.garments = garments
+                } catch {
+                    print("Decoding error details: \(error)")
+                    self.errorMessage = "Failed to decode response: \(error.localizedDescription)"
+                }
+            }
+        }.resume()
+    }
+}
+
+struct GarmentRow: View {
+    let garment: ClosetGarment
+    
+    var body: some View {
+        VStack(alignment: .leading, spacing: 4) {
+            HStack {
+                VStack(alignment: .leading, spacing: 2) {
+                    Text(garment.brand)
+                        .font(.headline)
+                    
+                    if let productName = garment.productName {
+                        Text(productName)
+                            .font(.subheadline)
+                            .foregroundColor(.gray)
+                    }
+                }
+                
+                Spacer()
+                
+                // Feedback indicator
+                if let feedback = garment.fitFeedback {
+                    HStack(spacing: 4) {
+                        Image(systemName: "checkmark.circle.fill")
+                            .foregroundColor(.green)
+                            .font(.caption)
+                        Text(feedback)
+                            .font(.caption)
+                            .foregroundColor(.green)
+                    }
+                } else {
+                    HStack(spacing: 4) {
+                        Image(systemName: "exclamationmark.circle")
+                            .foregroundColor(.orange)
+                            .font(.caption)
+                        Text("Add feedback")
+                            .font(.caption)
+                            .foregroundColor(.orange)
+                    }
+                }
+            }
+            
+            HStack {
+                Text(garment.size)
+                    .font(.subheadline)
+                    .foregroundColor(.gray)
+                
+                Spacer()
+                
+                // Show measurements that are available
+                if let chest = garment.measurements["chest"] {
+                    HStack(spacing: 8) {
+                        Text("Chest: \(chest)")
+                            .font(.caption)
+                            .foregroundColor(.gray)
+                        
+                        let additionalMeasurements = garment.measurements.filter { key, _ in
+                            key != "chest"
+                        }.count
+                        
+                        if additionalMeasurements > 0 {
+                            Text("+ \(additionalMeasurements) more")
+                                .font(.caption)
+                                .foregroundColor(.blue)
+                        }
+                    }
+                }
+            }
+        }
+        .padding(.vertical, 4)
+    }
+} 
