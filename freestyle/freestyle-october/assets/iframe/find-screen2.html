@@ -1,0 +1,898 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Proxi — Find Your Size</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <style>
+    :root{
+      --bg:#FFFFFF; --ink:#262626; --muted:#7A7A80;
+      --petrol-600:#009090; --petrol-500:#00A3A3; --petrol-400:#16B5B5; --petrol-100:#E0F7F7;
+      --mint-400:#A6FFCB; --ice-300:#7FE1FF;
+      --cta-start:#008888; --cta-mid:#3ECFD5; --cta-end:#9BFFCF;
+      --card:#FFFFFF; --track:#ECECEC; --shadow:0 10px 30px rgba(0,0,0,.06);
+    }
+*{margin:0;padding:0;box-sizing:border-box}
+html{background:#f5f5f5}
+body{font-family:Inter,system-ui,-apple-system,"Segoe UI",Roboto,Helvetica,Arial;background:#f5f5f5;color:var(--ink);
+  min-height:100vh;display:flex;align-items:center;justify-content:center;padding:0;position:relative}
+/* Warm page glow behind app content */
+body::before{
+  content:""; position:fixed; inset:-20% -10% auto -10%; height:60vh; pointer-events:none;
+  background:
+    radial-gradient(800px 350px at 50% -120px, rgba(0,163,163,.08), transparent 60%),
+    radial-gradient(1200px 500px at 10% -80px, rgba(166,255,203,.08), transparent 65%);
+  filter:saturate(105%);
+}
+
+/* iPhone Frame */
+.phone{width:430px;height:932px;border-radius:55px;background:transparent;border:2px solid #000;position:relative;box-shadow:none}
+.screen{position:absolute;inset:2px;background:#fff;border-radius:53px;overflow:hidden;display:flex;flex-direction:column}
+.screen,
+.phone,
+.device,
+.feed-viewport{
+  overflow-x:hidden;
+}
+
+/* Dynamic Island */
+.island{position:absolute;top:11px;left:50%;transform:translateX(-50%);width:126px;height:37px;background:#000;border-radius:19px;z-index:5}
+
+/* Status Bar */
+.status{height:54px;margin-top:4px;display:flex;align-items:center;justify-content:space-between;padding:0 30px;font-weight:600;color:#000;font-size:17px;letter-spacing:-.02em}
+.status .right{display:flex;align-items:center;gap:6px}
+.status .right img{height:13px;width:auto;display:block}
+
+/* App Content */
+.header{padding:3px 0px 0px;display:flex;align-items:center;justify-content:center;position:relative;margin-top:0}
+.logo{font-weight:600;font-size:32px;letter-spacing:-.01em;background:linear-gradient(135deg,var(--cta-start),var(--cta-mid) 46%,var(--cta-end));
+  -webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent}
+
+    /* Shared card + section system (aligns with feed/closet screens) */
+    .section{padding:0 24px;margin-top:12px}
+    .section:first-of-type{margin-top:0}
+    .card{
+      background:var(--card);
+      border:1px solid rgba(17,25,40,.08);
+      border-radius:20px;
+      box-shadow:0 12px 32px rgba(17,25,40,.08);
+      overflow:hidden;
+    }
+    .card.is-loose{box-shadow:0 8px 20px rgba(17,25,40,.06)}
+    .card.is-tight{box-shadow:0 10px 24px rgba(17,25,40,.05)}
+    .card-pad{padding:20px 24px}
+    .finder-shell.is-hidden{display:none;}
+    .loading-shell{display:none;}
+    .loading-shell.is-visible{display:block;}
+
+    /* Content Container */
+    .content{
+      flex:1;
+      overflow-y:auto;
+      overflow-x:hidden;
+      scrollbar-width:none;
+      -ms-overflow-style:none;
+      position:relative;
+      display:flex;
+      flex-direction:column;
+      gap:20px;
+      padding:12px 0 120px;
+    }
+    .content::-webkit-scrollbar{display:none}
+
+    /* Find Input Section */
+    .find-section{
+      display:flex;
+      flex-direction:column;
+      gap:18px;
+      opacity:1;
+      transition:opacity 0.3s ease;
+    }
+    .find-section.hidden{display:none;}
+
+    .find-title{font-weight:700;font-size:28px;line-height:1.2;letter-spacing:-.01em;color:var(--ink);margin-bottom:8px}
+    .find-subtitle{font-size:16px;color:var(--muted);margin-bottom:32px;line-height:1.5;max-width:340px}
+
+    .input-wrapper{position:relative;margin-bottom:16px}
+    .url-input{width:100%;padding:18px 20px;border:2px solid #E8E4DE;border-radius:16px;font-size:16px;
+      color:var(--ink);background:#fff;font-family:inherit;transition:all 0.3s ease;outline:none;box-shadow:0 2px 8px rgba(0,0,0,.04)}
+    .url-input:focus{border-color:var(--petrol-400);box-shadow:0 0 0 4px rgba(0,163,163,.08),0 4px 12px rgba(0,0,0,.08)}
+    .url-input::placeholder{color:#999}
+
+    .paste-btn{width:100%;padding:18px;background:linear-gradient(135deg,var(--cta-start),var(--cta-mid) 46%,var(--cta-end));
+      border:none;border-radius:16px;color:#fff;font-weight:700;font-size:17px;cursor:pointer;
+      transition:all 0.3s ease;box-shadow:0 6px 20px rgba(0,163,163,.25);position:relative;overflow:hidden}
+    .paste-btn::before{content:"";position:absolute;inset:1px 1px auto 1px;height:40%;border-radius:15px;
+      background:linear-gradient(180deg,rgba(255,255,255,.12),rgba(255,255,255,0));pointer-events:none}
+    .paste-btn:hover{transform:translateY(-2px);box-shadow:0 8px 24px rgba(0,163,163,.35)}
+    .paste-btn:active{transform:scale(.98)}
+
+    /* Loading State */
+    .loading-state{display:none;text-align:center}
+    .loading-state.visible{
+      display:flex;
+      flex-direction:column;
+      align-items:center;
+      gap:18px;
+      animation:fadeIn 0.3s ease;
+    }
+    .spinner{width:56px;height:56px;border:5px solid var(--petrol-100);border-top-color:var(--petrol-500);
+      border-radius:50%;animation:spin 0.8s linear infinite}
+    @keyframes spin{to{transform:rotate(360deg)}}
+    .loading-text{font-size:17px;color:var(--muted);font-weight:600}
+
+    /* Results Section */
+    .results-section{
+      display:none;
+      flex-direction:column;
+      gap:20px;
+      width:100%;
+      opacity:0;
+    }
+    .results-section.visible{
+      display:flex;
+      animation:fadeIn 0.5s ease forwards;
+    }
+    @keyframes fadeIn{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:translateY(0)}}
+
+    /* Product Confirmation + Recommendation Card */
+    .product-card{
+      display:flex;
+      flex-direction:column;
+      overflow:hidden;
+    }
+
+    /* Product confirmation section */
+    .product-found{
+      padding:24px 20px 20px;
+      display:flex;
+      gap:16px;
+    }
+    .product-thumb{
+      flex-shrink:0;
+      width:80px;
+      height:80px;
+      background:#f6f7f8;
+      border-radius:12px;
+      overflow:hidden;
+    }
+    .product-thumb img{
+      width:100%;
+      height:100%;
+      object-fit:cover;
+      object-position:center;
+      display:block;
+    }
+    .product-meta{
+      flex:1;
+      display:flex;
+      flex-direction:column;
+      justify-content:center;
+      gap:6px;
+    }
+    .found-label{
+      font-size:11px;
+      font-weight:700;
+      letter-spacing:.08em;
+      text-transform:uppercase;
+      color:var(--petrol-600);
+      display:flex;
+      align-items:center;
+      gap:6px;
+    }
+    .found-label::before{
+      content:'✓';
+      display:inline-flex;
+      align-items:center;
+      justify-content:center;
+      width:16px;
+      height:16px;
+      background:var(--petrol-100);
+      border-radius:50%;
+      font-size:10px;
+    }
+    .product-name{
+      font-size:17px;
+      font-weight:800;
+      color:var(--ink);
+      letter-spacing:-.01em;
+    }
+    .product-subtitle{
+      font-size:14px;
+      font-weight:600;
+      color:var(--ink);
+      opacity:0.7;
+    }
+
+    /* Size recommendation section */
+    .size-rec{
+      padding:12px 16px 16px;
+      border-top:1px solid rgba(17,25,40,.06);
+      background:linear-gradient(to bottom, #fff, #fafbfc);
+    }
+    .rec-main{
+      display:flex;
+      flex-direction:column;
+      gap:6px;
+    }
+    .rec-label{
+      display:block;
+      font-size:11px;
+      font-weight:700;
+      letter-spacing:.08em;
+      text-transform:uppercase;
+      color:var(--petrol-600);
+      margin-bottom:4px;
+    }
+    .size-rec h2{
+      font-size:20px;
+      font-weight:700;
+      margin-bottom:4px;
+      color:var(--ink);
+      line-height:1.1;
+      white-space:nowrap;
+    }
+    .size-rec .accent{
+      background:linear-gradient(135deg,var(--cta-start),var(--cta-mid));
+      -webkit-background-clip:text;
+      background-clip:text;
+      -webkit-text-fill-color:transparent;
+    }
+    .size-rec .subtext{
+      font-size:14px;
+      font-weight:500;
+      color:rgba(0,0,0,0.55);
+      line-height:1.4;
+      margin-left:2px;
+      letter-spacing:0.01em;
+    }
+    .size-rec .icon{
+      font-size:12px;
+      margin-right:6px;
+      opacity:0.8;
+    }
+    .shop-button{
+      padding:11px 18px;
+      border:none;
+      border-radius:12px;
+      background:linear-gradient(135deg,var(--cta-start),var(--cta-mid) 46%,var(--cta-end));
+      color:#fff;
+      font-weight:700;
+      font-size:14px;
+      box-shadow:0 4px 16px rgba(0,163,163,.25);
+      cursor:pointer;
+      transition:all 0.2s ease;
+      white-space:nowrap;
+      flex-shrink:0;
+    }
+    .shop-button:hover{transform:translateY(-2px);box-shadow:0 6px 20px rgba(0,163,163,.35)}
+    .shop-button:active{transform:scale(.98)}
+
+    /* Smart recommendation pill/button */
+    .smart-cta{
+      display:flex;
+      flex-direction:column;
+      border-top:1px solid rgba(17,25,40,.08);
+    }
+    .smart-toggle{
+      width:100%;
+      padding:16px 20px;
+      background:linear-gradient(135deg,var(--cta-start),var(--cta-mid) 46%,var(--cta-end));
+      color:#fff;
+      border:none;
+      border-bottom-left-radius:20px;
+      border-bottom-right-radius:20px;
+      font-size:15px;
+      font-weight:800;
+      text-align:left;
+      display:flex;
+      justify-content:space-between;
+      align-items:center;
+      gap:12px;
+      cursor:pointer;
+      transition:transform 0.2s ease, box-shadow 0.2s ease;
+    }
+    .smart-toggle-text{
+      flex:1;
+    }
+    .smart-toggle:hover{transform:translateY(-1px);box-shadow:0 8px 24px rgba(0,163,163,.35)}
+    .smart-toggle:active{transform:scale(.98)}
+    .smart-toggle::after{
+      content:'+';
+      font-size:18px;
+      font-weight:800;
+    }
+    .smart-cta.open .smart-toggle{
+      border-bottom-left-radius:0;
+      border-bottom-right-radius:0;
+    }
+    .smart-cta.open .smart-toggle::after{
+      content:'-';
+    }
+    .smart-cta.open .smart-toggle:hover,
+    .smart-cta.open .smart-toggle:active{
+      transform:none;
+      box-shadow:none;
+    }
+    .smart-panel{
+      display:flex;
+      flex-direction:column;
+      gap:12px;
+      padding:18px 20px 20px;
+      background:rgba(0,163,163,.08);
+      border-bottom-left-radius:20px;
+      border-bottom-right-radius:20px;
+      border-top:1px solid rgba(255,255,255,.4);
+    }
+    .smart-panel[hidden]{display:none;}
+    .smart-metric{
+      display:flex;
+      flex-direction:column;
+      gap:8px;
+    }
+    .smart-metric-head{
+      display:flex;
+      justify-content:space-between;
+      font-size:13px;
+      font-weight:700;
+      color:#047d7d;
+    }
+    .smart-meter{
+      height:6px;
+      background:rgba(0,163,163,.12);
+      border-radius:999px;
+      overflow:hidden;
+    }
+    .smart-meter span{
+      display:block;
+      height:100%;
+      background:#00A3A3;
+      border-radius:999px;
+    }
+    .smart-list{
+      margin:0;
+      padding-left:18px;
+      display:flex;
+      flex-direction:column;
+      gap:8px;
+    }
+    .smart-list li{
+      font-size:13px;
+      color:#374151;
+      line-height:1.5;
+    }
+    .smart-note{
+      font-size:13px;
+      color:#6b7280;
+    }
+
+    /* Section heading pattern */
+    .section-head{
+      display:flex;
+      flex-direction:column;
+      gap:6px;
+    }
+    .section-title{
+      font-size:24px;
+      font-weight:700;
+      color:var(--ink);
+      letter-spacing:-.01em;
+    }
+    .section-subtitle{
+      font-size:15px;
+      color:#047d7d;
+      font-weight:600;
+    }
+
+    /* Twin Cards */
+    .twins-feed{display:flex;flex-direction:column;gap:16px;margin-top:16px}
+    .twin-card{
+      overflow:hidden;
+      transition:transform 0.2s ease, box-shadow 0.2s ease;
+      animation:slideUp 0.5s ease backwards;
+    }
+    .twin-card:nth-child(1){animation-delay:0.1s}
+    .twin-card:nth-child(2){animation-delay:0.2s}
+    .twin-card:nth-child(3){animation-delay:0.3s}
+    .twin-card:hover{transform:translateY(-2px);box-shadow:0 18px 40px rgba(17,25,40,.16)}
+    @keyframes slideUp{from{opacity:0;transform:translateY(20px)}to{opacity:1;transform:translateY(0)}}
+
+    .twin-image-wrapper{position:relative;overflow:hidden}
+    .twin-img{width:100%;height:460px;object-fit:cover;object-position:center 25%;display:block}
+    .twin-image-wrapper::after{content:"";position:absolute;left:0;right:0;bottom:0;height:15%;
+      background:linear-gradient(180deg,rgba(255,255,255,0) 0%,rgba(250,248,246,.4) 50%,rgba(255,255,255,.95) 100%);pointer-events:none}
+
+    .size-badge{position:absolute;left:18px;bottom:18px;display:inline-flex;align-items:center;gap:10px;
+      padding:12px 18px;background:rgba(255,255,255,.95);backdrop-filter:blur(16px);border:1px solid rgba(0,0,0,.06);
+      border-radius:999px;font-weight:800;font-size:17px;color:var(--petrol-600);z-index:2;
+      box-shadow:0 8px 24px rgba(0,0,0,.12)}
+    .size-badge .label{font-size:14px;font-weight:600;color:var(--muted)}
+
+    .kept-badge{position:absolute;right:18px;top:18px;padding:8px 14px;background:rgba(34,197,94,.95);
+      backdrop-filter:blur(12px);border:1px solid rgba(255,255,255,.3);border-radius:999px;
+      font-weight:700;font-size:13px;color:#fff;z-index:2;box-shadow:0 4px 12px rgba(34,197,94,.3)}
+    .returned-badge{position:absolute;right:18px;top:18px;padding:8px 14px;background:rgba(239,68,68,.92);
+      backdrop-filter:blur(12px);border:1px solid rgba(255,255,255,.3);border-radius:999px;
+      font-weight:700;font-size:13px;color:#fff;z-index:2;box-shadow:0 4px 12px rgba(239,68,68,.3)}
+
+    .fit-note{margin-top:14px;padding:14px 16px;background:rgba(0,163,163,.04);border:1px solid rgba(0,163,163,.12);
+      border-radius:12px}
+    .fit-note-header{font-size:12px;font-weight:700;color:var(--petrol-600);margin-bottom:6px;
+      text-transform:uppercase;letter-spacing:.05em}
+    .fit-note-text{font-size:14px;color:var(--ink);line-height:1.5;font-weight:500;font-style:italic}
+
+    .twin-info{padding:18px 20px 20px}
+    .match-pill{display:inline-flex;align-items:center;gap:8px;padding:9px 16px;background:var(--petrol-100);
+      border:1px solid rgba(0,163,163,.2);border-radius:999px;margin-bottom:14px}
+    .match-pill .icon{font-size:15px}
+    .match-pill .text{font-size:13px;color:var(--petrol-600);font-weight:700;line-height:1.2}
+
+    .twin-details{margin-bottom:16px}
+    .twin-name{font-size:17px;font-weight:700;color:var(--ink);margin-bottom:8px}
+    .shared-item{font-size:15px;color:var(--muted);line-height:1.5;font-weight:500}
+    .shared-item .highlight{color:var(--petrol-600);font-weight:700}
+
+    .shop-btn{display:flex;align-items:center;justify-content:center;gap:10px;width:100%;
+      padding:16px;background:linear-gradient(135deg,var(--cta-start),var(--cta-mid) 46%,var(--cta-end));
+      border:none;border-radius:16px;color:#fff;font-weight:700;font-size:16px;cursor:pointer;
+      transition:all 0.3s ease;box-shadow:0 6px 20px rgba(0,163,163,.25);position:relative;overflow:hidden}
+    .shop-btn::before{content:"";position:absolute;inset:1px 1px auto 1px;height:40%;border-radius:15px;
+      background:linear-gradient(180deg,rgba(255,255,255,.12),rgba(255,255,255,0));pointer-events:none}
+    .shop-btn:hover{transform:translateY(-2px);box-shadow:0 8px 24px rgba(0,163,163,.35)}
+    .shop-btn:active{transform:scale(.98)}
+
+    /* Tab bar */
+    .tabs{position:absolute;left:0;right:0;bottom:0;height:83px;background:#fff;border-top:1px solid rgba(0,0,0,.08);
+      display:flex;justify-content:space-around;align-items:flex-start;padding-top:8px;padding-bottom:34px;z-index:100}
+    .tab{display:flex;flex-direction:column;align-items:center;gap:6px;text-decoration:none;color:#8e8e93;font-size:11px;font-weight:500;transition:color 0.2s ease}
+    .tab.active{color:var(--petrol-600);font-weight:600}
+    .ico{width:28px;height:28px;display:block}
+
+    /* Pulse animation for visual interest */
+    @keyframes pulse{0%,100%{transform:scale(1)}50%{transform:scale(1.02)}}
+
+
+    /* Sticky action bar */
+    .sticky-cta{
+      position:sticky;
+      bottom:96px; /* sits above tab bar */
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      gap:16px;
+      padding:12px 16px;
+      border-radius:20px;
+      border:1px solid rgba(17,25,40,.08);
+      background:var(--card);
+      box-shadow:0 12px 32px rgba(17,25,40,.12);
+      z-index:90;
+    }
+    .sticky-rec{display:flex;flex-direction:column;gap:2px}
+    .sticky-size{font-size:18px;font-weight:800;color:#111}
+    .sticky-label{font-size:12px;color:#047d7d;font-weight:600}
+    .sticky-btn{
+      white-space:nowrap; padding:12px 20px; border:none; border-radius:12px; font-weight:800;
+      background:linear-gradient(135deg,var(--cta-start),var(--cta-mid) 46%,var(--cta-end)); color:#fff;
+      font-size:15px; cursor:pointer; transition:all 0.2s ease;
+    }
+    .sticky-btn:hover{transform:translateX(2px)}
+    .sticky-btn:active{transform:scale(.98)}
+  </style>
+</head>
+<body>
+  <div class="phone">
+      <div class="screen">
+        <div class="island"></div>
+        <div class="status"><div>9:41</div><div class="right"><img src="../img/cellular-connection.svg" alt="cell"/><img src="../img/wifi.svg" alt="wifi"/><img src="../img/battery.svg" alt="battery"/></div></div>
+
+        <div class="header">
+          <div class="logo">proxi</div>
+        </div>
+
+        <!-- Main Content -->
+        <div class="content">
+          <section class="section finder-shell" id="findSectionWrap">
+            <div class="card card-pad find-section" id="findSection">
+              <h1 class="find-title">Find your size</h1>
+              <p class="find-subtitle">Paste a product link to see who else owns it and what size they bought</p>
+
+              <div class="input-wrapper">
+                <input
+                  type="text"
+                  class="url-input"
+                  id="urlInput"
+                  placeholder="https://petalandpup.com/products/..."
+                  autocomplete="off"
+                >
+              </div>
+
+              <button class="paste-btn" id="pasteBtn" onclick="handlePaste()">
+                Paste Link & Find Size Twins
+              </button>
+            </div>
+          </section>
+
+          <section class="section loading-shell" id="loadingSection">
+            <div class="card card-pad loading-state" id="loadingState">
+              <div class="spinner"></div>
+              <p class="loading-text">Finding your size twins...</p>
+            </div>
+          </section>
+
+          <div class="results-section" id="resultsSection">
+            <!-- Product confirmation + size recommendation card -->
+            <section class="section">
+              <article class="card product-card">
+                <!-- Product found confirmation -->
+                <div class="product-found">
+                  <div class="product-thumb">
+                    <img src="../img/pnpdress.png" alt="Petal & Pup Botanique Midi Dress"/>
+                  </div>
+                  <div class="product-meta">
+                    <span class="found-label">Found your product</span>
+                    <div class="product-name">PETAL & PUP</div>
+                    <div class="product-subtitle">Botanique Midi Dress</div>
+                  </div>
+                </div>
+
+                <!-- Size recommendation -->
+                <div class="size-rec">
+                  <span class="rec-label">PROXI SUGGESTION</span>
+                  <h2>Try <span class="accent">Size S</span></h2>
+                  <p class="subtext">
+                    <span class="icon">👯‍♀️</span> 1 size twin owns this dress
+                  </p>
+                </div>
+
+                <!-- Smart recommendation pill -->
+                <div class="smart-cta">
+                  <button class="smart-toggle" type="button" aria-expanded="false" aria-controls="smartPanel" onclick="toggleSmartRec(this)">
+                    <span class="smart-toggle-text">Why Size S?</span>
+                  </button>
+                  <div class="smart-panel" id="smartPanel" hidden>
+                    <div class="smart-metric">
+                      <div class="smart-metric-head">
+                        <span>Confidence</span>
+                        <span>82%</span>
+                      </div>
+                      <div class="smart-meter">
+                        <span style="width:82%"></span>
+                      </div>
+                    </div>
+                    <ul class="smart-list">
+                      <li><strong>2 of 3 proxies</strong> kept Size S for this exact dress</li>
+                      <li>Closest match <strong>@bellag22</strong> shares 3 items with you and consistently wears Size S</li>
+                      <li>Fit notes: true to size in waist, slightly snug in bust</li>
+                    </ul>
+                    <p class="smart-note">Confidence blends keep rates from your closest closet matches.</p>
+                  </div>
+                </div>
+              </article>
+            </section>
+
+            <section class="section twins-section">
+              <div class="section-head">
+                <h2 class="section-title">Your proxies</h2>
+                <p class="section-subtitle">3 dress twins own this exact dress</p>
+              </div>
+
+              <div class="twins-feed">
+                <!-- COMPARISON: First card from feed-unified.html -->
+                <article class="card proxy-card-feed" style="margin-top: 20px;">
+                  <div style="padding: 12px 16px; background: #fff; border-bottom: 1px solid #eee;">
+                    <div style="display: flex; align-items: center; gap: 10px;">
+                      <img style="width: 36px; height: 36px; border-radius: 50%; object-fit: cover; object-position: center 10%;" src="../img/u1.jpg" alt="bellag22">
+                      <div style="flex: 1;">
+                        <div style="font-weight: 700; font-size: 14px;">bellag22</div>
+                        <div style="font-size: 12px; color: #666;">Matches your Somerset (XS)</div>
+                      </div>
+                      <div style="padding: 4px 8px; background: #E0F7F7; border-radius: 999px; font-size: 11px; color: #047d7d; font-weight: 600;">
+                        1 shared size
+                      </div>
+                    </div>
+                  </div>
+                  <div style="position: relative;">
+                    <img src="../img/pnpreal.png" alt="J.Crew Halter Mixy Dress" style="width: 100%; height: 600px; object-fit: cover;">
+                    <div style="position: absolute; top: 10px; right: 10px; padding: 6px 10px; background: rgba(0,0,0,.45); backdrop-filter: blur(2px); border: 1px solid rgba(255,255,255,.35); border-radius: 999px; color: #fff; font-size: 12px; font-weight: 700;">
+                      S
+                    </div>
+                    <div style="position: absolute; top: 10px; left: 10px; padding: 6px 12px; background: rgba(255,255,255,.94); backdrop-filter: blur(8px); border: 1px solid rgba(0,0,0,.12); border-radius: 999px; color: #34424D; font-size: 13px; font-weight: 500;">
+                      Same as yours
+                    </div>
+                  </div>
+                  <div style="padding: 14px 16px;">
+                    <div style="font-size: 15px; margin-bottom: 8px;">
+                      <strong>J.Crew</strong> Halter Mixy Dress (S)
+                    </div>
+                    <div style="padding: 10px 12px; background: #f5f5f5; border-radius: 8px; margin-bottom: 12px;">
+                      <div style="font-size: 12px; color: #666; margin-bottom: 4px;">Comments · 4</div>
+                      <div style="font-size: 13px;"><strong>ggnyc8989:</strong> Is this petite or regular?</div>
+                      <div style="font-size: 11px; color: #047d7d; margin-top: 4px;">See full thread &gt;</div>
+                    </div>
+                    <button style="width: 100%; padding: 12px; background: linear-gradient(135deg,#008888,#3ECFD5 46%,#9BFFCF); border: none; border-radius: 12px; color: #fff; font-weight: 700; font-size: 15px;">
+                      Shop this item
+                    </button>
+                  </div>
+                </article>
+              </div>
+            </section>
+
+            <section class="section section--sticky">
+              <div class="sticky-cta" role="region" aria-label="Size action">
+                <div class="sticky-rec">
+                  <div class="sticky-size">Size S</div>
+                  <div class="sticky-label">Recommended</div>
+                </div>
+                <button class="sticky-btn" onclick="handleShopCTA()">Shop Size S →</button>
+              </div>
+            </section>
+          </div>
+        </div>
+
+        <!-- Bottom Navigation -->
+        <div class="tabs">
+          <a class="tab active" href="#">
+            <svg class="ico" viewBox="0 0 256 256" aria-hidden="true"><path fill="currentColor" d="M241,150.65s0,0,0-.05a51.33,51.33,0,0,0-2.53-5.9L196.93,50.18a12,12,0,0,0-2.5-3.65,36,36,0,0,0-50.92,0A12,12,0,0,0,140,55V76H116V55a12,12,0,0,0-3.51-8.48,36,36,0,0,0-50.92,0,12,12,0,0,0-2.5,3.65L17.53,144.7A51.33,51.33,0,0,0,15,150.6s0,0,0,.05A52,52,0,1,0,116,168V100h24v68a52,52,0,1,0,101-17.35ZM80,62.28a12,12,0,0,1,12-1.22v63.15a51.9,51.9,0,0,0-35.9-7.62ZM64,196a28,28,0,1,1,28-28A28,28,0,0,1,64,196ZM164,61.06a12.06,12.06,0,0,1,12,1.22l23.87,54.31a51.9,51.9,0,0,0-35.9,7.62ZM192,196a28,28,0,1,1,28-28A28,28,0,0,1,192,196Z"/></svg>
+            <span>Find</span>
+          </a>
+          <a class="tab" href="#">
+            <svg class="ico" viewBox="0 0 256 256" aria-hidden="true"><path fill="currentColor" d="M225.24,174.74a12,12,0,0,1-1.58,16.89C205.49,206.71,189.06,212,174.15,212c-19.76,0-36.86-9.29-51.88-17.44-25.06-13.62-44.86-24.37-74.61.3a12,12,0,1,1-15.32-18.48c42.25-35,75-17.23,101.39-2.92,25.06,13.61,44.86,24.37,74.61-.3A12,12,0,0,1,225.24,174.74Zm-16.9-57.59c-29.75,24.67-49.55,13.91-74.61.3-26.35-14.3-59.14-32.11-101.39,2.92a12,12,0,0,0,15.32,18.48c29.75-24.67,49.55-13.92,74.61-.3,15,8.15,32.12,17.44,51.88,17.44,14.91,0,31.34-5.29,49.51-20.36a12,12,0,0,0-15.32-18.48ZM47.66,82.84c29.75-24.67,49.55-13.92,74.61-.3,15,8.15,32.12,17.44,51.88,17.44,14.91,0,31.34-5.29,49.51-20.36a12,12,0,0,0-15.32-18.48c-29.75,24.67-49.55,13.92-74.61.3-26.35-14.3-59.14-32.11-101.39,2.93A12,12,0,1,0,47.66,82.84Z"/></svg>
+            <span>Feed</span>
+          </a>
+          <a class="tab" href="closet-screen.html">
+            <svg class="ico" viewBox="0 0 256 256" aria-hidden="true"><path fill="currentColor" d="M244,168,148,96l19.2-14.4A12,12,0,0,0,172,72a44,44,0,0,0-87.66-5.48,12,12,0,1,0,23.82,3,20,20,0,0,1,39.09-2.92L121,86.24c-.15.1-.29.21-.43.32L12,168a20,20,0,0,0,12,36H232a20,20,0,0,0,12-36ZM36,180l92-69,92,69Z"/></svg>
+            <span>Closet</span>
+          </a>
+          <a class="tab" href="#">
+            <svg class="ico" viewBox="0 0 256 256" aria-hidden="true"><path fill="currentColor" d="M234.38,210a123.36,123.36,0,0,0-60.78-53.23,76,76,0,1,0-91.2,0A123.36,123.36,0,0,0,21.62,210a12,12,0,1,0,20.77,12c18.12-31.32,50.12-50,85.61-50s67.49,18.69,85.61,50a12,12,0,0,0,20.77-12ZM76,96a52,52,0,1,1,52,52A52.06,52.06,0,0,1,76,96Z"/></svg>
+            <span>Profile</span>
+          </a>
+        </div>
+      </div>
+</div>
+
+<script>
+/*
+ * RULE-BASED RECOMMENDATION ENGINE (Zero AI API Costs!)
+ *
+ * This generates personalized recommendations using simple logic.
+ * No LLM calls needed - just count, compare, and template.
+ *
+ * Example logic for generating the recommendation:
+ */
+
+function generateRecommendation(twins, userProfile) {
+  // 1. Count size distribution
+  const sizeCounts = {};
+  twins.forEach(twin => {
+    sizeCounts[twin.size] = (sizeCounts[twin.size] || 0) + 1;
+  });
+
+  // 2. Find modal size (most common)
+  const modalSize = Object.keys(sizeCounts).reduce((a, b) =>
+    sizeCounts[a] > sizeCounts[b] ? a : b
+  );
+  const modalCount = sizeCounts[modalSize];
+  const consensus = modalCount / twins.length;
+
+  // 3. Find strongest match (twin with most shared items)
+  const strongestMatch = twins.reduce((strongest, current) =>
+    current.sharedItemsCount > strongest.sharedItemsCount ? current : strongest
+  );
+
+  // 4. Generate recommendation based on rules
+  let recommendation = {
+    size: modalSize,
+    title: `We recommend size ${modalSize}`,
+    reason: ''
+  };
+
+  // Rule 1: Strong consensus (80%+)
+  if (consensus >= 0.8) {
+    recommendation.reason = `<span class="stat">${modalCount} out of ${twins.length}</span> of your size twins bought size ${modalSize}.`;
+  }
+  // Rule 2: Closest match insight
+  else if (strongestMatch) {
+    recommendation.size = strongestMatch.size;
+    recommendation.title = `We recommend size ${strongestMatch.size}`;
+    recommendation.reason = `Your closest match (@${strongestMatch.username}) sized ${getSizingDirection(userProfile.size, strongestMatch.size)} to ${strongestMatch.size} in this dress.`;
+  }
+  // Rule 3: Split decision
+  else {
+    recommendation.title = `Most twins bought size ${modalSize}`;
+    recommendation.reason = `<span class="stat">${modalCount} out of ${twins.length}</span> twins bought size ${modalSize}, but sizes vary. Check the details below.`;
+  }
+
+  return recommendation;
+}
+
+function getSizingDirection(userSize, twinSize) {
+  const sizeOrder = ['XXS', 'XS', 'S', 'M', 'L', 'XL', 'XXL'];
+  const userIdx = sizeOrder.indexOf(userSize);
+  const twinIdx = sizeOrder.indexOf(twinSize);
+  if (twinIdx > userIdx) return 'up';
+  if (twinIdx < userIdx) return 'down';
+  return 'true to size';
+}
+
+// Total cost: $0. Zero API calls. Instant results.
+
+// Auto-play demo sequence for screen recording
+let isPlaying = false;
+// Work-mode flags (no recording):
+window.SHOW_RESULTS_ON_LOAD = true;
+window.ENABLE_AUTOSCROLL = false;
+
+function handlePaste() {
+  if (isPlaying) return;
+  isPlaying = true;
+
+  const urlInput = document.getElementById('urlInput');
+  const url = 'https://petalandpup.com/products/botanique-midi-dress-floral';
+
+  // Focus input
+  urlInput.focus();
+
+  // Type animation
+  let i = 0;
+  const typeInterval = setInterval(() => {
+    if (i < url.length) {
+      urlInput.value = url.substring(0, i + 1);
+      i++;
+    } else {
+      clearInterval(typeInterval);
+      setTimeout(showLoading, 400);
+    }
+  }, 25);
+}
+
+function showLoading() {
+  const findSection = document.getElementById('findSection');
+  const findSectionWrap = document.getElementById('findSectionWrap');
+  const loadingSection = document.getElementById('loadingSection');
+  const loadingState = document.getElementById('loadingState');
+
+  findSection?.classList.add('hidden');
+  findSectionWrap?.classList.add('is-hidden');
+  setTimeout(() => {
+    loadingSection?.classList.add('is-visible');
+    loadingState?.classList.add('visible');
+  }, 100);
+
+  setTimeout(showResults, 1800);
+}
+
+function showResults() {
+  const loadingSection = document.getElementById('loadingSection');
+  const loadingState = document.getElementById('loadingState');
+  const resultsSection = document.getElementById('resultsSection');
+  const content = document.querySelector('.content');
+
+  loadingState?.classList.remove('visible');
+  loadingSection?.classList.remove('is-visible');
+  resultsSection?.classList.add('visible');
+
+  // Scroll to top smoothly
+  setTimeout(() => {
+    content.scrollTo({ top: 0, behavior: 'smooth' });
+  }, 100);
+
+  // Slow scroll is disabled while editing unless explicitly enabled
+  if (window.ENABLE_AUTOSCROLL) {
+    setTimeout(() => {
+      const scrollHeight = content.scrollHeight - content.clientHeight;
+      const duration = 4000; // 4 seconds to scroll through
+      const startTime = performance.now();
+
+      function animateScroll(currentTime) {
+        const elapsed = currentTime - startTime;
+        const progress = Math.min(elapsed / duration, 1);
+
+        // Ease in-out function
+        const easeProgress = progress < 0.5
+          ? 2 * progress * progress
+          : 1 - Math.pow(-2 * progress + 2, 2) / 2;
+
+        content.scrollTop = scrollHeight * easeProgress;
+
+        if (progress < 1) {
+          requestAnimationFrame(animateScroll);
+        }
+      }
+
+      requestAnimationFrame(animateScroll);
+    }, 800);
+  }
+
+  isPlaying = false;
+}
+
+function handleShop() {
+  // Visual feedback
+  const btn = event.target;
+  btn.style.transform = 'scale(0.95)';
+  setTimeout(() => {
+    btn.style.transform = '';
+  }, 150);
+}
+
+// Demo data for chips + recommendation
+const DEMO_TWINS = [
+  { size: 'S', kept: true, username: 'sarah_chen', sharedItemsCount: 3, notes: ['Runs slightly small in bust'] },
+  { size: 'S', kept: true, username: 'emma_rose', sharedItemsCount: 2, notes: ['True to size, perfect at waist'] },
+  { size: 'L', kept: false, username: 'maya_patel', sharedItemsCount: 1, notes: ['Runs small, consider sizing up'] }
+];
+
+function updateHeroChips(twins){
+  const twinCount = twins.length;
+  const noteCount = twins.reduce((sum, t) => sum + (t.notes?.length || 1), 0);
+  const twinsEl = document.getElementById('chipTwins');
+  const notesEl = document.getElementById('chipNotes');
+  if (twinsEl) twinsEl.textContent = String(twinCount);
+  if (notesEl) notesEl.textContent = String(noteCount);
+}
+
+// Auto-start demo after 1.5 seconds
+// DISABLED FOR EDITING - Uncomment for screen recording
+// setTimeout(() => {
+//   handlePaste();
+// }, 1500);
+
+// While editing: land directly on results
+window.addEventListener('DOMContentLoaded', () => {
+  if (!window.SHOW_RESULTS_ON_LOAD) return;
+  const findSection = document.getElementById('findSection');
+  const findSectionWrap = document.getElementById('findSectionWrap');
+  const loadingSection = document.getElementById('loadingSection');
+  const loadingState = document.getElementById('loadingState');
+  const resultsSection = document.getElementById('resultsSection');
+  findSection?.classList.add('hidden');
+  findSectionWrap?.classList.add('is-hidden');
+  loadingState?.classList.remove('visible');
+  loadingSection?.classList.remove('is-visible');
+  resultsSection?.classList.add('visible');
+  // Update hero chips using demo twins on load when showing results
+  updateHeroChips(DEMO_TWINS);
+});
+
+function toggleReasoning() {
+  const reasoning = document.getElementById('reasoning');
+  reasoning.classList.toggle('expanded');
+}
+
+function handleShopCTA() {
+  // Copy size to clipboard with visual feedback
+  const sizeText = 'Size S';
+  navigator.clipboard?.writeText(sizeText).then(() => {
+    // Update button text temporarily
+    const buttons = document.querySelectorAll('.shop-button, .sticky-btn');
+    buttons.forEach(btn => {
+      const originalText = btn.textContent;
+      btn.textContent = '✓ Copied!';
+      setTimeout(() => {
+        btn.textContent = originalText;
+      }, 1500);
+    });
+  });
+
+  // Open product in new tab
+  setTimeout(() => {
+    window.open('https://petalandpup.com/products/botanique-midi-dress-floral', '_blank');
+  }, 300);
+}
+
+function handleProxyShop() {
+  // Visual feedback
+  const btn = event.target;
+  btn.style.transform = 'scale(0.95)';
+  setTimeout(() => {
+    btn.style.transform = '';
+  }, 150);
+}
+</script>
+
+</body>
+</html>

@@ -1,0 +1,294 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Proxi — Log Fit</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <style>
+    :root{
+      /* Neutrals */
+      --ink-900:#0B0F14; --ink-700:#121A22; --ink-500:#2A3642; --ink-300:#6A7683;
+      --canvas-0:#F7F9FB; --canvas-50:#EFF3F6; --canvas-100:#E9EEF1;
+
+      /* Brand & Accents */
+      --petrol-600:#009090; --petrol-500:#00A3A3; --petrol-400:#16B5B5; --petrol-100:#E0F7F7;
+      --mint-400:#A6FFCB; --mint-500:#35D1AE; --ice-300:#BFE7EF; --coral-500:#FF6B5A;
+      --aqua-500:#1FAED9;
+
+      /* Gradients */
+      --brand-sheen:linear-gradient(135deg,#009090 0%,#1FAED9 42%,#00A3A3 62%,#35D1AE 100%);
+
+      /* Radii */
+      --radius-card:16px; --radius-btn:12px; --radius-pill:999px;
+
+      /* Shadows */
+      --elev-0:0 1px 2px rgba(0,0,0,.06); --elev-1:0 8px 24px rgba(11,15,20,.08); --elev-2:0 20px 60px rgba(0,0,0,.18);
+    }
+    *{box-sizing:border-box;margin:0;padding:0}
+    html{background:#f5f5f5}
+    body{font-family:Inter,system-ui,-apple-system,"Segoe UI",Roboto,Helvetica,Arial;background:#f5f5f5;color:#fff;min-height:100vh;display:flex;align-items:center;justify-content:center;padding:0;position:relative}
+    /* Warm page glow behind app content */
+    body::before{content:"";position:fixed;inset:-20% -10% auto -10%;height:60vh;pointer-events:none;background:radial-gradient(800px 350px at 50% -120px, rgba(0,163,163,.08), transparent 60%),radial-gradient(1200px 500px at 10% -80px, rgba(166,255,203,.08), transparent 65%);filter:saturate(105%)}
+
+    /* Phone shell */
+    .phone{width:430px;height:932px;border-radius:55px;background:transparent;border:2px solid #000;position:relative}
+    .screen{position:absolute;inset:2px;background:#1A2430;border-radius:53px;overflow:hidden;display:flex;flex-direction:column}
+    .island{position:absolute;top:11px;left:50%;transform:translateX(-50%);width:126px;height:37px;background:#000;border-radius:19px;z-index:5}
+    .status{height:54px;margin-top:3px;display:flex;align-items:center;justify-content:space-between;padding:0 30px;font-weight:600;color:#fff;font-size:17px;letter-spacing:-.02em}
+    .status .right{display:flex;align-items:center;gap:6px}
+    .status .right img{height:13px;width:auto;display:block;filter:invert(1)}
+
+    /* Header with back button */
+    .header{padding:16px 24px;display:flex;align-items:center;justify-content:space-between;border-bottom:1px solid rgba(255,255,255,.1);margin-top:-16px}
+    .back-btn{width:36px;height:36px;border:none;background:transparent;cursor:pointer;display:flex;align-items:center;justify-content:center;border-radius:50%;transition:background .2s;color:#fff}
+    .back-btn:hover{background:rgba(255,255,255,.1)}
+    .header-title{font:700 18px/1.2 Inter;color:#fff;flex:1;text-align:center;margin-right:36px}
+
+    /* Content area */
+    .content{flex:1;overflow-y:auto;padding:20px 24px 120px;display:flex;flex-direction:column;gap:16px}
+
+    /* Product card - HERO */
+    .product-card{display:flex;flex-direction:column;align-items:center;gap:10px;padding:20px 12px 16px;background:transparent;border-radius:24px}
+    .product-image{width:370px;height:370px;border-radius:24px;object-fit:cover;box-shadow:0 16px 48px rgba(0,0,0,.5)}
+    .product-info{text-align:center}
+    .product-title{font:600 17px/1.3 Inter;color:rgba(255,255,255,.85);letter-spacing:-.01em}
+    .product-title .brand{color:rgba(255,255,255,.85)}
+
+    /* Intent section */
+    .section{display:flex;flex-direction:column;gap:10px}
+    .section-label{font:600 15px/1.3 Inter;color:rgba(255,255,255,.9);margin-bottom:-2px}
+    .intent-buttons{display:flex;gap:10px}
+    .intent-btn{flex:1;padding:14px 16px;border:2px solid #D8D3C8;background:#E8E5E0;border-radius:var(--radius-btn);font:700 15px/1.2 Inter;color:var(--ink-700);cursor:pointer;transition:all .2s;display:flex;align-items:center;justify-content:center;gap:8px}
+    .intent-btn:hover{border-color:#C8C3B8;background:#F0EDE8}
+    .intent-btn.active{border-color:var(--petrol-400);background:var(--petrol-400);color:#fff;box-shadow:0 4px 16px rgba(22,181,181,.3)}
+    .intent-icon{width:18px;height:18px}
+
+    /* Size selector */
+    .size-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:8px}
+    .size-btn{padding:12px 10px;border:2px solid #D8D3C8;background:#E8E5E0;border-radius:14px;font:700 14px/1 Inter;color:var(--ink-700);cursor:pointer;transition:all .2s;text-align:center}
+    .size-btn:hover{border-color:#C8C3B8;background:#F0EDE8}
+    .size-btn.active{border-color:var(--petrol-400);background:var(--petrol-400);color:#fff;box-shadow:0 4px 16px rgba(22,181,181,.3)}
+
+    /* Bottom CTA */
+    .bottom-cta{position:absolute;bottom:0;left:0;right:0;padding:16px 24px 40px;background:linear-gradient(to top,#1A2430 80%,rgba(26,36,48,0));border-top:1px solid rgba(255,255,255,.08)}
+    .cta-buttons{display:flex;gap:12px;align-items:center}
+    .cta-skip{padding:16px 24px;background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.15);color:rgba(255,255,255,.9);border-radius:var(--radius-btn);font:600 15px/1 Inter;cursor:pointer;transition:all .2s;flex-shrink:0}
+    .cta-skip:hover{background:rgba(255,255,255,.12);border-color:rgba(255,255,255,.25);color:#fff}
+    .cta-primary{flex:1;padding:16px 24px;background:var(--brand-sheen);color:#fff;border:none;border-radius:var(--radius-btn);font:700 16px/1 Inter;cursor:pointer;transition:all .3s;box-shadow:0 8px 24px rgba(0,163,163,.4)}
+    .cta-primary:hover{transform:translateY(-2px);box-shadow:0 12px 32px rgba(0,163,163,.5)}
+    .cta-primary:disabled{opacity:.4;cursor:not-allowed;transform:none}
+  </style>
+</head>
+<body>
+  <div class="phone">
+    <div class="island"></div>
+    <div class="screen">
+      <!-- Status bar -->
+      <div class="status"><div>9:41</div><div class="right"><img src="../img/cellular-connection.svg" alt="cell"/><img src="../img/wifi.svg" alt="wifi"/><img src="../img/battery.svg" alt="battery"/></div></div>
+
+      <!-- Header -->
+      <div class="header">
+        <button class="back-btn" aria-label="Go back">
+          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M15 18l-6-6 6-6"/>
+          </svg>
+        </button>
+        <h1 class="header-title">Log fit</h1>
+      </div>
+
+      <!-- Content -->
+      <div class="content">
+        <!-- Product Card -->
+        <div class="product-card">
+          <img src="../img/CL648_RD0165_m.png" alt="J.Crew Halter Mixy Dress" class="product-image">
+          <div class="product-info">
+            <div class="product-title"><span class="brand">J.Crew</span> • Halter Mixy Dress</div>
+          </div>
+        </div>
+
+        <!-- Intent Section -->
+        <div class="section">
+          <label class="section-label">Did you buy this?</label>
+          <div class="intent-buttons">
+            <button class="intent-btn" data-intent="bought">
+              <svg class="intent-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M20.59 13.41l-7.17 7.17a2 2 0 0 1-2.83 0L2 12V2h10l8.59 8.59a2 2 0 0 1 0 2.82z"/>
+                <line x1="7" y1="7" x2="7.01" y2="7"/>
+              </svg>
+              Bought it
+            </button>
+            <button class="intent-btn active" data-intent="tried">
+              <svg class="intent-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <circle cx="12" cy="12" r="10"/>
+                <path d="M12 16v-4"/>
+                <path d="M12 8h.01"/>
+              </svg>
+              Tried it
+            </button>
+          </div>
+        </div>
+
+        <!-- Size Section -->
+        <div class="section">
+          <label class="section-label">What size?</label>
+          <div class="size-grid" id="sizeGrid">
+            <!-- Sizes will be populated by JavaScript based on brand -->
+          </div>
+        </div>
+      </div>
+
+      <!-- Bottom CTA -->
+      <div class="bottom-cta">
+        <div class="cta-buttons">
+          <button class="cta-skip" id="skipBtn">Save</button>
+          <button class="cta-primary" id="addFitBtn">Add fit details</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    // Brand mapping function
+    function normalizeBrand(brandName) {
+      const domain = brandName.toLowerCase().replace(/\.(com|net|org)$/, '').replace('www.', '');
+
+      const brandMap = {
+        'thereformation': 'Reformation',
+        'reformation': 'Reformation',
+        'jcrew': 'J.Crew',
+        'aritzia': 'Aritzia',
+        'everlane': 'Everlane',
+        'madewell': 'Madewell',
+        'anthropologie': 'Anthropologie',
+        'freepeople': 'Free People',
+        'urbanoutfitters': 'Urban Outfitters',
+        'zara': 'Zara',
+        'hm': 'H&M'
+      };
+
+      return brandMap[domain] || brandName;
+    }
+
+    // Size configurations by brand
+    const sizeConfigs = {
+      'Reformation': ['0', '2', '4', '6', '8', '10', '12'],
+      'Aritzia': ['XXS', 'XS', 'S', 'M', 'L', 'XL', 'XXL'],
+      'default': ['XXS', 'XS', 'S', 'M', 'L', 'XL', 'XXL', 'XXXL']
+    };
+
+    // Load product data from localStorage
+    (function loadProductData() {
+      const pendingProduct = localStorage.getItem('pendingProduct');
+
+      if (pendingProduct) {
+        try {
+          const product = JSON.parse(pendingProduct);
+
+          // Normalize brand name
+          const normalizedBrand = normalizeBrand(product.brand);
+
+          // Update product image
+          const productImage = document.querySelector('.product-image');
+          if (product.image && productImage) {
+            productImage.src = product.image;
+            productImage.alt = product.title;
+          }
+
+          // Update product title (brand • name format)
+          const productTitle = document.querySelector('.product-title');
+          if (productTitle) {
+            let productName = product.title;
+            if (normalizedBrand && productName.toLowerCase().startsWith(normalizedBrand.toLowerCase())) {
+              productName = productName.substring(normalizedBrand.length).trim();
+              productName = productName.replace(/^[-|•:]/, '').trim();
+            }
+            productTitle.innerHTML = `<span class="brand">${normalizedBrand}</span> • ${productName}`;
+          }
+
+          // Populate size grid based on normalized brand
+          const sizeGrid = document.getElementById('sizeGrid');
+          const sizes = sizeConfigs[normalizedBrand] || sizeConfigs['default'];
+
+          // Set default active index (middle size for numeric, 'S' for alpha)
+          const defaultActiveIndex = normalizedBrand === 'Reformation' ? 2 : sizes.indexOf('S');
+
+          sizes.forEach((size, index) => {
+            const btn = document.createElement('button');
+            btn.className = 'size-btn';
+            btn.textContent = size;
+            if (index === defaultActiveIndex) {
+              btn.classList.add('active');
+            }
+            sizeGrid.appendChild(btn);
+          });
+
+        } catch (error) {
+          console.error('Error loading product data:', error);
+          // Fallback to default sizes if error
+          const sizeGrid = document.getElementById('sizeGrid');
+          sizeConfigs['default'].forEach((size, index) => {
+            const btn = document.createElement('button');
+            btn.className = 'size-btn';
+            btn.textContent = size;
+            if (size === 'S') btn.classList.add('active');
+            sizeGrid.appendChild(btn);
+          });
+        }
+      } else {
+        // No product data, show default sizes
+        const sizeGrid = document.getElementById('sizeGrid');
+        sizeConfigs['default'].forEach((size, index) => {
+          const btn = document.createElement('button');
+          btn.className = 'size-btn';
+          btn.textContent = size;
+          if (size === 'S') btn.classList.add('active');
+          sizeGrid.appendChild(btn);
+        });
+      }
+    })();
+
+    // Intent toggle
+    const intentButtons = document.querySelectorAll('.intent-btn');
+    intentButtons.forEach(btn => {
+      btn.addEventListener('click', () => {
+        intentButtons.forEach(b => b.classList.remove('active'));
+        btn.classList.add('active');
+        console.log('Intent:', btn.dataset.intent);
+      });
+    });
+
+    // Size toggle (using event delegation since buttons are created dynamically)
+    document.getElementById('sizeGrid').addEventListener('click', (e) => {
+      if (e.target.classList.contains('size-btn')) {
+        document.querySelectorAll('.size-btn').forEach(b => b.classList.remove('active'));
+        e.target.classList.add('active');
+        console.log('Size:', e.target.textContent);
+      }
+    });
+
+    // Back button - return to step 1
+    document.querySelector('.back-btn').addEventListener('click', () => {
+      window.location.href = 'log-fit-step1.html';
+    });
+
+    // Skip button - save and exit
+    document.getElementById('skipBtn').addEventListener('click', () => {
+      const intent = document.querySelector('.intent-btn.active').dataset.intent;
+      const size = document.querySelector('.size-btn.active').textContent;
+      console.log('Skip fit details - saving:', { intent, size });
+      // In production: save to database and navigate to closet/confirmation
+    });
+
+    // Add fit details button - go to step 3
+    document.getElementById('addFitBtn').addEventListener('click', () => {
+      const intent = document.querySelector('.intent-btn.active').dataset.intent;
+      const size = document.querySelector('.size-btn.active').textContent;
+      console.log('Add fit details with:', { intent, size });
+      window.location.href = 'log-fit-step3.html';
+    });
+  </script>
+</body>
+</html>

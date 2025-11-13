@@ -1,0 +1,153 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Proxi – Results (Dark)</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+  :root{
+    /* ----- Palette ----- */
+    --ink-900:#0C1114; /* page background (slate deep) */
+    --ink-800:#0F1418;
+    --ink-700:#11181C; /* elevated surface */
+    --ink-600:#1A242B; /* borders / separators */
+    --ink-500:#2A3642;
+    --ink-400:#3A4652;
+    --ink-300:#6A7683; /* secondary text */
+    --ink-100:#ECEFF2;
+
+    --canvas-0:#F7F9FB;
+    --canvas-50:#EFF3F6;
+    --canvas-100:#E9EEF1;
+
+    --petrol-600:#009090;
+    --petrol-500:#00A3A3;
+    --petrol-400:#16B5B5;
+    --petrol-300:#3ECFD5;
+    --petrol-100:#E0F7F7;
+
+    --mint-400:#A6FFCB;
+    --ice-300:#7FE1FF;
+    --brand-sheen:linear-gradient(135deg,#00A3A3 0%,#7FE1FF 50%,#A6FFCB 100%);
+
+    /* ----- Radii / Spacing / Elevation ----- */
+    --radius-card:16px;
+    --radius-btn:12px;
+    --radius-pill:999px;
+
+    --space-4:4px; --space-6:6px; --space-8:8px; --space-10:10px;
+    --space-12:12px; --space-14:14px; --space-16:16px; --space-20:20px;
+    --space-24:24px; --space-28:28px; --space-32:32px;
+
+    --elev-0:0 1px 2px rgba(0,0,0,.06);
+    --elev-1:0 8px 24px rgba(11,15,20,.18);
+    --elev-2:0 20px 60px rgba(0,0,0,.35);
+  }
+
+  html,body{height:100%;background:var(--ink-900);color:#fff;font-family:Inter,system-ui,-apple-system,Segoe UI,Roboto,Helvetica,Arial,sans-serif;}
+  *{box-sizing:border-box}
+
+  .screen{max-width:420px;margin:0 auto;padding-bottom:84px;}
+  .header{position:sticky;top:0;z-index:10;background:linear-gradient(180deg, rgba(12,17,20,.9), rgba(12,17,20,.7) 70%, rgba(12,17,20,0));backdrop-filter:blur(10px);padding:18px 20px 14px;border-bottom:1px solid rgba(255,255,255,.06);}
+  .brand{display:flex;gap:10px;align-items:center;justify-content:center;font-weight:800;font-size:24px;letter-spacing:-.02em;background:var(--brand-sheen);-webkit-background-clip:text;background-clip:text;color:transparent;}
+
+  .results-dark{padding:16px 16px 28px;}
+
+  .card{background:var(--ink-700);border:1px solid var(--ink-600);border-radius:var(--radius-card);box-shadow:var(--elev-1);}
+  .card:hover{transform:translateY(-2px);box-shadow:var(--elev-2);transition:all .3s ease;}
+  .card-pad{padding:16px;}
+
+  .product-card{display:grid;grid-template-columns:84px 1fr;gap:14px;align-items:center;}
+  .thumb{width:84px;height:84px;border-radius:14px;object-fit:cover;background:#222 url('https://images.unsplash.com/photo-1516826957135-700dedea698c?q=80&w=400&auto=format&fit=crop') center/cover no-repeat;}
+  .found-chip{display:inline-flex;align-items:center;gap:8px;padding:8px 12px;border-radius:12px;background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.14);font-weight:700;font-size:12px;color:#fff;}
+  .found-chip .dot{width:18px;height:18px;border-radius:50%;display:inline-grid;place-items:center;background:#0ac490;color:#0d1b1e;font-weight:900;}
+
+  .product-name{font-weight:700;font-size:18px;letter-spacing:-.01em;color:#fff;margin:6px 0 2px;}
+  .product-sub{color:var(--ink-300);font-weight:500}
+
+  .bridge{margin:18px 6px 8px;}
+  .overline{color:var(--petrol-400);text-transform:uppercase;font-weight:700;font-size:12px;letter-spacing:.06em;margin-bottom:6px;}
+  .bridge h2{font-size:16px;font-weight:600;color:#c9f1f1;letter-spacing:-.01em;margin:0 0 10px;}
+  .bridge .hairline{width:32px;height:2px;border-radius:2px;background:var(--brand-sheen);}
+
+  .twin-card .header{all:unset;display:flex;align-items:center;justify-content:space-between;margin-bottom:10px;}
+  .avatar{width:36px;height:36px;border-radius:50%;background:#2b3942 url('https://images.unsplash.com/photo-1531427186611-ecfd6d936c79?q=80&w=200&auto=format&fit=crop') center/cover no-repeat;border:1px solid var(--ink-600);margin-right:10px;flex:0 0 auto;}
+  .user{display:flex;align-items:center;font-weight:700;font-size:16px;gap:10px;}
+  .sizes-pill{padding:10px 14px;border-radius:999px;background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.12);color:#fff;font-weight:700;font-size:13px;}
+  .media{width:100%;height:420px;border-radius:14px;background:#222 url('https://images.unsplash.com/photo-1503341455253-b2e723bb3dbb?q=80&w=900&auto=format&fit=crop') center/cover no-repeat;}
+  .meta{display:flex;align-items:center;gap:14px;margin-top:10px;color:var(--ink-300);font-weight:600;font-size:13px;}
+
+  .cta{margin:14px 0 0;display:flex;gap:12px;align-items:center;}
+  .btn{display:inline-flex;align-items:center;justify-content:center;border-radius:var(--radius-btn);padding:14px 18px;font-weight:800;}
+  .btn-primary{color:#0E1518;background:linear-gradient(180deg,rgba(255,255,255,.12),transparent 12%), var(--brand-sheen);box-shadow:0 10px 24px rgba(0,163,163,.28);}
+  .btn-ghost{color:#fff;border:1px solid var(--ink-600);background:transparent;}
+
+  .stack{display:grid;gap:16px;}
+
+  /* Tab bar mock for completeness */
+  .tabs{position:sticky;bottom:0;left:0;right:0;background:rgba(11,15,20,.75);backdrop-filter:blur(16px);border-top:1px solid rgba(255,255,255,.08);}
+  .tabs ul{display:flex;justify-content:space-around;padding:10px 12px;margin:0;list-style:none;}
+  .tabs li{color:var(--ink-300);font-weight:600;}
+  .tabs li.active{color:var(--petrol-400);}
+</style>
+</head>
+<body>
+  <div class="screen">
+    <div class="header">
+      <div class="brand">proxi</div>
+    </div>
+
+    <main class="results-dark">
+      <section class="stack">
+        <!-- Product Found card (dark) -->
+        <article class="card card-pad product-card">
+          <div class="thumb" aria-hidden="true"></div>
+          <div>
+            <div class="found-chip"><span class="dot">✓</span> PRODUCT FOUND</div>
+            <div class="product-name">PETAL &amp; PUP</div>
+            <div class="product-sub">Botanique Midi Dress</div>
+          </div>
+        </article>
+
+        <!-- Bridge / Insight -->
+        <div class="bridge">
+          <div class="overline">Your size network</div>
+          <h2><strong>2</strong> of your size twins own this dress</h2>
+          <div class="hairline"></div>
+        </div>
+
+        <!-- Twin card (dark) -->
+        <article class="card card-pad twin-card">
+          <div class="header">
+            <div class="user">
+              <div class="avatar"></div>
+              bellag22
+            </div>
+            <div class="sizes-pill">2 shared sizes ▾</div>
+          </div>
+          <div class="media" aria-hidden="true"></div>
+          <div class="meta">
+            <span>Size S</span><span>Height 5'9"</span><span>Usually wears S</span>
+          </div>
+          <div class="cta">
+            <button class="btn btn-primary">Shop Size S →</button>
+            <button class="btn btn-ghost">View details</button>
+          </div>
+        </article>
+      </section>
+    </main>
+
+    <nav class="tabs">
+      <ul>
+        <li>Find</li>
+        <li class="active">Feed</li>
+        <li>Closet</li>
+        <li>Profile</li>
+      </ul>
+    </nav>
+  </div>
+</body>
+</html>

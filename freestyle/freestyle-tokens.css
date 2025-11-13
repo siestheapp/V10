@@ -1,0 +1,78 @@
+
+/* Freestyle Design System — CSS Tokens
+   Palette: Ink + Iridescent Petrol
+   Usage: import this file once; reference variables via var(--token-name)
+*/
+
+:root{
+  /* --- Neutrals --- */
+  --ink-900:#0B0F14; /* primary text / dark bg */
+  --ink-700:#121A22; /* dark surfaces, nav */
+  --ink-500:#2A3642; /* subhead, muted text */
+  --ink-300:#6A7683; /* secondary text, captions */
+
+  --canvas-0:#F7F9FB; /* app background (light) */
+  --canvas-50:#EFF3F6; /* cards/sections (light) */
+  --canvas-100:#E9EEF1; /* borders/dividers (light) */
+
+  /* --- Brand & Accents --- */
+  --petrol-600:#009090; /* pressed/active */
+  --petrol-500:#00A3A3; /* primary brand / CTA */
+  --petrol-400:#16B5B5; /* hover/highlight */
+  --petrol-100:#E0F7F7; /* light pills/backgrounds */
+
+  --mint-400:#A6FFCB; /* sub-accent */
+  --ice-300:#BFE7EF;  /* cool complement */
+  --coral-500:#FF6B5A; /* alerts / "tight" state */
+  --aqua-500:#1FAED9; /* gradient stop */
+  --mint-500:#35D1AE; /* gradient stop */
+  --petrol-500-a22:rgba(0,163,163,.22); /* alpha utility */
+
+  /* --- Gradient --- */
+  --brand-sheen: linear-gradient(135deg, var(--petrol-600) 0%, var(--aqua-500) 42%, var(--petrol-500) 62%, var(--mint-500) 100%);
+  --brand-bullet: linear-gradient(135deg, var(--petrol-600), var(--mint-500));
+
+  /* --- Radii --- */
+  --radius-card:16px;
+  --radius-btn:12px;
+  --radius-pill:999px;
+
+  /* --- Spacing scale --- */
+  --space-4:4px;
+  --space-8:8px;
+  --space-12:12px;
+  --space-16:16px;
+  --space-24:24px;
+  --space-32:32px;
+
+  /* --- Shadows --- */
+  --elev-0: 0 1px 2px rgba(0,0,0,.06);        /* subtle */
+  --elev-1: 0 8px 24px rgba(11,15,20,.08);    /* card */
+  --elev-2: 0 20px 60px rgba(0,0,0,.18);      /* modal/cta */
+}
+
+/* Example roles (reference) */
+.button-primary{
+  background: var(--petrol-500);
+  color: #fff;
+  border: 0;
+  border-radius: var(--radius-btn);
+  padding: var(--space-12) var(--space-16);
+  font-weight: 600;
+}
+.button-primary:hover{ background: var(--petrol-600); }
+.button-primary:active{ background: var(--petrol-600); transform: translateY(1px); }
+
+.pill{ 
+  display:inline-flex; align-items:center; gap:6px;
+  padding:6px 10px; border-radius: var(--radius-pill);
+  border: 1px solid rgba(11,15,20,.12);
+}
+.pill.good{ background: var(--petrol-100); border-color: rgba(0,163,163,.35); color: var(--ink-900); }
+.pill.tight{ background: #fff; border-color: var(--coral-500); color: var(--coral-500); }
+.pill.relaxed{ background: #fff; border-color: var(--ice-300); color: var(--ice-300); }
+
+.card{
+  background:#fff; border:1px solid rgba(11,15,20,.08);
+  border-radius: var(--radius-card); box-shadow: var(--elev-0);
+}

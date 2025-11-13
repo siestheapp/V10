@@ -1,0 +1,555 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1"/>
+  <title>Sies — Fit (New)</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --bg:#FAF8F6;
+      --ink:#1F1F1F;
+      --muted:#6F6F74;
+      --accent:#8F6AAE;
+      --card:#FFFFFF;
+      --stroke:#E8E4DE;
+      --track:#ECECEC;
+
+      --radius:16px;
+    }
+    * { box-sizing:border-box; margin:0; padding:0; }
+    body {
+      font-family:Inter,system-ui,-apple-system,"Segoe UI",Roboto,Helvetica,Arial;
+      background:var(--bg); color:var(--ink);
+      min-height:100vh; display:flex; align-items:center; justify-content:center; padding:0;
+    }
+    /* Phone shell (match mock8/closet3) */
+    .phone{width:430px;height:932px;border-radius:55px;background:#000;padding:2px;box-shadow:0 20px 60px -10px rgba(0,0,0,.06)}
+    .screen{height:100%;background:#fff;border-radius:53px;overflow:hidden;position:relative;display:flex;flex-direction:column}
+    .island{position:absolute;top:11px;left:50%;transform:translateX(-50%);width:126px;height:37px;background:#000;border-radius:19px;z-index:5}
+    .status{height:54px;margin-top:5px;display:flex;align-items:center;justify-content:space-between;padding:0 30px;font-weight:600;color:#000;font-size:17px;letter-spacing:-.02em}
+    .status .right{display:flex;align-items:center;gap:6px}
+    .status .right img{height:13px;width:auto;display:block}
+    .header{padding:16px 24px 6px;display:flex;align-items:center;justify-content:center;position:relative}
+    .logo{font-weight:600;font-size:32px;letter-spacing:-.01em;background:linear-gradient(180deg,#F1DCE3 0%,#8B7F83 100%);
+      -webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent}
+
+    .content{flex:1;overflow:auto;padding:0 24px 96px; background:
+      radial-gradient(260px 140px at 50% -40px, rgba(143,106,174,.06), rgba(143,106,174,0) 65%), var(--bg);
+    }
+    .header {
+      margin-bottom:2px;
+    }
+    .eyebrow {
+      font-size:12px; font-weight:700; text-transform:uppercase;
+      letter-spacing:.08em; color:var(--muted); margin-bottom:4px;
+    }
+    .h1 {
+      font-size:28px; font-weight:800; letter-spacing:-0.02em; line-height:1.1;
+      margin-bottom:6px;
+      background:linear-gradient(135deg, var(--ink) 0%, #6B5B95 100%);
+      -webkit-background-clip:text; background-clip:text; -webkit-text-fill-color:transparent;
+    }
+    .lede {
+      font-size:14px; color:var(--muted); margin-bottom:16px;
+    }
+    .pills {
+      display:flex; gap:8px; margin-bottom:14px;
+    }
+    .pill {
+      font-size:12px; font-weight:600; border-radius:999px;
+      padding:8px 14px; border:1px solid var(--stroke);
+      background:#fff; color:var(--muted); cursor:pointer;
+      transition:transform .08s ease, background-color .2s ease, color .2s ease, border-color .2s ease;
+    }
+    .pill.active {
+      background:rgba(143,106,174,.12);
+      color:var(--accent); border-color:transparent;
+    }
+    .pill:active { transform:scale(.98); }
+    .card {
+      background:var(--card); border:1px solid var(--stroke);
+      border-radius:var(--radius);
+      padding:14px; margin-bottom:24px;
+    }
+    .table-card {
+      padding:10px;
+    }
+    .table-scroll {
+      overflow-x: auto;
+      -webkit-overflow-scrolling: touch;
+      scrollbar-width: none;
+      -ms-overflow-style: none;
+      position: relative;
+    }
+    .table-scroll::-webkit-scrollbar {
+      display: none;
+    }
+    table {
+      width: max-content;
+      min-width: 100%;
+      border-collapse: collapse;
+      font-size: 15px;
+    }
+    thead th {
+      text-align: center;
+      font-size: 12px;
+      color: #6a6a73;
+      padding: 10px 12px;
+      border-bottom: 1px solid var(--track);
+      background: linear-gradient(to bottom, rgba(143,106,174,.04), rgba(255,255,255,0));
+      white-space: nowrap;
+      min-width: 80px;
+    }
+    thead th.measurement-label {
+      font-size: 15px;
+      font-weight: 700;
+      color: var(--ink);
+    }
+    .measurement-label {
+      text-align: left !important;
+      font-weight: 700;
+      color: var(--ink);
+      background: var(--card) !important;
+      border-right: 1px solid var(--stroke) !important;
+      position: sticky;
+      left: 0;
+      z-index: 10;
+      width: 80px !important;
+      min-width: 80px !important;
+      max-width: 80px !important;
+      padding-right: 8px !important;
+    }
+    .brand-col {
+      font-weight: 600;
+      color: var(--accent);
+      line-height: 1.3;
+      font-size: 15px;
+    }
+    .size-row {
+      background: rgba(143,106,174,.04);
+    }
+    .size-row .measurement-label {
+      background: var(--card) !important;
+      border-right: 1px solid var(--stroke) !important;
+    }
+    .size-cell {
+      font-weight: 400;
+      font-size: 16px;
+      color: var(--ink);
+      padding: 8px 12px !important;
+      font-variant-numeric: tabular-nums;
+    }
+    .size-header {
+      font-size: 16px !important;
+      text-transform: none !important;
+      letter-spacing: 0 !important;
+      font-weight: 700 !important;
+      color: var(--ink) !important;
+    }
+    tbody tr {
+      transition: background-color 0.2s ease;
+    }
+    tbody tr:hover {
+      background: rgba(143,106,174,.04);
+    }
+    tbody td {
+      padding: 12px 12px;
+      border-bottom: 1px solid rgba(0,0,0,.06);
+      vertical-align: middle;
+      text-align: center;
+      white-space: nowrap;
+      min-width: 80px;
+      font-size: 16px;
+      color: var(--ink);
+    }
+    tbody td.measurement-label {
+      text-align: left;
+      font-weight: 700;
+      font-size: 16px;
+      color: var(--ink);
+      background: var(--card);
+      border-right: 1px solid var(--stroke);
+      position: sticky;
+      left: 0;
+      z-index: 9;
+      padding-right: 8px;
+      width: 80px;
+      min-width: 80px;
+      max-width: 80px;
+    }
+    
+    /* Style dashes to be lighter */
+    tbody td:not(.measurement-label) {
+      font-variant-numeric: tabular-nums;
+      font-size: 16px;
+      font-weight: 400;
+      color: var(--ink);
+    }
+    .dash {
+      color: #999;
+      font-weight: 400;
+    }
+    .brand {
+      font-weight:600;
+      color: var(--accent);
+    }
+    .muted {
+      color:var(--muted);
+    }
+
+    .summary-scroll {
+      display:flex; overflow-x:auto; gap:12px; scroll-snap-type:x mandatory;
+      padding-bottom:8px; -webkit-overflow-scrolling:touch; position:relative;
+      mask-image:linear-gradient(to right, transparent 0, black 24px, black calc(100% - 24px), transparent 100%);
+      -webkit-mask-image:linear-gradient(to right, transparent 0, black 24px, black calc(100% - 24px), transparent 100%);
+    }
+    /* Hide scrollbars */
+    .summary-scroll{ scrollbar-width:none; -ms-overflow-style:none; }
+    .summary-scroll::-webkit-scrollbar{ display:none; }
+    /* Removed overlay gradients to avoid visual streaks; mask handles edge fade */
+    .summary-card {
+      flex:0 0 60%;
+      background:var(--card); border:1px solid var(--stroke);
+      border-radius:var(--radius); padding:12px 14px;
+      scroll-snap-align:start;
+      transition: transform 0.2s ease;
+      cursor: pointer;
+    }
+    .summary-card:hover {
+      transform: translateY(-2px);
+    }
+    .summary-title {
+      font-size:13px; text-transform:uppercase;
+      font-weight:600; letter-spacing:.05em;
+      color:var(--muted); margin-bottom:6px;
+    }
+    .summary-value {
+      font-size:28px; font-weight:700; color:var(--ink);
+      margin-bottom:0px;
+    }
+    .summary-note {
+      font-size:14px; color:var(--muted);
+    }
+    .tag { display:inline-block; font-size:10px; font-weight:700; text-transform:uppercase; letter-spacing:.04em; 
+      padding:2px 6px; border-radius:999px; margin-left:8px; vertical-align:middle; }
+    .tag-conf { background:rgba(143,106,174,.12); color:var(--accent); border:1px solid rgba(143,106,174,.22); }
+    .tag-est { background:rgba(255,152,0,.12); color:#e65100; border:1px solid rgba(230,81,0,.18); }
+    .hidden { display:none; }
+    .pager{ display:flex; justify-content:center; gap:8px; margin:8px 0 4px; }
+    .dot{ width:7px; height:7px; border-radius:999px; background:#d8d6d2; transition:background .2s ease, transform .2s ease; cursor:pointer; }
+    .dot.active{ background:var(--accent); transform:scale(1.25); }
+    .dot:active { transform:scale(.85); }
+    .dot:hover:not(.active) { background:#b8b6b2; transform:scale(1.1); }
+
+    /* Hero card */
+    .hero { position:relative; background:var(--card); border:1px solid var(--stroke); border-radius:var(--radius); padding:16px; margin-bottom:10px; display:flex; align-items:flex-start; justify-content:space-between; overflow:hidden; }
+    .hero::before{ content:""; position:absolute; right:-40px; top:-40px; width:160px; height:160px; background:radial-gradient(circle at 50% 50%, rgba(143,106,174,.12), rgba(143,106,174,0) 60%); }
+    .title { display:flex; align-items:center; gap:8px; }
+    .tape { width:18px; height:18px; color:var(--accent); opacity:.35; }
+    .fit-chips { display:flex; gap:8px; margin-top:8px; flex-wrap:wrap; }
+    .chip { font-size:12px; font-weight:600; color:#57575c; background:#F5F3F8; padding:6px 10px; border-radius:999px; }
+    .hero .tag { margin-left:12px; white-space:nowrap; }
+
+    /* Segmented control */
+    .pills.seg { 
+      display:inline-flex; 
+      background:#F9F8FF; 
+      border-radius:999px; 
+      padding:4px; 
+      gap:4px; 
+      border:1px solid rgba(143,106,174,.15); 
+      margin-bottom:16px;
+    }
+    .pills.seg .pill { 
+      background:transparent; 
+      border:none; 
+      color:#6f6f74; 
+      padding:6px 16px; 
+      display:inline-flex; 
+      align-items:center; 
+      min-height:32px; 
+      font-weight:600;
+      transition:all 0.2s ease;
+      cursor:pointer;
+    }
+    .pills.seg .pill.active { 
+      background:#fff; 
+      color:var(--accent); 
+      transform:scale(1.02);
+    }
+    .pills.seg .pill:hover:not(.active) {
+      background:rgba(255,255,255,.5);
+      color:#5a5a5f;
+    }
+
+    /* Insight card */
+    .insight { display:flex; gap:12px; align-items:flex-start; }
+    .insight .thumb { width:120px; height:160px; border-radius:20px; overflow:hidden; flex:0 0 120px; border:1px solid var(--stroke); background:#f7f5f2; }
+    .insight .thumb img { width:100%; height:100%; object-fit:cover; display:block; object-position:center 35%; }
+    .insight .copy { flex:1; }
+    .insight .eyebrow { margin-bottom:6px; }
+    .insight .title { font-size:18px; font-weight:700; margin-bottom:4px; letter-spacing:-.01em; }
+    .insight .brand { font-size:14px; color:var(--muted); margin-bottom:10px; }
+    .insight .rec { font-size:12px; color:#57575c; display:flex; align-items:center; gap:8px; }
+    .insight .dotb { width:8px; height:8px; background:var(--accent); border-radius:999px; opacity:.6; }
+    .insight .actions { margin-top:10px; }
+    .btn-link { display:inline-flex; align-items:center; gap:6px; font-size:12px; font-weight:700; color:var(--accent); text-decoration:none; padding:6px 10px; border:1px solid rgba(143,106,174,.22); border-radius:999px; background:#fff; }
+    .insight-card:hover {
+      transform: translateY(-2px);
+    }
+    
+    /* Animations */
+    @keyframes progressLoad {
+      from { width: 0%; }
+      to { width: 85%; }
+    }
+    
+    @keyframes fadeInUp {
+      from { opacity: 0; transform: translateY(20px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+    /* Bottom tab bar */
+    .tabs{position:absolute;left:0;right:0;bottom:0;height:83px;background:rgba(255,255,255,.72);border-top:1px solid rgba(0,0,0,.06);backdrop-filter:blur(14px);display:flex;justify-content:space-around;align-items:flex-start;padding-top:8px;padding-bottom:34px}
+    .tab{display:flex;flex-direction:column;align-items:center;gap:6px;text-decoration:none;color:#8e8e93;font-size:11px;font-weight:500}
+    .tab.active{color:#8F6AAE}
+    .ico{width:28px;height:28px}
+
+
+    /* PROFILE section — distinct from HOW */
+#profile.section{
+  background: linear-gradient(180deg, rgba(255,255,255,.65) 0%, rgba(255,255,255,0) 100%);
+  border-top: 1px solid rgba(0,0,0,.06);
+  border-bottom: 1px solid rgba(0,0,0,.06);
+  padding: 56px 0;
+}
+
+.profile-grid{
+  display:grid;
+  grid-template-columns: 1.1fr 1fr;
+  gap: 48px;
+  align-items: center;
+}
+
+#profile .eyebrow{ margin-bottom:10px; }
+#profile h2{ margin-bottom:12px; }
+#profile .lede{ margin-bottom:16px; }
+
+.profile-pills{
+  display:flex; flex-wrap:wrap; gap:8px; margin:10px 0 18px;
+}
+.pill{
+  font:600 12px/1 Inter;
+  color:#2F2F33; background:#fff;
+  border:1px solid #E8E4DE; border-radius:999px;
+  padding:8px 12px;
+  box-shadow:0 6px 18px rgba(0,0,0,.05);
+}
+
+.profile-points{
+  display:grid; gap:10px; margin-top:6px;
+}
+.profile-point{
+  display:grid; grid-template-columns:22px 1fr; column-gap:10px; align-items:start;
+  color:#4C4C50; font-size:16px; line-height:1.5;
+}
+.profile-point svg{ margin-top:3px; flex:0 0 auto; }
+
+#profile .mock{ background:transparent; box-shadow:none; padding:0; border-radius:0; }
+#profile .mock-inner{
+  background:transparent; border-radius:0;
+  width:272px; aspect-ratio:430/1100; overflow:hidden; margin:0 auto; position:relative;
+}
+#profile .mock-inner iframe{
+  width:430px; height:1000px; border:0; background:transparent;
+  position:absolute; top:50%; left:50%; transform:translate(-50%,-50%) scale(.63);
+  transform-origin:center;
+}
+
+/* Slight stickiness on large screens for polish */
+@media (min-width: 1100px){
+  #profile .mock{ position: sticky; top: 90px; }
+}
+
+/* Stack nicely on mobile */
+@media (max-width: 960px){
+  .profile-grid{ grid-template-columns: 1fr; gap:28px; }
+  #profile .mock{ position:static; }
+}
+
+  </style>
+</head>
+<body>
+  <div class="phone">
+    <div class="screen">
+      <div class="island"></div>
+      <div class="status"><div>9:41</div><div class="right"><img src="../Cellular Connection.svg" alt="cell"/><img src="../Wifi.svg" alt="wifi"/><img src="../Battery.svg" alt="battery"/></div></div>
+
+      <div class="header">
+        <div class="logo">sies</div>
+      </div>
+
+      <div class="content">
+
+
+        <!-- Fit Profile Progress -->
+        <div class="progress-card" style="background: linear-gradient(135deg, #F0F9FF 0%, #FFFFFF 100%); border: 1px solid #E0F2FE; border-radius: 16px; padding: 16px; margin-bottom: 16px;">
+          <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 8px;">
+            <span style="font-weight: 700; color: var(--ink); font-size: 15px;">Fit Profile Strength</span>
+            <span style="font-weight: 700; color: var(--accent); font-size: 15px;">85%</span>
+          </div>
+          <div style="height: 6px; background: #E5E7EB; border-radius: 3px; overflow: hidden;">
+            <div style="height: 100%; width: 85%; background: linear-gradient(90deg, var(--accent), #A78BFA); border-radius: 3px; transition: width 0.8s ease; animation: progressLoad 1.2s ease-out;"></div>
+          </div>
+          <div style="font-size: 12px; color: var(--muted); margin-top: 6px;">Add 2 more items to unlock premium fit insights</div>
+        </div>
+
+        <div class="pills seg" id="categoryPills" style="margin-bottom:8px">
+          <div class="pill" data-filter="all">All</div>
+          <div class="pill active" data-filter="dresses">Dresses</div>
+          <div class="pill" data-filter="tops">Tops</div>
+          <div class="pill" data-filter="bottoms">Bottoms</div>
+        </div>
+
+        <div class="card table-card">
+          <div class="table-scroll">
+            <table id="fitTable">
+              <thead>
+                <tr>
+                  <th class="measurement-label">Point</th>
+                  <th data-cat="tops" class="brand-col">COS</th>
+                  <th data-cat="bottoms" class="brand-col">AYR</th>
+                  <th data-cat="bottoms" class="brand-col">Zara</th>
+                  <th data-cat="dresses" class="brand-col">Alexis</th>
+                  <th data-cat="dresses" class="brand-col">GH</th>
+                  <th data-cat="tops" class="brand-col">Sies Marjan</th>
+                  <th data-cat="tops" class="brand-col">RÓHE</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr class="size-row">
+                  <td class="measurement-label size-header">Size</td>
+                  <td data-cat="tops" class="size-cell">XS</td>
+                  <td data-cat="bottoms" class="size-cell">26S</td>
+                  <td data-cat="bottoms" class="size-cell">M</td>
+                  <td data-cat="dresses" class="size-cell">S</td>
+                  <td data-cat="dresses" class="size-cell">UK8</td>
+                  <td data-cat="tops" class="size-cell">0/XS</td>
+                  <td data-cat="tops" class="size-cell">EU 32</td>
+                </tr>
+                <tr class="measurement-row">
+                  <td class="measurement-label">Bust</td>
+                  <td data-cat="tops">31.5"</td>
+                  <td data-cat="bottoms"><span class="dash">–</span></td>
+                  <td data-cat="bottoms"><span class="dash">–</span></td>
+                  <td data-cat="dresses">33.0"</td>
+                  <td data-cat="dresses">32.3"</td>
+                  <td data-cat="tops">32.0"</td>
+                  <td data-cat="tops">40.2"</td>
+                </tr>
+                <tr class="measurement-row">
+                  <td class="measurement-label">Waist</td>
+                  <td data-cat="tops">25.2"</td>
+                  <td data-cat="bottoms">26.0"</td>
+                  <td data-cat="bottoms">26.8"</td>
+                  <td data-cat="dresses">27.0"</td>
+                  <td data-cat="dresses">25.6"</td>
+                  <td data-cat="tops">25.0"</td>
+                  <td data-cat="tops">29.6"</td>
+                </tr>
+                <tr class="measurement-row">
+                  <td class="measurement-label">Hip</td>
+                  <td data-cat="tops">31.1"</td>
+                  <td data-cat="bottoms">36.0"</td>
+                  <td data-cat="bottoms">35.4"</td>
+                  <td data-cat="dresses">37.0"</td>
+                  <td data-cat="dresses">35.4"</td>
+                  <td data-cat="tops">35.5"</td>
+                  <td data-cat="tops"><span class="dash">–</span></td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+
+        <div class="summary-scroll" id="summaryScroll">
+          <div class="summary-card" data-cat="tops dresses">
+            <div class="summary-title">Bust Fit Range</div>
+            <div class="summary-value" data-all="31.0–33.5″" data-tops="31.0–33.0″" data-dresses="31.0–33.5″">31.0–33.5″</div>
+          </div>
+          <div class="summary-card" data-cat="bottoms dresses">
+            <div class="summary-title">Waist Fit Range</div>
+            <div class="summary-value" data-all="25.5–26.5″" data-bottoms="25.5–26.5″" data-dresses="25.5–26.0″">25.5–26.5″</div>
+          </div>
+          <div class="summary-card" data-cat="bottoms dresses">
+            <div class="summary-title">Hips Fit Range</div>
+            <div class="summary-value" data-all="34.5–35.5″" data-bottoms="34.5–35.5″" data-dresses="34.5–35.0″">34.5–35.5″</div>
+          </div>
+        </div>
+
+        <script>
+        (function(){
+          const pills = document.querySelectorAll('#categoryPills .pill');
+          const values = document.querySelectorAll('#summaryScroll .summary-value');
+          const cards = document.querySelectorAll('#summaryScroll .summary-card');
+          const cols = document.querySelectorAll('#fitTable th[data-cat], #fitTable td[data-cat]');
+          const scrollEl = document.getElementById('summaryScroll');
+
+          function visibleCards(){ return Array.from(cards).filter(c=>!c.classList.contains('hidden')); }
+
+          function setActive(filter){
+            pills.forEach(p=>p.classList.toggle('active', p.dataset.filter===filter));
+            // Show only relevant cards
+            cards.forEach(card=>{
+              if(filter==='all'){ card.classList.remove('hidden'); return; }
+              const cats = (card.getAttribute('data-cat')||'').split(/\s+/);
+              card.classList.toggle('hidden', !cats.includes(filter));
+            });
+            // Filter table columns
+            cols.forEach(col=>{
+              if(filter==='all'){ col.classList.remove('hidden'); return; }
+              col.classList.toggle('hidden', col.dataset.cat!==filter);
+            });
+            // Update values based on data attributes
+            values.forEach(v=>{
+              const key = filter==='all' ? 'all' : filter;
+              const datasetKey = `data-${key}`;
+              const next = v.getAttribute(datasetKey);
+              if(next){ v.textContent = next; }
+            });
+            // Reset scroll to first visible card
+            const first = visibleCards()[0];
+            if(first){ scrollEl.scrollTo({left:first.offsetLeft, behavior:'instant'}); }
+          }
+
+          pills.forEach(p=>p.addEventListener('click',()=> setActive(p.dataset.filter)));
+          setActive('dresses');
+        })();
+        </script>
+
+        <div class="card insight-card" style="margin-top:20px; padding: 20px 24px; background: linear-gradient(135deg, #F9F8FF 0%, #FFFFFF 100%); border: 1px solid rgba(143,106,174,.12); transition: transform 0.2s ease;">
+          <a class="insight" href="https://www.anthropologie.com/shop/hutch-corene-strapless-floral-tulle-a-line-midi-dress2?category=clothes-top-rated&color=038&type=STANDARD&quantity=1" target="_blank" rel="noreferrer" style="text-decoration:none; color:inherit; display: flex; gap: 20px; align-items: flex-start;">
+                          <div class="thumb" style="border: 2px solid var(--accent);">
+              <img alt="Hutch Corene Strapless Floral Tulle A-Line Midi Dress" src="https://images.urbndata.com/is/image/Anthropologie/98281447_038_b?$a15-pdp-detail-shot$&fit=constrain&fmt=webp&qlt=80&wid=600"/>
+            </div>
+            <div class="copy">
+              <div class="eyebrow" style="color: var(--accent); font-weight: 700; font-size: 14px; margin-bottom: 10px;">Smart Fit Suggestion</div>
+              <div class="product-name" style="font-size: 20px; font-weight: 700; color: var(--ink); margin-bottom: 8px; line-height: 1.2;">Strapless Mini Dress (XS)</div>
+              <div class="brand" style="margin-bottom: 10px; font-size: 16px; font-weight: 500; color: var(--ink);">Anthropologie</div>
+              <div class="tap-to-view" style="font-size: 13px; color: var(--accent); font-weight: 600;">Tap to view</div>
+
+            </div>
+          </a>
+        </div>
+      </div>
+
+      <div class="tabs">
+        <a class="tab" href="#"><svg class="ico" viewBox="0 0 256 256" aria-hidden="true"><path fill="currentColor" d="M241,150.65s0,0,0-.05a51.33,51.33,0,0,0-2.53-5.9L196.93,50.18a12,12,0,0,0-2.5-3.65,36,36,0,0,0-50.92,0A12,12,0,0,0,140,55V76H116V55a12,12,0,0,0-3.51-8.48,36,36,0,0,0-50.92,0,12,12,0,0,0-2.5,3.65L17.53,144.7A51.33,51.33,0,0,0,15,150.6s0,0,0,.05A52,52,0,1,0,116,168V100h24v68a52,52,0,1,0,101-17.35ZM80,62.28a12,12,0,0,1,12-1.22v63.15a51.9,51.9,0,0,0-35.9-7.62ZM64,196a28,28,0,1,1,28-28A28,28,0,0,1,64,196ZM164,61.06a12.06,12.06,0,0,1,12,1.22l23.87,54.31a51.9,51.9,0,0,0-35.9,7.62ZM192,196a28,28,0,1,1,28-28A28,28,0,0,1,192,196Z"/></svg><span>Find</span></a>
+        <a class="tab" href="#"><svg class="ico" viewBox="0 0 256 256" aria-hidden="true"><path fill="currentColor" d="M225.24,174.74a12,12,0,0,1-1.58,16.89C205.49,206.71,189.06,212,174.15,212c-19.76,0-36.86-9.29-51.88-17.44-25.06-13.62-44.86-24.37-74.61.3a12,12,0,1,1-15.32-18.48c42.25-35,75-17.23,101.39-2.92,25.06,13.61,44.86,24.37,74.61-.3A12,12,0,0,1,225.24,174.74Zm-16.9-57.59c-29.75,24.67-49.55,13.91-74.61.3-26.35-14.3-59.14-32.11-101.39,2.92a12,12,0,0,0,15.32,18.48c29.75-24.67,49.55-13.92,74.61-.3,15,8.15,32.12,17.44,51.88,17.44,14.91,0,31.34-5.29,49.51-20.36a12,12,0,0,0-15.32-18.48ZM47.66,82.84c29.75-24.67,49.55-13.92,74.61-.3,15,8.15,32.12,17.44,51.88,17.44,14.91,0,31.34-5.29,49.51-20.36a12,12,0,0,0-15.32-18.48c-29.75,24.67-49.55,13.92-74.61.3-26.35-14.3-59.14-32.11-101.39,2.93A12,12,0,1,0,47.66,82.84Z"/></svg><span>Feed</span></a>
+        <a class="tab" href="#"><svg class="ico" viewBox="0 0 256 256" aria-hidden="true"><path fill="currentColor" d="M244,168,148,96l19.2-14.4A12,12,0,0,0,172,72a44,44,0,0,0-87.66-5.48,12,12,0,1,0,23.82,3,20,20,0,0,1,39.09-2.92L121,86.24c-.15.1-.29.21-.43.32L12,168a20,20,0,0,0,12,36H232a20,20,0,0,0,12-36ZM36,180l92-69,92,69Z"/></svg><span>Closet</span></a>
+        <a class="tab active" href="#"><svg class="ico" viewBox="0 0 256 256" aria-hidden="true"><path fill="currentColor" d="M234.38,210a123.36,123.36,0,0,0-60.78-53.23,76,76,0,1,0-91.2,0A123.36,123.36,0,0,0,21.62,210a12,12,0,1,0,20.77,12c18.12-31.32,50.12-50,85.61-50s67.49,18.69,85.61,50a12,12,0,0,0,20.77-12ZM76,96a52,52,0,1,1,52,52A52.06,52.06,0,0,1,76,96Z"/></svg><span>Profile</span></a>
+      </div>
+    </div>
+  </div>
+</body>
+</html>

@@ -1,0 +1,167 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <title>Sies • Glossy Treemap (responsive, fixed labels)</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <style>
+    :root{
+      /* Design system tokens you can swap */
+      --color-bg:#FAF8F6;
+      --color-ink:#2B2031;
+      --color-accent:#8F6AAE; /* used to derive category tints */
+    }
+    html, body { height:100%; margin:0; background:var(--color-bg); }
+    .wrap {
+      width: min(980px, 92vw);
+      height: min(560px, 62vh);
+      margin: 40px auto;
+      position: relative;
+    }
+    canvas { display:block; border-radius: 18px; }
+    .labels { position:absolute; inset:0; pointer-events:none; }
+    .label{
+      position:absolute;
+      left:12px; right:12px;
+      height:22px;
+      display:flex; justify-content:space-between; align-items:flex-end;
+      font:600 13px/1.2 Inter, system-ui, -apple-system, Segoe UI, Roboto, sans-serif;
+      color:var(--color-ink);
+      text-shadow:0 1px 0 rgba(255,255,255,.55);
+      white-space:nowrap; opacity:.95;
+    }
+  </style>
+</head>
+<body>
+  <div class="wrap" id="app">
+    <canvas id="gl"></canvas>
+    <div class="labels" id="labels"></div>
+  </div>
+
+  <script src="https://cdn.jsdelivr.net/npm/d3@7"></script>
+  <script type="module">
+    import * as THREE from 'https://unpkg.com/three@0.160.0/build/three.module.js';
+
+    // ----- Data
+    const ITEMS = [
+      {cat:'tops',    brand:'COS',              size:'XS'},
+      {cat:'tops',    brand:'Sies Marjan',      size:'0 / XS'},
+      {cat:'tops',    brand:'ALFIE',            size:'S'},
+      {cat:'tops',    brand:'Róhe',             size:'EU 32'},
+      {cat:'bottoms', brand:'AYR',              size:'26S'},
+      {cat:'bottoms', brand:'Zara',             size:'M'},
+      {cat:'dresses', brand:'Georgia Hardinge', size:'UK 8'},
+      {cat:'dresses', brand:'Alexis',           size:'S'}
+    ];
+
+    // ----- Palette derived from DS accent (keeps it on-brand)
+    function hexToHsl(hex){
+      const m=/^#?([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i.exec(hex||'#8F6AAE');
+      const r=parseInt(m[1],16)/255,g=parseInt(m[2],16)/255,b=parseInt(m[3],16)/255;
+      const max=Math.max(r,g,b),min=Math.min(r,g,b); let h,s,l=(max+min)/2;
+      if(max===min){h=s=0}else{const d=max-min; s=l>.5?d/(2-max-min):d/(max+min);
+        h=(max===r?(g-b)/d+(g<b?6:0):max===g?(b-r)/d+2:(r-g)/d+4)*60}
+      return {h,s,l}
+    }
+    function hslToHex(h,s,l){
+      h/=360; const f=(p,q,t)=>{if(t<0)t+=1;if(t>1)t-=1;if(t<1/6)return p+(q-p)*6*t;if(t<1/2)return q;if(t<2/3)return p+(q-p)*(2/3-t)*6;return p;}
+      let r,g,b; if(s===0){r=g=b=l}else{const q=l<.5?l*(1+s):l+s-l*s,p=2*l-q;r=f(p,q,h+1/3);g=f(p,q,h);b=f(p,q,h-1/3)}
+      return "#"+[r,g,b].map(v=>Math.round(v*255).toString(16).padStart(2,'0')).join('')
+    }
+    const acc = hexToHsl(getComputedStyle(document.documentElement).getPropertyValue('--color-accent').trim());
+    const CAT_BASE = {
+      tops:    hslToHex((acc.h+0+360)%360,   acc.s*0.9, 0.82),
+      bottoms: hslToHex((acc.h-35+360)%360,  acc.s*0.9, 0.84),
+      dresses: hslToHex((acc.h+25+360)%360,  acc.s*0.95,0.85)
+    };
+
+    // ----- Layout
+    const weight = d => d.brand.length*1.6 + d.size.length*1.25 + 16;
+    const layoutTreemap = (W,H) => {
+      const root=d3.hierarchy({children:ITEMS.map(d=>({...d,value:weight(d)}))}).sum(d=>d.value);
+      d3.treemap().size([W,H]).paddingInner(10).round(true)(root);
+      return root.leaves().map(l=>({x:l.x0,y:l.y0,w:l.x1-l.x0,h:l.y1-l.y0,cat:l.data.cat,brand:l.data.brand,size:l.data.size}));
+    };
+
+    // ----- Shaders
+    const vtx=`varying vec2 vUv;void main(){vUv=uv;gl_Position=projectionMatrix*modelViewMatrix*vec4(position,1.0);}`;
+    const frg=`precision highp float;uniform vec3 uBase;uniform vec2 uSize;uniform float uTime;varying vec2 vUv;
+      float hash(vec2 p){return fract(sin(dot(p,vec2(127.1,311.7)))*43758.5453);}
+      void main(){vec2 uv=vUv;float t=uTime*0.15;
+        vec2 c1=vec2(0.25,0.28),c2=vec2(0.72,0.22),c3=vec2(0.55,0.78);
+        float g1=smoothstep(0.9,0.0,distance(uv,c1+0.03*vec2(sin(t),cos(t))));
+        float g2=smoothstep(0.95,0.0,distance(uv,c2+0.02*vec2(cos(t*0.8),sin(t*0.6))));
+        float g3=smoothstep(1.0,0.0,distance(uv,c3+0.025*vec2(sin(t*0.7),cos(t*0.9))));
+        vec3 base=uBase;vec3 color=base*0.84+base*vec3(1.05,1.02,1.1)*0.35*g1+base*vec3(1.1,1.08,1.0)*0.45*g2+vec3(1.0)*0.25*g3;
+        color*=mix(0.95,1.06,uv.y);
+        float sp=smoothstep(0.995,1.0,hash(uv*uSize+t));color+=sp*0.12;
+        gl_FragColor=vec4(color,1.0);
+      }`;
+
+    // ----- Renderer (responsive)
+    const mount = document.getElementById('app');
+    const canvas = document.getElementById('gl');
+    const labelsLayer = document.getElementById('labels');
+    const renderer = new THREE.WebGLRenderer({canvas, alpha:true, antialias:true});
+    const scene = new THREE.Scene();
+    const camera = new THREE.OrthographicCamera(0, 1, 1, 0, -10, 10);
+    const geom = new THREE.PlaneGeometry(1,1);
+    const matCache = new Map();
+
+    function materialFor(cat, size){
+      if(matCache.has(cat)) return matCache.get(cat);
+      const m = new THREE.ShaderMaterial({
+        transparent:true,
+        vertexShader:vtx, fragmentShader:frg,
+        uniforms:{ uBase:{value:new THREE.Color(CAT_BASE[cat])}, uSize:{value:new THREE.Vector2(size.w,size.h)}, uTime:{value:0.0} }
+      });
+      matCache.set(cat, m); return m;
+    }
+
+    function draw(){
+      // size & DPR
+      const W = mount.clientWidth, H = mount.clientHeight;
+      renderer.setPixelRatio(Math.min(2, window.devicePixelRatio||1));
+      renderer.setSize(W,H,false);
+      camera.left=0; camera.right=W; camera.top=H; camera.bottom=0; camera.updateProjectionMatrix();
+
+      // layout + clear
+      const tiles = layoutTreemap(W,H);
+      while(scene.children.length) scene.remove(scene.children[0]);
+      labelsLayer.innerHTML='';
+
+      // tiles + labels
+      tiles.forEach(t=>{
+        const mesh = new THREE.Mesh(geom, materialFor(t.cat, t));
+        mesh.position.set(t.x+t.w/2, H-(t.y+t.h/2), 0);
+        mesh.scale.set(t.w, t.h, 1);
+        scene.add(mesh);
+
+        const div = document.createElement('div');
+        div.className='label';
+        div.style.left = (t.x+12)+'px';
+        div.style.top  = (t.y+t.h-26)+'px';
+        div.style.width = (t.w-24)+'px';
+        div.innerHTML = `<span>${t.brand}</span><span style="font-weight:800">${t.size}</span>`;
+        labelsLayer.appendChild(div);
+      });
+
+      renderer.render(scene, camera);
+    }
+
+    // animate sheen
+    let start=performance.now();
+    function tick(now){
+      const t=(now-start)/1000;
+      matCache.forEach(m=>m.uniforms.uTime.value=t);
+      renderer.render(scene,camera);
+      requestAnimationFrame(tick);
+    }
+
+    // bootstrap & responsiveness
+    function init(){ draw(); requestAnimationFrame(tick); }
+    if (document.fonts && document.fonts.ready) { document.fonts.ready.then(init); } else { init(); }
+    new ResizeObserver(draw).observe(mount);
+  </script>
+</body>
+</html>

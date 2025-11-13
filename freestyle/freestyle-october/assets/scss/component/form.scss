@@ -1,0 +1,95 @@
+@use '../base/var' as *;
+@use '../base/breakpoints' as *;
+
+/* ===== FORM ===== */
+.form {
+  &-space {
+    max-width: 500px;
+    margin-right: auto;
+    margin-left: auto;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    gap: 12px;
+    @include media-breakpoint-up(sm) {
+      flex-direction: row;
+    }
+    @include media-breakpoint-up(md) {
+      max-width: 640px;
+    }
+    @include media-breakpoint-up(xl) {
+      max-width: 720px;
+    }
+  }
+
+  &-input {
+    width: 100%;
+    padding: 14px 16px;
+    border: 1px solid $color-stone;
+    border-radius: 25px;
+    font: 16px/20px $font-default;
+    color: $color-ink;
+    display: inline-block;
+    background: white;
+    box-shadow: 0 10px 24px rgba($color-orchid, .25);
+    outline: none;
+
+    &::placeholder {
+      transition: opacity $effect-s;
+    }
+
+    &:focus::placeholder {
+      opacity: 0;
+    }
+
+    &:-webkit-autofill {
+      font-size: 16px !important;
+      color: $color-ink !important;
+      -webkit-text-fill-color: $color-ink;
+      transition: background-color 5000s ease-in-out 0s;
+    }
+  }
+
+  .btn {
+    display: block;
+    white-space: nowrap;
+    @include media-breakpoint-down(sm) {
+      width: 100%;
+      max-width: 400px;
+      margin-right: auto;
+      margin-left: auto;
+    }
+  }
+
+  &-note {
+    margin-top: 10px;
+    display: block;
+    font-size: 12px;
+    color: $color-muted;
+    text-align: center;
+    cursor: default;
+    @include user-select;
+  }
+}
+
+// BUTTON
+.btn {
+  padding: 15px 20px;
+  border: none;
+  border-radius: 25px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  font: bold 16px/20px $font-default;
+  letter-spacing: .01em;
+  color: white;
+  background: linear-gradient(135deg, $color-blue, $color-orchid);
+  box-shadow: 0 10px 24px rgba($color-orchid, .25);
+  @include user-select;
+  cursor: pointer;
+  @include media-breakpoint-up(xl) {
+    font-size: 18px;
+  }
+}

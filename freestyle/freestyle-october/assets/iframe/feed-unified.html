@@ -1,0 +1,1894 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>Proxi — Your Fit Feed</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+:root{
+  /* Neutrals */
+  --bg:#FFFFFF; --ink:#262626; --muted:#7A7A80;
+  /* Proxi brand */
+  --petrol-600:#009090; --petrol-500:#00A3A3; --petrol-400:#16B5B5; --petrol-100:#E0F7F7;
+  --mint-400:#A6FFCB; --ice-300:#7FE1FF;
+  /* Adaptive CTA ramp (deepened default for contrast) */
+  --cta-start:#008888; --cta-mid:#3ECFD5; --cta-end:#9BFFCF;
+  --card:#FFFFFF; --track:#ECECEC; --shadow:0 10px 30px rgba(0,0,0,.06);
+}
+*{margin:0;padding:0;box-sizing:border-box}
+html{background:#f5f5f5}
+body{font-family:Inter,system-ui,-apple-system,"Segoe UI",Roboto,Helvetica,Arial;background:#f5f5f5;color:var(--ink);
+  min-height:100vh;display:flex;align-items:center;justify-content:center;padding:0;position:relative}
+/* Warm page glow behind app content */
+body::before{
+  content:""; position:fixed; inset:-20% -10% auto -10%; height:60vh; pointer-events:none;
+  background:
+    radial-gradient(800px 350px at 50% -120px, rgba(0,163,163,.08), transparent 60%),
+    radial-gradient(1200px 500px at 10% -80px, rgba(166,255,203,.08), transparent 65%);
+  filter:saturate(105%);
+}
+
+/* iPhone Frame (Finy Style) */
+.phone{width:430px;height:932px;border-radius:55px;background:transparent;border:2px solid #000;position:relative;box-shadow:none}
+.screen{position:absolute;inset:2px;background:#fff;border-radius:53px;overflow:hidden;display:flex;flex-direction:column}
+.screen,
+.phone,
+.device,
+.feed-viewport{
+  overflow-x:hidden;
+}
+
+/* Dynamic Island */
+.island{position:absolute;top:11px;left:50%;transform:translateX(-50%);width:126px;height:37px;background:#000;border-radius:19px;z-index:5}
+
+/* Status Bar */
+.status{height:54px;margin-top:20px;display:flex;align-items:center;justify-content:space-between;padding:0 30px;font-weight:600;color:#000;font-size:17px;letter-spacing:-.02em}
+.status .right{display:flex;align-items:center;gap:6px}
+.status .right img{height:13px;width:auto;display:block}
+
+/* App Content */
+.header{padding:20px 0px 0px;display:flex;align-items:center;justify-content:center;position:relative;margin-top:0}
+.logo{font-weight:600;font-size:32px;letter-spacing:-.01em;background:linear-gradient(135deg,var(--cta-start),var(--cta-mid) 46%,var(--cta-end));
+  -webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent}
+.section{
+  padding:4px 24px 12px;
+}
+.h1{font-weight:700;font-size:26px;line-height:1.1;letter-spacing:-.01em}
+
+.topline{
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:12px;
+  flex-wrap:nowrap;
+  margin-top:6px;
+}
+.topline.single{
+  justify-content:flex-start;
+  margin-top:4px;
+  margin-bottom:8px;
+}
+.count-pill{
+  flex:0 0 auto;
+  white-space:nowrap;
+  background:var(--petrol-100);
+  border:1px solid rgba(0,163,163,.25);
+  padding:6px 10px;
+  border-radius:999px;
+  font:600 12px/1 Inter, system-ui;
+  color:var(--petrol-600);
+}
+
+/* Enhanced Chips */
+.chips{display:flex;gap:8px;padding-top:4px;overflow-x:auto;-webkit-overflow-scrolling:touch;scrollbar-width:none}
+.chips{margin-top:2px}
+.chips::-webkit-scrollbar{display:none}
+.chip{border:1px solid #E8E4DE;background:#fff;color:var(--ink);border-radius:9999px;padding:10px 16px;font-size:13px;font-weight:500;white-space:nowrap;transition:all 0.2s ease}
+.chip.is-active{border-color:var(--petrol-400);background:var(--petrol-100);color:var(--petrol-600);font-weight:600;box-shadow:0 2px 8px rgba(0,163,163,.08)}
+.chip:not(.is-active):hover{background:#f8f8f8;border-color:#d0d0d0}
+
+.explainer{
+  display:inline-flex;align-items:center;gap:8px;
+  margin-top:6px;
+  padding:8px 12px;
+  border-radius:999px;
+  background:var(--petrol-100);
+  border:1px solid var(--petrol-400);
+  color:#0B0F14;
+  font:600 12px/1.2 Inter, system-ui;
+}
+.explainer .sym{font-weight:800;}
+ 
+ /* Closet-style legend (inline, compact) */
+ .legend{display:flex;align-items:baseline;gap:.1rem;margin-top:12px;margin-bottom:6px;margin-left:6px;font-size:clamp(13px,1.7vw,16px);line-height:1.35;color:#6A7A87}
+ .legend-term{font-weight:600;display:inline-flex;align-items:baseline;gap:.1rem;color:#34424D}
+ /* Legend Proxi glyph (SVG) — baseline aligned like an equals sign */
+ .legend .equiv{
+   display:inline-flex; align-items:baseline; justify-content:center; margin:0 .25ch;
+ }
+ .legend .equiv .icon-proxi{
+   --size:0.88em !important;            /* 1% smaller than text */
+   vertical-align:baseline !important; /* align to text baseline */
+   position:relative; top:0.14em;      /* nudge downward */
+ }
+ .legend-def{color:#34424D;font-weight:500}
+
+/* Feed */
+/* Feed scroll + spacing between cards */
+.feed{
+  padding:0 24px 96px;
+  overflow-y:auto;
+  overflow-x:visible;
+  display:flex;
+  flex-direction:column;
+  gap:16px;
+  scrollbar-width:none;
+  -ms-overflow-style:none;
+}
+.feed::-webkit-scrollbar{display:none;}
+
+/* Enhanced Card */
+.card{background:#fff;border:1px solid #eee6;border-radius:18px;overflow:visible;transition:transform 0.2s ease, box-shadow 0.2s ease;position:relative;box-shadow:0 8px 24px rgba(17,25,40,.05);z-index:1}
+.card:hover{transform:translateY(-1px);box-shadow:0 16px 40px rgba(17,25,40,.12)}
+.card + .card{margin-top:6px}
+
+.fit-toggle{padding:10px 16px;border-radius:999px;border:1px solid rgba(0,0,0,.08);background:#fff;font:700 14px/1.1 Inter;color:var(--ink);cursor:pointer;transition:background .2s ease}
+.fit-toggle:hover{background:#f7f7f7}
+
+.imgbox{position:relative;overflow:hidden;border-radius:18px;box-shadow:inset 0 0 0 2px rgba(255,255,255,.7)}
+.imgbox img{display:block;width:100%;height:440px;object-fit:cover;object-position:center 22%}
+.imgbox .shadow{position:absolute;left:0;right:0;bottom:0;height:24%;background:linear-gradient(180deg,rgba(0,0,0,0) 0%,rgba(0,0,0,.16) 50%,rgba(0,0,0,.28) 100%)}
+/* Card shell + image (from working small feed) */
+.img{width:100%;height:440px;object-fit:cover;object-position:center 22%}
+.imgbox::after{
+  content:""; position:absolute; left:0; right:0; bottom:0; height:12%;
+  background:linear-gradient(180deg,rgba(255,255,255,0) 0%,rgba(250,248,246,.32) 55%,rgba(255,255,255,.92) 100%);
+  pointer-events:none; /* important so it doesn't swallow scroll/clicks */
+}
+
+/* (Heart/save UI removed for MVP) */
+
+/* Evidence pill */
+.size-pill{position:absolute;left:16px;bottom:16px;display:inline-flex;align-items:center;gap:8px;padding:8px 14px;
+  border:1px solid #E8E4DE;border-radius:999px;background:rgba(255,255,255,.88);backdrop-filter:blur(8px);
+  font:600 15px/1 Inter;color:#4C4C50;z-index:2}
+.size-pill .dot{width:5px;height:5px;border-radius:50%;background:#C9C5C0;display:inline-block}
+.size-pill .conf{color:var(--petrol-600);font-weight:700;font-size:15px}
+
+/* Enhanced Best Fit CTA with icon */
+.size-cta{position:relative;display:flex;align-items:center;justify-content:space-between;gap:12px;width:100%;
+  margin:12px 0 10px;padding:14px 20px;border:none;border-radius:24px;color:#fff;
+  background:
+    linear-gradient(180deg, rgba(255,255,255,.08) 0%, rgba(255,255,255,0) 8%),
+    linear-gradient(135deg, var(--cta-start), var(--cta-mid) 40%, var(--cta-end));
+
+  font:700 15px/1 Inter;cursor:pointer;transform:translateZ(0);transition:all 0.2s ease}
+.size-cta:hover{transform:translateY(-1px)}
+.size-cta::before{content:"";position:absolute;inset:1px 1px auto 1px;height:35%;border-radius:27px;
+  background:linear-gradient(180deg, rgba(255,255,255,.06), rgba(255,255,255,0));pointer-events:none}
+.size-cta .label{font:800 17px/1.1 Inter;letter-spacing:-.005em;display:flex;align-items:center;gap:8px}
+.size-cta .match{display:inline-flex;align-items:center;gap:8px;padding:8px 14px;border-radius:999px;
+  background:rgba(255,255,255,.8);border:1px solid rgba(255,255,255,.95);color:var(--ink);font:600 13px/1 Inter;
+  backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px)}
+.size-cta:active{transform:scale(.985)}
+
+/* Measuring tape icon */
+.measure-icon{width:16px;height:16px;opacity:0.9}
+
+.info{position:relative;margin-top:12px;padding:14px 18px 12px}
+.info::before{content:"";position:absolute;top:-10px;left:0;right:0;height:10px;
+  background:linear-gradient(180deg,rgba(0,0,0,.06),rgba(0,0,0,0));
+  border-top-left-radius:12px;border-top-right-radius:12px}
+.divider{height:1px;background:rgba(0,0,0,.08);margin:8px 0 8px;border-radius:1px}
+
+/* Enhanced metadata row */
+.row{display:flex;align-items:center;justify-content:space-between;margin-bottom:8px;padding:0 10px 0 6px}
+.left-meta{display:flex;align-items:center;gap:8px}
+.brand{font-size:12px;letter-spacing:.3px;color:#555;font-weight:600}
+.price{font-weight:700;font-size:17px;color:#2d2d2d}
+.rating{display:flex;align-items:center;gap:4px;font-size:12px;color:#666}
+.stars{color:#ffa500}
+
+.tappable{cursor:pointer}
+
+/* Enhanced shop CTA */
+.shop-cta{display:inline-flex;align-items:center;gap:8px;padding:10px 16px;
+  background:rgba(0,163,163,.08);border:1px solid rgba(0,163,163,.25);border-radius:12px;
+  color:var(--petrol-600);text-decoration:none;font-weight:600;font-size:14px;transition:all 0.2s ease}
+.shop-cta:hover{background:rgba(0,163,163,.15);border-color:rgba(0,163,163,.35);text-decoration:none;transform:translateY(-1px)}
+.shop-cta svg{width:16px;height:16px}
+
+/* Trust signals */
+.trust-signals{display:flex;align-items:center;gap:12px;margin-top:8px;font-size:12px;color:#666}
+/* Reused for inline right-side meta (Free returns) */
+.trust-item{display:flex;align-items:center;gap:6px;font-size:14px;color:#4C4C50;font-weight:500}
+.trust-item svg{width:16px;height:16px;color:#4ade80;position:relative;top:1px}
+
+/* CTA clusters (unified buttons) */
+.cta{display:flex;align-items:center;justify-content:space-between;gap:12px;margin:12px 0 10px}
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:8px;padding:12px 18px;border-radius:24px;font:700 15px/1.1 Inter;cursor:pointer;border:1px solid transparent;transition:transform 0.2s ease, box-shadow 0.2s ease, background 0.2s ease;color:var(--ink)}
+.btn--ramp{color:#fff;background:
+    linear-gradient(180deg, rgba(255,255,255,.08) 0%, rgba(255,255,255,0) 8%),
+    linear-gradient(135deg, var(--cta-start), var(--cta-mid) 40%, var(--cta-end))}
+.btn--ramp strong{font-weight:800;letter-spacing:-.005em}
+.btn--ramp:hover{transform:translateY(-1px);box-shadow:0 12px 24px rgba(0,163,163,.18)}
+.btn--ghost{background:rgba(255,255,255,.8);border-color:rgba(0,0,0,.08);color:var(--ink)}
+.btn--ghost:hover{background:#f8f8f8}
+.cta-b{display:flex;justify-content:center;margin-top:12px}
+.cta-b .btn--ghost{width:100%;max-width:260px;font-weight:700}
+
+/* Details */
+.details{background:#fff;border:1px solid #eee6;border-radius:16px;padding:12px 16px 8px;transition:max-height .35s ease,opacity .25s ease}
+.item{padding:8px 0}
+.item+ .item{border-top:1px solid #e9e9ef}
+.measure{font-size:14px;line-height:1.55;color:var(--ink)}
+.measure strong{font-size:15px;font-weight:700;color:var(--ink)}
+.measure .muted{color:var(--muted);font-weight:400}
+
+/* Spec rows with delta badges (expanded state) */
+.spec{display:flex;align-items:center;justify-content:space-between;padding:10px 0}
+
+/* Proxy header (borrowed) */
+.look-h{display:flex;align-items:center;gap:10px;padding:10px 14px 0}
+.avatar{width:34px;height:34px;border-radius:10px;object-fit:cover}
+.avatar--circle{border-radius:999px}
+.name{font:700 14px/1.2 Inter;color:#2F2F33}
+.bads{display:flex;gap:8px;flex-wrap:wrap}
+.badge{display:inline-flex;align-items:center;gap:8px;padding:8px 12px;
+  border-radius:999px;border:1px solid rgba(0,0,0,.08);background:#fff;
+  font:700 12px/1.1 Inter;color:#2F2F33;white-space:nowrap}
+.details .badge{display:inline-flex;align-items:center;justify-content:center;gap:0;min-width:68px;font-size:14px;line-height:1;padding:8px 10px;border-radius:999px;background:var(--petrol-100);color:var(--petrol-600);font-weight:700;border:1px solid var(--petrol-400)}
+.details .divider{height:1px;background:#ececec;margin:6px 0;border-radius:1px}
+
+/* Proxy card elements */
+.hero-wrap{position:relative;border-radius:18px;overflow:hidden;border:1px solid rgba(0,0,0,.04);background:#f5f6f8;box-shadow:inset 0 0 0 2px rgba(255,255,255,.7)}
+.carousel{position:relative;height:440px}
+.hero-img{display:block;width:100%;height:440px;object-fit:cover;border-radius:18px}
+.hero-img--tight{object-position:center 22%}
+.carousel .slide{position:absolute;inset:0;opacity:0;transition:opacity .35s ease}
+.carousel .slide.active{opacity:1}
+.dots{position:absolute;left:50%;bottom:12px;transform:translateX(-50%);display:flex;gap:6px}
+.dot{width:8px;height:8px;border-radius:50%;background:#e6e6ea;opacity:.9}
+.dot.active{background:#c9c5c0}
+.look-caption{margin-top:14px}
+.look-caption p{font:600 14px/1.45 Inter;color:#2F2F33}
+.look-caption .sub{margin-top:6px;font:500 13px/1.4 Inter;color:var(--muted)}
+.look-caption .user{margin-right:8px}
+.comment-teaser{display:block;width:100%;text-align:left;margin-top:12px;border-radius:16px;
+  border:1px solid rgba(0,0,0,.08);background:#fff;padding:10px 12px;box-shadow:0 2px 6px rgba(0,0,0,.03);
+  cursor:pointer;transition:background .2s ease, box-shadow .2s ease}
+.comment-teaser:hover{background:#f7f9fb;box-shadow:0 6px 16px rgba(0,0,0,.06)}
+.comment-teaser .k{font:600 11px/1.2 Inter;color:var(--muted);margin-bottom:6px}
+.comment-teaser .row{font:600 13px/1.45 Inter;color:#2F2F33}
+.comment-teaser .row .q,.comment-teaser .row .a{font-weight:700}
+.comment-teaser .row .sep{margin:0 8px;color:#c4c7cc}
+.comment-teaser .link{margin-top:6px;font:600 12px/1.2 Inter;color:var(--petrol-600)}
+.comment-teaser .link-inline{margin-top:0;margin-left:8px;display:none;font:600 13px/1.45 Inter;color:var(--petrol-600);white-space:nowrap}
+.look-actions{display:flex;gap:14px;margin:16px 0 6px}
+.look-actions--center{justify-content:center;flex-wrap:wrap}
+.btn-primary--fit{flex:0 0 auto}
+.btn-primary{display:inline-flex;align-items:center;justify-content:center;gap:8px;padding:12px 18px;border-radius:999px;
+  background:linear-gradient(135deg, var(--cta-start), var(--cta-mid) 46%, var(--cta-end)); color:#fff; font:700 15px/1.1 Inter; border:1px solid rgba(0,0,0,.04)}
+.btn-secondary{display:inline-flex;align-items:center;justify-content:center;gap:8px;padding:12px 18px;border-radius:999px;background:#fff;
+  border:1px solid rgba(0,0,0,.10); color:var(--ink); font:700 15px/1.1 Inter}
+.card > .look-h{
+  padding:12px 16px;
+  background:#fff;
+  border-bottom:1px solid rgba(0,0,0,.06);
+  border-top-left-radius:18px;
+  border-top-right-radius:18px;
+}
+.card > .look-h .avatar{box-shadow:0 1px 3px rgba(0,0,0,.08)}
+.card > .look-h + .hero-wrap{border-top-left-radius:0;border-top-right-radius:0}
+
+/* Tighter header for srd24 card */
+.proxy-card:nth-of-type(2) .pc-look-h{
+  padding:8px 16px;
+}
+
+
+
+.brandprice{align-items:center;gap:2px}
+.brandprice .brand{font-size:12px;letter-spacing:.3px;color:#555;font-weight:600;text-transform:uppercase}
+.brandprice .price{font-weight:700;font-size:17px;color:#2d2d2d}
+.brandprice .perk{margin-left:auto;font-size:13px;color:#4C4C50;font-weight:600;display:flex;align-items:center;gap:6px}
+.brandprice .perk::before{content:"";width:14px;height:14px;border-radius:50%;background:linear-gradient(135deg,var(--cta-start),var(--cta-end));display:inline-block}
+
+/* Fit Tip card */
+.tip{display:flex;align-items:flex-start;gap:10px;margin:12px 0 2px;padding:14px;border-radius:12px;background:var(--petrol-100);border:1px solid var(--petrol-400);color:#0B0F14;font-size:13px}
+.tip .copy{flex:1}
+
+/* Summary pill (feed view) */
+.tip-summary{
+  margin-top:12px;
+  padding:14px 16px;
+  background:var(--petrol-100);
+  border:1px solid var(--petrol-400);
+  border-radius:12px;
+  font-size:14px;
+  color:#0B0F14;
+}
+.shop-row{display:flex;justify-content:center;margin-top:10px;padding:0 18px}
+.shop-link{display:flex;align-items:center;justify-content:center;width:100%;min-height:44px;padding:12px 16px;
+  background:#FFFFFF;border:1px solid var(--petrol-400);border-radius:12px;
+  color:var(--petrol-600);text-decoration:none;font-weight:700;letter-spacing:-.01em;font-size:15px}
+.shop-link:hover{background:var(--petrol-100);text-decoration:none}
+.shop-link:active{background:var(--petrol-400);color:#fff}
+.shop-link:focus-visible{outline:2px solid var(--petrol-500);outline-offset:2px}
+.summary{margin-top:6px;font-size:13px;color:var(--muted)}
+.summary strong{color:var(--petrol-600);font-weight:600}
+
+/* Inline heading (Explore + subline) */
+.heading-inline{display:flex;align-items:baseline;gap:10px;margin:0 0 6px;flex-wrap:wrap}
+.heading-inline .heading-main{font-size:26px;font-weight:700;color:var(--ink);letter-spacing:-0.01em;line-height:1.1}
+.heading-sub-inline{font-size:16px;font-weight:600;color:#6A7683;letter-spacing:-.005em;line-height:1.2}
+
+/* Accent highlight for key references (brand petrol) */
+.accent{color:var(--petrol-600);font-weight:600}
+
+/* Inline advisory note (enhanced visibility) */
+.details .advice-inline{margin:6px 0 2px;font-size:15px;line-height:1.55;color:#4C4C50;font-weight:500}
+.advice-next{margin-top:14px}
+.details .advice-inline b{color:var(--petrol-600)}
+
+/* Expanded-state polish: hide feed summary and soften advisory tip */
+.view-detail .tip-summary{display:none}
+.details .tip{background:var(--petrol-100);border:1px solid var(--petrol-400);color:#0B0F14;padding:14px 16px;margin:12px 0}
+.details .tip .copy{font-size:14px;line-height:1.5}
+.details .tip .copy b{color:var(--petrol-600)}
+
+/* Inline shop link inside expanded details */
+.shop-inline{
+  display:block;
+  margin-top:12px;
+  padding:12px 16px;
+  text-align:center;
+  border-radius:12px;
+  font-weight:800; letter-spacing:-.01em; font-size:16px; line-height:1.3;
+  color:#fff; text-decoration:none;
+  background:linear-gradient(135deg, var(--cta-start), var(--cta-mid) 40%, var(--cta-end));
+
+}
+.shop-inline:hover{ filter:brightness(1.03) }
+.shop-inline:active{ transform:translateY(1px) }
+
+.fit-details{display:none}
+.fit-details.open{display:block}
+
+/* SG fit-details block */
+.card .fit-details{padding:18px;border-radius:16px;background:#fff;border:1px solid rgba(0,0,0,.06);margin-top:16px}
+.card .fit-details .micro{margin:0 0 12px;font:600 14px/1.35 Inter;color:#2F2F33}
+.card .fit-details .micro .link{color:var(--petrol-600);text-decoration:none}
+.card .fit-row{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:12px 0;border-top:1px solid rgba(0,0,0,.06)}
+.card .fit-row:first-of-type{border-top:0}
+.card .fit-row .k{font:800 16px/1.25 Inter;color:var(--ink)}
+.card .fit-row .v{font:600 15px/1.3 Inter;color:#2F2F33}
+.card .fit-row .muted{color:#8b8f97}
+.card .fit-row .chip{padding:8px 14px;border-radius:999px;border:1px solid rgba(0,0,0,.1);background:#F4F6FA;font:700 13px/1.1 Inter;color:var(--ink)}
+.card .fit-details .note{margin:12px 0 16px;color:#2F2F33;font:600 14px/1.45 Inter}
+.card .fit-details .cta{display:block;text-align:center;padding:14px 18px;border-radius:12px;
+  background:linear-gradient(135deg,var(--cta-start),var(--cta-mid) 46%,var(--cta-end));color:#fff;font:800 16px/1.1 Inter;text-decoration:none}
+
+/* Feed vs detail states */
+.hidden{display:none}
+.view-feed .details,.view-feed .micro{display:none}
+.view-detail .details{display:block}
+/* Hide non-essential commerce/meta when expanded */
+.view-detail .divider,
+.view-detail .row,
+.view-detail .micro,
+.view-detail .trust-signals,
+.view-detail .shop-cta{display:none}
+/* hide shop link in expanded view */
+.view-detail .shop-row{display:none}
+/* Tighten spacing above first line in details */
+.view-detail #fitDetails{padding-top:4px}
+
+/* Override: allow details to open within feed view when not .hidden */
+.view-feed .details:not(.hidden){display:block}
+
+/* Reduce top spacing above the first line in inner details card */
+#fitDetails{padding-top:8px}
+#fitDetails .item:first-child{padding-top:0}
+#fitDetails .advice-inline{margin-top:2px}
+/* Hide outer Shop row when inner details is open */
+.info .details:not(.hidden) ~ .shop-row{display:none}
+
+/* Tab bar */
+.tabs{position:absolute;left:0;right:0;bottom:0;height:83px;background:#fff;border-top:1px solid rgba(0,0,0,.08);
+  display:flex;justify-content:space-around;align-items:flex-start;padding-top:8px;padding-bottom:34px;z-index:100}
+.tab{display:flex;flex-direction:column;align-items:center;gap:6px;text-decoration:none;color:#8e8e93;font-size:11px;font-weight:500;transition:color 0.2s ease}
+.tab.active{color:var(--petrol-600);font-weight:600}
+.ico{width:28px;height:28px;display:block}
+
+/* Misc */
+.subhead{margin-top:6px;color:#4C4C50;font:600 14px/1.4 Inter}
+.micro{
+  color:#4C4C50;
+  font-size:14px;
+  font-weight:500;
+  margin-top:6px;
+}
+/* Comment teaser – match size-twin */
+.comment-teaser{display:block;width:100%;text-align:left;margin-top:12px;border-radius:16px;
+  border:1px solid rgba(0,0,0,.08);background:#fff;padding:10px 12px;box-shadow:0 2px 6px rgba(0,0,0,.03);
+  cursor:pointer;transition:background .2s ease, box-shadow .2s ease}
+.comment-teaser:hover{background:#f7f9fb;box-shadow:0 6px 16px rgba(0,0,0,.06)}
+.comment-teaser .k{font:600 11px/1.2 Inter;color:var(--muted);margin-bottom:6px}
+.comment-teaser .row{font:600 13px/1.45 Inter;color:#2F2F33}
+.comment-teaser .row .q,.comment-teaser .row .a{font-weight:700}
+.comment-teaser .row .sep{margin:0 8px;color:#c4c7cc}
+.comment-teaser .link{margin-top:6px;font:600 12px/1.2 Inter;color:var(--petrol-600)}
+.comment-teaser .link-inline{margin-top:0;margin-left:8px;display:none;font:600 13px/1.45 Inter;color:var(--petrol-600);white-space:nowrap}
+</style>
+<style>
+/* ===== Proxy card (namespaced from size-twin) ===== */
+.proxy-card{background:#fff;border:1px solid rgba(0,0,0,.06);border-radius:18px;padding:8px 12px 10px;overflow:visible;position:relative;z-index:1}
+.pc-look-h{display:flex;align-items:center;gap:10px;padding:6px 6px 10px;overflow:visible;position:relative}
+.pc-avatar{width:34px;height:34px;border-radius:10px;object-fit:cover}
+.pc-avatar--circle{border-radius:999px}
+.pc-name{font:700 14px/1.2 Inter;color:#2F2F33}
+.pc-bads{display:flex;gap:8px;flex-wrap:wrap;overflow:visible;position:relative}
+.pc-badge{
+  display:inline-flex;align-items:center;justify-content:center;padding:6px 12px;
+  border-radius:999px;border:1px solid rgba(0,136,128,.22);
+  background:linear-gradient(180deg,#ffffff 0%,#f4fbfa 100%);
+  box-shadow:0 1px 2px rgba(0,0,0,.06), inset 0 -1px 0 rgba(255,255,255,.7);
+  font:700 12px/1 Inter;letter-spacing:.01em;color:#007d74;white-space:nowrap;
+}
+.pc-match.micro{margin:2px 6px 8px 56px;color:var(--muted);font:600 12px/1.2 Inter;}
+.pc-match-link{border:0;background:transparent;color:#0a8;font-weight:800;padding:0}
+.pc-match-link:focus-visible{outline:2px solid #0a8;border-radius:4px}
+.pc-hero-wrap{position:relative}
+.pc-carousel{position:relative}
+.pc-carousel a{display:block;position:relative;z-index:1}
+.pc-hero-img{display:block;width:100%;height:520px;object-fit:cover;border-radius:14px;cursor:pointer}
+.pc-hero-img--tight{object-position:center 22%}
+.pc-chip{
+  position:absolute;top:10px;left:10px;z-index:2;
+  padding:6px 10px;border-radius:999px;
+  background:#fff;border:1px solid rgba(0,0,0,.08);
+  font:700 12px/1.1 Inter;color:var(--ink);
+  box-shadow:0 2px 6px rgba(0,0,0,.08);
+}
+.pc-dots{position:absolute;left:50%;bottom:12px;transform:translateX(-50%);display:flex;gap:6px}
+.pc-dot{width:8px;height:8px;border-radius:50%;background:#e6e6ea;opacity:.9}
+.pc-dot.pc-active{background:#c9c5c0}
+.pc-look-caption{margin-top:14px}
+.pc-look-caption p{font:600 16px/1.4 Inter;color:#2F2F33}
+.pc-sub{margin-top:6px;font:500 13px/1.4 Inter;color:var(--muted)}
+.pc-user{margin-right:8px}
+.pc-comment-teaser{display:block;width:100%;text-align:left;margin-top:12px;border-radius:16px;border:1px solid rgba(0,0,0,.08);background:#fff;padding:10px 12px;box-shadow:0 2px 6px rgba(0,0,0,.03);cursor:pointer !important}
+.pc-comment-teaser:hover{background:#f7f9fb;box-shadow:0 6px 16px rgba(0,0,0,.06)}
+.pc-k{font:600 11px/1.2 Inter;color:var(--muted);margin-bottom:6px}
+.pc-row{font:500 14px/1.45 Inter;color:#374151}
+.pc-username{font-weight:700;color:#111827}
+.pc-colon{margin-right:4px;color:#6B7280}
+.pc-link{margin-top:8px;font:600 13px/1.2 Inter;color:#009090}
+.pc-look-actions{display:flex;gap:14px;margin:16px 0 6px}
+.pc-btn-primary{display:inline-flex;align-items:center;justify-content:center;gap:8px;padding:12px 18px;border-radius:999px;background:linear-gradient(135deg, var(--cta-start), var(--cta-mid) 46%, var(--cta-end)); color:#fff; font:700 15px/1.1 Inter; border:1px solid rgba(0,0,0,.04); transition:transform 0.2s ease, box-shadow 0.2s ease; cursor:pointer}
+.pc-btn-primary:first-child{font-size:14px;padding:12px 16px}
+.pc-btn-primary:hover{transform:translateY(-2px); box-shadow:0 4px 12px rgba(0,0,0,.08)}
+.pc-btn-secondary{display:inline-flex;align-items:center;justify-content:center;gap:8px;padding:12px 18px;border-radius:999px;background:#fff;border:1px solid rgba(0,0,0,.10); color:var(--ink); font:700 15px/1.1 Inter; transition:transform 0.2s ease, box-shadow 0.2s ease; cursor:pointer}
+.pc-btn-secondary:hover{transform:translateY(-2px); box-shadow:0 4px 12px rgba(0,0,0,.08)}
+.proxy-card + .card{margin-top:8px}
+
+/* Proxy carousel mechanics (namespaced) */
+.proxy-card .pc-carousel{
+  position:relative;
+  display:grid;
+  height:520px;
+  overflow:hidden;
+  border-radius:14px;
+}
+.proxy-card .pc-slide{
+  position:relative;
+  grid-area:1 / 1 / -1 / -1;
+  width:100%;
+  height:100%;
+  box-sizing:border-box;
+  overflow:hidden;
+  opacity:0;
+  transition:opacity .25s ease;
+}
+.proxy-card .pc-slide.pc-active{ opacity:1; }
+.proxy-card .pc-hero-img{
+  display:block; width:100%; height:520px;
+  object-fit:cover; object-position:center 22%; border-radius:14px;
+}
+/* Proxy carousel nav controls (mirrors size-twin .carousel .nav) */
+.proxy-card .pc-carousel .pc-nav{position:absolute;top:50%;transform:translateY(-50%);width:32px;height:32px;border-radius:999px;background:rgba(0,0,0,.35);color:#fff;display:flex;align-items:center;justify-content:center;border:none;cursor:pointer;font-size:0;z-index:10}
+.proxy-card .pc-carousel .pc-nav.left{left:10px}
+.proxy-card .pc-carousel .pc-nav.right{right:10px}
+.proxy-card .pc-carousel .pc-nav.left::before{content:"\2039";font-size:20px;line-height:1;transform:translate(-0.5px, -1px);display:block}
+.proxy-card .pc-carousel .pc-nav.right::before{content:"\203A";font-size:20px;line-height:1;transform:translate(0.5px, -1px);display:block}
+
+/* === Proxi SVG icon (solid) === */
+.icon-proxi{
+  --size: 16px;             /* scale control */
+  width: var(--size);
+  height: var(--size);
+  display:inline-block;
+  color: #009090 !important;      /* Proxi petrol/400 */
+  vertical-align:-0.05em;
+}
+.icon-proxi use{fill:currentColor;}
+
+/* === Proxi SVG icon (gradient via mask) === */
+.icon-proxi-gradient{
+  --size: 16px;
+  width: var(--size);
+  height: var(--size);
+  display:inline-block;
+  -webkit-mask:url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox=\'0 0 24 24\'><rect x=\'0.96\' y=\'4\' width=\'22.08\' height=\'2.48\' rx=\'1\'/><rect x=\'0.96\' y=\'11\' width=\'22.08\' height=\'2.48\' rx=\'1\'/><rect x=\'0.96\' y=\'18\' width=\'22.08\' height=\'2.48\' rx=\'1\'/></svg>') no-repeat center / contain;
+          mask:url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox=\'0 0 24 24\'><rect x=\'0.96\' y=\'4\' width=\'22.08\' height=\'2.48\' rx=\'1\'/><rect x=\'0.96\' y=\'11\' width=\'22.08\' height=\'2.48\' rx=\'1\'/><rect x=\'0.96\' y=\'18\' width=\'22.08\' height=\'2.48\' rx=\'1\'/></svg>') no-repeat center / contain;
+  background:#009090;
+}
+
+/* === Proxi pills (≡ system) - Updated with custom CSS rectangles === */
+
+/* Base pill */
+.pill-proxi{
+  display:inline-flex !important; align-items:center !important; justify-content:center !important; gap:4px !important;
+  height:24px !important; padding:0 8px !important;                /* larger: 24px tall, 8px sides */
+  border-radius:9999px !important;
+  background:#FFFFFF !important;                         /* strong contrast on imagery */
+  border:1px solid rgba(0,0,0,.14) !important;           /* firmer edge for hardware quality */
+  box-shadow:0 2px 8px rgba(0,0,0,.10) !important;
+  color:#0B3D3A !important;                              /* deep petrol ink */
+  font:700 12px/1 Inter, system-ui, -apple-system, "Segoe UI", Roboto, Helvetica, Arial !important;
+  user-select:none !important; cursor:default !important;
+}
+
+/* Triple bar glyph - custom rectangles */
+/* === Proxi symbol (≡) — scalable version === */
+.pill-proxi{
+  /* add a default glyph size (10px at 16px root) */
+  --glyph: 0.625rem;
+  --bar-w: 0.76;   /* width factor of glyph */
+  --bar-h: 0.14;   /* height factor of glyph */
+  --gap:   0.10;   /* inter-bar gap factor */
+}
+
+.pill-proxi .glyph{
+  display:flex; flex-direction:column; align-items:center; justify-content:center;
+  width:var(--glyph); height:var(--glyph);
+  gap:calc(var(--glyph) * var(--gap));
+}
+.pill-proxi .glyph .bar{
+  width: calc(var(--glyph) * var(--bar-w));
+  height:calc(var(--glyph) * var(--bar-h));
+  border-radius:calc(var(--glyph) * 0.10);
+  background:linear-gradient(135deg, #005a5c 0%, #008a90 55%, #2fb8bf 100%) !important;
+}
+
+/* Count styling */
+.pill-proxi .count{
+  font-weight:500; font-feature-settings:"tnum" 1;
+  color:#34424D;
+}
+
+/* Count variant: ≡ n (username header or your closet items) */
+.pill-proxi--count{ background:#FFFFFF; cursor:pointer !important; }
+/* Slightly larger count pill (2%): glyph, font-size, height, padding */
+.pill-proxi--count{
+  --glyph: calc(0.625rem * 1.3);
+  height: calc(24px * 1.2) !important;
+  padding: 0 calc(8px * 1.1) !important;
+  font-size: calc(12px * 1.2) !important;
+}
+.pill-proxi--count:hover{
+  background:#f7f9fb !important;
+  box-shadow:0 6px 16px rgba(0,0,0,.06) !important;
+}
+
+/* Mark variant: ≡ (no number) — on other user's photo when that image is the shared item */
+.pill-proxi--mark{ padding:0 6px !important; }
+.pill-proxi--mark{ --glyph: 0.9375rem; } /* 15px */
+
+/* Size variant: Shows size text instead of symbol */
+.pill-proxi--size{ padding:0 8px !important; }
+.pill-proxi--size .size-text{
+  font-weight:800; font-feature-settings:"tnum" 1;
+  background:linear-gradient(135deg, #005a5c 0%, #008a90 55%, #2fb8bf 100%);
+  -webkit-background-clip:text; background-clip:text; -webkit-text-fill-color:transparent;
+}
+
+/* Text variant: Shows text instead of symbol */
+.pill-proxi--text{
+  height:28px !important;
+  padding:0 10px !important;
+  background:rgba(255,255,255,.94) !important;
+  backdrop-filter:blur(8px) !important;
+  border:1px solid rgba(0,0,0,.12) !important;
+}
+.pill-proxi--text .text-content{
+  font-weight:500; font-size:13px;
+  color:#34424D;
+}
+
+/* Quick size presets */
+.pill-proxi.--sm{ --glyph: 0.5rem; }    /* ~8px */
+.pill-proxi.--md{ --glyph: 0.625rem; }  /* ~10px (default) */
+.pill-proxi.--lg{ --glyph: 0.875rem; }  /* ~14px */
+
+/* Placement helpers for overlays */
+.pill-top-left { position:absolute; top:12px; left:12px;  z-index:2; }
+
+/* Cap very large counts visually */
+.pill-proxi[data-count="99plus"] .count{ letter-spacing:-.5px; }
+
+/* Lulus Signature Elegance positioning - shift image content left */
+.pc-slide[data-title="Signature Elegance One-Shoulder Maxi Dress"] .pc-hero-img--tight{
+  object-position: 100% 22% !important;
+}
+
+/* Second slide specific positioning - Peregrine Midi Dress */
+.pc-slide[data-title="Peregrine Midi Dress"] .pc-hero-img{
+  transform:none !important;
+  object-position:center !important;
+  border-radius:14px !important;
+}
+
+/* Hide carousel dots on second slide */
+.pc-slide[data-title="Peregrine Midi Dress"] .pc-dots,
+.pc-carousel .pc-dots,
+.pc-dot{
+  display:none !important;
+}
+
+/* Move product info up */
+.pc-slide[data-title="Peregrine Midi Dress"] .pc-look-h{
+  padding:2px 6px 0px !important;
+}
+
+/* Reduce space between image and product info on slide 2 */
+.pc-slide[data-title="Peregrine Midi Dress"] .pc-look-caption{
+  margin-top:14px !important;
+}
+
+/* Reduce space from match line on slide 2 only */
+.proxy-card:has(.pc-slide[data-title="Peregrine Midi Dress"].pc-active) .pc-match{
+  margin:0px 6px 0px 56px !important;
+}
+
+/* Reduce space after carousel on slide 2 */
+.pc-slide[data-title="Peregrine Midi Dress"] .pc-hero-wrap{
+  margin-bottom:-20px !important;
+}
+
+/* More aggressive spacing reduction for slide 2 */
+.proxy-card:has(.pc-slide[data-title="Peregrine Midi Dress"].pc-active) .pc-look-caption{
+  margin-top:14px !important;
+}
+
+/* Alternative approach - target when slide 2 is active */
+.pc-slide[data-title="Peregrine Midi Dress"].pc-active ~ * .pc-look-caption,
+.pc-slide[data-title="Peregrine Midi Dress"].pc-active + * + * .pc-look-caption{
+  margin-top:14px !important;
+}
+
+/* Simple class-based approach */
+.slide-2-active .pc-look-caption{
+  margin-top:14px !important;
+}
+
+/* Hide proxi badge on second slide since it's a recommendation, not shared size */
+.proxy-card:has(.pc-slide[data-title="Peregrine Midi Dress"].pc-active) .proxi-badge-wrap{
+  display:none !important;
+}
+
+/* Hide proxi badge on srd24 card (second proxy card) since it's a recommendation */
+.proxy-card:nth-of-type(2) .proxi-badge-wrap{
+  display:none !important;
+}
+
+/* Hide arrows on srd24 card (single image) */
+.proxy-card:nth-of-type(2) .pc-nav{
+  display:none !important;
+}
+
+/* Move size bullet up on slide 2 and 3 of ellaa76 card (no proxi badge) */
+.pc-slide[data-title="Peregrine Midi Dress"] .size-bullet,
+.pc-slide[data-title="Draped Midi Dress"] .size-bullet{
+  top:10px !important;
+}
+
+/* Move size bullet up on srd24 card (no proxi badge) */
+.proxy-card:nth-of-type(2) .size-bullet{
+  top:10px !important;
+}
+
+/* Move size bullet up on SG card (Jocelyn dress) */
+.card .imgbox .size-bullet{
+  top:10px !important;
+}
+
+/* Size bullet (from closet screen) */
+.size-bullet{
+  position:absolute;
+  top:43px;
+  right:10px;
+  padding:6px 10px;
+  border-radius:999px;
+  background:rgba(0,0,0,.45);
+  backdrop-filter:blur(2px);
+  border:1px solid rgba(255,255,255,.35);
+  color:#fff;
+  font:700 12px/1 Inter;
+  z-index:3;
+}
+
+/* When no proxi badge, move size bullet up */
+.pc-hero-wrap:not(:has(.proxi-badge-wrap)) .size-bullet{
+  top:10px;
+}
+
+/* Proxi badge + tooltip */
+.proxi-badge-wrap{
+  position:absolute;
+  top:10px;
+  right:10px;
+  z-index:9999;
+}
+
+.proxi-inline-wrap{
+  position:relative;
+  display:inline-flex;
+  align-items:center;
+  z-index:9999;
+}
+
+.proxi-trigger{
+  border:0;
+  background:transparent;
+  padding:0;
+  cursor:default;
+}
+
+.proxi-trigger:focus-visible{
+  outline:2px solid rgba(0,163,163,.55);
+  outline-offset:2px;
+}
+
+.proxi-trigger--badge{
+  display:inline-flex;
+  align-items:center;
+  justify-content:center;
+  background:transparent;
+  padding:0;
+}
+
+.proxi-tip{
+  position:absolute;
+  display:inline-block;
+  width:max-content;
+  white-space:nowrap;
+  padding:8px 12px;
+  border-radius:12px;
+  background:rgba(0,0,0,0.9);
+  color:#fff;
+  border:1px solid rgba(31,174,217,0.65);
+  font-family:'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+  font-weight:var(--weight-medium, 500);
+  font-size:13px;
+  letter-spacing:.1px;
+  line-height:1.2;
+  box-shadow:0 8px 24px rgba(11,15,20,.08);
+  opacity:0;
+  pointer-events:none;
+  transform:translateY(-50%) scale(.96);
+  transition:opacity .2s ease, transform .2s ease;
+  z-index:9999;
+}
+
+.proxi-tip::before,
+.proxi-tip::after{
+  content:"";
+  position:absolute;
+  top:50%;
+  transform:translateY(-50%);
+}
+
+.proxi-tip::before{
+  border:7px solid transparent;
+}
+
+.proxi-tip::after{
+  border:6px solid transparent;
+}
+
+.proxi-tip--left{
+  right:calc(100% + 8px);
+  top:50%;
+}
+
+.proxi-tip--left::before{
+  right:-14px;
+  border-left-color:rgba(31,174,217,0.65);
+}
+
+.proxi-tip--left::after{
+  right:-12px;
+  border-left-color:rgba(0,0,0,0.9);
+}
+
+.proxi-tip--right{
+  top:calc(100% + 8px);
+  left:50%;
+  transform:translateX(-50%) scale(.96);
+}
+
+.proxi-tip--right::before{
+  bottom:auto;
+  top:-14px;
+  left:50%;
+  transform:translateX(-50%);
+  border-bottom-color:rgba(31,174,217,0.65);
+  border-right-color:transparent;
+  border-top-color:transparent;
+}
+
+.proxi-tip--right::after{
+  bottom:auto;
+  top:-12px;
+  left:50%;
+  transform:translateX(-50%);
+  border-bottom-color:rgba(0,0,0,0.9);
+  border-right-color:transparent;
+  border-top-color:transparent;
+}
+
+.proxi-trigger:where(:hover, :focus-visible)+.proxi-tip{
+  opacity:1;
+  pointer-events:auto;
+}
+
+.proxi-trigger:where(:hover, :focus-visible)+.proxi-tip--right{
+  transform:translateX(-50%) scale(1);
+}
+
+/* FTUX: heading + split pill */
+.ftux--note{
+  margin:10px 0 4px; padding:14px 16px;
+  border:1px solid rgba(0,0,0,.12); border-radius:18px; background:#fff;
+  box-shadow:0 6px 24px rgba(17,25,40,.08);
+}
+.ftux-head h3{ margin:0 0 8px; font:700 15.5px/1.2 Inter; color:#2f2f33; }
+.ftux-row{ display:flex; align-items:center; }
+/* make the inner row behave like one capsule */
+.ftux-pill{
+  display:flex;
+  align-items:stretch;      /* <-- was center */
+  overflow:hidden;          /* masks the right capsule curve */
+  border-radius:9999px;
+  width:100%; border:1px solid rgba(0,0,0,.12); background:#fff;
+  min-height:44px;          /* ensure minimum height */
+}
+/* message stays as-is (optionally a touch more padding) */
+.ftux-msg{ 
+  padding:10px 14px;        /* was 12px - tighter vertical balance */
+  font:500 13.5px/1.35 Inter; 
+  color:#3d444b; 
+  flex:1;                   /* take up remaining space */
+}
+/* CTA becomes the right segment, not a mini-pill */
+.ftux-cta{
+  -webkit-appearance:none;
+  appearance:none;
+  border:0;
+  margin:0;
+  padding:0 18px;           /* slightly wider */
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  white-space:nowrap;
+  border-radius:0;          /* <-- remove its own rounding */
+  background:linear-gradient(90deg,#35d0b0,#1aa1b4);
+  mask-image:linear-gradient(to left, black 98%, transparent 100%);
+  -webkit-mask-image:linear-gradient(to left, black 98%, transparent 100%);
+  color:#fff;
+  font:700 13px/1 Inter;
+  cursor:pointer;
+  flex-shrink:0;            /* don't shrink */
+  position:relative;
+}
+.ftux-cta::before{
+  content:"";
+  position:absolute; left:-1px; top:0; bottom:0; width:1px;
+  background: linear-gradient(
+    to bottom,
+    rgba(0,0,0,.00),
+    rgba(0,0,0,.10) 18%,
+    rgba(0,0,0,.10) 82%,
+    rgba(0,0,0,.00)
+  );
+}
+.ftux-cta:hover{ filter:brightness(1.05); }
+.ftux-cta:focus-visible{ outline:2px solid #7FE1FF; outline-offset:2px; }
+
+/* While FTUX is showing, hide filters & legend */
+.has-ftux .chips,
+.has-ftux .legend{ display:none; }
+
+/* Hide legend entirely (confusing with text-only pills) */
+.legend{ display:none !important; }
+
+</style>
+</head>
+<body class="view-feed has-ftux">
+  <!-- Proxi icon sprite (8% shorter bars, centered) -->
+  <svg style="position:absolute;width:0;height:0;overflow:hidden" aria-hidden="true">
+    <symbol id="proxi" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+      <rect x="0.96" y="4" width="22.08" height="2.48" rx="1"></rect>
+      <rect x="0.96" y="11" width="22.08" height="2.48" rx="1"></rect>
+      <rect x="0.96" y="18" width="22.08" height="2.48" rx="1"></rect>
+    </symbol>
+  </svg>
+  <div class="phone">
+      <div class="screen">
+        <div class="island"></div>
+        <div class="status"><div>9:41</div><div class="right"><img src="../img/cellular-connection.svg" alt="cell"/><img src="../img/wifi.svg" alt="wifi"/><img src="../img/battery.svg" alt="battery"/></div></div>
+
+        <div class="header">
+          <div class="logo">proxi</div>
+        </div>
+
+        <div class="section">
+          <!-- FTUX: heading + split pill dismiss -->
+          <div class="ftux ftux--note" id="ftux">
+            <div class="ftux-head"><h3>Your Proxi feed</h3></div>
+
+            <div class="ftux-row">
+              <div class="ftux-pill">
+                <div class="ftux-msg">Your size twins are here. See what else fits them — and might fit you.</div>
+                <button type="button" class="ftux-cta" id="ftuxDismiss">Got it →</button>
+              </div>
+            </div>
+          </div>
+
+          <div class="chips">
+            <button class="chip is-active">Under $150</button>
+            <button class="chip">Wedding guest</button>
+            <button class="chip">Midi</button>
+            <button class="chip">Quick ship</button>
+            <button class="chip">New in</button>
+          </div>
+          <div class="legend" role="note">
+            <span class="legend-term">proxies <span class="equiv" aria-hidden="true">
+                <svg class="icon-proxi" style="--size:1em;">
+                  <use href="#proxi" xlink:href="#proxi"></use>
+                </svg>
+              </span></span>
+            <span class="legend-def">users who share your size</span>
+          </div>
+        </div>
+
+        <div class="feed">
+
+          <!-- ===== PROXY CARD (lifted from size-twin, namespaced) ===== -->
+          <section class="proxy-card">
+            <header class="pc-look-h">
+              <img class="pc-avatar pc-avatar--circle" src="../img/videoframe_611.png" alt="ellaa76 profile photo">
+              <div class="pc-name">ellaa76</div>
+              <div class="pc-bads">
+                <span class="proxi-inline-wrap">
+                  <button type="button"
+                          class="pill-proxi pill-proxi--count proxi-trigger"
+                          data-user="ellaa76"
+                          aria-label="Shared Proxi items"
+                          aria-describedby="tip-proxi-count">
+                    <span class="glyph" aria-hidden="true">
+                      <svg viewBox="0 0 256 256" style="width: var(--glyph); height: var(--glyph); display: block; color: #009090;" aria-hidden="true">
+                        <path fill="currentColor" d="M225.24,174.74a12,12,0,0,1-1.58,16.89C205.49,206.71,189.06,212,174.15,212c-19.76,0-36.86-9.29-51.88-17.44-25.06-13.62-44.86-24.37-74.61.3a12,12,0,1,1-15.32-18.48c42.25-35,75-17.23,101.39-2.92,25.06,13.61,44.86,24.37,74.61-.3A12,12,0,0,1,225.24,174.74Zm-16.9-57.59c-29.75,24.67-49.55,13.91-74.61.3-26.35-14.3-59.14-32.11-101.39,2.92a12,12,0,0,0,15.32,18.48c29.75-24.67,49.55-13.92,74.61-.3,15,8.15,32.12,17.44,51.88,17.44,14.91,0,31.34-5.29,49.51-20.36a12,12,0,0,0-15.32-18.48ZM47.66,82.84c29.75-24.67,49.55-13.92,74.61-.3,15,8.15,32.12,17.44,51.88,17.44,14.91,0,31.34-5.29,49.51-20.36a12,12,0,0,0-15.32-18.48c-29.75,24.67-49.55,13.92-74.61.3-26.35-14.3-59.14-32.11-101.39,2.93A12,12,0,1,0,47.66,82.84Z"/>
+                      </svg>
+                    </span>
+                    <span class="count">1 shared size</span>
+                  </button>
+                </span>
+              </div>
+            </header>
+
+            <div class="pc-match micro">
+              Matches your <button class="pc-match-link" data-open="match">Somerset (XS)</button>
+            </div>
+
+            <div class="pc-hero-wrap">
+              <div class="proxi-badge-wrap">
+                <button type="button"
+                        class="pill-proxi pill-proxi--text proxi-trigger proxi-trigger--badge"
+                        aria-label="Size twin info">
+                  <span class="text-content">Same as yours</span>
+                </button>
+              </div>
+              <div class="pc-carousel" data-index="0">
+                <div class="pc-slide pc-active" data-brand="J.Crew" data-title="Halter Mixy Dress" data-size="S" data-comments="4" data-user="ggnyc8989" data-q="Is this petite or regular?">
+                  <a href="https://www.jcrew.com/p/womens/categories/clothing/dresses-and-jumpsuits/halter-mixy-dress/CL648?srsltid=AfmBOorYMAVYnJLhcm2oe3NyDuwMiBQTsxaAhV39sLde4Eo0to2OK1JR&color_name=vintage-garnet&colorProductCode=CL648" target="_blank" rel="noopener noreferrer">
+                    <img class="pc-hero-img pc-hero-img--tight" src="../img/1__1__1__1-proxy-hero@3x_20251016_003318.png" alt="Halter Mixy Dress — S">
+                  </a>
+                  <span class="size-bullet" aria-label="Size for this item">S</span>
+                </div>
+                <div class="pc-slide" data-brand="Anthropologie" data-title="Peregrine Midi Dress" data-size="M Petite" data-comments="1" data-user="user882" data-q="How long is the skirt?">
+                  <a href="https://www.anthropologie.com/shop/the-peregrine-midi-dress?color=520&inventoryCountry=US&countryCode=US&creative=&device=c&g_acctid=619-693-8226&g_adgroupid=&g_adid=&g_adtype=none&g_campaign=US+-+Shopping+-+PMAX+-+Apparel+-+Dresses+-+Icons%2FPush&g_campaignid=22530518290&g_keyword=&g_keywordid=&g_network=x&g_type=shopping&matchtype=&network=x&utm_campaign=US+-+Shopping+-+PMAX+-+Apparel+-+Dresses+-+Icons/Push&utm_content=&utm_kxconfid=vx6rd81ts&utm_medium=paid_search&utm_source=Google&utm_term=&gclsrc=aw.ds&gad_source=1&gad_campaignid=22526881889&gbraid=0AAAAADnwqi5VVmRiPLUsmXSeM0E0Xq9eX&gclid=CjwKCAjw0sfHBhB6EiwAQtv5qS56WSZ9PfLNylrIhwvUyBzLw8Qi1eB13bbCFbMMA1hA-Opl3nMVNBoCFigQAvD_BwE" target="_blank" rel="noopener noreferrer">
+                    <img class="pc-hero-img" src="../img/user1__Anthropologie__Peregrine_Midi_Dress__XS_Petite-proxy-hero@3x_20251014_172344.png" alt="Peregrine Midi Dress — M Petite">
+                  </a>
+                  <span class="size-bullet" aria-label="Size for this item">M Petite</span>
+                </div>
+                <div class="pc-slide" data-brand="Zara" data-title="Draped Midi Dress" data-size="S Petite" data-comments="2" data-user="gbell" data-q="I think this sold out :(">
+                  <a href="https://www.zara.com/us/en/draped-midi-dress-p04772305.html" target="_blank" rel="noopener noreferrer">
+                    <img class="pc-hero-img" src="../img/user1__zara__drapedmididress__spetite-proxy-hero@3x_20251015_170628.png" alt="Draped Midi Dress — S Petite">
+                  </a>
+                  <span class="size-bullet" aria-label="Size for this item">S Petite</span>
+                </div>
+                <button class="pc-nav left" type="button" aria-label="Previous slide"></button>
+                <button class="pc-nav right" type="button" aria-label="Next slide"></button>
+                <div class="pc-dots" aria-label="Slide position">
+                  <button class="pc-dot pc-active" type="button" aria-label="Slide 1"></button>
+                  <button class="pc-dot" type="button" aria-label="Slide 2"></button>
+                  <button class="pc-dot" type="button" aria-label="Slide 3"></button>
+                </div>
+              </div>
+            </div>
+
+            <div class="pc-look-caption">
+              <p><a href="https://www.jcrew.com/p/womens/categories/clothing/dresses-and-jumpsuits/halter-mixy-dress/CL648?srsltid=AfmBOorYMAVYnJLhcm2oe3NyDuwMiBQTsxaAhV39sLde4Eo0to2OK1JR&color_name=vintage-garnet&colorProductCode=CL648" target="_blank" rel="noopener noreferrer" style="text-decoration:none;color:inherit;cursor:pointer"><span class="pc-user"><strong id="pcBrand">J.Crew</strong></span> <span id="pcTitle">Halter Mixy Dress</span> <span id="pcSize">(S)</span></a></p>
+            </div>
+
+            <div class="pc-comment-teaser" role="button" aria-label="View comments">
+              <div class="pc-k">Comments · <span id="pcCCount">4</span></div>
+              <div class="pc-row">
+                <span class="pc-username" id="pcCUser">ggnyc8989</span><span class="pc-colon">:</span> <span id="pcCQ">Is this petite or regular?</span>
+              </div>
+              <div class="pc-link" id="pcLinkBlock">See full thread &gt;</div>
+            </div>
+
+            <div class="pc-look-actions">
+              <button class="pc-btn-primary" id="shopButton">Shop this item</button>
+              <button class="pc-btn-secondary">See more from ellaa76</button>
+            </div>
+          </section>
+
+          <!-- ===== DUPLICATED PROXY CARD (placed below the first) ===== -->
+          <section class="proxy-card">
+            <header class="pc-look-h">
+              <img class="pc-avatar pc-avatar--circle" src="../img/eli3.png" alt="srd24 profile photo">
+              <div class="pc-name">srd24</div>
+              <div class="pc-bads">
+                <span class="proxi-inline-wrap">
+                  <button type="button"
+                          class="pill-proxi pill-proxi--count proxi-trigger"
+                          data-user="srd24"
+                          aria-label="Shared Proxi items"
+                          aria-describedby="tip-proxi-count">
+                    <span class="glyph" aria-hidden="true">
+                      <svg viewBox="0 0 256 256" style="width: var(--glyph); height: var(--glyph); display: block; color: #009090;" aria-hidden="true">
+                        <path fill="currentColor" d="M225.24,174.74a12,12,0,0,1-1.58,16.89C205.49,206.71,189.06,212,174.15,212c-19.76,0-36.86-9.29-51.88-17.44-25.06-13.62-44.86-24.37-74.61.3a12,12,0,1,1-15.32-18.48c42.25-35,75-17.23,101.39-2.92,25.06,13.61,44.86,24.37,74.61-.3A12,12,0,0,1,225.24,174.74Zm-16.9-57.59c-29.75,24.67-49.55,13.91-74.61.3-26.35-14.3-59.14-32.11-101.39,2.92a12,12,0,0,0,15.32,18.48c29.75-24.67,49.55-13.92,74.61-.3,15,8.15,32.12,17.44,51.88,17.44,14.91,0,31.34-5.29,49.51-20.36a12,12,0,0,0-15.32-18.48ZM47.66,82.84c29.75-24.67,49.55-13.92,74.61-.3,15,8.15,32.12,17.44,51.88,17.44,14.91,0,31.34-5.29,49.51-20.36a12,12,0,0,0-15.32-18.48c-29.75,24.67-49.55,13.92-74.61.3-26.35-14.3-59.14-32.11-101.39,2.93A12,12,0,1,0,47.66,82.84Z"/>
+                      </svg>
+                    </span>
+                    <span class="count">2 shared sizes</span>
+                  </button>
+                </span>
+              </div>
+            </header>
+
+            <div class="pc-match micro">
+              Matches your <button class="pc-match-link" data-open="match">Somerset (XS)</button>
+            </div>
+
+            <div class="pc-hero-wrap">
+              <div class="pc-carousel" data-index="0">
+                <div class="pc-slide pc-active" data-brand="Lulus" data-title="Signature Elegance One-Shoulder Maxi Dress" data-size="XS" data-comments="4" data-q="Is this petite or regular?" data-a="Regular!">
+                  <a href="https://www.lulus.com/products/signature-elegance-olive-green-satin-one-shoulder-maxi-dress/2460691.html?irclickid=2MYV0l2uRxycWWbR6022E3PzUkpyrm3MKXD3VA0&sharedid=&irpid=116548&utm_source=impact&utm_medium=affiliate&utm_campaign=LTK&utm_content=ONLINE_TRACKING_LINK&utm_keyword=&irgwc=1" target="_blank" rel="noopener noreferrer">
+                    <img class="pc-hero-img pc-hero-img--tight" src="../img/videoframe_2906__1_-1760417574510-proxy-hero@3x.png" alt="Signature Elegance One-Shoulder Maxi Dress">
+                  </a>
+                  <span class="size-bullet" aria-label="Size for this item">XS</span>
+                </div>
+                <button class="pc-nav left" type="button" aria-label="Previous slide"></button>
+                <button class="pc-nav right" type="button" aria-label="Next slide"></button>
+                <div class="pc-dots" aria-label="Slide position">
+                  <button class="pc-dot pc-active" type="button" aria-label="Slide 1"></button>
+                </div>
+              </div>
+            </div>
+
+            <div class="pc-look-caption">
+              <p><a href="https://www.lulus.com/products/signature-elegance-olive-green-satin-one-shoulder-maxi-dress/2460691.html?irclickid=2MYV0l2uRxycWWbR6022E3PzUkpyrm3MKXD3VA0&sharedid=&irpid=116548&utm_source=impact&utm_medium=affiliate&utm_campaign=LTK&utm_content=ONLINE_TRACKING_LINK&utm_keyword=&irgwc=1" target="_blank" rel="noopener noreferrer" style="text-decoration:none;color:inherit;cursor:pointer"><span class="pc-user"><strong id="pcBrand">Lulus</strong></span> <span id="pcTitle">Signature Elegance One-Shoulder Maxi Dress</span> <span id="pcSize">(XS)</span></a></p>
+            </div>
+
+            <div class="pc-look-actions">
+              <button class="pc-btn-primary" id="shopButton">Shop this item</button>
+              <button class="pc-btn-secondary">See more from srd24</button>
+            </div>
+          </section>
+
+          <!-- CARD 2 — SIZE-GUIDE ONLY (DARK FLORAL), NO PROXY HEADER -->
+          <div class="card">
+            <div class="imgbox">
+              <img class="img" src="https://images.urbndata.com/is/image/Anthropologie/4130652010091_256_b?$redesign-zoom-5x$" alt="Anthropologie slip dress"/>
+              <span class="size-bullet" aria-label="Size for this item">S</span>
+            </div>
+
+            <div class="info">
+              <!-- 1) Best Fit CTA row -->
+              <button class="size-cta" id="sizeCta" type="button" aria-expanded="false">
+                <span class="label">
+                  <svg class="measure-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M3 7v10a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V9a2 2 0 0 0-2-2H5a2 2 0 0 0-2 2z"/>
+                    <line x1="8" y1="1" x2="8" y2="4"/>
+                    <line x1="16" y1="1" x2="16" y2="4"/>
+                  </svg>
+                  Best Fit: <strong>S</strong>
+                </span>
+                <span class="match">Fit details</span>
+              </button>
+
+              <!-- optional divider -->
+              <div class="divider"></div>
+
+              <!-- 2) Brand/price + trust item row -->
+              <div class="row">
+                <div class="left-meta">
+                  <span class="brand">ANTHROPOLOGIE</span>
+                  <span class="price">$168.00</span>
+                </div>
+                <div class="trust-item">
+                  <svg viewBox="0 0 16 16" aria-hidden="true"><path d="M6.5 11.2 3.8 8.6l1-1 1.7 1.7 4-4 1 1-5 5z"/></svg>
+                  Free returns
+                </div>
+              </div>
+
+              <!-- optional divider -->
+              <div class="divider"></div>
+
+              <!-- Expanded details (nested inner card) -->
+              <div class="details hidden" id="fitDetails">
+                <div class="item">
+                  <p class="advice-inline">Compared to your size: <strong class="accent">Alexis S</strong> <span class="muted">(perfect fit)</span></p>
+                </div>
+                <div class="spec">
+                  <span class="measure"><strong>Bust —</strong> Looser <span class="muted">(35–36″ vs 33″)</span></span>
+                  <span class="badge">+2–3″</span>
+                </div>
+                <div class="divider"></div>
+                <div class="spec">
+                  <span class="measure"><strong>Waist —</strong> Matches <span class="muted">(27–28″ vs 27″)</span></span>
+                  <span class="badge">≈</span>
+                </div>
+                <div class="divider"></div>
+                <div class="spec">
+                  <span class="measure"><strong>Hips —</strong> Matches <span class="muted">(37–38″ vs 37″)</span></span>
+                  <span class="badge">≈</span>
+                </div>
+                <p class="advice-inline advice-next">Prefer a slimmer look? XS will match the bust but feel snug at waist and hips (1–2″ smaller)</p>
+                <a class="shop-inline" href="https://www.anthropologie.com/shop/the-jocelyn-sleeveless-slip-midi-dress-by-maeve?category=top-rated-dresses&color=256&type=STANDARD&quantity=1" target="_blank" aria-label="Shop size S">Shop S →</a>
+              </div>
+
+              <!-- 3) Fit blurb -->
+              <div class="tip-summary">
+                Fits like your <strong>Alexis</strong> dress — roomier bust, matching waist &amp; hips.
+              </div>
+
+              <!-- 4) Shop CTA -->
+              <div class="shop-row">
+                <a class="shop-link" href="https://www.anthropologie.com/shop/the-jocelyn-sleeveless-slip-midi-dress-by-maeve?category=top-rated-dresses&color=256&type=STANDARD&quantity=1" target="_blank">Shop S</a>
+              </div>
+            </div>
+          </div>
+
+        </div> <!-- /.feed -->
+
+
+        <div class="tabs">
+          <a class="tab" href="#"><svg class="ico" viewBox="0 0 256 256" aria-hidden="true"><path fill="currentColor" d="M241,150.65s0,0,0-.05a51.33,51.33,0,0,0-2.53-5.9L196.93,50.18a12,12,0,0,0-2.5-3.65,36,36,0,0,0-50.92,0A12,12,0,0,0,140,55V76H116V55a12,12,0,0,0-3.51-8.48,36,36,0,0,0-50.92,0,12,12,0,0,0-2.5,3.65L17.53,144.7A51.33,51.33,0,0,0,15,150.6s0,0,0,.05A52,52,0,1,0,116,168V100h24v68a52,52,0,1,0,101-17.35ZM80,62.28a12,12,0,0,1,12-1.22v63.15a51.9,51.9,0,0,0-35.9-7.62ZM64,196a28,28,0,1,1,28-28A28,28,0,0,1,64,196ZM164,61.06a12.06,12.06,0,0,1,12,1.22l23.87,54.31a51.9,51.9,0,0,0-35.9,7.62ZM192,196a28,28,0,1,1,28-28A28,28,0,0,1,192,196Z"/></svg><span>Find</span></a>
+          <a class="tab active" href="#"><svg class="ico" viewBox="0 0 256 256" aria-hidden="true"><path fill="currentColor" d="M225.24,174.74a12,12,0,0,1-1.58,16.89C205.49,206.71,189.06,212,174.15,212c-19.76,0-36.86-9.29-51.88-17.44-25.06-13.62-44.86-24.37-74.61.3a12,12,0,1,1-15.32-18.48c42.25-35,75-17.23,101.39-2.92,25.06,13.61,44.86,24.37,74.61-.3A12,12,0,0,1,225.24,174.74Zm-16.9-57.59c-29.75,24.67-49.55,13.91-74.61.3-26.35-14.3-59.14-32.11-101.39,2.92a12,12,0,0,0,15.32,18.48c29.75-24.67,49.55-13.92,74.61-.3,15,8.15,32.12,17.44,51.88,17.44,14.91,0,31.34-5.29,49.51-20.36a12,12,0,0,0-15.32-18.48ZM47.66,82.84c29.75-24.67,49.55-13.92,74.61-.3,15,8.15,32.12,17.44,51.88,17.44,14.91,0,31.34-5.29,49.51-20.36a12,12,0,0,0-15.32-18.48c-29.75,24.67-49.55,13.92-74.61.3-26.35-14.3-59.14-32.11-101.39,2.93A12,12,0,1,0,47.66,82.84Z"/></svg><span>Feed</span></a>
+          <a class="tab" href="closet-screen.html"><svg class="ico" viewBox="0 0 256 256" aria-hidden="true"><path fill="currentColor" d="M244,168,148,96l19.2-14.4A12,12,0,0,0,172,72a44,44,0,0,0-87.66-5.48,12,12,0,1,0,23.82,3,20,20,0,0,1,39.09-2.92L121,86.24c-.15.1-.29.21-.43.32L12,168a20,20,0,0,0,12,36H232a20,20,0,0,0,12-36ZM36,180l92-69,92,69Z"/></svg><span>Closet</span></a>
+          <a class="tab" href="#"><svg class="ico" viewBox="0 0 256 256" aria-hidden="true"><path fill="currentColor" d="M234.38,210a123.36,123.36,0,0,0-60.78-53.23,76,76,0,1,0-91.2,0A123.36,123.36,0,0,0,21.62,210a12,12,0,1,0,20.77,12c18.12-31.32,50.12-50,85.61-50s67.49,18.69,85.61,50a12,12,0,0,0,20.77-12ZM76,96a52,52,0,1,1,52,52A52.06,52.06,0,0,1,76,96Z"/></svg><span>Profile</span></a>
+        </div>
+
+        <!-- Modals inside .screen -->
+        <div id="pc-sheet" class="pc-sheet" hidden>
+          <div class="pc-sheet__card">
+            <h3>Why this proxy?</h3>
+            <p><strong>ellaa76</strong> wears the same piece you own: <strong>Anthropologie Somerset (XS)</strong>.
+               Seeing how it fits them helps you compare size and fit to similar items.</p>
+            <button class="pc-sheet__close">Got it</button>
+          </div>
+        </div>
+
+        <!-- Shared Sizes Modal -->
+        <div id="shared-sizes-modal" class="shared-modal" hidden role="dialog" aria-modal="true" aria-labelledby="modalTitle">
+          <div class="shared-modal__overlay"></div>
+          <div class="shared-modal__card">
+            <button class="shared-modal__close" aria-label="Close modal">
+              <svg width="20" height="20" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round">
+                <path d="M5 5L15 15M5 15L15 5"/>
+              </svg>
+            </button>
+
+            <header class="shared-modal__header">
+              <h2 id="modalTitle" class="shared-modal__title">You & ellaa76 share 1 size!</h2>
+            </header>
+
+            <!-- Simple list of shared items -->
+            <div class="shared-items-list">
+              <!-- Item 1: J.Crew Halter Mixy Dress -->
+              <div class="shared-list-item" role="button" tabindex="0">
+                <div class="shared-list-thumb">
+                  <img src="../img/CL648_RD0165_m.png" alt="Halter Mixy Dress">
+                </div>
+                <div class="shared-list-content">
+                  <div class="shared-list-brand">J.Crew</div>
+                  <div class="shared-list-name">Halter Mixy Dress</div>
+                  <div class="shared-list-match">Both own in <strong>S</strong></div>
+                </div>
+              </div>
+            </div>
+
+            <div class="shared-modal-footer">
+              <button class="shared-modal__cta">See ellaa76's closet</button>
+              <button class="shared-modal__link">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <circle cx="11" cy="11" r="8"/>
+                  <path d="M21 21l-4.35-4.35"/>
+                </svg>
+                Find more proxies
+              </button>
+            </div>
+          </div>
+        </div>
+
+        <!-- Comments Thread Modal -->
+        <div id="comments-modal" class="comments-modal" hidden role="dialog" aria-modal="true" aria-labelledby="commentsTitle">
+          <div class="comments-modal__overlay"></div>
+          <div class="comments-modal__card">
+            <button class="comments-modal__close" aria-label="Close comments">
+              <svg width="20" height="20" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round">
+                <path d="M5 5L15 15M5 15L15 5"/>
+              </svg>
+            </button>
+
+            <header class="comments-modal__header">
+              <h2 id="commentsTitle" class="comments-modal__title">Comments · 4</h2>
+            </header>
+
+            <div class="comments-list" id="commentsList">
+              <!-- Comments will be populated dynamically by JavaScript -->
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+<style>
+.pc-sheet{position:fixed;inset:0;background:rgba(0,0,0,.3);display:flex;align-items:flex-end}
+.pc-sheet[hidden]{display:none}
+.pc-sheet__card{width:100%;background:#fff;border-radius:16px 16px 0 0;padding:16px 18px;box-shadow:0 -4px 24px rgba(0,0,0,.12)}
+.pc-sheet__card h3{margin:4px 0 8px;font:800 16px/1.2 Inter}
+.pc-sheet__card p{margin:0 0 12px;font:600 14px/1.45 Inter;color:#2F2F33}
+.pc-sheet__close{display:inline-flex;align-items:center;justify-content:center;padding:10px 14px;
+  border-radius:10px;border:1px solid rgba(0,0,0,.08);background:#fff;font:700 14px/1.1 Inter}
+
+/* Shared Sizes Modal */
+.shared-modal{position:absolute;inset:0;z-index:9999;display:flex;align-items:center;justify-content:center;padding:20px}
+.shared-modal[hidden]{display:none}
+.shared-modal__overlay{position:absolute;inset:0;background:rgba(0,0,0,.6);backdrop-filter:blur(8px);animation:fadeIn .3s ease}
+.shared-modal__card{position:relative;width:100%;max-width:420px;background:#fff;border-radius:24px;padding:36px 28px 28px;box-shadow:0 20px 60px rgba(0,0,0,.3);animation:slideUp .4s cubic-bezier(.34,1.56,.64,1)}
+.shared-modal__close{position:absolute;top:14px;right:14px;width:32px;height:32px;border:none;background:rgba(0,0,0,.05);border-radius:50%;color:#666;cursor:pointer;display:flex;align-items:center;justify-content:center;transition:all .2s}
+.shared-modal__close:hover{background:rgba(0,0,0,.1);transform:scale(1.05)}
+
+/* Header */
+.shared-modal__header{text-align:center;margin-bottom:28px}
+.shared-modal__title{font:800 20px/1.3 Inter;color:#0B0F14;margin:0}
+
+/* Items List */
+.shared-items-list{display:flex;flex-direction:column;gap:16px;margin-bottom:28px}
+
+/* List Item */
+.shared-list-item{display:flex;gap:16px;align-items:center;padding:16px;background:#fff;border-radius:14px;border:1px solid #E5E7EB;transition:all .2s;cursor:pointer;-webkit-tap-highlight-color:transparent}
+.shared-list-item:hover,.shared-list-item:active{background:#f7f9fb !important;box-shadow:0 6px 16px rgba(0,0,0,.06) !important}
+
+/* Thumbnail */
+.shared-list-thumb{flex-shrink:0;width:120px;height:120px;border-radius:12px;overflow:hidden;background:#E5E7EB}
+.shared-list-thumb img{width:100%;height:100%;object-fit:cover;object-position:center 20%}
+
+/* Content */
+.shared-list-content{flex:1;min-width:0;display:flex;flex-direction:column;gap:5px}
+.shared-list-brand{font:700 12px/1.2 Inter;text-transform:uppercase;letter-spacing:.5px;color:#6B7280}
+.shared-list-name{font:600 17px/1.3 Inter;color:#111827;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.shared-list-match{font:600 15px/1.3 Inter;color:#00857A;margin-top:0}
+.shared-list-match strong{font-weight:700;color:#00A3A3}
+
+/* Modal Footer */
+.shared-modal-footer{display:flex;flex-direction:column;gap:14px;align-items:stretch}
+.shared-modal__cta{width:100%;padding:15px 24px;background:linear-gradient(135deg,#00A3A3,#5ECED7);color:#fff;border:none;border-radius:12px;font:700 16px/1 Inter;cursor:pointer;transition:all .2s;box-shadow:0 4px 14px rgba(83,224,207,.35)}
+.shared-modal__cta:hover{transform:translateY(-2px);box-shadow:0 6px 20px rgba(83,224,207,.45)}
+.shared-modal__cta:active{transform:translateY(0)}
+
+/* Ghost Button */
+.shared-modal__link{display:flex;align-items:center;justify-content:center;gap:8px;width:100%;padding:12px 24px;background:transparent;border:1px solid #B8C5D0;color:#374151;border-radius:12px;font:600 15px/1 Inter;cursor:pointer;transition:all .2s}
+.shared-modal__link svg{transition:transform .2s}
+.shared-modal__link:hover{border-color:#8B98A5;background:#F9FAFB;color:#111827}
+.shared-modal__link:hover svg{transform:scale(1.1)}
+
+/* Animations */
+@keyframes fadeIn{from{opacity:0}to{opacity:1}}
+@keyframes slideUp{from{opacity:0;transform:translateY(40px)}to{opacity:1;transform:translateY(0)}}
+@keyframes popIn{from{opacity:0;transform:scale(.5)}to{opacity:1;transform:scale(1)}}
+@keyframes scaleIn{from{opacity:0;transform:scale(.8)}to{opacity:1;transform:scale(1)}}
+
+/* Comments Modal */
+.comments-modal{position:absolute;inset:0;z-index:9999;display:flex;align-items:flex-end;justify-content:center;border-radius:53px;overflow:hidden}
+.comments-modal[hidden]{display:none}
+.comments-modal__overlay{position:absolute;inset:0;background:rgba(0,0,0,.6);backdrop-filter:blur(8px);animation:fadeIn .3s ease;border-radius:53px}
+.comments-modal__card{position:relative;width:100%;background:#fff;border-radius:24px 24px 0 0;padding:24px 20px 34px;box-shadow:0 -20px 60px rgba(0,0,0,.3);animation:slideUp .4s cubic-bezier(.34,1.56,.64,1);max-height:75vh;overflow-y:auto}
+.comments-modal__close{position:absolute;top:14px;right:14px;width:32px;height:32px;border:none;background:rgba(0,0,0,.05);border-radius:50%;color:#666;cursor:pointer;display:flex;align-items:center;justify-content:center;transition:all .2s}
+.comments-modal__close:hover{background:rgba(0,0,0,.1);transform:scale(1.05)}
+
+/* Header */
+.comments-modal__header{text-align:left;margin-bottom:20px;padding-right:40px}
+.comments-modal__title{font:800 20px/1.3 Inter;color:#0B0F14;margin:0}
+
+/* Comments List */
+.comments-list{display:flex;flex-direction:column;gap:20px}
+
+/* Individual Comment */
+.comment{display:flex;flex-direction:column;gap:6px}
+.comment--reply{padding-left:16px;border-left:2px solid #E5E7EB}
+
+/* Comment Header */
+.comment-header{display:flex;align-items:center;gap:8px;flex-wrap:wrap}
+.comment-username{font:700 14px/1 Inter;color:#111827}
+.comment-badge{padding:3px 8px;background:#E0F7F7;color:#009090;border-radius:6px;font:700 11px/1 Inter;text-transform:uppercase;letter-spacing:.3px}
+.comment-time{font:600 13px/1 Inter;color:#9CA3AF}
+
+/* Comment Body */
+.comment-body{font:500 15px/1.4 Inter;color:#374151}
+</style>
+
+<script>
+  (function(){
+    const link = document.querySelector('.pc-match-link');
+    const sheet = document.querySelector('#pc-sheet');
+    const close = sheet?.querySelector('.pc-sheet__close');
+    link?.addEventListener('click', ()=> sheet.hidden = false);
+    close?.addEventListener('click', ()=> sheet.hidden = true);
+    sheet?.addEventListener('click', (e)=>{ if(e.target === sheet) sheet.hidden = true; });
+  })();
+</script>
+
+<script>
+  // Shared Sizes Modal
+  (function(){
+    const modal = document.querySelector('#shared-sizes-modal');
+    const closeBtn = modal?.querySelector('.shared-modal__close');
+    const overlay = modal?.querySelector('.shared-modal__overlay');
+    const triggers = document.querySelectorAll('.pill-proxi--count');
+
+    // Data for each user's shared items
+    const sharedData = {
+      ellaa76: {
+        count: 1,
+        items: [
+          {
+            brand: 'J.Crew',
+            name: 'Halter Mixy Dress',
+            size: 'S',
+            image: '../img/CL648_RD0165_m.png'
+          }
+        ]
+      },
+      srd24: {
+        count: 2,
+        items: [
+          {
+            brand: 'Alexis',
+            name: 'Briette Satin Maxi Dress',
+            size: 'S',
+            image: 'https://cdn.modaoperandi.com/assets/images/products/1039207/685257/c/large_alexis-blue-briette-dress.jpg?_v=1755195214',
+            url: 'https://www.modaoperandi.com/women/p/alexis/briette-dress/685257'
+          },
+          {
+            brand: 'Reformation',
+            name: 'Taryn Two Piece',
+            size: '2',
+            image: 'https://media.thereformation.com/image/upload/f_auto,q_auto:eco,dpr_2.0/w_500/PRD-SFCC/1314122/BLACK/1314122.1.BLACK?_s=RAABAB0',
+            url: 'https://www.thereformation.com/products/taryn-two-piece/1314122.html?dwvar_1314122_color=BLK&quantity=1'
+          }
+        ]
+      }
+    };
+
+    function populateModal(username) {
+      const data = sharedData[username];
+      if (!data) return;
+
+      // Update title
+      const title = modal.querySelector('#modalTitle');
+      if (title) {
+        const sizeWord = data.count === 1 ? 'size' : 'sizes';
+        title.textContent = `You & ${username} share ${data.count} ${sizeWord}!`;
+      }
+
+      // Update items list
+      const itemsList = modal.querySelector('.shared-items-list');
+      if (itemsList) {
+        itemsList.innerHTML = data.items.map(item => `
+          <div class="shared-list-item" role="button" tabindex="0" ${item.url ? `data-url="${item.url}"` : ''} style="${item.url ? 'cursor: pointer;' : ''}">
+            <div class="shared-list-thumb">
+              <img src="${item.image}" alt="${item.name}">
+            </div>
+            <div class="shared-list-content">
+              <div class="shared-list-brand">${item.brand}</div>
+              <div class="shared-list-name">${item.name}</div>
+              <div class="shared-list-match">Both own in <strong>${item.size}</strong></div>
+            </div>
+          </div>
+        `).join('');
+
+        // Add click handlers for items with URLs
+        itemsList.querySelectorAll('.shared-list-item[data-url]').forEach(item => {
+          item.addEventListener('click', () => {
+            const url = item.dataset.url;
+            if (url) window.open(url, '_blank');
+          });
+        });
+      }
+
+      // Update footer button
+      const ctaBtn = modal.querySelector('.shared-modal__cta');
+      if (ctaBtn) {
+        ctaBtn.textContent = `See ${username}'s closet`;
+      }
+    }
+
+    function openModal(username) {
+      populateModal(username);
+      if(modal) modal.hidden = false;
+    }
+
+    function closeModal() {
+      if(modal) modal.hidden = true;
+    }
+
+    // Event listeners for all triggers
+    triggers.forEach(trigger => {
+      trigger.addEventListener('click', () => {
+        const username = trigger.dataset.user;
+        openModal(username);
+      });
+    });
+
+    closeBtn?.addEventListener('click', closeModal);
+    overlay?.addEventListener('click', closeModal);
+  })();
+</script>
+
+<script>
+  // Comments Modal (Dynamic)
+  (function(){
+    const modal = document.querySelector('#comments-modal');
+    const closeBtn = modal?.querySelector('.comments-modal__close');
+    const overlay = modal?.querySelector('.comments-modal__overlay');
+    const trigger = document.querySelector('.pc-comment-teaser');
+    const commentsList = document.getElementById('commentsList');
+    const commentsTitle = document.getElementById('commentsTitle');
+
+    // Comment data for each slide
+    const commentsData = {
+      'Halter Mixy Dress': [
+        { username: 'ggnyc8989', time: '2d ago', body: 'Is this petite or regular?' },
+        { username: 'ellaa76', time: '2d ago', body: 'Regular!', isOwner: true, isReply: true },
+        { username: 'kb_2847', time: '1d ago', body: 'Would you say it runs true to size?' },
+        { username: 'ellaa76', time: '1d ago', body: 'I would say it runs small, esp at the waist', isOwner: true, isReply: true }
+      ],
+      'Peregrine Midi Dress': [
+        { username: 'user882', time: '3d ago', body: 'How long is the skirt?' }
+      ],
+      'Draped Midi Dress': [
+        { username: 'gbell', time: '1d ago', body: 'I think this sold out :(' },
+        { username: 'ellaa76', time: '1d ago', body: 'They had it in my store in nyc', isOwner: true, isReply: true }
+      ]
+    };
+
+    function renderComments(productTitle) {
+      if(!commentsList) return;
+
+      const comments = commentsData[productTitle] || [];
+      commentsList.innerHTML = '';
+
+      if(commentsTitle) {
+        commentsTitle.textContent = `Comments · ${comments.length}`;
+      }
+
+      comments.forEach(comment => {
+        const commentDiv = document.createElement('div');
+        commentDiv.className = comment.isReply ? 'comment comment--reply' : 'comment';
+
+        const headerDiv = document.createElement('div');
+        headerDiv.className = 'comment-header';
+
+        const username = document.createElement('span');
+        username.className = 'comment-username';
+        username.textContent = comment.username;
+        headerDiv.appendChild(username);
+
+        if(comment.isOwner) {
+          const badge = document.createElement('span');
+          badge.className = 'comment-badge';
+          badge.textContent = 'Owner';
+          headerDiv.appendChild(badge);
+        }
+
+        const time = document.createElement('span');
+        time.className = 'comment-time';
+        time.textContent = comment.time;
+        headerDiv.appendChild(time);
+
+        const bodyDiv = document.createElement('div');
+        bodyDiv.className = 'comment-body';
+        bodyDiv.textContent = comment.body;
+
+        commentDiv.appendChild(headerDiv);
+        commentDiv.appendChild(bodyDiv);
+        commentsList.appendChild(commentDiv);
+      });
+    }
+
+    function openModal() {
+      // Get current slide title to determine which comments to show
+      const activeSlide = document.querySelector('.pc-slide.pc-active');
+      const productTitle = activeSlide?.dataset.title || 'Halter Mixy Dress';
+
+      renderComments(productTitle);
+      if(modal) modal.hidden = false;
+    }
+
+    function closeModal() {
+      if(modal) modal.hidden = true;
+    }
+
+    // Event listeners
+    trigger?.addEventListener('click', openModal);
+    closeBtn?.addEventListener('click', closeModal);
+    overlay?.addEventListener('click', closeModal);
+  })();
+</script>
+
+<script>
+  (function(){
+    const chips = document.querySelector('.chips');
+
+    // Adaptive CTA ramps (subtle variety by category)
+    const RAMP = {
+      default: ['#00A3A3','#5ECED7','#A6FFCB'],
+      wedding: ['#009A99','#63D6C9','#A6FFCB'],
+      midi:    ['#008E9E','#7ED4E7','#B6FFDE'],
+      budget:  ['#00A3A3','#6EDBE0','#B6FFE9'],
+      quick:   ['#0096A8','#74CDE0','#AEEED9']
+    };
+    function setRamp(arr){
+      const [s,m,e] = arr || RAMP.default;
+      document.documentElement.style.setProperty('--cta-start', s);
+      document.documentElement.style.setProperty('--cta-mid',   m);
+      document.documentElement.style.setProperty('--cta-end',   e);
+    }
+    setRamp(RAMP.default);
+
+    // (heart/save functionality removed for MVP)
+
+    // Track chip clicks + set adaptive ramp
+    if(chips){
+      chips.addEventListener('click', (e)=>{
+        const btn = e.target.closest('.chip');
+        if(!btn) return;
+        const label = (btn.textContent || '').toLowerCase();
+        if(label.includes('wedding'))      setRamp(RAMP.wedding);
+        else if(label.includes('midi'))    setRamp(RAMP.midi);
+        else if(label.includes('$') || label.includes('under')) setRamp(RAMP.budget);
+        else if(label.includes('quick'))   setRamp(RAMP.quick);
+        else                               setRamp(RAMP.default);
+        try{ parent.postMessage({ type:'mock_button_click', key:`feed-chip-${label.trim().replace(/\s+/g,'-')}` }, '*'); }catch(err){}
+      }, {passive:true});
+    }
+  })();
+</script>
+
+<script>
+  // Namespaced proxy carousel controller
+  (function () {
+    const card = document.querySelector('.proxy-card');
+    if (!card) return;
+
+    const slides = card.querySelectorAll('.pc-carousel .pc-slide');
+    const dots   = card.querySelectorAll('.pc-dot');
+    if(!slides.length) return;
+
+    // Targets for caption/teaser
+    const brandEl = document.getElementById('pcBrand');
+    const titleEl = document.getElementById('pcTitle');
+    const sizeEl  = document.getElementById('pcSize');
+    const cCountEl = document.getElementById('pcCCount');
+    const cUserEl = document.getElementById('pcCUser');
+    const cQEl = document.getElementById('pcCQ');
+
+    function applyFromSlide(slide){
+      if(!slide) return;
+      const { brand, title, size, comments, user, q } = slide.dataset || {};
+      if(brandEl) brandEl.textContent = brand || '';
+      if(titleEl) titleEl.textContent = title || '';
+      if(sizeEl)  sizeEl.textContent  = size ? `(${size})` : '';
+      if(cCountEl) cCountEl.textContent = comments || '0';
+      if(cUserEl) cUserEl.textContent = user || 'user';
+      if(cQEl) cQEl.textContent = q || '';
+
+      // Update product name link URL based on current slide
+      const productLink = document.querySelector('.pc-look-caption a');
+      if(productLink && title) {
+        if(title === 'Halter Mixy Dress') {
+          productLink.href = 'https://www.jcrew.com/p/womens/categories/clothing/dresses-and-jumpsuits/halter-mixy-dress/CL648?srsltid=AfmBOorYMAVYnJLhcm2oe3NyDuwMiBQTsxaAhV39sLde4Eo0to2OK1JR&color_name=vintage-garnet&colorProductCode=CL648';
+        } else if(title === 'Signature Elegance One-Shoulder Maxi Dress') {
+          productLink.href = 'https://www.lulus.com/products/signature-elegance-olive-green-satin-one-shoulder-maxi-dress/2460691.html?irclickid=2MYV0l2uRxycWWbR6022E3PzUkpyrm3MKXD3VA0&sharedid=&irpid=116548&utm_source=impact&utm_medium=affiliate&utm_campaign=LTK&utm_content=ONLINE_TRACKING_LINK&utm_keyword=&irgwc=1';
+        } else if(title === 'Peregrine Midi Dress') {
+          productLink.href = 'https://www.anthropologie.com/shop/the-peregrine-midi-dress?color=520&inventoryCountry=US&countryCode=US&creative=&device=c&g_acctid=619-693-8226&g_adgroupid=&g_adid=&g_adtype=none&g_campaign=US+-+Shopping+-+PMAX+-+Apparel+-+Dresses+-+Icons%2FPush&g_campaignid=22530518290&g_keyword=&g_keywordid=&g_network=x&g_type=shopping&matchtype=&network=x&utm_campaign=US+-+Shopping+-+PMAX+-+Apparel+-+Dresses+-+Icons/Push&utm_content=&utm_kxconfid=vx6rd81ts&utm_medium=paid_search&utm_source=Google&utm_term=&gclsrc=aw.ds&gad_source=1&gad_campaignid=22526881889&gbraid=0AAAAADnwqi5VVmRiPLUsmXSeM0E0Xq9eX&gclid=CjwKCAjw0sfHBhB6EiwAQtv5qS56WSZ9PfLNylrIhwvUyBzLw8Qi1eB13bbCFbMMA1hA-Opl3nMVNBoCFigQAvD_BwE';
+        } else if(title === 'Draped Midi Dress') {
+          productLink.href = 'https://www.zara.com/us/en/draped-midi-dress-p04772305.html';
+        }
+      }
+
+      // Update shop button URL based on current slide
+      const shopButton = document.getElementById('shopButton');
+      if(shopButton && title) {
+        if(title === 'Signature Elegance One-Shoulder Maxi Dress') {
+          shopButton.onclick = () => window.open('https://www.lulus.com/products/signature-elegance-olive-green-satin-one-shoulder-maxi-dress/2460691.html?irclickid=2MYV0l2uRxycWWbR6022E3PzUkpyrm3MKXD3VA0&sharedid=&irpid=116548&utm_source=impact&utm_medium=affiliate&utm_campaign=LTK&utm_content=ONLINE_TRACKING_LINK&utm_keyword=&irgwc=1', '_blank');
+        } else if(title === 'Peregrine Midi Dress') {
+          shopButton.onclick = () => window.open('https://www.anthropologie.com/shop/the-peregrine-midi-dress?color=520&inventoryCountry=US&countryCode=US&creative=&device=c&g_acctid=619-693-8226&g_adgroupid=&g_adid=&g_adtype=none&g_campaign=US+-+Shopping+-+PMAX+-+Apparel+-+Dresses+-+Icons%2FPush&g_campaignid=22530518290&g_keyword=&g_keywordid=&g_network=x&g_type=shopping&matchtype=&network=x&utm_campaign=US+-+Shopping+-+PMAX+-+Apparel+-+Dresses+-+Icons/Push&utm_content=&utm_kxconfid=vx6rd81ts&utm_medium=paid_search&utm_source=Google&utm_term=&gclsrc=aw.ds&gad_source=1&gad_campaignid=22526881889&gbraid=0AAAAADnwqi5VVmRiPLUsmXSeM0E0Xq9eX&gclid=CjwKCAjw0sfHBhB6EiwAQtv5qS56WSZ9PfLNylrIhwvUyBzLw8Qi1eB13bbCFbMMA1hA-Opl3nMVNBoCFigQAvD_BwE', '_blank');
+        } else if(title === 'Draped Midi Dress') {
+          shopButton.onclick = () => window.open('https://www.zara.com/us/en/draped-midi-dress-p04772305.html', '_blank');
+        }
+      }
+    }
+
+    let idx = 0;
+    function show(n){
+      idx = (n + slides.length) % slides.length;
+      slides.forEach((s,i)=> s.classList.toggle('pc-active', i===idx));
+      dots.forEach((d,i)=> d.classList.toggle('pc-active',  i===idx));
+
+      // Toggle class for slide 2 spacing
+      card.classList.toggle('slide-2-active', idx === 1);
+
+      // Show/hide "Same as yours" pill based on slide
+      const badgeWrap = card.querySelector('.proxi-badge-wrap');
+      if (badgeWrap) {
+        // Show only on first slide (Somerset)
+        badgeWrap.style.display = idx === 0 ? '' : 'none';
+      }
+
+      applyFromSlide(slides[idx]);
+    }
+    dots.forEach((d,i)=> d.addEventListener('click', ()=> show(i)));
+
+    // Wire left/right nav buttons
+    const navLeft  = card.querySelector('.pc-nav.left');
+    const navRight = card.querySelector('.pc-nav.right');
+    if(navLeft)  navLeft.addEventListener('click', ()=> show(idx - 1));
+    if(navRight) navRight.addEventListener('click', ()=> show(idx + 1));
+
+    let startX = null;
+    card.addEventListener('touchstart', (e)=>{ startX = e.touches[0].clientX; }, {passive:true});
+    card.addEventListener('touchend', (e)=>{
+      if(startX==null) return;
+      const dx = e.changedTouches[0].clientX - startX;
+      if (Math.abs(dx) > 40) show(idx + (dx<0 ? 1 : -1));
+      startX = null;
+    }, {passive:true});
+
+    show(0);
+  })();
+</script>
+
+<script>
+  // Click handler for proxy card image
+  document.addEventListener('click', (e) => {
+    // Check if clicking on the proxy card hero image
+    if (e.target.classList.contains('pc-hero-img')) {
+      // Get the active slide within the same card as the clicked image
+      const card = e.target.closest('.proxy-card');
+      const activeSlide = card ? card.querySelector('.pc-slide.pc-active') : document.querySelector('.pc-slide.pc-active');
+      if (activeSlide) {
+        const title = activeSlide.dataset.title;
+        if (title === 'Signature Elegance One-Shoulder Maxi Dress') {
+          window.open('https://www.lulus.com/products/signature-elegance-olive-green-satin-one-shoulder-maxi-dress/2460691.html?irclickid=2MYV0l2uRxycWWbR6022E3PzUkpyrm3MKXD3VA0&sharedid=&irpid=116548&utm_source=impact&utm_medium=affiliate&utm_campaign=LTK&utm_content=ONLINE_TRACKING_LINK&utm_keyword=&irgwc=1', '_blank');
+        } else if (title === 'Peregrine Midi Dress') {
+          window.open('https://www.anthropologie.com/shop/the-peregrine-midi-dress?color=520&inventoryCountry=US&countryCode=US&creative=&device=c&g_acctid=619-693-8226&g_adgroupid=&g_adid=&g_adtype=none&g_campaign=US+-+Shopping+-+PMAX+-+Apparel+-+Dresses+-+Icons%2FPush&g_campaignid=22530518290&g_keyword=&g_keywordid=&g_network=x&g_type=shopping&matchtype=&network=x&utm_campaign=US+-+Shopping+-+PMAX+-+Apparel+-+Dresses+-+Icons/Push&utm_content=&utm_kxconfid=vx6rd81ts&utm_medium=paid_search&utm_source=Google&utm_term=&gclsrc=aw.ds&gad_source=1&gad_campaignid=22526881889&gbraid=0AAAAADnwqi5VVmRiPLUsmXSeM0E0Xq9eX&gclid=CjwKCAjw0sfHBhB6EiwAQtv5qS56WSZ9PfLNylrIhwvUyBzLw8Qi1eB13bbCFbMMA1hA-Opl3nMVNBoCFigQAvD_BwE', '_blank');
+        } else if (title === 'Draped Midi Dress') {
+          window.open('https://www.zara.com/us/en/draped-midi-dress-p04772305.html', '_blank');
+        }
+      }
+    }
+  });
+</script>
+
+<script>
+  // Simple view toggle for SG card (mirror feed-gallery)
+  (function(){
+    const body = document.body;
+    const sizeCta = document.getElementById('sizeCta');
+    const match = sizeCta ? sizeCta.querySelector('.match') : null;
+    const details = document.getElementById('fitDetails');
+    const summary = document.querySelector('.tip-summary');
+
+    function setCollapsed(){
+      if(details){ details.classList.add('hidden'); details.setAttribute('aria-hidden','true'); }
+      if(summary){ summary.style.display = ''; }
+      if(sizeCta) sizeCta.setAttribute('aria-expanded','false');
+      if(match) match.textContent = 'Fit details';
+    }
+    function setExpanded(){
+      if(details){ details.classList.remove('hidden'); details.setAttribute('aria-hidden','false'); }
+      if(summary){ summary.style.display = 'none'; }
+      if(sizeCta) sizeCta.setAttribute('aria-expanded','true');
+      if(match) match.textContent = 'Hide details';
+    }
+
+    if(sizeCta){
+      setCollapsed();
+      sizeCta.addEventListener('click', ()=>{
+        const open = details && !details.classList.contains('hidden');
+        open ? setCollapsed() : setExpanded();
+      });
+    }
+  })();
+</script>
+
+<script>
+  // Swap hero images to local assets when available (copied from size-twin)
+  document.querySelectorAll('.hero-img[data-local-src]').forEach((img)=>{
+    const localSrc = img.dataset.localSrc;
+    const fallback = img.dataset.fallbackSrc || img.src;
+    if(!localSrc) return;
+    const probe = new Image();
+    probe.onload = ()=>{ img.src = localSrc; };
+    probe.onerror = ()=>{ img.src = fallback; };
+    probe.src = localSrc;
+  });
+</script>
+
+<script>
+  (function(){
+    try{
+      const params = new URLSearchParams(location.search);
+      const embed = params.get('embed');
+      if(embed){
+        // Make background transparent and remove page glow when embedded
+        document.documentElement.style.background = 'transparent';
+        document.body.style.background = 'transparent';
+        document.body.style.padding = '0';
+        const styleEl = document.createElement('style');
+        styleEl.textContent = `body::before{display:none !important}`;
+        document.head.appendChild(styleEl);
+      }
+    }catch(err){}
+  })();
+  </script>
+
+<script>
+(function(){
+  var ftux = document.getElementById('ftux');
+  var btn  = document.getElementById('ftuxDismiss');
+  var body = document.body;
+
+  // If seen before, remove FTUX immediately
+  if (localStorage.getItem('proxiFtuxSeen') === '1') {
+    body.classList.remove('has-ftux');
+    if (ftux) ftux.remove();
+    return;
+  }
+
+  if (btn) btn.addEventListener('click', function(){
+    localStorage.setItem('proxiFtuxSeen', '1');
+    body.classList.remove('has-ftux');
+    if (ftux) ftux.remove();
+  });
+})();
+</script>
+
+<script>
+// PJAX fragment swap with prefetch + cache for near-instant transitions
+(function(){
+  const SCREEN_SELECTOR = '.screen';
+  const CACHE = (window.__pjaxCache = window.__pjaxCache || new Map());
+  history.scrollRestoration = 'manual';
+
+  function absUrl(url){ return new URL(url, location.href).href; }
+
+  function mergeHead(fromDoc){
+    const head = document.head;
+    const nodes = fromDoc.querySelectorAll('head style, head link[rel="stylesheet"]');
+    nodes.forEach(node=>{
+      const key = node.tagName + ':' + (node.getAttribute('href') || (node.textContent||'').length);
+      if(!head.querySelector(`[data-pjax-key="${key}"]`)){
+        const clone = node.cloneNode(true);
+        clone.setAttribute('data-pjax-key', key);
+        head.appendChild(clone);
+      }
+    });
+  }
+
+  function preloadImages(doc){
+    doc.querySelectorAll('.pc-hero-img, .img').forEach(img=>{
+      const src = img.getAttribute('src');
+      if(src){ const im = new Image(); im.src = src; }
+    });
+  }
+
+  async function fetchDoc(url){
+    const key = absUrl(url);
+    if(CACHE.has(key)) return CACHE.get(key);
+    const res = await fetch(key, { credentials:'same-origin', cache:'force-cache' });
+    const html = await res.text();
+    const doc = new DOMParser().parseFromString(html, 'text/html');
+    CACHE.set(key, doc);
+    return doc;
+  }
+
+  async function pjaxNavigate(url, replace){
+    const screen = document.querySelector(SCREEN_SELECTOR);
+    if(!screen){ window.location.href = url; return; }
+    screen.style.transition = 'opacity .12s ease';
+    try{
+      const doc = await fetchDoc(url);
+      mergeHead(doc);
+      preloadImages(doc);
+      screen.style.opacity = '0';
+      requestAnimationFrame(()=>{
+        const next = doc.querySelector(SCREEN_SELECTOR);
+        if(next){ screen.innerHTML = next.innerHTML; }
+        doc.querySelectorAll('body script').forEach(s=>{
+          const ns = document.createElement('script');
+          if(s.src) ns.src = s.src; else ns.textContent = s.textContent;
+          document.body.appendChild(ns);
+        });
+        const method = replace ? 'replaceState' : 'pushState';
+        history[method]({}, '', absUrl(url));
+        requestAnimationFrame(()=>{ screen.style.opacity = '1'; });
+      });
+    }catch(err){
+      window.location.href = url;
+    }
+  }
+
+  function prefetch(url){ fetchDoc(url).then(preloadImages).catch(()=>{}); }
+
+  // Preload the counterpart page eagerly and on intent
+  prefetch('closet-screen.html');
+  document.addEventListener('pointerenter', (e)=>{
+    const a = e.target.closest('.tabs a[href]');
+    if(a) prefetch(a.href);
+  }, {passive:true});
+  document.addEventListener('touchstart', (e)=>{
+    const a = e.target.closest('.tabs a[href]');
+    if(a) prefetch(a.href);
+  }, {passive:true});
+
+  // Intercept tab clicks
+  document.addEventListener('click', (e)=>{
+    const a = e.target.closest('.tabs a[href]');
+    if(!a) return;
+    const href = a.getAttribute('href');
+    if(!href || href==='#') return;
+    if(/closet-screen\.html|feed-unified\.html/.test(href)){
+      e.preventDefault();
+      pjaxNavigate(href, false);
+    }
+  });
+
+  window.addEventListener('popstate', ()=> pjaxNavigate(location.href, true));
+})();
+</script>
+
+</body>
+</html>
