@@ -1,0 +1,52 @@
+id,user_garment_id,measurement_type,measurement_value,unit,measurement_source,notes,created_at,created_by,size_label,source_term,garment_guide_id,measurement_format
+1,19,body_length,29,in,product_page,"From Vuori Strato Tech Tee product page - listed as ""29 body length"" under fit specifications",2025-08-09 19:17:22.41897,1,,Body length,1,text
+75,,body_length,26.5,in,product_page,Uniqlo SUPIMA Cotton T-Shirt size S - body_length,2025-08-10 00:52:42.843963,1,S,Body length back,3,table
+76,,shoulder_width,17.0,in,product_page,Uniqlo SUPIMA Cotton T-Shirt size S - shoulder_width,2025-08-10 00:52:42.843963,1,S,Shoulder width,3,table
+77,,chest_width,20.0,in,product_page,Uniqlo SUPIMA Cotton T-Shirt size S - chest_width,2025-08-10 00:52:42.843963,1,S,Body width,3,table
+78,,sleeve_length,16.5,in,product_page,Uniqlo SUPIMA Cotton T-Shirt size S - sleeve_length,2025-08-10 00:52:42.843963,1,S,Sleeve length (center back),3,table
+79,18,body_length,28.0,in,product_page,Uniqlo SUPIMA Cotton T-Shirt size M - body_length,2025-08-10 00:52:42.843963,1,M,Body length back,3,table
+80,18,shoulder_width,17.5,in,product_page,Uniqlo SUPIMA Cotton T-Shirt size M - shoulder_width,2025-08-10 00:52:42.843963,1,M,Shoulder width,3,table
+81,18,chest_width,21.5,in,product_page,Uniqlo SUPIMA Cotton T-Shirt size M - chest_width,2025-08-10 00:52:42.843963,1,M,Body width,3,table
+82,18,sleeve_length,17.5,in,product_page,Uniqlo SUPIMA Cotton T-Shirt size M - sleeve_length,2025-08-10 00:52:42.843963,1,M,Sleeve length (center back),3,table
+83,,body_length,29.0,in,product_page,Uniqlo SUPIMA Cotton T-Shirt size L - body_length,2025-08-10 00:52:42.843963,1,L,Body length back,3,table
+84,,shoulder_width,18.5,in,product_page,Uniqlo SUPIMA Cotton T-Shirt size L - shoulder_width,2025-08-10 00:52:42.843963,1,L,Shoulder width,3,table
+85,,chest_width,23.0,in,product_page,Uniqlo SUPIMA Cotton T-Shirt size L - chest_width,2025-08-10 00:52:42.843963,1,L,Body width,3,table
+86,,sleeve_length,18.0,in,product_page,Uniqlo SUPIMA Cotton T-Shirt size L - sleeve_length,2025-08-10 00:52:42.843963,1,L,Sleeve length (center back),3,table
+87,,body_length,30.0,in,product_page,Uniqlo SUPIMA Cotton T-Shirt size XL - body_length,2025-08-10 00:52:42.843963,1,XL,Body length back,3,table
+88,,shoulder_width,19.5,in,product_page,Uniqlo SUPIMA Cotton T-Shirt size XL - shoulder_width,2025-08-10 00:52:42.843963,1,XL,Shoulder width,3,table
+89,,chest_width,24.5,in,product_page,Uniqlo SUPIMA Cotton T-Shirt size XL - chest_width,2025-08-10 00:52:42.843963,1,XL,Body width,3,table
+90,,sleeve_length,18.5,in,product_page,Uniqlo SUPIMA Cotton T-Shirt size XL - sleeve_length,2025-08-10 00:52:42.843963,1,XL,Sleeve length (center back),3,table
+91,,body_length,31.0,in,product_page,Uniqlo SUPIMA Cotton T-Shirt size XXL - body_length,2025-08-10 00:52:42.843963,1,XXL,Body length back,3,table
+92,,shoulder_width,20.5,in,product_page,Uniqlo SUPIMA Cotton T-Shirt size XXL - shoulder_width,2025-08-10 00:52:42.843963,1,XXL,Shoulder width,3,table
+93,,chest_width,26.0,in,product_page,Uniqlo SUPIMA Cotton T-Shirt size XXL - chest_width,2025-08-10 00:52:42.843963,1,XXL,Body width,3,table
+94,,sleeve_length,19.0,in,product_page,Uniqlo SUPIMA Cotton T-Shirt size XXL - sleeve_length,2025-08-10 00:52:42.843963,1,XXL,Sleeve length (center back),3,table
+95,,body_length,32.0,in,product_page,Uniqlo SUPIMA Cotton T-Shirt size 3XL - body_length,2025-08-10 00:52:42.843963,1,3XL,Body length back,3,table
+96,,shoulder_width,21.5,in,product_page,Uniqlo SUPIMA Cotton T-Shirt size 3XL - shoulder_width,2025-08-10 00:52:42.843963,1,3XL,Shoulder width,3,table
+97,,chest_width,27.5,in,product_page,Uniqlo SUPIMA Cotton T-Shirt size 3XL - chest_width,2025-08-10 00:52:42.843963,1,3XL,Body width,3,table
+98,,sleeve_length,19.5,in,product_page,Uniqlo SUPIMA Cotton T-Shirt size 3XL - sleeve_length,2025-08-10 00:52:42.843963,1,3XL,Sleeve length (center back),3,table
+99,,body_length,25.0,in,product_page,Uniqlo SUPIMA Cotton T-Shirt size XXS - body_length,2025-08-10 00:54:17.352449,1,XXS,Body length back,3,table
+100,,shoulder_width,15.5,in,product_page,Uniqlo SUPIMA Cotton T-Shirt size XXS - shoulder_width,2025-08-10 00:54:17.352449,1,XXS,Shoulder width,3,table
+101,,chest_width,18.0,in,product_page,Uniqlo SUPIMA Cotton T-Shirt size XXS - chest_width,2025-08-10 00:54:17.352449,1,XXS,Body width,3,table
+102,,sleeve_length,15.5,in,product_page,Uniqlo SUPIMA Cotton T-Shirt size XXS - sleeve_length,2025-08-10 00:54:17.352449,1,XXS,Sleeve length (center back),3,table
+103,,body_length,25.5,in,product_page,Uniqlo SUPIMA Cotton T-Shirt size XS - body_length,2025-08-10 00:54:17.352449,1,XS,Body length back,3,table
+104,,shoulder_width,16.5,in,product_page,Uniqlo SUPIMA Cotton T-Shirt size XS - shoulder_width,2025-08-10 00:54:17.352449,1,XS,Shoulder width,3,table
+105,,chest_width,19.0,in,product_page,Uniqlo SUPIMA Cotton T-Shirt size XS - chest_width,2025-08-10 00:54:17.352449,1,XS,Body width,3,table
+106,,sleeve_length,15.5,in,product_page,Uniqlo SUPIMA Cotton T-Shirt size XS - sleeve_length,2025-08-10 00:54:17.352449,1,XS,Sleeve length (center back),3,table
+108,,chest_width,42.6,in,product_page,NN.07 size chart measurement for chest_width,2025-08-10 01:20:59.393164,1,L,1/2 Chest Width,2,table
+109,,sleeve_length,35.4,in,product_page,NN.07 size chart measurement for sleeve_length,2025-08-10 01:20:59.393164,1,L,Sleeve Length,2,table
+110,,body_length,27.4,in,product_page,NN.07 size chart measurement for body_length,2025-08-10 01:20:59.393164,1,L,Center Back Length,2,table
+111,6,chest_width,41.0,in,product_page,NN.07 size chart measurement for chest_width,2025-08-10 01:20:59.393164,1,M,1/2 Chest Width,2,table
+112,6,sleeve_length,35.0,in,product_page,NN.07 size chart measurement for sleeve_length,2025-08-10 01:20:59.393164,1,M,Sleeve Length,2,table
+113,6,body_length,27.0,in,product_page,NN.07 size chart measurement for body_length,2025-08-10 01:20:59.393164,1,M,Center Back Length,2,table
+114,,chest_width,39.4,in,product_page,NN.07 size chart measurement for chest_width,2025-08-10 01:20:59.393164,1,S,1/2 Chest Width,2,table
+115,,sleeve_length,34.6,in,product_page,NN.07 size chart measurement for sleeve_length,2025-08-10 01:20:59.393164,1,S,Sleeve Length,2,table
+116,,body_length,26.6,in,product_page,NN.07 size chart measurement for body_length,2025-08-10 01:20:59.393164,1,S,Center Back Length,2,table
+118,,chest_width,44.0,in,product_page,NN.07 size chart measurement for chest_width,2025-08-10 01:20:59.393164,1,XL,1/2 Chest Width,2,table
+119,,sleeve_length,35.8,in,product_page,NN.07 size chart measurement for sleeve_length,2025-08-10 01:20:59.393164,1,XL,Sleeve Length,2,table
+120,,body_length,27.8,in,product_page,NN.07 size chart measurement for body_length,2025-08-10 01:20:59.393164,1,XL,Center Back Length,2,table
+121,,chest_width,46.4,in,product_page,NN.07 size chart measurement for chest_width,2025-08-10 01:20:59.393164,1,XXL,1/2 Chest Width,2,table
+122,,sleeve_length,36.2,in,product_page,NN.07 size chart measurement for sleeve_length,2025-08-10 01:20:59.393164,1,XXL,Sleeve Length,2,table
+123,,body_length,28.1,in,product_page,NN.07 size chart measurement for body_length,2025-08-10 01:20:59.393164,1,XXL,Center Back Length,2,table
+129,,chest_width,24.1,in,product_page,Lacoste Across chest measurement for size L from dual measurement UI,2025-08-10 02:53:17.819195,1,L,Across chest,6,table
+130,,sleeve_length,26.4,in,product_page,Lacoste Sleeve length measurement for size L from dual measurement UI,2025-08-10 02:53:17.819195,1,L,Sleeve length,6,table
+131,,body_length,30.2,in,product_page,Lacoste Front length measurement for size L from dual measurement UI,2025-08-10 02:53:17.819195,1,L,Front length,6,table

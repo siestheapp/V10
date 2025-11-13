@@ -1,0 +1,13 @@
+# Default owners
+*       @seandavey
+
+# Areas
+expo/**                 @seandavey
+src/ios_app/**          @seandavey
+scripts/**              @seandavey
+supabase/**             @seandavey
+docs/**                 @seandavey
+tests/**                @seandavey
+data/**                 @seandavey
+
+

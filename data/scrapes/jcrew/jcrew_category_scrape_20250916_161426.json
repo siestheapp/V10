@@ -1,0 +1,25 @@
+{
+  "category_url": "https://www.jcrew.com/plp/mens/categories/clothing/shirts?sub-categories=men-shirts-linen",
+  "started_at": "2025-09-16T16:12:35.215421",
+  "products": [
+    {
+      "url": "https://www.jcrew.com/p/mens/categories/clothing/shirts/cotton-linen-twill/linen-cotton-blend-twill-workshirt/CG345",
+      "product_code": "CG345",
+      "product_name": "",
+      "colors": [
+        "WHITE",
+        "ESTATE BLUE"
+      ],
+      "fits": [],
+      "error": null,
+      "scraped_at": "2025-09-16T16:13:09.119224"
+    }
+  ],
+  "summary": {
+    "total_products": 4,
+    "successful": 1,
+    "failed": 0
+  },
+  "completed_at": "2025-09-16T16:14:26.141643",
+  "duration_seconds": 110.926222
+}

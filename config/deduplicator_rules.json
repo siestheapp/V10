@@ -1,0 +1,22 @@
+{
+  "consecutive_codes": {
+    "description": "Consecutive product codes (AI873/AI874) likely indicate color variants",
+    "action": "add_variant",
+    "example": "AI873 and AI874 are variants of the same Ludlow shirt"
+  },
+  "empty_names": {
+    "description": "Products with empty names should be rejected during scraping",
+    "action": "reject",
+    "example": "Skip any product without a base_name"
+  },
+  "style_variations": {
+    "description": "Similar names with style differences are separate products",
+    "action": "create_master",
+    "example": "Secret Wash shirt vs Secret Wash shirt in stripe"
+  },
+  "master_codes": {
+    "description": "MP### codes indicate master products",
+    "action": "create_master_or_skip",
+    "example": "MP832 is a master product code"
+  }
+}

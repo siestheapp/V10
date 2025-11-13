@@ -1,0 +1,108 @@
+{% extends "admin/base.html" %}
+
+{% block title %}Size Guides - Admin{% endblock %}
+
+{% block content %}
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <h2><i class="fas fa-ruler"></i> Size Guides</h2>
+    <a href="{{ url_for('admin_upload_size_guide') }}" class="btn btn-primary">
+        <i class="fas fa-plus"></i> Upload New Size Guide
+    </a>
+</div>
+
+{% if size_guides %}
+<div class="card">
+    <div class="card-header">
+        <h5 class="card-title mb-0">
+            <i class="fas fa-list"></i> All Size Guides ({{ size_guides|length }})
+        </h5>
+    </div>
+    <div class="card-body p-0">
+        <div class="table-responsive">
+            <table class="table table-striped mb-0">
+                <thead class="table-dark">
+                    <tr>
+                        <th>Brand</th>
+                        <th>Gender</th>
+                        <th>Category</th>
+                        <th>Level</th>
+                        <th>Sizes</th>
+                        <th>Source</th>
+                        <th>Created</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for guide in size_guides %}
+                    <tr>
+                        <td>
+                            <strong>{{ guide.brand_name }}</strong>
+                        </td>
+                        <td>
+                            <span class="badge bg-{% if guide.gender == 'Male' %}primary{% else %}secondary{% endif %}">
+                                {{ guide.gender }}
+                            </span>
+                        </td>
+                        <td>{{ guide.category_name }}</td>
+                        <td>
+                            <small class="text-muted">{{ guide.guide_level }}</small>
+                        </td>
+                        <td>
+                            <span class="badge bg-success">{{ guide.entry_count }} sizes</span>
+                        </td>
+                        <td>
+                            {% if guide.source_url %}
+                                <a href="{{ guide.source_url }}" target="_blank" class="btn btn-sm btn-outline-info">
+                                    <i class="fas fa-external-link-alt"></i> View Source
+                                </a>
+                            {% else %}
+                                <span class="text-muted">No source</span>
+                            {% endif %}
+                        </td>
+                        <td>
+                            <small class="text-muted">
+                                {{ guide.created_at.strftime('%Y-%m-%d') }}
+                            </small>
+                        </td>
+                        <td>
+                            <div class="btn-group btn-group-sm">
+                                <button class="btn btn-outline-primary" onclick="viewSizeGuide({{ guide.id }})">
+                                    <i class="fas fa-eye"></i> View
+                                </button>
+                                <button class="btn btn-outline-warning" onclick="editSizeGuide({{ guide.id }})">
+                                    <i class="fas fa-edit"></i> Edit
+                                </button>
+                            </div>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+{% else %}
+<div class="card">
+    <div class="card-body text-center py-5">
+        <i class="fas fa-ruler fa-3x text-muted mb-3"></i>
+        <h4 class="text-muted">No Size Guides Found</h4>
+        <p class="text-muted">Upload your first size guide to get started.</p>
+        <a href="{{ url_for('admin_upload_size_guide') }}" class="btn btn-primary">
+            <i class="fas fa-plus"></i> Upload Size Guide
+        </a>
+    </div>
+</div>
+{% endif %}
+
+<script>
+function viewSizeGuide(guideId) {
+    // TODO: Implement view size guide details modal
+    alert('View size guide ' + guideId + ' - Coming soon!');
+}
+
+function editSizeGuide(guideId) {
+    // TODO: Implement edit size guide functionality
+    alert('Edit size guide ' + guideId + ' - Coming soon!');
+}
+</script>
+{% endblock %} 

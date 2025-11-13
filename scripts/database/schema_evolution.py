@@ -1,0 +1,230 @@
+#!/usr/bin/env python3
+"""
+Schema Evolution Tracker
+
+Automatically tracks schema changes in the tailor2 database by:
+1. Taking schema-only dumps with timestamps
+2. Comparing to previous snapshots
+3. Appending diffs to SCHEMA_EVOLUTION.md
+"""
+
+import subprocess
+import os
+import sys
+from datetime import datetime
+from pathlib import Path
+import difflib
+import pytz
+
+# Database configuration - Updated to use Supabase tailor3
+DB_CONFIG = {
+    "database": "postgres",
+    "user": "postgres.lbilxlkchzpducggkrxx",
+    "password": "efvTower12",
+    "host": "aws-0-us-east-2.pooler.supabase.com",
+    "port": "6543"
+}
+
+def get_est_timestamp():
+    eastern = pytz.timezone('US/Eastern')
+    return datetime.now(eastern)
+
+def get_schema_dump():
+    """Get current schema as SQL string"""
+    try:
+        cmd = [
+            "pg_dump",
+            "-U", DB_CONFIG["user"],
+            "-h", DB_CONFIG["host"],
+            "-p", DB_CONFIG["port"],
+            "-d", DB_CONFIG["database"],
+            "--schema-only",
+            "--no-owner",
+            "--no-privileges"
+        ]
+        
+        result = subprocess.run(cmd, capture_output=True, text=True, check=True)
+        return result.stdout
+    except subprocess.CalledProcessError as e:
+        print(f"❌ Error getting schema dump: {e}")
+        print(f"stderr: {e.stderr}")
+        return None
+    except FileNotFoundError:
+        print("❌ pg_dump not found. Make sure PostgreSQL is installed and in PATH.")
+        return None
+
+def save_schema_snapshot(schema_sql: str, timestamp: str = None):
+    """Save schema snapshot to file"""
+    if not timestamp:
+        timestamp = get_est_timestamp().strftime("%Y%m%d_%H%M%S")
+    
+    filename = f"supabase/snapshots/2025-06-29/SCHEMA_{timestamp}.sql"
+    
+    # Ensure directory exists
+    os.makedirs("supabase/snapshots/2025-06-29", exist_ok=True)
+    
+    with open(filename, 'w') as f:
+        f.write(schema_sql)
+    
+    print(f"\u2705 Schema snapshot saved: {filename}")
+    return filename
+
+def get_previous_schema():
+    """Get the most recent schema snapshot"""
+    schema_dir = Path("supabase/snapshots/2025-06-29")
+    if not schema_dir.exists():
+        return None
+    
+    # Find all SCHEMA_*.sql files
+    schema_files = list(schema_dir.glob("SCHEMA_*.sql"))
+    if not schema_files:
+        return None
+    
+    # Get the most recent one
+    latest_file = max(schema_files, key=lambda f: f.stat().st_mtime)
+    
+    try:
+        with open(latest_file, 'r') as f:
+            return f.read()
+    except Exception as e:
+        print(f"❌ Error reading previous schema: {e}")
+        return None
+
+def generate_schema_diff(old_schema: str, new_schema: str) -> str:
+    """Generate a human-readable diff between schemas"""
+    if not old_schema or not new_schema:
+        return "No previous schema to compare against."
+    
+    # Split into lines for diffing
+    old_lines = old_schema.splitlines(keepends=True)
+    new_lines = new_schema.splitlines(keepends=True)
+    
+    # Generate diff
+    diff = difflib.unified_diff(
+        old_lines, 
+        new_lines,
+        fromfile="Previous Schema",
+        tofile="Current Schema",
+        lineterm=""
+    )
+    
+    return "\n".join(diff)
+
+def update_evolution_markdown(timestamp: str, diff: str, has_changes: bool):
+    """Update SCHEMA_EVOLUTION.md with new entry"""
+    evolution_file = "supabase/snapshots/2025-06-29/SCHEMA_EVOLUTION.md"
+    
+    # Ensure directory exists
+    os.makedirs("supabase/snapshots/2025-06-29", exist_ok=True)
+    
+    # Read existing content
+    existing_content = ""
+    if os.path.exists(evolution_file):
+        with open(evolution_file, 'r') as f:
+            existing_content = f.read()
+    
+    # Create new entry
+    date_str = get_est_timestamp().strftime("%Y-%m-%d %H:%M:%S")
+    
+    if has_changes:
+        new_entry = f"""
+## [{date_str}] Schema Changes Detected
+
+**Schema snapshot:** `SCHEMA_{timestamp}.sql`
+
+**Changes:**
+```sql
+{diff}
+```
+
+---
+"""
+    else:
+        new_entry = f"""
+## [{date_str}] Schema Check - No Changes
+
+**Schema snapshot:** `SCHEMA_{timestamp}.sql`
+
+No schema changes detected since last snapshot.
+
+---
+"""
+    
+    # Add new entry at the top (after the header)
+    if existing_content:
+        # Find the first section after the header
+        lines = existing_content.split('\n')
+        insert_index = 0
+        
+        for i, line in enumerate(lines):
+            if line.startswith('## [') and i > 0:
+                insert_index = i
+                break
+        
+        # Insert new entry
+        lines.insert(insert_index, new_entry.strip())
+        updated_content = '\n'.join(lines)
+    else:
+        # Create new file
+        updated_content = f"""# SCHEMA_EVOLUTION.md
+
+This file tracks all schema and structural changes to the `tailor2` database, automatically generated by schema_evolution.py.
+
+{new_entry.strip()}
+
+## How This Works
+
+This file is automatically updated whenever schema_evolution.py is run. It:
+1. Takes a schema-only dump of the database
+2. Compares it to the previous snapshot
+3. Records any changes with timestamps and diffs
+
+---
+*Automatically generated for AI analysis and development tracking*
+"""
+    
+    # Write updated content
+    with open(evolution_file, 'w') as f:
+        f.write(updated_content)
+    
+    print(f"\u2705 Schema evolution updated: {evolution_file}")
+
+def main():
+    """Main function to track schema evolution"""
+    print("🔍 Tracking schema evolution...")
+    
+    # Get current schema
+    current_schema = get_schema_dump()
+    if not current_schema:
+        print("❌ Failed to get current schema")
+        return
+    
+    # Get timestamp
+    timestamp = get_est_timestamp().strftime("%Y%m%d_%H%M%S")
+    
+    # Save current schema snapshot
+    snapshot_file = save_schema_snapshot(current_schema, timestamp)
+    
+    # Get previous schema for comparison
+    previous_schema = get_previous_schema()
+    
+    # Generate diff
+    if previous_schema:
+        diff = generate_schema_diff(previous_schema, current_schema)
+        has_changes = diff.strip() != "No previous schema to compare against." and len(diff.strip()) > 0
+    else:
+        diff = "First schema snapshot - no previous version to compare against."
+        has_changes = False
+    
+    # Update evolution markdown
+    update_evolution_markdown(timestamp, diff, has_changes)
+    
+    if has_changes:
+        print("🔄 Schema changes detected and recorded!")
+    else:
+        print("✅ No schema changes detected")
+    
+    print("🎉 Schema evolution tracking complete!")
+
+if __name__ == "__main__":
+    main() 

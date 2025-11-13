@@ -1,0 +1,166 @@
+{% extends "admin/base.html" %}
+
+{% block title %}Admin Dashboard - Garment Manager{% endblock %}
+
+{% block content %}
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <h2><i class="fas fa-tachometer-alt"></i> Admin Dashboard</h2>
+    <div class="text-muted">
+        Welcome back, {{ session.get('admin_name', 'Admin') }}!
+    </div>
+</div>
+
+<!-- Statistics Cards -->
+<div class="row mb-4">
+    <div class="col-md-3">
+        <div class="card bg-primary text-white">
+            <div class="card-body">
+                <div class="d-flex justify-content-between">
+                    <div>
+                        <h4 class="card-title">{{ user_count }}</h4>
+                        <p class="card-text">Users</p>
+                    </div>
+                    <div class="align-self-center">
+                        <i class="fas fa-users fa-2x"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <div class="col-md-3">
+        <div class="card bg-success text-white">
+            <div class="card-body">
+                <div class="d-flex justify-content-between">
+                    <div>
+                        <h4 class="card-title">{{ garment_count }}</h4>
+                        <p class="card-text">Garments</p>
+                    </div>
+                    <div class="align-self-center">
+                        <i class="fas fa-tshirt fa-2x"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <div class="col-md-3">
+        <div class="card bg-info text-white">
+            <div class="card-body">
+                <div class="d-flex justify-content-between">
+                    <div>
+                        <h4 class="card-title">{{ brand_count }}</h4>
+                        <p class="card-text">Brands</p>
+                    </div>
+                    <div class="align-self-center">
+                        <i class="fas fa-tags fa-2x"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <div class="col-md-3">
+        <div class="card bg-warning text-white">
+            <div class="card-body">
+                <div class="d-flex justify-content-between">
+                    <div>
+                        <h4 class="card-title">{{ feedback_count }}</h4>
+                        <p class="card-text">Feedback</p>
+                    </div>
+                    <div class="align-self-center">
+                        <i class="fas fa-comments fa-2x"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Recent Activity -->
+<div class="row">
+    <div class="col-md-8">
+        <div class="card">
+            <div class="card-header">
+                <h5 class="card-title mb-0">
+                    <i class="fas fa-clock"></i> Recent Garments Added
+                </h5>
+            </div>
+            <div class="card-body">
+                {% if recent_garments %}
+                    <div class="table-responsive">
+                        <table class="table table-hover">
+                            <thead>
+                                <tr>
+                                    <th>Product</th>
+                                    <th>Brand</th>
+                                    <th>User</th>
+                                    <th>Added</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for garment in recent_garments %}
+                                <tr>
+                                    <td>
+                                        <strong>{{ garment.product_name or 'Unnamed Garment' }}</strong>
+                                    </td>
+                                    <td>{{ garment.brand_name }}</td>
+                                    <td>{{ garment.user_email }}</td>
+                                    <td>{{ garment.created_at.strftime('%Y-%m-%d %H:%M') }}</td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                {% else %}
+                    <div class="text-center py-4">
+                        <i class="fas fa-tshirt fa-2x text-muted mb-3"></i>
+                        <p class="text-muted">No garments added yet.</p>
+                    </div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+    
+    <div class="col-md-4">
+        <div class="card">
+            <div class="card-header">
+                <h5 class="card-title mb-0">
+                    <i class="fas fa-tools"></i> Quick Actions
+                </h5>
+            </div>
+            <div class="card-body">
+                <div class="d-grid gap-2">
+                    <a href="{{ url_for('admin_brands') }}" class="btn btn-outline-primary">
+                        <i class="fas fa-tags"></i> Manage Brands
+                    </a>
+                    <a href="{{ url_for('admin_categories') }}" class="btn btn-outline-info">
+                        <i class="fas fa-list"></i> Manage Categories
+                    </a>
+                    <a href="{{ url_for('admin_users') }}" class="btn btn-outline-success">
+                        <i class="fas fa-users"></i> View Users
+                    </a>
+                    <a href="{{ url_for('admin_activity') }}" class="btn btn-outline-secondary">
+                        <i class="fas fa-history"></i> Activity Log
+                    </a>
+                </div>
+            </div>
+        </div>
+        
+        <div class="card mt-3">
+            <div class="card-header">
+                <h6 class="card-title mb-0">
+                    <i class="fas fa-info-circle"></i> System Info
+                </h6>
+            </div>
+            <div class="card-body">
+                <small class="text-muted">
+                    <strong>Admin:</strong> {{ session.get('admin_name', 'Admin') }}<br>
+                    <strong>Role:</strong> {{ session.get('admin_role', 'Unknown') }}<br>
+                    <strong>Email:</strong> {{ session.get('admin_email', 'N/A') }}
+                </small>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %} 

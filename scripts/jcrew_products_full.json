@@ -1,0 +1,518 @@
+{
+  "CM389": {
+    "code": "CM389",
+    "name": "Best Seller",
+    "url": "https://www.jcrew.com/p/mens/categories/clothing/shirts/corduroy/fine-wale-corduroy-shirt/CM389",
+    "original_url": "https://www.jcrew.com/p/mens/categories/clothing/shirts/corduroy/fine-wale-corduroy-shirt/CM389?display=standard&fit=Classic&color_name=redwood-brown&colorProductCode=CM389"
+  },
+  "CF783": {
+    "code": "CF783",
+    "name": "Best Seller",
+    "url": "https://www.jcrew.com/p/mens/categories/clothing/shirts/secret-wash/secret-wash-cotton-poplin-shirt-with-point-collar/CF783",
+    "original_url": "https://www.jcrew.com/p/mens/categories/clothing/shirts/secret-wash/secret-wash-cotton-poplin-shirt-with-point-collar/CF783?display=standard&fit=Classic&color_name=victor-brown-green&colorProductCode=CF783"
+  },
+  "CN406": {
+    "code": "CN406",
+    "name": "New",
+    "url": "https://www.jcrew.com/p/mens/categories/clothing/shirts/corduroy/fine-wale-corduroy-shirt-with-embroidered-dogs/CN406",
+    "original_url": "https://www.jcrew.com/p/mens/categories/clothing/shirts/corduroy/fine-wale-corduroy-shirt-with-embroidered-dogs/CN406?display=standard&fit=Classic&color_name=dog-emb-blue-brown&colorProductCode=CN406"
+  },
+  "BE996": {
+    "code": "BE996",
+    "name": "Best Seller",
+    "url": "https://www.jcrew.com/p/mens/categories/clothing/shirts/broken-in-oxford/broken-in-organic-cotton-oxford-shirt/BE996",
+    "original_url": "https://www.jcrew.com/p/mens/categories/clothing/shirts/broken-in-oxford/broken-in-organic-cotton-oxford-shirt/BE996?display=standard&fit=Classic&color_name=white&colorProductCode=BE996"
+  },
+  "BX291": {
+    "code": "BX291",
+    "name": "Best Seller",
+    "url": "https://www.jcrew.com/p/mens/categories/clothing/dress-shirts/business-casual-shirts/bowery-performance-stretch-dress-shirt-with-spread-collar/BX291",
+    "original_url": "https://www.jcrew.com/p/mens/categories/clothing/dress-shirts/business-casual-shirts/bowery-performance-stretch-dress-shirt-with-spread-collar/BX291?display=standard&fit=Classic&color_name=white&colorProductCode=BX291"
+  },
+  "BZ532": {
+    "code": "BZ532",
+    "name": "Top Rated",
+    "url": "https://www.jcrew.com/p/mens/categories/clothing/shirts/chambray-and-denim-shirts/organic-cotton-chambray-shirt/BZ532",
+    "original_url": "https://www.jcrew.com/p/mens/categories/clothing/shirts/chambray-and-denim-shirts/organic-cotton-chambray-shirt/BZ532?display=standard&fit=Classic&color_name=black-chambray&colorProductCode=BZ532"
+  },
+  "CJ508": {
+    "code": "CJ508",
+    "name": "Top Rated",
+    "url": "https://www.jcrew.com/p/mens/categories/clothing/shirts/camp-collar/short-sleeve-cotton-dobby-camp-collar-shirt/CJ508",
+    "original_url": "https://www.jcrew.com/p/mens/categories/clothing/shirts/camp-collar/short-sleeve-cotton-dobby-camp-collar-shirt/CJ508?display=standard&fit=Classic&color_name=distant-surplus&colorProductCode=CJ508"
+  },
+  "ME183": {
+    "code": "ME183",
+    "name": "",
+    "url": "https://www.jcrew.com/p/mens/categories/clothing/shirts/ME183",
+    "original_url": ""
+  },
+  "ME053": {
+    "code": "ME053",
+    "name": "",
+    "url": "https://www.jcrew.com/p/mens/categories/clothing/shirts/ME053",
+    "original_url": ""
+  },
+  "ME625": {
+    "code": "ME625",
+    "name": "",
+    "url": "https://www.jcrew.com/p/mens/categories/clothing/shirts/ME625",
+    "original_url": ""
+  },
+  "MP123": {
+    "code": "MP123",
+    "name": "",
+    "url": "https://www.jcrew.com/p/mens/categories/clothing/shirts/MP123",
+    "original_url": ""
+  },
+  "MP251": {
+    "code": "MP251",
+    "name": "",
+    "url": "https://www.jcrew.com/p/mens/categories/clothing/shirts/MP251",
+    "original_url": ""
+  },
+  "MP600": {
+    "code": "MP600",
+    "name": "",
+    "url": "https://www.jcrew.com/p/mens/categories/clothing/shirts/MP600",
+    "original_url": ""
+  },
+  "MP653": {
+    "code": "MP653",
+    "name": "",
+    "url": "https://www.jcrew.com/p/mens/categories/clothing/shirts/MP653",
+    "original_url": ""
+  },
+  "MP712": {
+    "code": "MP712",
+    "name": "",
+    "url": "https://www.jcrew.com/p/mens/categories/clothing/shirts/MP712",
+    "original_url": ""
+  },
+  "MP694": {
+    "code": "MP694",
+    "name": "",
+    "url": "https://www.jcrew.com/p/mens/categories/clothing/shirts/MP694",
+    "original_url": ""
+  },
+  "MP235": {
+    "code": "MP235",
+    "name": "",
+    "url": "https://www.jcrew.com/p/mens/categories/clothing/shirts/MP235",
+    "original_url": ""
+  },
+  "WOFF2": {
+    "code": "WOFF2",
+    "name": "",
+    "url": "https://www.jcrew.com/p/mens/categories/clothing/shirts/WOFF2",
+    "original_url": ""
+  },
+  "SHIRTS": {
+    "code": "SHIRTS",
+    "name": "",
+    "url": "https://www.jcrew.com/p/mens/categories/clothing/shirts/SHIRTS",
+    "original_url": ""
+  },
+  "CREATE": {
+    "code": "CREATE",
+    "name": "",
+    "url": "https://www.jcrew.com/p/mens/categories/clothing/shirts/CREATE",
+    "original_url": ""
+  },
+  "CSS2": {
+    "code": "CSS2",
+    "name": "",
+    "url": "https://www.jcrew.com/p/mens/categories/clothing/shirts/CSS2",
+    "original_url": ""
+  },
+  "PIXEL": {
+    "code": "PIXEL",
+    "name": "",
+    "url": "https://www.jcrew.com/p/mens/categories/clothing/shirts/PIXEL",
+    "original_url": ""
+  },
+  "TRACK": {
+    "code": "TRACK",
+    "name": "",
+    "url": "https://www.jcrew.com/p/mens/categories/clothing/shirts/TRACK",
+    "original_url": ""
+  },
+  "WOMENS": {
+    "code": "WOMENS",
+    "name": "",
+    "url": "https://www.jcrew.com/p/mens/categories/clothing/shirts/WOMENS",
+    "original_url": ""
+  },
+  "MENS": {
+    "code": "MENS",
+    "name": "",
+    "url": "https://www.jcrew.com/p/mens/categories/clothing/shirts/MENS",
+    "original_url": ""
+  },
+  "GIRLS": {
+    "code": "GIRLS",
+    "name": "",
+    "url": "https://www.jcrew.com/p/mens/categories/clothing/shirts/GIRLS",
+    "original_url": ""
+  },
+  "BOYS": {
+    "code": "BOYS",
+    "name": "",
+    "url": "https://www.jcrew.com/p/mens/categories/clothing/shirts/BOYS",
+    "original_url": ""
+  },
+  "WOMEN": {
+    "code": "WOMEN",
+    "name": "",
+    "url": "https://www.jcrew.com/p/mens/categories/clothing/shirts/WOMEN",
+    "original_url": ""
+  },
+  "KIDS": {
+    "code": "KIDS",
+    "name": "",
+    "url": "https://www.jcrew.com/p/mens/categories/clothing/shirts/KIDS",
+    "original_url": ""
+  },
+  "SALE": {
+    "code": "SALE",
+    "name": "",
+    "url": "https://www.jcrew.com/p/mens/categories/clothing/shirts/SALE",
+    "original_url": ""
+  },
+  "XLINK": {
+    "code": "XLINK",
+    "name": "",
+    "url": "https://www.jcrew.com/p/mens/categories/clothing/shirts/XLINK",
+    "original_url": ""
+  },
+  "CART": {
+    "code": "CART",
+    "name": "",
+    "url": "https://www.jcrew.com/p/mens/categories/clothing/shirts/CART",
+    "original_url": ""
+  },
+  "DENIM": {
+    "code": "DENIM",
+    "name": "",
+    "url": "https://www.jcrew.com/p/mens/categories/clothing/shirts/DENIM",
+    "original_url": ""
+  },
+  "JCREW": {
+    "code": "JCREW",
+    "name": "",
+    "url": "https://www.jcrew.com/p/mens/categories/clothing/shirts/JCREW",
+    "original_url": ""
+  },
+  "JSON": {
+    "code": "JSON",
+    "name": "",
+    "url": "https://www.jcrew.com/p/mens/categories/clothing/shirts/JSON",
+    "original_url": ""
+  },
+  "LOGIN": {
+    "code": "LOGIN",
+    "name": "",
+    "url": "https://www.jcrew.com/p/mens/categories/clothing/shirts/LOGIN",
+    "original_url": ""
+  },
+  "HOME": {
+    "code": "HOME",
+    "name": "",
+    "url": "https://www.jcrew.com/p/mens/categories/clothing/shirts/HOME",
+    "original_url": ""
+  },
+  "HATS": {
+    "code": "HATS",
+    "name": "",
+    "url": "https://www.jcrew.com/p/mens/categories/clothing/shirts/HATS",
+    "original_url": ""
+  },
+  "BAGS": {
+    "code": "BAGS",
+    "name": "",
+    "url": "https://www.jcrew.com/p/mens/categories/clothing/shirts/BAGS",
+    "original_url": ""
+  },
+  "BELTS": {
+    "code": "BELTS",
+    "name": "",
+    "url": "https://www.jcrew.com/p/mens/categories/clothing/shirts/BELTS",
+    "original_url": ""
+  },
+  "HAIR": {
+    "code": "HAIR",
+    "name": "",
+    "url": "https://www.jcrew.com/p/mens/categories/clothing/shirts/HAIR",
+    "original_url": ""
+  },
+  "PANTS": {
+    "code": "PANTS",
+    "name": "",
+    "url": "https://www.jcrew.com/p/mens/categories/clothing/shirts/PANTS",
+    "original_url": ""
+  },
+  "JEANS": {
+    "code": "JEANS",
+    "name": "",
+    "url": "https://www.jcrew.com/p/mens/categories/clothing/shirts/JEANS",
+    "original_url": ""
+  },
+  "SKIRTS": {
+    "code": "SKIRTS",
+    "name": "",
+    "url": "https://www.jcrew.com/p/mens/categories/clothing/shirts/SKIRTS",
+    "original_url": ""
+  },
+  "SHORTS": {
+    "code": "SHORTS",
+    "name": "",
+    "url": "https://www.jcrew.com/p/mens/categories/clothing/shirts/SHORTS",
+    "original_url": ""
+  },
+  "SWIM": {
+    "code": "SWIM",
+    "name": "",
+    "url": "https://www.jcrew.com/p/mens/categories/clothing/shirts/SWIM",
+    "original_url": ""
+  },
+  "ACTIVE": {
+    "code": "ACTIVE",
+    "name": "",
+    "url": "https://www.jcrew.com/p/mens/categories/clothing/shirts/ACTIVE",
+    "original_url": ""
+  },
+  "SHOES": {
+    "code": "SHOES",
+    "name": "",
+    "url": "https://www.jcrew.com/p/mens/categories/clothing/shirts/SHOES",
+    "original_url": ""
+  },
+  "CLOGS": {
+    "code": "CLOGS",
+    "name": "",
+    "url": "https://www.jcrew.com/p/mens/categories/clothing/shirts/CLOGS",
+    "original_url": ""
+  },
+  "COLBIE": {
+    "code": "COLBIE",
+    "name": "",
+    "url": "https://www.jcrew.com/p/mens/categories/clothing/shirts/COLBIE",
+    "original_url": ""
+  },
+  "JELLY": {
+    "code": "JELLY",
+    "name": "",
+    "url": "https://www.jcrew.com/p/mens/categories/clothing/shirts/JELLY",
+    "original_url": ""
+  },
+  "MESH": {
+    "code": "MESH",
+    "name": "",
+    "url": "https://www.jcrew.com/p/mens/categories/clothing/shirts/MESH",
+    "original_url": ""
+  },
+  "NORDIC": {
+    "code": "NORDIC",
+    "name": "",
+    "url": "https://www.jcrew.com/p/mens/categories/clothing/shirts/NORDIC",
+    "original_url": ""
+  },
+  "BOOTS": {
+    "code": "BOOTS",
+    "name": "",
+    "url": "https://www.jcrew.com/p/mens/categories/clothing/shirts/BOOTS",
+    "original_url": ""
+  },
+  "PUMA": {
+    "code": "PUMA",
+    "name": "",
+    "url": "https://www.jcrew.com/p/mens/categories/clothing/shirts/PUMA",
+    "original_url": ""
+  },
+  "SOCKS": {
+    "code": "SOCKS",
+    "name": "",
+    "url": "https://www.jcrew.com/p/mens/categories/clothing/shirts/SOCKS",
+    "original_url": ""
+  },
+  "TOPS": {
+    "code": "TOPS",
+    "name": "",
+    "url": "https://www.jcrew.com/p/mens/categories/clothing/shirts/TOPS",
+    "original_url": ""
+  },
+  "BABY": {
+    "code": "BABY",
+    "name": "",
+    "url": "https://www.jcrew.com/p/mens/categories/clothing/shirts/BABY",
+    "original_url": ""
+  },
+  "PETS": {
+    "code": "PETS",
+    "name": "",
+    "url": "https://www.jcrew.com/p/mens/categories/clothing/shirts/PETS",
+    "original_url": ""
+  },
+  "PROD": {
+    "code": "PROD",
+    "name": "",
+    "url": "https://www.jcrew.com/p/mens/categories/clothing/shirts/PROD",
+    "original_url": ""
+  },
+  "XANADU": {
+    "code": "XANADU",
+    "name": "",
+    "url": "https://www.jcrew.com/p/mens/categories/clothing/shirts/XANADU",
+    "original_url": ""
+  },
+  "TABLET": {
+    "code": "TABLET",
+    "name": "",
+    "url": "https://www.jcrew.com/p/mens/categories/clothing/shirts/TABLET",
+    "original_url": ""
+  },
+  "ARRAY": {
+    "code": "ARRAY",
+    "name": "",
+    "url": "https://www.jcrew.com/p/mens/categories/clothing/shirts/ARRAY",
+    "original_url": ""
+  },
+  "9MQIA": {
+    "code": "9MQIA",
+    "name": "",
+    "url": "https://www.jcrew.com/p/mens/categories/clothing/shirts/9MQIA",
+    "original_url": ""
+  },
+  "B8CC9X": {
+    "code": "B8CC9X",
+    "name": "",
+    "url": "https://www.jcrew.com/p/mens/categories/clothing/shirts/B8CC9X",
+    "original_url": ""
+  },
+  "BIBDCP": {
+    "code": "BIBDCP",
+    "name": "",
+    "url": "https://www.jcrew.com/p/mens/categories/clothing/shirts/BIBDCP",
+    "original_url": ""
+  },
+  "JAVA": {
+    "code": "JAVA",
+    "name": "",
+    "url": "https://www.jcrew.com/p/mens/categories/clothing/shirts/JAVA",
+    "original_url": ""
+  },
+  "BT549": {
+    "code": "BT549",
+    "name": "",
+    "url": "https://www.jcrew.com/p/mens/categories/clothing/shirts/BT549",
+    "original_url": ""
+  },
+  "CC101": {
+    "code": "CC101",
+    "name": "",
+    "url": "https://www.jcrew.com/p/mens/categories/clothing/shirts/CC101",
+    "original_url": ""
+  },
+  "CC100": {
+    "code": "CC100",
+    "name": "",
+    "url": "https://www.jcrew.com/p/mens/categories/clothing/shirts/CC100",
+    "original_url": ""
+  },
+  "CM237": {
+    "code": "CM237",
+    "name": "",
+    "url": "https://www.jcrew.com/p/mens/categories/clothing/shirts/CM237",
+    "original_url": ""
+  },
+  "CM390": {
+    "code": "CM390",
+    "name": "",
+    "url": "https://www.jcrew.com/p/mens/categories/clothing/shirts/CM390",
+    "original_url": ""
+  },
+  "BE554": {
+    "code": "BE554",
+    "name": "",
+    "url": "https://www.jcrew.com/p/mens/categories/clothing/shirts/BE554",
+    "original_url": ""
+  },
+  "BE999": {
+    "code": "BE999",
+    "name": "",
+    "url": "https://www.jcrew.com/p/mens/categories/clothing/shirts/BE999",
+    "original_url": ""
+  },
+  "BE546": {
+    "code": "BE546",
+    "name": "",
+    "url": "https://www.jcrew.com/p/mens/categories/clothing/shirts/BE546",
+    "original_url": ""
+  },
+  "BE998": {
+    "code": "BE998",
+    "name": "",
+    "url": "https://www.jcrew.com/p/mens/categories/clothing/shirts/BE998",
+    "original_url": ""
+  },
+  "BE163": {
+    "code": "BE163",
+    "name": "",
+    "url": "https://www.jcrew.com/p/mens/categories/clothing/shirts/BE163",
+    "original_url": ""
+  },
+  "BE164": {
+    "code": "BE164",
+    "name": "",
+    "url": "https://www.jcrew.com/p/mens/categories/clothing/shirts/BE164",
+    "original_url": ""
+  },
+  "BE077": {
+    "code": "BE077",
+    "name": "",
+    "url": "https://www.jcrew.com/p/mens/categories/clothing/shirts/BE077",
+    "original_url": ""
+  },
+  "BE076": {
+    "code": "BE076",
+    "name": "",
+    "url": "https://www.jcrew.com/p/mens/categories/clothing/shirts/BE076",
+    "original_url": ""
+  },
+  "BT744": {
+    "code": "BT744",
+    "name": "",
+    "url": "https://www.jcrew.com/p/mens/categories/clothing/shirts/BT744",
+    "original_url": ""
+  },
+  "BT743": {
+    "code": "BT743",
+    "name": "",
+    "url": "https://www.jcrew.com/p/mens/categories/clothing/shirts/BT743",
+    "original_url": ""
+  },
+  "BJ705": {
+    "code": "BJ705",
+    "name": "",
+    "url": "https://www.jcrew.com/p/mens/categories/clothing/shirts/BJ705",
+    "original_url": ""
+  },
+  "BN126": {
+    "code": "BN126",
+    "name": "",
+    "url": "https://www.jcrew.com/p/mens/categories/clothing/shirts/BN126",
+    "original_url": ""
+  },
+  "BE986": {
+    "code": "BE986",
+    "name": "",
+    "url": "https://www.jcrew.com/p/mens/categories/clothing/shirts/BE986",
+    "original_url": ""
+  },
+  "PRICE": {
+    "code": "PRICE",
+    "name": "Price",
+    "url": "https://www.jcrew.com/p/mens/categories/clothing/shirts/PRICE",
+    "original_url": ""
+  }
+}

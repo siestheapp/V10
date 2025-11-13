@@ -1,0 +1,11 @@
+{
+  "timestamp": "2025-09-15T21:51:07.909141",
+  "last_product_code": "BG663",
+  "stats": {
+    "total_products": 10,
+    "products_with_fits": 1,
+    "products_without_fits": 4,
+    "errors": 5,
+    "updated": 1
+  }
+}

@@ -1,0 +1,1 @@
+daily-notes/2025-07-25/app_vision.md

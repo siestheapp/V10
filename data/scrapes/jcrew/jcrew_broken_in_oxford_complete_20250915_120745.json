@@ -1,0 +1,108 @@
+[
+  {
+    "url": "https://www.jcrew.com/p/mens/categories/clothing/shirts/broken-in-oxford/broken-in-organic-cotton-oxford-shirt/BE996",
+    "code": "BE996",
+    "name": "Broken-in organic cotton oxford shirt",
+    "category": "Shirts",
+    "subcategory": "Oxford",
+    "colors": [
+      "Default"
+    ],
+    "material": "",
+    "fit_options": [
+      "Classic",
+      "Slim",
+      "Slim Untucked",
+      "Tall",
+      "Relaxed"
+    ],
+    "sizes": [
+      "XS",
+      "S",
+      "M",
+      "L",
+      "XL",
+      "XXL"
+    ],
+    "price": null,
+    "image_url": "https://www.jcrew.com/s7-img-facade/BE996_YD7734?$crop1254$",
+    "description": "",
+    "scraped_at": "2025-09-15T12:07:38.005682"
+  },
+  {
+    "url": "https://www.jcrew.com/p/mens/categories/clothing/shirts/broken-in-oxford/classic-oxford-two-pocket-workshirt/CM226",
+    "code": "CM226",
+    "name": "Classic oxford two-pocket workshirt",
+    "category": "Shirts",
+    "subcategory": "Oxford",
+    "colors": [
+      {
+        "name": "Van Walnut White",
+        "code": "YD9386",
+        "productCode": "CM226",
+        "imageUrl": "https://www.jcrew.com/s7-img-facade/CM226_YD9386_sw?$pdp_sw20$"
+      },
+      {
+        "name": "Miro Navy Red",
+        "code": "YD8637",
+        "productCode": "CM226",
+        "imageUrl": "https://www.jcrew.com/s7-img-facade/CM226_YD8637_sw?$pdp_sw20$"
+      },
+      {
+        "name": "Eric Stripe White Blue",
+        "code": "YD8636",
+        "productCode": "CM226",
+        "imageUrl": "https://www.jcrew.com/s7-img-facade/CM226_YD8636_sw?$pdp_sw20$"
+      }
+    ],
+    "material": "",
+    "fit_options": [
+      "Tall",
+      "Classic"
+    ],
+    "sizes": [
+      "XS",
+      "S",
+      "M",
+      "L",
+      "XL",
+      "XXL"
+    ],
+    "price": null,
+    "image_url": "https://www.jcrew.com/s7-img-facade/CM226_YD9386?$crop1254$",
+    "description": "",
+    "scraped_at": "2025-09-15T12:07:41.442305"
+  },
+  {
+    "url": "https://www.jcrew.com/p/mens/categories/clothing/shirts/broken-in-oxford/limited-edition-the-new-yorker-x-jcrew-broken-in-organic-cotton-oxford-shirt/CH326",
+    "code": "CH326",
+    "name": "Limited-edition The New Yorker X J.Crew Broken-in organic cotton oxford shirt",
+    "category": "Shirts",
+    "subcategory": "Oxford",
+    "colors": [
+      {
+        "name": "Van Light Blue White",
+        "code": "YD7833",
+        "productCode": "CH326",
+        "imageUrl": "https://www.jcrew.com/s7-img-facade/CH326_YD7833_sw?$pdp_sw20$"
+      }
+    ],
+    "material": "",
+    "fit_options": [
+      "Tall",
+      "Classic"
+    ],
+    "sizes": [
+      "XS",
+      "S",
+      "M",
+      "L",
+      "XL",
+      "XXL"
+    ],
+    "price": null,
+    "image_url": "https://www.jcrew.com/s7-img-facade/CH326_YD7833?$crop1254$",
+    "description": "",
+    "scraped_at": "2025-09-15T12:07:44.133475"
+  }
+]

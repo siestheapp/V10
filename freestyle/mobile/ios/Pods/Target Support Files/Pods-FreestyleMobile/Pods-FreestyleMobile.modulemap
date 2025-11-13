@@ -1,0 +1,6 @@
+module Pods_FreestyleMobile {
+  umbrella header "Pods-FreestyleMobile-umbrella.h"
+
+  export *
+  module * { export * }
+}

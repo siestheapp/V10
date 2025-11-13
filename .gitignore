@@ -4,7 +4,92 @@
 # Ignore xcuserdata directories globally
 **/xcuserdata/
 
+# Environment files (CRITICAL - contains sensitive credentials)
+.env
+**/.env
+*.env
 
+# Database credentials and sensitive config
+**/config.ini
+**/secrets.json
+**/credentials.json
+
+# Python cache
 __pycache__/
+__pycache__/
+*.pyc
+*.sql
+!supabase/schema.sql
+!supabase/migrations/*.sql
+*.txt
+*.zip
 
-freestyle-old/
+# Ignore all .specstory files and directories
+.specstory/
+
+# Temporary files and directories
+.temp/
+temp/
+*.tmp
+
+# Build directories
+build/
+dist/
+*.app/
+
+# Archive and backup patterns
+*.backup
+archive/*.zip
+
+# Logs (may contain sensitive info)
+*.log
+logs/
+
+# Database dumps and backups
+database/backups/
+database/snapshots/
+database/dumps/
+
+# iOS build artifacts
+*.ipa
+*.dSYM.zip
+DerivedData/
+ 
+# Package managers and environments
+venv/
+.venv/
+ 
+# Editor and tooling
+.vscode/
+.idea/
+.cursor/
+.ruff_cache/
+.mypy_cache/
+.pytest_cache/
+.coverage
+coverage.xml
+htmlcov/
+ 
+# Node / Expo
+expo/node_modules/
+expo/.expo/
+expo/.expo-shared/
+expo/android/app/build/
+expo/android/build/
+expo/ios/Pods/
+expo/ios/build/
+ 
+# Additional environment patterns
+.env.local
+.env.*.local
+ 
+# Database dumps (explicit patterns to avoid accidental commits)
+*_dump_*.sql
+*_dump_*.txt
+fs_core_dump_*.sql
+tailor3_dump_*.sql
+database_dump_*.sql
+ 
+# MacOS system files
+.DS_Store
+mobile/node_modules/
