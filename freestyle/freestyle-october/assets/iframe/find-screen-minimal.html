@@ -1,0 +1,433 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Proxi — Find Your Size (Minimal)</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="../../../freestyle-tokens.css">
+  <style>
+    :root{
+      --bg: #FAFBFC;
+      --ink: var(--ink-900);
+      --muted: #8B95A6;
+      --accent: var(--petrol-600);
+      --card: #FFFFFF;
+    }
+*{margin:0;padding:0;box-sizing:border-box}
+html{background:var(--bg)}
+body{
+  font-family:Inter,system-ui,-apple-system,"Segoe UI",Roboto,Helvetica,Arial;
+  background:var(--bg);
+  color:var(--ink);
+  min-height:100vh;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  padding:0;
+  position:relative
+}
+
+/* iPhone Frame */
+.phone{width:430px;height:932px;border-radius:55px;background:transparent;border:2px solid #000;position:relative;box-shadow:none}
+.screen{position:absolute;inset:2px;background:#FAFBFC;border-radius:53px;overflow:hidden;display:flex;flex-direction:column}
+
+/* Dynamic Island */
+.island{position:absolute;top:11px;left:50%;transform:translateX(-50%);width:126px;height:37px;background:#000;border-radius:19px;z-index:5}
+
+/* Status Bar */
+.status{height:54px;margin-top:4px;display:flex;align-items:center;justify-content:space-between;padding:0 30px;font-weight:600;color:#000;font-size:17px;letter-spacing:-.02em}
+.status .right{display:flex;align-items:center;gap:6px}
+.status .right img{height:13px;width:auto;display:block}
+
+/* App Content */
+.header{padding:8px 0px 0px;display:flex;align-items:center;justify-content:center;position:relative}
+.logo{
+  font-weight:600;
+  font-size:28px;
+  letter-spacing:-.015em;
+  background:linear-gradient(135deg, #00A3A3, #16B5B5);
+  -webkit-background-clip:text;
+  background-clip:text;
+  -webkit-text-fill-color:transparent
+}
+
+/* Content Container */
+.content{
+  flex:1;
+  display:flex;
+  flex-direction:column;
+  align-items:center;
+  padding:40px 24px;
+}
+
+/* Minimal Loading Card - Product Hero */
+.loading-card{
+  width:100%;
+  max-width:380px;
+  background:#fff;
+  border-radius:24px;
+  padding:24px;
+  box-shadow:
+    0 4px 6px -1px rgba(0,0,0,0.03),
+    0 10px 15px -3px rgba(0,0,0,0.05),
+    0 20px 25px -5px rgba(0,0,0,0.03);
+  animation:slideUp 0.5s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+@keyframes slideUp{
+  from{opacity:0;transform:translateY(20px)}
+  to{opacity:1;transform:translateY(0)}
+}
+
+/* Product Hero Section */
+.product-hero{
+  display:flex;
+  gap:16px;
+  padding-bottom:20px;
+  border-bottom:1px solid #F3F4F6;
+  margin-bottom:20px;
+}
+
+.product-image{
+  width:80px;
+  height:80px;
+  border-radius:16px;
+  object-fit:cover;
+  background:#F9FAFB;
+  flex-shrink:0;
+}
+
+.product-info{
+  flex:1;
+  display:flex;
+  flex-direction:column;
+  justify-content:center;
+}
+
+.product-brand{
+  font-size:12px;
+  font-weight:700;
+  letter-spacing:0.08em;
+  text-transform:uppercase;
+  color:#8B95A6;
+  margin-bottom:4px;
+}
+
+.product-name{
+  font-size:18px;
+  font-weight:600;
+  color:#0B0F14;
+  line-height:1.3;
+  margin-bottom:8px;
+}
+
+.product-status{
+  display:inline-flex;
+  align-items:center;
+  gap:6px;
+  font-size:13px;
+  color:#0E8A62;
+  font-weight:500;
+}
+
+.status-dot{
+  width:8px;
+  height:8px;
+  background:#0E8A62;
+  border-radius:50%;
+  animation:pulse 2s ease-in-out infinite;
+}
+
+@keyframes pulse{
+  0%, 100%{opacity:1;transform:scale(1)}
+  50%{opacity:0.6;transform:scale(0.8)}
+}
+
+/* Loading Section */
+.loading-section{
+  display:flex;
+  flex-direction:column;
+  align-items:center;
+  gap:16px;
+}
+
+.loading-spinner{
+  width:32px;
+  height:32px;
+  border:2.5px solid #E5E7EB;
+  border-top-color:#00A3A3;
+  border-radius:50%;
+  animation:spin 0.8s linear infinite;
+}
+
+@keyframes spin{
+  to{transform:rotate(360deg)}
+}
+
+.loading-text{
+  font-size:16px;
+  font-weight:500;
+  color:#3A4652;
+  text-align:center;
+}
+
+.loading-subtext{
+  font-size:14px;
+  color:#8B95A6;
+  text-align:center;
+  margin-top:-8px;
+}
+
+/* Subtle Progress Indicator */
+.progress-dots{
+  display:flex;
+  gap:8px;
+  margin-top:8px;
+}
+
+.progress-dot{
+  width:6px;
+  height:6px;
+  background:#E5E7EB;
+  border-radius:50%;
+  transition:background 0.3s ease;
+}
+
+.progress-dot.active{
+  background:#00A3A3;
+  animation:dotPulse 1.4s ease-in-out infinite;
+}
+
+@keyframes dotPulse{
+  0%, 80%, 100%{transform:scale(1);opacity:1}
+  40%{transform:scale(1.3);opacity:0.8}
+}
+
+/* Size Badge */
+.size-badge{
+  position:absolute;
+  top:12px;
+  right:12px;
+  background:linear-gradient(135deg, #E0F7F7, #F0FDFD);
+  border:1px solid #16B5B5;
+  padding:6px 12px;
+  border-radius:20px;
+  font-size:13px;
+  font-weight:600;
+  color:#009090;
+}
+
+/* Bottom hint */
+.bottom-hint{
+  position:absolute;
+  bottom:120px;
+  left:0;
+  right:0;
+  text-align:center;
+  font-size:13px;
+  color:#8B95A6;
+  padding:0 40px;
+  opacity:0;
+  animation:fadeIn 1s ease 2s forwards;
+}
+
+@keyframes fadeIn{
+  to{opacity:1}
+}
+
+/* Bottom navigation */
+.bottom-nav{
+  position:absolute;
+  bottom:0;
+  left:0;
+  right:0;
+  height:83px;
+  background:#fff;
+  border-top:1px solid rgba(0,0,0,0.06);
+  display:flex;
+  justify-content:space-around;
+  align-items:center;
+  padding:8px 20px 24px;
+}
+
+.nav-item{
+  display:flex;
+  flex-direction:column;
+  align-items:center;
+  gap:4px;
+  text-decoration:none;
+  color:#C4C9D4;
+  font-size:11px;
+  font-weight:500;
+  cursor:pointer;
+  transition:color 0.2s;
+}
+
+.nav-item.active{color:#00A3A3}
+.nav-icon{
+  width:28px;
+  height:28px;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+}
+
+/* Reduced motion */
+@media (prefers-reduced-motion: reduce){
+  .loading-card{animation:none}
+  .loading-spinner{animation:none}
+  .status-dot{animation:none}
+  .progress-dot{animation:none}
+}
+  </style>
+</head>
+<body>
+  <div class="phone">
+    <div class="screen">
+      <div class="island"></div>
+      <div class="status">
+        <div>9:41</div>
+        <div class="right">
+          <img src="../img/cellular-connection.svg" alt="cell"/>
+          <img src="../img/wifi.svg" alt="wifi"/>
+          <img src="../img/battery.svg" alt="battery"/>
+        </div>
+      </div>
+
+      <!-- Main Content -->
+      <div class="header">
+        <div class="logo">proxi</div>
+      </div>
+
+      <div class="content">
+        <!-- Minimal Loading Card -->
+        <div class="loading-card">
+          <!-- Product Hero - The Star of the Show -->
+          <div class="product-hero">
+            <img class="product-image" src="../img/pnpdress.png" alt="Product" />
+            <div class="product-info">
+              <div class="product-brand">Petal & Pup</div>
+              <div class="product-name">Botanique Midi Dress</div>
+              <div class="product-status">
+                <span class="status-dot"></span>
+                <span>Product matched</span>
+              </div>
+            </div>
+            <div class="size-badge">Size S</div>
+          </div>
+
+          <!-- Clean Loading State -->
+          <div class="loading-section">
+            <div class="loading-spinner"></div>
+            <div class="loading-text" id="loadingText">Finding your size twins</div>
+            <div class="loading-subtext" id="loadingSubtext">Analyzing 1,247 fits</div>
+            <div class="progress-dots">
+              <div class="progress-dot active"></div>
+              <div class="progress-dot"></div>
+              <div class="progress-dot"></div>
+              <div class="progress-dot"></div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="bottom-hint" id="hint">
+        We're matching you with people who have similar measurements
+      </div>
+
+      <!-- Bottom Navigation -->
+      <nav class="bottom-nav">
+        <div class="nav-item active">
+          <svg class="nav-icon" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <circle cx="11" cy="11" r="8" stroke="currentColor" stroke-width="1.5"/>
+            <path d="M21 21L16.65 16.65" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
+          </svg>
+          <span>Find</span>
+        </div>
+        <div class="nav-item">
+          <svg class="nav-icon" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <rect x="4" y="4" width="16" height="16" rx="2" stroke="currentColor" stroke-width="1.5"/>
+            <path d="M4 9H20" stroke="currentColor" stroke-width="1.5"/>
+            <path d="M9 4V20" stroke="currentColor" stroke-width="1.5"/>
+          </svg>
+          <span>Feed</span>
+        </div>
+        <div class="nav-item">
+          <svg class="nav-icon" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <path d="M12 2L3 7V12C3 16.5 6 20.16 12 21C18 20.16 21 16.5 21 12V7L12 2Z" stroke="currentColor" stroke-width="1.5" stroke-linejoin="round"/>
+          </svg>
+          <span>Closet</span>
+        </div>
+        <div class="nav-item">
+          <svg class="nav-icon" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <circle cx="12" cy="8" r="3" stroke="currentColor" stroke-width="1.5"/>
+            <path d="M16 14C16 12.3431 14.2091 11 12 11C9.79086 11 8 12.3431 8 14" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
+            <circle cx="12" cy="12" r="10" stroke="currentColor" stroke-width="1.5"/>
+          </svg>
+          <span>Profile</span>
+        </div>
+      </nav>
+    </div>
+  </div>
+
+  <script>
+    // Minimal, focused animations
+    const loadingTexts = [
+      'Finding your size twins',
+      'Matching body types',
+      'Analyzing fit data',
+      'Almost ready'
+    ];
+
+    const loadingSubtexts = [
+      'Analyzing 1,247 fits',
+      'Checking 18 brands',
+      '92% match confidence',
+      'Preparing results'
+    ];
+
+    const hints = [
+      'We\'re matching you with people who have similar measurements',
+      'Size twins help you shop with confidence',
+      'Same size, different brands - we\'ve got you covered'
+    ];
+
+    let textIndex = 0;
+    let dotIndex = 0;
+    let hintIndex = 0;
+
+    // Simple text rotation
+    function updateLoadingText() {
+      textIndex = (textIndex + 1) % loadingTexts.length;
+      document.getElementById('loadingText').textContent = loadingTexts[textIndex];
+      document.getElementById('loadingSubtext').textContent = loadingSubtexts[textIndex];
+
+      // Update progress dots
+      const dots = document.querySelectorAll('.progress-dot');
+      dots.forEach((dot, i) => {
+        dot.classList.toggle('active', i <= textIndex);
+      });
+    }
+
+    // Update hint text
+    function updateHint() {
+      const hintEl = document.getElementById('hint');
+      hintEl.style.opacity = '0';
+      setTimeout(() => {
+        hintIndex = (hintIndex + 1) % hints.length;
+        hintEl.textContent = hints[hintIndex];
+        hintEl.style.opacity = '1';
+      }, 300);
+    }
+
+    // Start animations after a brief delay
+    setTimeout(() => {
+      setInterval(updateLoadingText, 2500);
+      setInterval(updateHint, 5000);
+    }, 1000);
+  </script>
+</body>
+</html>

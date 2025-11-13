@@ -1,0 +1,25 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <title>Glossy Treemap (Three.js + d3)</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <style>
+    html, body { height:100%; margin:0; background:#f6f5f4; }
+    /* This is the important part: give the container size */
+    .wrap { width: 980px; height: 560px; margin: 40px auto; position: relative; }
+    canvas { display:block; border-radius: 18px; }
+    .label{
+      position:absolute; pointer-events:none;
+      font:600 13px/1.2 system-ui,-apple-system,Segoe UI,Roboto,sans-serif;
+      color:#0b0b12; text-shadow:0 1px 0 rgba(255,255,255,.55);
+      white-space:nowrap; opacity:.95;
+    }
+  </style>
+</head>
+<body>
+  <div class="wrap" id="app"></div>
+  <script src="https://cdn.jsdelivr.net/npm/d3@7"></script>
+  <script type="module" src="./treemap.js"></script>
+</body>
+</html>

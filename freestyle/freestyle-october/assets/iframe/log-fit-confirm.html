@@ -1,0 +1,218 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Proxi — Confirm Product</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <style>
+    :root{
+      /* Neutrals */
+      --ink-900:#0B0F14; --ink-700:#121A22; --ink-500:#2A3642; --ink-300:#6A7683;
+      --canvas-0:#F7F9FB; --canvas-50:#EFF3F6; --canvas-100:#E9EEF1;
+
+      /* Brand & Accents */
+      --petrol-600:#009090; --petrol-500:#00A3A3; --petrol-400:#16B5B5; --petrol-100:#E0F7F7;
+      --mint-400:#A6FFCB; --mint-500:#35D1AE; --ice-300:#BFE7EF; --coral-500:#FF6B5A;
+      --aqua-500:#1FAED9;
+
+      /* Gradients */
+      --brand-sheen:linear-gradient(135deg,#009090 0%,#1FAED9 42%,#00A3A3 62%,#35D1AE 100%);
+
+      /* Radii */
+      --radius-card:16px; --radius-btn:12px; --radius-pill:999px;
+
+      /* Shadows */
+      --elev-0:0 1px 2px rgba(0,0,0,.06); --elev-1:0 8px 24px rgba(11,15,20,.08); --elev-2:0 20px 60px rgba(0,0,0,.18);
+    }
+    *{box-sizing:border-box;margin:0;padding:0}
+    html{background:#f5f5f5}
+    body{font-family:Inter,system-ui,-apple-system,"Segoe UI",Roboto,Helvetica,Arial;background:#f5f5f5;color:#fff;min-height:100vh;display:flex;align-items:center;justify-content:center;padding:0;position:relative}
+    /* Warm page glow behind app content */
+    body::before{content:"";position:fixed;inset:-20% -10% auto -10%;height:60vh;pointer-events:none;background:radial-gradient(800px 350px at 50% -120px, rgba(0,163,163,.08), transparent 60%),radial-gradient(1200px 500px at 10% -80px, rgba(166,255,203,.08), transparent 65%);filter:saturate(105%)}
+
+    /* Phone shell */
+    .phone{width:430px;height:932px;border-radius:55px;background:transparent;border:2px solid #000;position:relative}
+    .screen{position:absolute;inset:2px;background:#1A2430;border-radius:53px;overflow:hidden;display:flex;flex-direction:column}
+    .island{position:absolute;top:11px;left:50%;transform:translateX(-50%);width:126px;height:37px;background:#000;border-radius:19px;z-index:5}
+    .status{height:54px;margin-top:3px;display:flex;align-items:center;justify-content:space-between;padding:0 30px;font-weight:600;color:#fff;font-size:17px;letter-spacing:-.02em}
+    .status .right{display:flex;align-items:center;gap:6px}
+    .status .right img{height:13px;width:auto;display:block;filter:invert(1)}
+
+    /* Header with back button */
+    .header{padding:16px 24px;display:flex;align-items:center;justify-content:space-between;border-bottom:1px solid rgba(255,255,255,.1);margin-top:-16px}
+    .back-btn{width:36px;height:36px;border:none;background:transparent;cursor:pointer;display:flex;align-items:center;justify-content:center;border-radius:50%;transition:background .2s;color:#fff}
+    .back-btn:hover{background:rgba(255,255,255,.1)}
+    .header-title{font:700 18px/1.2 Inter;color:#fff;flex:1;text-align:center;margin-right:36px}
+
+    /* Content area */
+    .content{flex:1;overflow-y:auto;padding:40px 24px 120px;display:flex;flex-direction:column;gap:24px;align-items:center;justify-content:center}
+
+    /* Product preview card */
+    .product-preview{display:flex;flex-direction:column;align-items:center;gap:16px;padding:24px;background:rgba(255,255,255,.05);border-radius:24px;border:1px solid rgba(255,255,255,.1);max-width:370px;width:100%;opacity:0;transition:opacity .3s ease}
+    .product-preview.loaded{opacity:1}
+    .product-image{width:320px;height:320px;border-radius:20px;object-fit:cover;box-shadow:0 12px 40px rgba(0,0,0,.5)}
+    .product-info{text-align:center;display:flex;flex-direction:column;gap:6px}
+    .product-brand{font:600 13px/1.3 Inter;color:rgba(255,255,255,.6);text-transform:uppercase;letter-spacing:.05em}
+    .product-name{font:600 18px/1.3 Inter;color:#fff;letter-spacing:-.01em}
+    .product-url{font:500 13px/1.4 Inter;color:rgba(255,255,255,.5);word-break:break-all;max-width:280px}
+
+    /* Confirmation text */
+    .confirm-text{text-align:center;max-width:300px}
+    .confirm-title{font:600 16px/1.3 Inter;color:rgba(255,255,255,.85);margin-bottom:6px}
+    .confirm-subtitle{font:500 14px/1.4 Inter;color:rgba(255,255,255,.6)}
+
+    /* Bottom CTA */
+    .bottom-cta{position:absolute;bottom:0;left:0;right:0;padding:16px 24px 40px;background:linear-gradient(to top,#1A2430 80%,rgba(26,36,48,0));border-top:1px solid rgba(255,255,255,.08)}
+    .cta-buttons{display:flex;gap:12px;align-items:center}
+    .cta-secondary{padding:16px 24px;background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.15);color:rgba(255,255,255,.9);border-radius:var(--radius-btn);font:600 15px/1 Inter;cursor:pointer;transition:all .2s;flex-shrink:0}
+    .cta-secondary:hover{background:rgba(255,255,255,.12);border-color:rgba(255,255,255,.25);color:#fff}
+    .cta-primary{flex:1;padding:16px 24px;background:var(--brand-sheen);color:#fff;border:none;border-radius:var(--radius-btn);font:700 16px/1 Inter;cursor:pointer;transition:all .3s;box-shadow:0 8px 24px rgba(0,163,163,.4)}
+    .cta-primary:hover{transform:translateY(-2px);box-shadow:0 12px 32px rgba(0,163,163,.5)}
+  </style>
+</head>
+<body>
+  <div class="phone">
+    <div class="island"></div>
+    <div class="screen">
+      <!-- Status bar -->
+      <div class="status"><div>9:41</div><div class="right"><img src="../img/cellular-connection.svg" alt="cell"/><img src="../img/wifi.svg" alt="wifi"/><img src="../img/battery.svg" alt="battery"/></div></div>
+
+      <!-- Header -->
+      <div class="header">
+        <button class="back-btn" aria-label="Go back">
+          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M15 18l-6-6 6-6"/>
+          </svg>
+        </button>
+        <h1 class="header-title">Confirm product</h1>
+      </div>
+
+      <!-- Content -->
+      <div class="content">
+        <!-- Product Preview -->
+        <div class="product-preview">
+          <img src="../img/CL648_RD0165_m.png" alt="J.Crew Halter Mixy Dress" class="product-image">
+          <div class="product-info">
+            <div class="product-brand">J.Crew</div>
+            <div class="product-name">Halter Mixy Dress</div>
+          </div>
+        </div>
+
+        <!-- Confirmation text -->
+        <div class="confirm-text">
+          <h2 class="confirm-title">Is this the right item?</h2>
+          <p class="confirm-subtitle">We found this product from the link you provided</p>
+        </div>
+      </div>
+
+      <!-- Bottom CTA -->
+      <div class="bottom-cta">
+        <div class="cta-buttons">
+          <button class="cta-secondary" id="wrongBtn">Wrong item</button>
+          <button class="cta-primary" id="confirmBtn">Yes, continue</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    // Brand mapping function
+    function normalizeBrand(brandName) {
+      const domain = brandName.toLowerCase().replace(/\.(com|net|org)$/, '').replace('www.', '');
+
+      const brandMap = {
+        'thereformation': 'Reformation',
+        'reformation': 'Reformation',
+        'jcrew': 'J.Crew',
+        'aritzia': 'Aritzia',
+        'everlane': 'Everlane',
+        'madewell': 'Madewell',
+        'anthropologie': 'Anthropologie',
+        'freepeople': 'Free People',
+        'urbanoutfitters': 'Urban Outfitters',
+        'zara': 'Zara',
+        'hm': 'H&M'
+      };
+
+      return brandMap[domain] || brandName;
+    }
+
+    // Load product data from localStorage
+    (function loadProductData() {
+      const pendingProduct = localStorage.getItem('pendingProduct');
+      const productPreview = document.querySelector('.product-preview');
+
+      if (pendingProduct) {
+        try {
+          const product = JSON.parse(pendingProduct);
+
+          // Normalize brand name
+          const normalizedBrand = normalizeBrand(product.brand);
+
+          // Update product image
+          const productImage = document.querySelector('.product-image');
+          if (product.image && productImage) {
+            productImage.src = product.image;
+            productImage.alt = product.title;
+          }
+
+          // Update brand name
+          const brandElement = document.querySelector('.product-brand');
+          if (brandElement) {
+            brandElement.textContent = normalizedBrand;
+          }
+
+          // Update product name
+          const nameElement = document.querySelector('.product-name');
+          if (product.title && nameElement) {
+            // Try to extract product name without brand
+            let productName = product.title;
+            if (normalizedBrand && productName.toLowerCase().startsWith(normalizedBrand.toLowerCase())) {
+              productName = productName.substring(normalizedBrand.length).trim();
+              // Remove common separators
+              productName = productName.replace(/^[-|•:]/, '').trim();
+            }
+            nameElement.textContent = productName;
+          }
+
+          // Show the product preview after data is loaded
+          if (productPreview) {
+            productPreview.classList.add('loaded');
+          }
+
+        } catch (error) {
+          console.error('Error loading product data:', error);
+          // Still show the preview even if there's an error
+          if (productPreview) {
+            productPreview.classList.add('loaded');
+          }
+        }
+      } else {
+        // No product data, show default
+        if (productPreview) {
+          productPreview.classList.add('loaded');
+        }
+      }
+    })();
+
+    // Back button - return to step 1
+    document.querySelector('.back-btn').addEventListener('click', () => {
+      window.location.href = 'log-fit-step1.html';
+    });
+
+    // Wrong item - return to step 1
+    document.getElementById('wrongBtn').addEventListener('click', () => {
+      window.location.href = 'log-fit-step1.html';
+    });
+
+    // Confirm button - proceed to step 2
+    document.getElementById('confirmBtn').addEventListener('click', () => {
+      console.log('Product confirmed, proceeding to log fit');
+      window.location.href = 'log-fit-step2.html';
+    });
+  </script>
+</body>
+</html>

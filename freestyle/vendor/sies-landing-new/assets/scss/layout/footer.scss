@@ -1,0 +1,36 @@
+@use '../base/var' as *;
+@use '../base/breakpoints' as *;
+
+/* ===== FOOTER ===== */
+.footer {
+  padding: 12px 0;
+  margin-top: auto;
+  text-align: center;
+  box-shadow: 0 0 0 1px rgba(black, .06);
+  @include media-breakpoint-up(xs) {
+    padding-top: 8px;
+    padding-bottom: 8px;
+  }
+  @include media-breakpoint-up(sm) {
+    padding-top: 12px;
+    padding-bottom: 12px;
+  }
+  @include media-breakpoint-up(md) {
+    padding-top: 16px;
+    padding-bottom: 16px;
+  }
+
+  .copyright {
+    margin: 0;
+    font-size: 11px;
+    line-height: 13px;
+    color: $color-gray;
+    @include media-breakpoint-up(xs) {
+      font-size: 12px;
+      line-height: 1.5em;
+    }
+    @include media-breakpoint-up(sm) {
+      br {display: none;}
+    }
+  }
+}
