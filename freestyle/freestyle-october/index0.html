@@ -1,0 +1,642 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  <title>Proxi — Online Shopping Is a Group Project</title>
+  <meta name="description" content="See how clothes fit on people like you. Shop with confidence using real fit data from your community.">
+  <meta name="copyright" content="Copyright © 2025 Sean Davey. All rights reserved.">
+  <meta name="author" content="Sean Davey">
+
+  <meta property="og:site_name" content="Proxi">
+  <meta property="og:title" content="Proxi — Online Shopping Is a Group Project">
+  <meta property="og:description" content="See how clothes fit on people like you. Shop with confidence using real fit data from your community.">
+  <meta property="og:type" content="website">
+  <meta property="og:url" content="https://proxitheapp.com">
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+
+  <link rel="stylesheet" href="freestyle-tokens.css">
+  <link rel="stylesheet" href="assets/css/style.css">
+  <style>
+    /* Fallback tokens in case the external tokens file fails to load */
+    :root{
+      --petrol-600:#009090; --petrol-500:#00A3A3; --petrol-400:#16B5B5;
+      --canvas-100:#E9EEF1; --ink-900:#0B0F14; --ink-500:#2A3642;
+      --brand-sheen: linear-gradient(135deg,#009090 0%,#1FAED9 42%,#00A3A3 62%,#35D1AE 100%);
+    }
+    /* Freestyle overrides for branding without rebuilding CSS */
+    .header .logo a,
+    .header .logo{background:var(--brand-sheen);-webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent;text-decoration:none}
+    .brand-text{background:var(--brand-sheen);-webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent}
+    .btn{background:var(--petrol-500, #00A3A3);color:#fff;border:1px solid var(--petrol-400, #16B5B5)}
+    .btn:hover{background:var(--petrol-600, #009090)}
+    .section-title{border-bottom-color:var(--canvas-100, #E9EEF1)}
+
+    /* Inputs & forms */
+    .form-input{border:1px solid var(--canvas-100)}
+    .form-input:focus{outline:2px solid var(--ice-300);outline-offset:2px;border-color:var(--petrol-500)}
+
+    /* Copy colors for hierarchy */
+    .section-heading{color:var(--ink-900, #0B0F14)}
+    .section-subheading{color:var(--ink-500, #2A3642)}
+
+    /* Nav & links */
+    .nav a:hover{color:var(--petrol-500)}
+
+    /* FAQ details */
+    #faq summary{color:var(--ink-900)}
+    #faq details:hover summary{color:var(--petrol-500)}
+    /* Override the purple bullet to match teal numbers */
+    #faq .faq-list details summary::before{background:linear-gradient(135deg, var(--petrol-600, #009090), #35D1AE); box-shadow:0 4px 12px rgba(0,163,163,.22)}
+
+    /* Tighten site header height and reduce top spacing */
+    .header{padding:.5em 0}
+    @media (min-width:1280px){ .header{padding-top:.75em} }
+    .header .logo{font-size:2em;line-height:1;font-weight:600;letter-spacing:-.01em}
+    @media (min-width:1280px){ .header .logo{font-size:2.2em} }
+    @media (prefers-contrast: more){ .header .logo a, .header .logo{background:none;-webkit-text-fill-color:#0B0F14;-webkit-text-stroke:0;text-shadow:none;color:#0B0F14} }
+    .page{padding-top:36px}
+
+    /* Slightly reduce hero video mock size for extra breathing room */
+    .hero .mock.video .mock-inner{transform:scale(0.950697);transform-origin:top right;margin-top:-18px}
+    /* Slightly enlarge unified feed mock to match prior hero video presence */
+    .hero .mock.unified .mock-inner{transform:scale(1.00);transform-origin:top right}
+    /* Slightly reduce large closet mock in HOW section (same proportions) */
+    .how .mock .mock-inner{transform:scale(0.985);transform-origin:top right; margin-top: 0}
+
+    /* HOW: hierarchy + rhythm */
+    .how .how-heading { letter-spacing: -0.01em; }
+    .how .how-arrow { color: #A3AFBA; }                /* lighter arrow for clarity */
+
+    /* Remove native markers completely */
+    .steps { 
+      list-style: none !important; 
+      padding-left: 0 !important; 
+      margin-left: 0 !important;
+      margin-top: 12px; 
+    }
+    .steps .step { 
+      display:flex; 
+      gap:14px; 
+      align-items:flex-start; 
+      padding:18px 0; 
+      list-style: none !important;
+    }
+    .steps .step + .step { border-top:1px solid rgba(0,0,0,0.05); }   /* subtle divider */
+    .steps .step-title { margin:0 0 4px; }
+    .steps .step-copy { margin:0; color:var(--ink-500,#2A3642); }
+
+    /* Simple badge styling with hard-coded numbers - no pseudo-elements */
+    .step-badge {
+      flex: 0 0 28px;
+      height: 28px;
+      border-radius: 999px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: 600;
+      font-size: 14px;
+      color: #fff;
+      background: linear-gradient(135deg, var(--petrol-600,#009090), #35D1AE);
+      box-shadow: 0 6px 18px rgba(0,163,163,.18);
+      font-family: inherit !important;
+      position: static;
+      z-index: auto;
+    }
+    
+    /* Completely disable any pseudo-elements that might be injecting content */
+    .step-badge::before,
+    .step-badge::after {
+      display: none !important;
+      content: none !important;
+    }
+    .step-body{ flex:1; }
+
+    /* Slightly more breathing room between steps list and right mock on large screens */
+    @media (min-width: 1024px){
+      .how .cols { column-gap: 64px; }
+    }
+    /* Top-align the text column with the phone on desktop */
+    @media (min-width: 768px){
+      .how .cols { align-items: flex-start; }
+    }
+    /* Lift the phone mock by 30px on desktop to center with list */
+    @media (min-width: 1024px){
+      .how .mock.mock-how .mock-inner{ margin-top: -48px; }
+    }
+
+    /* Override base CSS width for closet mock */
+    @media (min-width: 768px) {
+      .how .mock.mock-how .mock-inner {
+        width: 300px; /* Align with landingpage-cloned desktop width */
+      }
+    }
+    @media (min-width: 768px) and (max-width: 991.98px) {
+      .how .mock.mock-how .mock-inner {
+        width: 270px; /* Match profile mockup width on tablet */
+        border-radius: 33px;
+      }
+    }
+
+    /* HOW: use width-driven wrapper + top-left scale like landingpage-cloned */
+    .how .mock.mock-how .mock-inner{
+      /* cancel any generic transform applied earlier */
+      -webkit-transform: none;
+              transform: none;
+      position: relative;
+      filter: none;
+      background: transparent;
+      overflow: hidden;
+      aspect-ratio: 430/932;
+      height: auto;
+      max-height: none;
+      padding-top: 0;
+      padding-bottom: 0;
+      width: 231px;
+      margin: 0 auto;
+    }
+    @media (min-width: 375px){ .how .mock.mock-how .mock-inner{ width: 270px; } }
+    @media (min-width: 390px){ .how .mock.mock-how .mock-inner{ width: 300px; } }
+    .how .mock.mock-how .mock-inner iframe{
+      background: transparent;
+      width: 430px;
+      height: 932px;
+      -webkit-transform: scale(0.53648069);
+              transform: scale(0.53648069);
+      -webkit-transform-origin: top left;
+              transform-origin: top left;
+      border-radius: 40px;
+    }
+    @media (min-width: 375px){ .how .mock.mock-how .mock-inner iframe{ -webkit-transform: scale(0.62790698); transform: scale(0.62790698); } }
+    @media (min-width: 390px){ .how .mock.mock-how .mock-inner iframe{ -webkit-transform: scale(0.69767442); transform: scale(0.69767442); } }
+    /* Make profile mock match closet mock proportions */
+    .profile .mock.mock-profile .mock-inner iframe{ -webkit-transform: scale(0.525); transform: scale(0.525); }
+    @media (min-width: 375px){ .profile .mock.mock-profile .mock-inner iframe{ -webkit-transform: scale(0.615); transform: scale(0.615); } }
+    @media (min-width: 390px){ .profile .mock.mock-profile .mock-inner iframe{ -webkit-transform: scale(0.685); transform: scale(0.685); } }
+
+    /* PROFILE: match width-driven wrapper + top-left scale */
+    .profile .mock.mock-profile .mock-inner{
+      position: relative;
+      filter: none;
+      background: transparent;
+      overflow: hidden;
+      aspect-ratio: 430/932;
+      height: auto;
+      max-height: none;
+      padding-top:0;
+      padding-bottom: 0;
+      width: 231px;
+      margin: 0 auto;
+    }
+    @media (min-width: 375px){ .profile .mock.mock-profile .mock-inner{ width: 270px; } }
+    @media (min-width: 390px){ .profile .mock.mock-profile .mock-inner{ width: 300px; } }
+    .profile .mock.mock-profile .mock-inner iframe{
+      background: transparent !important;
+      width: 430px;
+      height: 932px;
+      -webkit-transform: scale(0.53648069);
+              transform: scale(0.53648069);
+      -webkit-transform-origin: top left;
+              transform-origin: top left;
+      border-radius: 40px;
+      -webkit-mask-image: radial-gradient(circle at 0 0, transparent 0, transparent 38px, #000 40px),
+                           radial-gradient(circle at 100% 0, transparent 0, transparent 38px, #000 40px),
+                           radial-gradient(circle at 0 100%, transparent 0, transparent 38px, #000 40px),
+                           radial-gradient(circle at 100% 100%, transparent 0, transparent 38px, #000 40px);
+              mask-image: radial-gradient(circle at 0 0, transparent 0, transparent 38px, #000 40px),
+                           radial-gradient(circle at 100% 0, transparent 0, transparent 38px, #000 40px),
+                           radial-gradient(circle at 0 100%, transparent 0, transparent 38px, #000 40px),
+                           radial-gradient(circle at 100% 100%, transparent 0, transparent 38px, #000 40px);
+    }
+    .profile .mock.mock-profile{
+      background: transparent;
+    }
+    .profile{
+      background: transparent;
+    }
+    @media (min-width: 768px) and (max-width: 991.98px) {
+      .profile .mock.mock-profile .mock-inner {
+        width: 270px;
+        border-radius: 33px;
+      }
+    }
+    .profile .mock.mock-profile .mock-inner iframe{
+      background: transparent;
+      -webkit-transform: scale(0.53648069) !important;
+              transform: scale(0.53648069) !important;
+      -webkit-transform-origin: top left !important;
+              transform-origin: top left !important;
+    }
+    @media (min-width: 375px){
+      .profile .mock.mock-profile .mock-inner iframe{ -webkit-transform: scale(0.615); transform: scale(0.615); }
+    }
+    @media (min-width: 390px){
+      .profile .mock.mock-profile .mock-inner iframe{ -webkit-transform: scale(0.685); transform: scale(0.685); }
+    }
+
+     /* Gentle stagger-in for steps (optional, respects reduced motion) */
+     @media (prefers-reduced-motion: no-preference){
+       .steps .step{ opacity:0; transform: translateY(6px); }
+       .steps .step.step-in{ opacity:1; transform: none; transition: opacity .28s ease, transform .28s ease; }
+       .steps .step:nth-child(2).step-in{ transition-delay:.06s; }
+       .steps .step:nth-child(3).step-in{ transition-delay:.12s; }
+     }
+
+     /* Ensure steps are visible even if intersection observer doesn't fire */
+     #how .steps .step{ opacity:1; transform:none; }
+
+     /* Reduce spacing between how and profile sections */
+     .how { padding-bottom: 24px; }
+     @media (min-width: 768px) { .how { padding-bottom: 32px; } }
+     @media (min-width: 1280px) { .how { padding-bottom: 40px; } }
+     
+     .profile { padding-top: 24px; }
+     @media (min-width: 768px) { .profile { padding-top: 32px; } }
+     @media (min-width: 1280px) { .profile { padding-top: 40px; } }
+
+     /* Hard-kill any decorative pseudo on the list item itself */
+     .steps .step::before,
+     .steps .step::after {
+       content: none !important;
+       display: none !important;
+       width: 0 !important;
+       height: 0 !important;
+       background: none !important;
+       background-image: none !important;
+       -webkit-mask-image: none !important;
+       mask-image: none !important;
+       border: 0 !important;
+       box-shadow: none !important;
+     }
+
+     /* Keep our own badge + number rendering */
+     .steps { list-style: none; padding-left: 0; counter-reset: step; }
+     .steps .step { counter-increment: step; }
+     .step-badge { /* your existing badge styles remain */ }
+     .step-badge .step-num::before { content: counter(step); }
+
+  </style>
+</head>
+<body>
+
+<header class="header">
+  <div class="container">
+    <div class="logo"><a href="#top">proxi</a></div>
+    <ul class="nav">
+      <li><a href="#how">How it works</a></li>
+      <li><a href="#faq">FAQ</a></li>
+    </ul>
+  </div>
+</header>
+
+<main id="top" class="page">
+  <div class="container">
+
+    <!-- HERO -->
+      <header class="hero">
+      <div class="cols">
+        <div class="col">
+          <header class="section-header">
+            <h1 class="section-heading">Online shopping is a group project.</h1>
+            <p class="section-subheading">See how clothes fit on people like you.</p>
+          </header>
+          <form class="form" method="POST" action="https://api.web3forms.com/submit" name="waitlist" autocomplete="on">
+            <input type="hidden" name="access_key" value="df754075-e1ca-4095-91e4-2ec448dbeb17">
+            <input type="hidden" name="subject" value="Proxi Early Access Signup">
+            <input type="checkbox" name="botcheck" class="hidden" style="display: none;">
+            <div class="form-space">
+              <input class="form-input" type="email" name="email" placeholder="Enter your email" required inputmode="email" autocomplete="email" autocapitalize="off" spellcheck="false">
+              <button class="btn" type="submit">Get early access &rarr;</button>
+            </div>
+            <small class="form-note" style="display:block; margin-top:0.5rem; margin-left:18px">Join 1,000+ early users</small>
+          </form>
+        </div>
+        <div class="col">
+          <div class="mock video" aria-hidden="true">
+            <a class="mock-inner" href="assets/iframe/find-screen.html" target="_blank" rel="noopener noreferrer" data-track="hero-mock">
+              <video preload="metadata" autoplay muted loop playsinline poster="assets/video/demo2.jpg">
+                <source src="assets/video/demo2-10.21.mp4" type="video/mp4">
+                Your browser does not support the video tag.
+              </video>
+              <div class="click-overlay" data-track="hero-mock"></div>
+            </a>
+          </div>
+        </div>
+      </div>
+    </header>
+
+    <!-- HOW IT WORKS -->
+    <section id="how" class="section how">
+      <div class="cols">
+        <div class="col">
+          <header class="section-header">
+            <p class="section-title">How it works</p>
+            <!-- Clearer transformation headline -->
+            <h2 id="section-heading" class="how-heading">
+              From your closet <span class="how-arrow">→</span> your proxies
+            </h2>
+          </header>
+
+          <ol class="steps">
+            <li class="step">
+              <span class="step-badge" aria-hidden="true">1</span>
+              <div class="step-body">
+                <p class="step-title"><strong>Add a few pieces</strong></p>
+                <p class="step-copy">Add 1–3 pieces you already own to your Closet — we'll use their exact size and brand to map your fit.</p>
+              </div>
+            </li>
+
+            <li class="step">
+              <span class="step-badge" aria-hidden="true">2</span>
+              <div class="step-body">
+                <p class="step-title"><strong>Meet your proxies</strong></p>
+                <p class="step-copy">We find people who wear the same pieces and sizes as you — and show what fits them in other brands and styles.</p>
+              </div>
+            </li>
+
+            <li class="step">
+              <span class="step-badge" aria-hidden="true">3</span>
+              <div class="step-body">
+                <p class="step-title"><strong>Shop with confidence</strong></p>
+                <p class="step-copy">See your recommended size and real-world fit notes — from people who wear what you do.</p>
+              </div>
+            </li>
+          </ol>
+        </div>
+
+        <div class="col">
+          <div class="mock mock-how" aria-hidden="true">
+            <div class="mock-inner" data-track="how-closet-mock">
+              <iframe src="assets/iframe/closet-screen.html?v=1" title="Closet mockup" loading="lazy"></iframe>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- PROFILE -->
+    <section id="profile" class="section profile">
+      <header class="section-header">
+        <p class="section-title">Your fit profile</p>
+        <h2 class="section-heading">See your fit across every brand</h2>
+        <p class="section-subheading">Every piece you add makes your profile smarter.</p>
+      </header>
+      <div class="mock mock-profile" aria-hidden="true">
+        <div class="mock-inner" data-track="profile-mock">
+              <iframe src="assets/iframe/profile-screen.html?v=2" title="Profile mockup" loading="lazy"></iframe>
+        </div>
+      </div>
+    </section>
+
+    <!-- FAQ -->
+    <section id="faq" class="section faq">
+      <div class="wrapper">
+        <header class="section-header">
+          <h2 class="section-heading">FAQ</h2>
+        </header>
+        <div class="faq-list">
+          <details>
+            <summary>What is a "proxi"?</summary>
+            <div>A proxi is a real person who wears the same item in the same size as you. We surface their photos and sizes so you can shop "by proxi" with confidence.</div>
+          </details>
+          <details>
+            <summary>When will Proxi launch?</summary>
+            <div>Public launch is December 2025. Join now to get early access before then.</div>
+          </details>
+          <details>
+            <summary>Does Proxi work for men's clothing?</summary>
+            <div>Not yet. We're starting with women's fashion for early access, with plans to add men's clothing after public launch.</div>
+          </details>
+          <details>
+            <summary>How many items do I need to start?</summary>
+            <div>Just one. Add a single piece you already wear and you'll see proxi matches and recommended sizes on similar items right away. More items = better matches.</div>
+          </details>
+        </div>
+      </div>
+    </section>
+
+    <!-- JOIN -->
+    <section id="join" class="section join">
+      <header class="section-header">
+        <h2 class="section-heading">Be first to try Proxi</h2>
+        <p class="section-subheading">Get early access and updates.</p>
+      </header>
+      <form class="form" method="POST" action="https://api.web3forms.com/submit" name="waitlist" autocomplete="on">
+        <input type="hidden" name="access_key" value="df754075-e1ca-4095-91e4-2ec448dbeb17">
+        <input type="hidden" name="subject" value="Proxi Early Access Signup">
+        <input type="checkbox" name="botcheck" class="hidden" style="display: none;">
+        <div class="form-space">
+          <input class="form-input" type="email" name="email" placeholder="Enter your email" required inputmode="email" autocomplete="email" autocapitalize="off" spellcheck="false">
+          <button class="btn" type="submit">Get early access &rarr;</button>
+        </div>
+        <small class="form-note" style="display:block; margin-top:0.5rem; margin-left:18px">Join 1,000+ early users</small>
+      </form>
+    </section>
+
+  </div>
+</main>
+
+<footer class="footer">
+  <div class="container">
+    <p class="copyright">
+      &copy; 2025 Oona Holdings LLC &nbsp;&nbsp;|&nbsp;&nbsp; <a href="privacy-policy.html" style="color:inherit;text-decoration:underline">Privacy Policy</a>
+    </p>
+  </div>
+</footer>
+
+<script>
+  // Simple analytics tracker for mockup clicks (sends to Formspree)
+  (function () {
+    const COLLECT_URL = 'https://formspree.io/f/meorpayo';
+
+    function track(eventName, detail) {
+      try {
+        if(!navigator.sendBeacon) return;
+        const fd = new FormData();
+        fd.append('type', eventName);
+        fd.append('key', (detail && detail.key) || '');
+        fd.append('meta', JSON.stringify((detail && detail.meta) || {}));
+        fd.append('path', location.pathname);
+        fd.append('ts', String(Date.now()));
+        fd.append('_subject', 'Proxi click');
+        navigator.sendBeacon(COLLECT_URL, fd);
+      } catch (e) {
+        // no-op
+      }
+    }
+
+    function handleClick(e) {
+      const key = e.currentTarget.getAttribute('data-track');
+      track('mock_click', { key });
+    }
+
+    // Attach to all click overlays and any .mock with data-track
+    document.querySelectorAll('.click-overlay, .mock[data-track]').forEach(el => {
+      el.addEventListener('click', handleClick, { passive: true });
+    });
+
+    // Listen for button-level events coming from iframes (mock internals)
+    window.addEventListener('message', (e) => {
+      const data = e.data || {};
+      if (data && data.type === 'mock_button_click') {
+        track('mock_button_click', { key: data.key, meta: data.meta || {} });
+      }
+    }, { passive: true });
+  })();
+</script>
+
+<script>
+  (function () {
+    const WEB3FORMS_ENDPOINT = 'https://api.web3forms.com/submit';
+    const DIAGNOSTIC_ENDPOINT = 'https://formspree.io/f/meorpayo';
+    const forms = document.querySelectorAll('form[name="waitlist"]');
+
+    forms.forEach(form => {
+      form.addEventListener('submit', async (e) => {
+        e.preventDefault();
+        const userEmail = form.querySelector('input[type="email"]').value;
+
+        try {
+          const res = await fetch(WEB3FORMS_ENDPOINT, {
+            method: 'POST',
+            headers: { 'Accept': 'application/json' },
+            body: new FormData(form)
+          });
+          if (!res.ok) throw new Error('Network');
+
+          // Show diagnostic question
+          form.innerHTML = `
+            <div style="text-align:center">
+              <p style="margin:0 0 1rem; font-weight:600; font-size:1.1rem">You're in!</p>
+              <p style="margin:0 0 1.5rem; font-size:0.95rem; color:#2A3642">Quick question to help us prioritize:</p>
+              <p style="margin:0 0 1rem; font-weight:500; text-align:left">Where do you most struggle with online sizing?</p>
+              <div style="text-align:left; margin:0 0 1.5rem">
+                <label style="display:block; margin:0.5rem 0; cursor:pointer">
+                  <input type="radio" name="struggle_brand" value="Zara" style="margin-right:0.5rem"> Zara
+                </label>
+                <label style="display:block; margin:0.5rem 0; cursor:pointer">
+                  <input type="radio" name="struggle_brand" value="Aritzia" style="margin-right:0.5rem"> Aritzia
+                </label>
+                <label style="display:block; margin:0.5rem 0; cursor:pointer">
+                  <input type="radio" name="struggle_brand" value="Reformation" style="margin-right:0.5rem"> Reformation
+                </label>
+                <label style="display:block; margin:0.5rem 0; cursor:pointer">
+                  <input type="radio" name="struggle_brand" value="Anthropologie" style="margin-right:0.5rem"> Anthropologie
+                </label>
+                <label style="display:block; margin:0.5rem 0; cursor:pointer">
+                  <input type="radio" name="struggle_brand" value="J.Crew" style="margin-right:0.5rem"> J.Crew
+                </label>
+                <label style="display:block; margin:0.5rem 0; cursor:pointer">
+                  <input type="radio" name="struggle_brand" value="Lululemon" style="margin-right:0.5rem"> Lululemon
+                </label>
+                <label style="display:block; margin:0.5rem 0; cursor:pointer">
+                  <input type="radio" name="struggle_brand" value="Lulus" style="margin-right:0.5rem"> Lulus
+                </label>
+                <label style="display:block; margin:0.5rem 0; cursor:pointer">
+                  <input type="radio" name="struggle_brand" value="Banana Republic" style="margin-right:0.5rem"> Banana Republic
+                </label>
+                <label style="display:block; margin:0.5rem 0; cursor:pointer">
+                  <input type="radio" name="struggle_brand" value="Free People" style="margin-right:0.5rem"> Free People
+                </label>
+                <label style="display:block; margin:0.5rem 0; cursor:pointer">
+                  <input type="radio" name="struggle_brand" value="Hill House Home" style="margin-right:0.5rem"> Hill House Home
+                </label>
+                <label style="display:block; margin:0.5rem 0; cursor:pointer">
+                  <input type="radio" name="struggle_brand" value="Everywhere" style="margin-right:0.5rem"> Everywhere — it's inconsistent
+                </label>
+                <label style="display:block; margin:0.5rem 0; cursor:pointer">
+                  <input type="radio" name="struggle_brand" value="Other" style="margin-right:0.5rem"> Other
+                </label>
+                <input type="text" id="other_brand" placeholder="Please specify..." style="display:none; width:100%; margin-top:0.5rem; padding:0.5rem; border:1px solid #E9EEF1; border-radius:4px; font-size:0.9rem">
+              </div>
+              <button id="diagnostic_submit" class="btn" style="width:100%">Submit</button>
+              <a href="#" id="diagnostic_skip" style="display:block; margin-top:0.75rem; font-size:0.85rem; color:#2A3642; text-decoration:underline">Skip</a>
+            </div>
+          `;
+
+          // Show/hide "Other" text input
+          const otherRadio = form.querySelector('input[value="Other"]');
+          const otherInput = form.querySelector('#other_brand');
+          form.querySelectorAll('input[name="struggle_brand"]').forEach(radio => {
+            radio.addEventListener('change', () => {
+              if (radio.value === 'Other') {
+                otherInput.style.display = 'block';
+              } else {
+                otherInput.style.display = 'none';
+              }
+            });
+          });
+
+          // Handle diagnostic submission
+          const submitDiagnostic = async () => {
+            const selected = form.querySelector('input[name="struggle_brand"]:checked');
+            let brandValue = selected ? selected.value : 'skipped';
+
+            if (brandValue === 'Other' && otherInput.value.trim()) {
+              brandValue = 'Other: ' + otherInput.value.trim();
+            }
+
+            // Send diagnostic data
+            try {
+              const fd = new FormData();
+              fd.append('type', 'diagnostic');
+              fd.append('email', userEmail);
+              fd.append('struggle_brand', brandValue);
+              fd.append('_subject', 'Proxi Diagnostic Response');
+              await fetch(DIAGNOSTIC_ENDPOINT, { method: 'POST', body: fd });
+            } catch (e) {
+              // Silent fail - don't block user flow
+            }
+
+            // Show final message
+            form.innerHTML = `<p style="margin:0.5rem 0 0; font-weight:600; text-align:center">Thanks! Look out for an email from us with your invite.</p>`;
+            history.replaceState(null, '', location.pathname + '?joined=1');
+          };
+
+          form.querySelector('#diagnostic_submit').addEventListener('click', submitDiagnostic);
+          form.querySelector('#diagnostic_skip').addEventListener('click', (e) => {
+            e.preventDefault();
+            submitDiagnostic();
+          });
+
+        } catch (err) {
+          window.location.href = '/thanks.html';
+        }
+      });
+    });
+  })();
+</script>
+<script>
+  (function(){
+    var logoLink = document.querySelector('.header .logo a');
+    if(logoLink){
+      logoLink.addEventListener('click', function(e){
+        e.preventDefault();
+        try{ window.scrollTo({ top: 0, behavior: 'smooth' }); }
+        catch(err){ window.scrollTo(0,0); }
+      }, { passive: true });
+    }
+  })();
+</script>
+<script>
+  (function(){
+    if (window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+    var steps = document.querySelectorAll('#how .steps .step');
+    if(!steps.length) return;
+    var io = new IntersectionObserver((entries)=>{
+      entries.forEach(e=>{
+        if(e.isIntersecting){ e.target.classList.add('step-in'); }
+      });
+    }, { rootMargin: '0px 0px -20% 0px', threshold: 0.1 });
+    steps.forEach(s=> io.observe(s));
+  })();
+</script>
+<script defer src="/_vercel/insights/script.js"></script>
+<script>window.va = window.va || function(){(window.vaq = window.vaq || []).push(arguments)}</script>
+</body>
+</html>

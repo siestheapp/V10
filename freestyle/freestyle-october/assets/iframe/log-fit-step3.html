@@ -1,0 +1,355 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Proxi — Fit Details</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <style>
+    :root{
+      /* Neutrals */
+      --ink-900:#0B0F14; --ink-700:#121A22; --ink-500:#2A3642; --ink-300:#6A7683;
+      --canvas-0:#F7F9FB; --canvas-50:#EFF3F6; --canvas-100:#E9EEF1;
+
+      /* Brand & Accents */
+      --petrol-600:#009090; --petrol-500:#00A3A3; --petrol-400:#16B5B5; --petrol-100:#E0F7F7;
+      --mint-400:#A6FFCB; --mint-500:#35D1AE; --ice-300:#BFE7EF; --coral-500:#FF6B5A;
+      --aqua-500:#1FAED9;
+
+      /* Gradients */
+      --brand-sheen:linear-gradient(135deg,#009090 0%,#1FAED9 42%,#00A3A3 62%,#35D1AE 100%);
+
+      /* Radii */
+      --radius-card:16px; --radius-btn:12px; --radius-pill:999px;
+
+      /* Shadows */
+      --elev-0:0 1px 2px rgba(0,0,0,.06); --elev-1:0 8px 24px rgba(11,15,20,.08); --elev-2:0 20px 60px rgba(0,0,0,.18);
+    }
+    *{box-sizing:border-box;margin:0;padding:0}
+    html{background:#f5f5f5}
+    body{font-family:Inter,system-ui,-apple-system,"Segoe UI",Roboto,Helvetica,Arial;background:#f5f5f5;color:#fff;min-height:100vh;display:flex;align-items:center;justify-content:center;padding:0;position:relative}
+    /* Warm page glow behind app content */
+    body::before{content:"";position:fixed;inset:-20% -10% auto -10%;height:60vh;pointer-events:none;background:radial-gradient(800px 350px at 50% -120px, rgba(0,163,163,.08), transparent 60%),radial-gradient(1200px 500px at 10% -80px, rgba(166,255,203,.08), transparent 65%);filter:saturate(105%)}
+
+    /* Phone shell */
+    .phone{width:430px;height:932px;border-radius:55px;background:transparent;border:2px solid #000;position:relative}
+    .screen{position:absolute;inset:2px;background:#1A2430;border-radius:53px;overflow:hidden;display:flex;flex-direction:column}
+    .island{position:absolute;top:11px;left:50%;transform:translateX(-50%);width:126px;height:37px;background:#000;border-radius:19px;z-index:5}
+    .status{height:54px;margin-top:3px;display:flex;align-items:center;justify-content:space-between;padding:0 30px;font-weight:600;color:#fff;font-size:17px;letter-spacing:-.02em}
+    .status .right{display:flex;align-items:center;gap:6px}
+    .status .right img{height:13px;width:auto;display:block;filter:invert(1)}
+
+    /* Header with back button */
+    .header{padding:16px 24px;display:flex;align-items:center;justify-content:space-between;border-bottom:1px solid rgba(255,255,255,.1);margin-top:-16px}
+    .back-btn{width:36px;height:36px;border:none;background:transparent;cursor:pointer;display:flex;align-items:center;justify-content:center;border-radius:50%;transition:background .2s;color:#fff}
+    .back-btn:hover{background:rgba(255,255,255,.1)}
+    .header-title{font:700 18px/1.2 Inter;color:#fff;flex:1;text-align:center;margin-right:36px}
+
+    /* Content area */
+    .content{flex:1;overflow-y:auto;padding:24px 24px 120px;display:flex;flex-direction:column;gap:24px}
+
+    /* Product summary */
+    .product-summary{display:flex;gap:16px;align-items:center;padding:16px 18px;background:rgba(255,255,255,.05);border-radius:var(--radius-card);border:1px solid rgba(255,255,255,.1)}
+    .product-thumb{width:120px;height:120px;border-radius:var(--radius-btn);object-fit:cover;flex-shrink:0;box-shadow:0 8px 24px rgba(0,0,0,.5)}
+    .product-details{flex:1;min-width:0;display:flex;flex-direction:column;gap:2px}
+    .product-brand{font:500 13px/1.3 Inter;color:rgba(255,255,255,.6);text-transform:uppercase;letter-spacing:.05em}
+    .product-title-sm{font:600 16px/1.3 Inter;color:#fff;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+    .product-meta{font:500 14px/1.3 Inter;color:rgba(255,255,255,.6);margin-top:3px}
+
+    /* Section */
+    .section{display:flex;flex-direction:column;gap:14px}
+    .section-label{font:600 15px/1.3 Inter;color:rgba(255,255,255,.9)}
+    .section-hint{font:400 14px/1.4 Inter;color:rgba(255,255,255,.6);margin-top:-8px}
+
+    /* Overall fit buttons */
+    .fit-options{display:flex;gap:10px}
+    .fit-btn{flex:1;padding:14px 12px;border:2px solid #D8D3C8;background:#E8E5E0;border-radius:var(--radius-btn);font:700 15px/1.2 Inter;color:var(--ink-700);cursor:pointer;transition:all .2s;text-align:center;display:flex;flex-direction:column;align-items:center;gap:6px}
+    .fit-btn:hover{border-color:#C8C3B8;background:#F0EDE8}
+    .fit-btn.active{border-color:var(--petrol-400);background:var(--petrol-400);color:#fff;box-shadow:0 4px 16px rgba(22,181,181,.3)}
+    .fit-icon{font-size:20px;line-height:1}
+
+    /* Expandable details */
+    .details-toggle{display:flex;align-items:center;justify-content:space-between;padding:16px;background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.15);border-radius:var(--radius-btn);cursor:pointer;transition:all .2s}
+    .details-toggle:hover{background:rgba(255,255,255,.08);border-color:rgba(255,255,255,.25)}
+    .toggle-label{font:600 15px/1.3 Inter;color:#fff}
+    .toggle-icon{width:20px;height:20px;transition:transform .3s;color:rgba(255,255,255,.6)}
+    .toggle-icon.expanded{transform:rotate(180deg)}
+
+    .details-content{max-height:0;overflow:hidden;transition:max-height .3s cubic-bezier(0.4, 0, 0.2, 1);padding:0 16px;opacity:0;transition:max-height .3s cubic-bezier(0.4, 0, 0.2, 1), opacity .2s ease}
+    .details-content.expanded{max-height:600px;padding-top:20px;padding-bottom:20px;opacity:1}
+
+    .detail-item{display:flex;flex-direction:column;gap:10px;margin-bottom:20px}
+    .detail-item:last-child{margin-bottom:0}
+    .detail-label{font:600 14px/1.3 Inter;color:rgba(255,255,255,.8)}
+    .detail-options{display:flex;gap:8px}
+    .detail-btn{flex:1;padding:10px 8px;border:2px solid rgba(255,255,255,.15);background:rgba(255,255,255,.05);border-radius:14px;font:600 13px/1.2 Inter;color:rgba(255,255,255,.7);cursor:pointer;transition:all .2s;text-align:center}
+    .detail-btn:hover{border-color:rgba(255,255,255,.25);background:rgba(255,255,255,.08)}
+    .detail-btn.active{border-color:var(--petrol-400);background:var(--petrol-400);color:#fff;box-shadow:0 4px 16px rgba(22,181,181,.3)}
+
+    /* Bottom CTA */
+    .bottom-cta{position:absolute;bottom:0;left:0;right:0;padding:16px 24px 40px;background:linear-gradient(to top,#1A2430 80%,rgba(26,36,48,0));border-top:1px solid rgba(255,255,255,.08)}
+    .cta-btn{width:100%;padding:16px 24px;background:var(--brand-sheen);color:#fff;border:none;border-radius:var(--radius-btn);font:700 16px/1 Inter;cursor:pointer;transition:all .3s;box-shadow:0 8px 24px rgba(0,163,163,.4)}
+    .cta-btn:hover{transform:translateY(-2px);box-shadow:0 12px 32px rgba(0,163,163,.5)}
+
+    /* Success overlay */
+    .success-overlay{position:fixed;inset:0;background:rgba(0,0,0,.85);backdrop-filter:blur(8px);z-index:1000;display:none;align-items:center;justify-content:center;opacity:0;transition:opacity .3s}
+    .success-overlay.visible{display:flex;opacity:1}
+    .success-content{display:flex;flex-direction:column;align-items:center;gap:24px;text-align:center;padding:40px;transform:scale(0.8);opacity:0;transition:all .4s cubic-bezier(.34,1.56,.64,1)}
+    .success-overlay.visible .success-content{transform:scale(1);opacity:1;transition-delay:.1s}
+    .success-icon{width:80px;height:80px;border-radius:50%;background:var(--brand-sheen);display:flex;align-items:center;justify-content:center;box-shadow:0 8px 32px rgba(0,163,163,.5);animation:successPulse .6s ease-out}
+    .success-icon svg{width:48px;height:48px;stroke:#fff;stroke-width:3;stroke-linecap:round;stroke-linejoin:round;fill:none}
+    .checkmark{stroke-dasharray:50;stroke-dashoffset:50;animation:drawCheck .5s ease-out .2s forwards}
+    @keyframes successPulse{0%{transform:scale(0);opacity:0}50%{transform:scale(1.1)}100%{transform:scale(1);opacity:1}}
+    @keyframes drawCheck{to{stroke-dashoffset:0}}
+    .success-title{font:700 24px/1.2 Inter;color:#fff;letter-spacing:-.02em}
+    .success-subtitle{font:500 16px/1.4 Inter;color:rgba(255,255,255,.7);max-width:280px}
+  </style>
+</head>
+<body>
+  <div class="phone">
+    <div class="island"></div>
+    <div class="screen">
+      <!-- Status bar -->
+      <div class="status"><div>9:41</div><div class="right"><img src="../img/cellular-connection.svg" alt="cell"/><img src="../img/wifi.svg" alt="wifi"/><img src="../img/battery.svg" alt="battery"/></div></div>
+
+      <!-- Header -->
+      <div class="header">
+        <button class="back-btn" aria-label="Go back">
+          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M15 18l-6-6 6-6"/>
+          </svg>
+        </button>
+        <h1 class="header-title">Fit details</h1>
+      </div>
+
+      <!-- Content -->
+      <div class="content">
+        <!-- Product Summary -->
+        <div class="product-summary">
+          <img src="../img/CL648_RD0165_m.png" alt="J.Crew Halter Mixy Dress" class="product-thumb">
+          <div class="product-details">
+            <div class="product-brand">J.Crew</div>
+            <div class="product-title-sm">Halter Mixy Dress</div>
+            <div class="product-meta">Tried it • Size S</div>
+          </div>
+        </div>
+
+        <!-- Overall Fit Section -->
+        <div class="section">
+          <label class="section-label">Overall fit</label>
+          <div class="fit-options">
+            <button class="fit-btn" data-fit="small">
+              <span class="fit-icon">↓</span>
+              <span>Too small</span>
+            </button>
+            <button class="fit-btn active" data-fit="right">
+              <span class="fit-icon">✓</span>
+              <span>Just right</span>
+            </button>
+            <button class="fit-btn" data-fit="big">
+              <span class="fit-icon">↑</span>
+              <span>Too big</span>
+            </button>
+          </div>
+        </div>
+
+        <!-- Expandable Details Section -->
+        <div class="section">
+          <div class="details-toggle" id="detailsToggle">
+            <span class="toggle-label">Add specific feedback</span>
+            <svg class="toggle-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M6 9l6 6 6-6"/>
+            </svg>
+          </div>
+
+          <div class="details-content" id="detailsContent">
+            <!-- Length -->
+            <div class="detail-item">
+              <div class="detail-label">Length</div>
+              <div class="detail-options">
+                <button class="detail-btn" data-field="length" data-value="short">Too short</button>
+                <button class="detail-btn active" data-field="length" data-value="right">Just right</button>
+                <button class="detail-btn" data-field="length" data-value="long">Too long</button>
+              </div>
+            </div>
+
+            <!-- Bust -->
+            <div class="detail-item">
+              <div class="detail-label">Bust</div>
+              <div class="detail-options">
+                <button class="detail-btn" data-field="bust" data-value="tight">Too tight</button>
+                <button class="detail-btn active" data-field="bust" data-value="right">Just right</button>
+                <button class="detail-btn" data-field="bust" data-value="loose">Too loose</button>
+              </div>
+            </div>
+
+            <!-- Waist -->
+            <div class="detail-item">
+              <div class="detail-label">Waist</div>
+              <div class="detail-options">
+                <button class="detail-btn" data-field="waist" data-value="tight">Too tight</button>
+                <button class="detail-btn active" data-field="waist" data-value="right">Just right</button>
+                <button class="detail-btn" data-field="waist" data-value="loose">Too loose</button>
+              </div>
+            </div>
+
+            <!-- Hips -->
+            <div class="detail-item">
+              <div class="detail-label">Hips</div>
+              <div class="detail-options">
+                <button class="detail-btn" data-field="hips" data-value="tight">Too tight</button>
+                <button class="detail-btn active" data-field="hips" data-value="right">Just right</button>
+                <button class="detail-btn" data-field="hips" data-value="loose">Too loose</button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Bottom CTA -->
+      <div class="bottom-cta">
+        <button class="cta-btn">Save fit</button>
+      </div>
+    </div>
+
+    <!-- Success Overlay -->
+    <div class="success-overlay" id="successOverlay">
+      <div class="success-content">
+        <div class="success-icon">
+          <svg viewBox="0 0 24 24">
+            <polyline class="checkmark" points="20 6 9 17 4 12"/>
+          </svg>
+        </div>
+        <h2 class="success-title">Fit saved!</h2>
+        <p class="success-subtitle">You're building your personal fit database</p>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    // Brand mapping function
+    function normalizeBrand(brandName) {
+      const domain = brandName.toLowerCase().replace(/\.(com|net|org)$/, '').replace('www.', '');
+
+      const brandMap = {
+        'thereformation': 'Reformation',
+        'reformation': 'Reformation',
+        'jcrew': 'J.Crew',
+        'aritzia': 'Aritzia',
+        'everlane': 'Everlane',
+        'madewell': 'Madewell',
+        'anthropologie': 'Anthropologie',
+        'freepeople': 'Free People',
+        'urbanoutfitters': 'Urban Outfitters',
+        'zara': 'Zara',
+        'hm': 'H&M'
+      };
+
+      return brandMap[domain] || brandName;
+    }
+
+    // Load product data from localStorage
+    (function loadProductData() {
+      const pendingProduct = localStorage.getItem('pendingProduct');
+
+      if (pendingProduct) {
+        try {
+          const product = JSON.parse(pendingProduct);
+
+          // Normalize brand name
+          const normalizedBrand = normalizeBrand(product.brand);
+
+          // Update product thumbnail
+          const productThumb = document.querySelector('.product-thumb');
+          if (product.image && productThumb) {
+            productThumb.src = product.image;
+            productThumb.alt = product.title;
+          }
+
+          // Update brand name
+          const brandElement = document.querySelector('.product-brand');
+          if (brandElement) {
+            brandElement.textContent = normalizedBrand;
+          }
+
+          // Update product name
+          const titleElement = document.querySelector('.product-title-sm');
+          if (titleElement) {
+            let productName = product.title;
+            if (normalizedBrand && productName.toLowerCase().startsWith(normalizedBrand.toLowerCase())) {
+              productName = productName.substring(normalizedBrand.length).trim();
+              productName = productName.replace(/^[-|•:]/, '').trim();
+            }
+            titleElement.textContent = productName;
+          }
+
+        } catch (error) {
+          console.error('Error loading product data:', error);
+        }
+      }
+    })();
+
+    // Overall fit toggle
+    const fitButtons = document.querySelectorAll('.fit-btn');
+    fitButtons.forEach(btn => {
+      btn.addEventListener('click', () => {
+        fitButtons.forEach(b => b.classList.remove('active'));
+        btn.classList.add('active');
+        console.log('Overall fit:', btn.dataset.fit);
+      });
+    });
+
+    // Details toggle (expand/collapse)
+    const detailsToggle = document.getElementById('detailsToggle');
+    const detailsContent = document.getElementById('detailsContent');
+    const toggleIcon = detailsToggle.querySelector('.toggle-icon');
+
+    detailsToggle.addEventListener('click', () => {
+      const isExpanded = detailsContent.classList.toggle('expanded');
+      toggleIcon.classList.toggle('expanded');
+      console.log('Details expanded:', isExpanded);
+    });
+
+    // Detail buttons toggle
+    const detailButtons = document.querySelectorAll('.detail-btn');
+    detailButtons.forEach(btn => {
+      btn.addEventListener('click', () => {
+        const field = btn.dataset.field;
+        // Remove active from siblings in same field
+        document.querySelectorAll(`[data-field="${field}"]`).forEach(b => b.classList.remove('active'));
+        btn.classList.add('active');
+        console.log(`${field}:`, btn.dataset.value);
+      });
+    });
+
+    // Back button - return to step 2
+    document.querySelector('.back-btn').addEventListener('click', () => {
+      window.location.href = 'log-fit-step2.html';
+    });
+
+    // Save button - show success then navigate
+    document.querySelector('.cta-btn').addEventListener('click', () => {
+      const overallFit = document.querySelector('.fit-btn.active').dataset.fit;
+      const details = {};
+
+      // Collect all active detail selections
+      document.querySelectorAll('.detail-btn.active').forEach(btn => {
+        details[btn.dataset.field] = btn.dataset.value;
+      });
+
+      console.log('Save fit:', { overallFit, details });
+
+      // Show success overlay
+      const successOverlay = document.getElementById('successOverlay');
+      successOverlay.classList.add('visible');
+
+      // Navigate to closet after 1.5 seconds
+      setTimeout(() => {
+        window.location.href = 'closet-screen.html';
+      }, 1500);
+    });
+  </script>
+</body>
+</html>

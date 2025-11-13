@@ -1,0 +1,720 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+      <meta name="viewport"
+      content="width=device-width, initial-scale=1, viewport-fit=cover, interactive-widget=resizes-content">
+  <title>Sies — In Your Size • Join the Waitlist</title>
+  <meta name="description" content="Sies predicts your best-fitting size across brands using the clothes you already own. Join the waitlist to get early access."/>
+  <meta name="author" content="Sean Davey" />
+  <meta name="copyright" content="Copyright © 2025 Sean Davey. All rights reserved." />
+  <meta property="og:site_name" content="Sies by Sean Davey" />
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <style>
+    :root{
+      --bg:#FAF8F6; --ink:#1F1F1F; --muted:#6F6F74; --accent:#8F6AAE;
+      --card:#FFFFFF; --track:#ECECEC; --shadow:0 10px 30px rgba(0,0,0,.06);
+      --g1:#667eea; --g2:#764ba2;
+      --radius:16px; --radius-lg:22px; --radius-xl:28px; --radius-2xl:36px;
+      --space: clamp(12px, 2vw, 20px);
+      --maxw: 1120px;
+    }
+    *{box-sizing:border-box;margin:0;padding:0}
+    body{font-family:Inter,system-ui,-apple-system,"Segoe UI",Roboto,Helvetica,Arial;background:var(--bg);color:var(--ink)}
+    a{color:inherit}
+    img{max-width:100%;display:block}
+
+    .container{max-width:var(--maxw);margin:0 auto;padding:0 20px}
+    header{position:sticky;top:0;z-index:100;background:rgba(250,248,246,.8);backdrop-filter:blur(10px);border-bottom:1px solid rgba(0,0,0,.06)}
+    .nav{display:flex;align-items:center;justify-content:space-between;padding:8px 0}
+    .logo{font-weight:600;font-size:32px;letter-spacing:-.01em;background:linear-gradient(180deg,#F1DCE3 0%,#8B7F83 100%);-webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent}
+    .nav a{font-weight:600;color:#4C4C50;text-decoration:none;margin-left:20px}
+
+    .hero{margin-top:-95px;padding:12px 0 15px}  /* tighter top and bottom for a crisp fold */
+    .hero-wrap{display:grid;grid-template-columns:1.2fr 1fr;gap:32px;align-items:center;min-width:0}
+    .eyebrow{font:700 12px/1 Inter;letter-spacing:.1em;text-transform:uppercase;color:#6F6F74;margin-bottom:14px}
+    h1{font-size: clamp(32px, 5vw, 54px);line-height:1.04;letter-spacing:-.02em;margin-bottom:10px}
+    .sub{font-size: clamp(16px, 2.2vw, 20px);line-height:1.5;color:#4C4C50;margin-bottom:18px}
+    .cta{display:flex;gap:10px;align-items:center}
+    .input{flex:1;min-width:200px;background:#fff;border:1px solid #E8E4DE;border-radius:var(--radius-lg);padding:14px 16px;font:500 16px/1.2 Inter;box-shadow:0 10px 24px rgba(118,75,162,.25)}
+    .btn{display:inline-flex;align-items:center;justify-content:center;gap:10px;padding:14px 24px;border-radius:var(--radius-lg);font:700 18px/1 Inter;color:#fff;border:none;cursor:pointer;background:linear-gradient(135deg,var(--g1),var(--g2));box-shadow:0 10px 24px rgba(118,75,162,.25)}
+    .note{margin-top:10px;font-size:12px;color:#6F6F74}
+    
+    /* Benefits */
+    .benefits{margin:20px 0;display:flex;flex-direction:column;gap:8px}
+    .benefit{font-size:16px;color:#4C4C50;line-height:1.4}
+
+    .mock{border-radius:var(--radius-2xl);background:#000;box-shadow:0 30px 80px rgba(0,0,0,.25);padding:12px;max-width:100%;min-width:0}
+    .mock-inner{background:#fff;border-radius:calc(var(--radius-2xl) - 10px);aspect-ratio:9/16;overflow:hidden;max-width:100%}
+    .mock-inner iframe{width:100%;height:100%;border:0;background:transparent}
+
+    .section{padding:64px 0}
+    .section h2{font-size: clamp(26px, 3.4vw, 36px);letter-spacing:-.01em;margin-bottom:10px}
+    .section p.lede{color:#4C4C50;max-width:760px}
+    .grid{margin-top:28px;display:grid;grid-template-columns:repeat(auto-fit,minmax(300px,1fr));gap:18px}
+
+    .steps{display:grid;grid-template-columns:repeat(auto-fit,minmax(250px,1fr));gap:18px;margin-top:24px}
+    .step{background:#fff;border:1px solid #eee6;border-radius:var(--radius);padding:18px}
+    .step-num{width:28px;height:28px;border-radius:999px;display:inline-flex;align-items:center;justify-content:center;background:rgba(143,106,174,.12);color:#8F6AAE;font:700 14px/1 Inter;margin-bottom:10px}
+
+    footer{padding:40px 0;border-top:1px solid rgba(0,0,0,.06);margin-top:40px;text-align:center}
+  
+    /* Section headings: consistent look with hero */
+    .section-head{
+      text-align:center;
+      padding-top:20px;
+      margin-bottom:10px;            /* light space under header stack */
+    }
+
+    /* desktop / large */
+    #how h2{
+      font-size: clamp(28px, 3vw, 36px);
+      line-height: 1.18;
+      font-weight: 700;
+      margin-bottom: 24px;
+      white-space: nowrap;   /* one line on desktop */
+    }
+
+    /* tablet & down */
+    @media (max-width: 900px){
+      #how h2{
+        white-space: normal;   /* wrap gracefully when tight */
+        max-width: 16ch;       /* controlled wrap, looks intentional */
+      }
+    }
+    
+    /* Global anchor offset for sticky header */
+    html {
+      scroll-behavior: smooth;
+      scroll-padding-top: 53px;   /* tweak to 60–72 if needed */
+    }
+    
+    /* Stronger badge styling */
+    .how-list{
+      counter-reset: howstep;
+      display:flex;
+      flex-direction:column;
+      gap:44px;                    /* generous rhythm */
+      padding-top: 30px;           /* small increase above step 1 */
+    }
+
+    .step{ 
+      counter-increment: howstep;
+      display: grid;
+      grid-template-columns: 34px 1fr; 
+      column-gap:16px; 
+      align-items: start;
+      background: transparent;  /* override old card look if unwanted */
+      border: 0;
+      padding: 0;
+      margin-bottom: 2px;       /* small increase between steps */
+    }
+
+    .step::before{
+      content: counter(howstep);
+      width:30px; height:30px; border-radius:9999px;
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      font:700 13px/1 Inter; color:#fff;
+      background: linear-gradient(135deg,var(--g1),var(--g2));
+      box-shadow: 0 10px 24px rgba(118,75,162,.25);
+    }
+    
+    .step-title{ 
+      font-weight:650; 
+      font-size:22px; 
+      margin:2px 0 12px; 
+      color: var(--ink);
+    }
+    .step-text{  
+      font-size:16.5px; 
+      line-height:1.5; 
+      max-width:520px; 
+      color:#4C4C50; 
+    }
+    
+    .step-title,
+    .step-text { grid-column: 2; }      /* keep both in the wide column */
+
+    /* Optional: make eyebrows feel intentional everywhere */
+    .eyebrow{
+      font:700 12px/1 Inter;
+      letter-spacing:.1em;
+      text-transform:uppercase;
+      color:#6F6F74;
+      margin-bottom:14px;
+    }
+  
+    /* HOW section spacing: no top padding so the top line sits right under header */
+    #how.section { 
+      padding: 0 0 50px !important;
+    }
+
+    /* Tighten header stack */
+    #how h2 {
+      margin-bottom: 28px !important;  /* was 12px */
+    }
+
+    #how .how-grid{
+      display:grid;
+      grid-template-columns: 1.35fr 1fr;
+      align-items:center;              /* vertically center items in the row */
+      gap:48px;
+    }
+    
+
+    
+
+    
+
+    
+    #how .eyebrow{ margin-bottom:8px; }        /* was 14px in places  */
+    @media (max-width: 960px){
+      #how .how-grid{
+        grid-template-columns: 1fr; 
+        gap:28px;
+      }
+      #how .left-col{ margin-top: 0; }
+      #how .mock{ margin-top: 0; align-self:center; }
+    }
+  
+    /* (cleaned) demo mockups use absolute centering without transforms */
+    
+    /* Three mockups layout */
+    .three-mockups {
+      display: grid;
+      grid-template-columns: repeat(3, 272px);
+      gap: 45px;
+      margin-top: 45px;
+      justify-content: center;
+      justify-items: center;
+    }
+    
+    .mockup-item {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 0px;
+    }
+    
+    .mockup-label {
+      font-size: 14px;
+      font-weight: 500;
+      color: #6F6F74;
+      margin-top: 16px;
+      margin-bottom: -8px;
+      text-align: center;
+      text-transform: uppercase;
+      letter-spacing: 0.04em;
+    }
+    
+    /* Make demo phones frameless like Section 2 */
+    #demo .three-mockups .mock {
+      background: transparent;
+      box-shadow: none;
+      padding: 0;
+      margin-top: 0;
+    }
+    
+    #demo .three-mockups .mock-inner {
+      background: transparent;
+      border-radius: 0;
+      width: 272px;
+      max-width: 100%;
+      aspect-ratio: 430/1000;
+      overflow: hidden;
+      margin: 0 auto;
+      position: relative;
+    }
+
+    /* Click tracking overlay (covers iframe/videos without changing layout) */
+    .click-overlay{ position:absolute; inset:0; background:transparent; cursor:pointer }
+    
+    #demo .three-mockups .mock iframe {
+      width: 430px;
+      height: 945px;
+      border: 0;
+      background: transparent;
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%) scale(0.63);
+      transform-origin: center center;
+    }
+    
+    @media (max-width: 1200px) {
+      .hero-wrap {
+        grid-template-columns: 1fr;
+        gap: 24px;
+        text-align: center;
+      }
+      .hero {
+        margin-top: 0;
+        padding: 20px 0 40px;
+      }
+    }
+    
+    @media (max-width: 960px) {
+      .three-mockups {
+        grid-template-columns: 1fr;
+        gap: 32px;
+      }
+    }
+    
+    /* Video styling to match iframe */
+    .mock:has(video){background:transparent !important;padding:0 !important;box-shadow:none !important;width:fit-content !important;height:fit-content !important;pointer-events:none !important}
+    .mock:has(video) .mock-inner{background:transparent;border-radius:0;aspect-ratio:430/932;overflow:hidden;width:fit-content;pointer-events:none}
+    .mock video{transform:translateY(-44px) scale(0.655);transform-origin:center;width:100%;height:100%;object-fit:cover;border-radius:53px}
+    .mock a{pointer-events:auto !important;cursor:pointer}
+
+    /* FAQ — refined accordion styling */
+    #faq .container{ max-width: 760px }
+    #faq .faq-list{ display:flex; flex-direction:column; gap:10px; margin-top:14px }
+    #faq details{ background:#fff; border:1px solid #E8E4DE; border-radius:14px; overflow:hidden }
+    #faq summary{ list-style:none; cursor:pointer; padding:14px 16px; font:600 16px/1.3 Inter; color:var(--ink); display:flex; align-items:center; gap:10px }
+    #faq summary::-webkit-details-marker{ display:none }
+    #faq summary::before{ content:""; width:8px; height:8px; border-radius:999px; background:linear-gradient(135deg,var(--g1),var(--g2)); box-shadow:0 4px 12px rgba(118,75,162,.25) }
+    #faq summary::after{ content:""; margin-left:auto; width:10px; height:10px; border-right:2px solid #8F6AAE; border-bottom:2px solid #8F6AAE; transform:rotate(-45deg); transition:transform .2s ease }
+    #faq details[open] summary::after{ transform:rotate(45deg) }
+    #faq details > div{ padding:8px 16px 14px; color:#4C4C50; border-top:1px solid rgba(0,0,0,.06); font-size:15px; line-height:1.55 }
+
+
+
+    /* 2) Remove the extra vertical offsets inside HOW */
+    #how .left-col { margin-top: 0 !important; }          /* was 28px */
+    #how .mock     { margin-top: 0 !important; }          /* was -14px */
+
+    /* === HOW: framed device, consistent scale, no phantom gap === */
+    #how .mock {
+      background:transparent;
+      padding:0;
+      box-shadow:none;
+      border-radius:0;
+      margin: 0 0 0 -5px;               /* nudge left by 5px */
+    }
+
+    #how .mock .mock-inner {
+      background:transparent;
+      border-radius:0;
+      aspect-ratio:430 / 1000;         /* taller to reveal bottom */
+      width:calc(430px * 0.700);       /* +1% scale reflected in layout width */
+      max-width:100%;
+      margin-inline:auto;
+      overflow:hidden;
+      position:relative;
+    }
+
+    #how .mock-inner iframe {
+      width:430px;
+      height:1000px;
+      transform:scale(0.700);          /* matches wrapper width (+1%) */
+      transform-origin:top left;
+      border:0;
+      background:transparent;
+      border-radius:40px;               /* slightly tighter corners for scale */
+    }
+
+
+
+    /* PROFILE SPOTLIGHT — centered phone + gradient leader lines */
+    #profile.section{
+      background: radial-gradient(1200px 420px at 50% -120px, rgba(255,255,255,.9), rgba(255,255,255,0));
+      border-top: 1px solid rgba(0,0,0,.06);
+      border-bottom: 1px solid rgba(0,0,0,.06);
+      padding: 40px 0 60px;
+    }
+
+    .profile-grid{
+      position: relative;
+      max-width: 1040px;
+      margin: 0 auto;
+      display: grid;
+      grid-template-rows: auto auto;
+      justify-items: center;
+      gap: 6px;
+    }
+
+    #profile .spot-head{ text-align:center; }
+    #profile .spot-head .eyebrow{ margin-bottom:8px }
+    #profile .spot-head h2{ margin-bottom:8px }
+    #profile .spot-head .lede{ margin:10px auto 0; max-width:1000px; white-space:nowrap }
+    @media (max-width: 960px){
+      #profile .spot-head .lede{ white-space: normal }
+    }
+
+    #profile .mock{ background:transparent; box-shadow:none; padding:0; border-radius:0; }
+    #profile .mock-inner{
+      background:transparent; border-radius:0;
+      width:300px; aspect-ratio:430/1000; position:relative; overflow:hidden;
+    }
+    #profile .mock-inner iframe{
+      width:430px; height:940px; border:0; background:transparent;
+      position:absolute; top:50%; left:50%;
+      transform:translate(-50%,-50%) scale(.70);
+      transform-origin:center;
+    }
+
+    .mockup-label {
+      font-size: 16px;
+      font-weight: 600;
+      color: var(--ink);      /* darker for clarity */
+      margin-top: 16px;
+      margin-bottom: 2px;     /* cleaner spacing */
+      text-align: center;
+      letter-spacing: 0.01em; /* subtle, less wide */
+      text-transform: none;   /* natural casing */
+    }
+
+    /* iPhone polish */
+    :root{
+      --safe-top: env(safe-area-inset-top);
+      --safe-bottom: env(safe-area-inset-bottom);
+    }
+    header{ padding-top: max(8px, var(--safe-top)); }
+    footer{ padding-bottom: max(16px, var(--safe-bottom)); }
+
+    @media (max-width: 430px){ /* iPhone 15 width */
+      html, body{ overflow-x:hidden; -webkit-text-size-adjust:100%; }
+      .container{ padding: 0 16px; }                              /* narrower gutters */
+      .hero{ margin-top: 0 !important; padding: 12px 0 24px; }     /* undo desktop -95px */
+      h1{ font-size: clamp(30px, 7.6vw, 36px); line-height:1.08; max-width: 16ch; }
+      .sub{ font-size: 15.5px; line-height: 1.45; }
+
+      /* Form: stack + big tap targets, prevent iOS zoom */
+      .cta{ flex-direction: column; align-items: stretch; gap: 12px; }        /* was row */
+      .input, .btn{ width: 100%; padding: 16px; min-height: 48px; }
+      input, select, textarea{ font-size: 16px; }
+
+      /* Phone mock: keep comfortably inside viewport */
+      .mock-inner{ width: clamp(230px, 72vw, 280px) !important; }
+
+      /* Section rhythm (a bit tighter on phones) */
+      .section{ padding: 40px 0; }
+    }
+
+    /* Smooth anchor landings under sticky header */
+    html{ scroll-padding-top: 64px; }                                          /* was 53px */
+
+    /* Nicer taps */
+    *{ -webkit-tap-highlight-color: rgba(0,0,0,0); }
+
+    /* Motion preference support */
+    @media (prefers-reduced-motion: reduce){
+      .mock video { display:none; }
+      .mock-inner { background:#fff url('./mock-cover.jpg') center/cover no-repeat; }
+    }
+
+    /* --- HERO mock fix: apply only below 960px (tablet + phones) --- */
+    @media (max-width: 960px) {
+      .hero .mock {
+        background: transparent;
+        padding: 0;
+        box-shadow: none;
+        justify-self: center;
+      }
+
+      /* Override earlier .mock:has(video) .mock-inner width collapse */
+      .hero .mock-inner,
+      .hero .mock:has(video) .mock-inner {
+        background: transparent;
+        border-radius: 40px;
+        width: clamp(230px, 72vw, 300px) !important;
+        aspect-ratio: 430 / 932;
+        margin: 0 auto;
+        overflow: hidden;
+        position: relative;
+      }
+
+      .hero .mock-inner video {
+        position: absolute;
+        inset: 0;
+        width: 100%;
+        height: 100%;
+        object-fit: contain;
+        transform: none !important;
+        border-radius: 40px;
+      }
+    }
+
+  </style>
+</head>
+<body>
+  <header>
+    <div class="container nav">
+      <a href="#" class="logo" style="text-decoration: none; color: inherit;">sies</a>
+              <nav>
+          <a href="#how">How it works</a>
+          <a href="#faq">FAQ</a>
+        </nav>
+    </div>
+  </header>
+
+  <main>
+    <!-- HERO -->
+    <section class="hero">
+      <div class="container hero-wrap">
+        <div>
+          <h1>Find clothes that fit — every time.</h1>
+
+
+                  <div class="benefits">
+          <div class="benefit">No measuring. No guesswork. No surprises.</div>
+        </div>
+
+          <form id="waitlist" class="cta"
+      name="waitlist" method="POST" action="https://formspree.io/f/meorpayo"
+      data-netlify="true" netlify-honeypot="bot-field" autocomplete="on">
+  <!-- Required hidden fields for Netlify -->
+  <input type="hidden" name="form-name" value="waitlist" />
+  <p class="hidden" style="display:none;">
+    <label>Don't fill this out: <input name="bot-field" /></label>
+  </p>
+
+  <input class="input" type="email" name="email" placeholder="Enter your email" required
+         inputmode="email" autocomplete="email" autocapitalize="off" spellcheck="false" />
+  <button class="btn" type="submit">Join the waitlist →</button>
+</form>
+          <p class="note">Join 1000+ early users. No spam, ever.</p>
+        </div>
+        <div class="mock" aria-hidden="true">
+          <div class="mock-inner">
+            <a href="https://www.anthropologie.com/shop/the-jocelyn-sleeveless-slip-midi-dress-by-maeve?category=top-rated-dresses&color=256&type=STANDARD&quantity=1" target="_blank" rel="noopener noreferrer" data-track="hero-mock" style="display: inline-block; position: relative; z-index: 10;">
+              <video preload="metadata" autoplay muted loop playsinline poster="./mock-cover.jpg">
+                <source src="./mockup-video3.mp4" type="video/mp4">
+                Your browser does not support the video tag.
+              </video>
+            </a>
+            <div class="click-overlay" data-track="hero-mock"></div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- HOW IT WORKS -->
+    <section id="how" class="section" style="background:linear-gradient(180deg,rgba(255,255,255,0) 0%, rgba(255,255,255,.4) 100%);border-top:1px solid rgba(0,0,0,.06);border-bottom:1px solid rgba(0,0,0,.06);padding:0 0 40px">
+      <div class="container">
+        <!-- Left-Right Layout -->
+        <div class="how-grid">
+          <!-- LEFT: Header + Steps -->
+          <div class="left-col">
+            <div>
+              <div class="eyebrow">how it works</div>
+              <h2 id="how-title">Your sizes → your measurements</h2>
+            </div>
+
+                        <div class="how-list">
+              <div class="step">
+                <h3 class="step-title">Add a few favorites</h3>
+                <p class="step-text">Add 1–3 pieces you already own. Sies pulls the exact measurements automatically.</p>
+              </div>
+
+              <div class="step">
+                <h3 class="step-title">Sit back while Sies does the math</h3>
+                <p class="step-text">Sies builds your fit profile from size guides and spec sheets — no measuring tape needed.</p>
+              </div>
+
+              <div class="step">
+                <h3 class="step-title">Shop with confidence</h3>
+                <p class="step-text">See your recommended size and a short "why it fits" note. No guesswork, just clothes that feel made for you.</p>
+              </div>
+            </div>     <!-- closes the STEPS wrapper -->
+        </div>       <!-- closes the LEFT column -->
+
+        <!-- RIGHT: Mock -->
+        <div class="mock" aria-hidden="true">
+            <div class="mock-inner" data-track="how-closet-mock">
+              <iframe src="./closet-screen.html" title="Closet mockup" loading="lazy"></iframe>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- PROFILE SPOTLIGHT -->
+    <section id="profile" class="section">
+      <div class="container">
+        <div class="profile-grid">
+
+          <div class="spot-head">
+            <div class="eyebrow">Your fit profile</div>
+            <h2>Your closet, brought to life</h2>
+            <p class="lede">
+              Every piece you add makes your profile smarter.
+            </p>
+          </div>
+
+          <!-- Center phone -->
+          <div class="mock" aria-hidden="true" style="margin-top: 10px;">
+            <div class="mock-inner" data-track="profile-mock">
+              <iframe src="./profile-screen.html" title="Profile mockup" loading="lazy"></iframe>
+            </div>
+          </div>
+
+
+
+        </div>
+      </div>
+    </section>
+
+    <!-- DEMO MOCKUPS -->
+    <section class="section" id="demo" style="padding:24px 0 10px">
+      <div class="container">
+        <h2>Everything in one place.</h2>
+        <p class="lede">Your sizes, your measurements, your shopping.</p>
+        <div class="three-mockups">
+          <div class="mockup-item">
+            <div class="mockup-label">Your Closet</div>
+            <div class="mock"><div class="mock-inner" data-track="gallery-closet"><iframe src="./closet-gallery.html" title="Closet mockup" loading="lazy"></iframe></div></div>
+          </div>
+          <div class="mockup-item">
+            <div class="mockup-label">Your Profile</div>
+            <div class="mock"><div class="mock-inner" data-track="gallery-profile"><iframe src="./profile-gallery.html" title="Profile mockup" loading="lazy"></iframe></div></div>
+          </div>
+          <div class="mockup-item">
+            <div class="mockup-label">Your Feed</div>
+            <div class="mock"><div class="mock-inner" data-track="gallery-feed"><iframe src="./feed-gallery.html" title="Feed mockup" loading="lazy"></iframe></div></div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- TESTIMONIAL -->
+    <section class="section" id="love" style="padding: 60px 0 40px;">
+      <div class="container">
+        <div class="quote" style="max-width:760px;margin:0 auto;background:#fff;padding:24px;border-radius:var(--radius);box-shadow:0 8px 24px rgba(0,0,0,.08);">
+          <p style="font-size:18px;line-height:1.55">“I used to order two sizes every time I shopped for a dress online. With Sies, I have a much better idea of how each size will fit.”</p>
+          <div class="who" style="margin-top:10px;font-weight:600">— Emily, NYC</div>
+        </div>
+      </div>
+    </section>
+
+    <!-- FAQ -->
+    <section id="faq" class="section">
+      <div class="container">
+        <h2>FAQ</h2>
+        <div class="faq-list">
+          <details>
+            <summary>Do I need to measure myself?</summary>
+            <div>No. Sies learns your fit from the clothes you already own. Snap a couple tag photos or paste product links and we’ll extract measurements automatically.</div>
+          </details>
+          <details>
+            <summary>Are my sizes public?</summary>
+            <div>No. Sizes and measurements are private by default. You can share with Close Friends; creators can opt-in to share.</div>
+          </details>
+          <details>
+            <summary>Will this work across different brands?</summary>
+            <div>Yes. We standardize brand size guides and map them to your fit profile, so an XS in one brand can be compared to an S in another.</div>
+          </details>
+          <details>
+            <summary>What if I like different fits?</summary>
+            <div>Choose a fit zone – sleek, perfect, or relaxed – and Sies adapts by garment type. You’ll also see a short “why it fits” explanation on each item.</div>
+          </details>
+          <details>
+            <summary>How is my data used?</summary>
+            <div>Only to improve your recommendations. We don’t sell personal data. You can remove your info anytime from Settings.</div>
+          </details>
+        </div>
+      </div>
+    </section>
+
+    <!-- FINAL CTA -->
+    <section class="section" id="join" style="padding: 20px 0 40px;">
+      <div class="container" style="text-align:center;max-width:760px">
+        <h2>Be first to try Sies</h2>
+        <p class="lede">Join the waitlist for early access and updates.</p>
+        <form class="cta"
+      name="waitlist" method="POST" action="https://formspree.io/f/meorpayo"
+      data-netlify="true" netlify-honeypot="bot-field"
+      style="justify-content:center;margin-top:10px" autocomplete="on">
+  <!-- Required hidden fields for Netlify -->
+  <input type="hidden" name="form-name" value="waitlist" />
+  <p class="hidden" style="display:none;">
+    <label>Don't fill this out: <input name="bot-field" /></label>
+  </p>
+
+  <input class="input" type="email" name="email" placeholder="Enter your email" required
+         inputmode="email" autocomplete="email" autocapitalize="off" spellcheck="false" />
+  <button class="btn" type="submit">Join the waitlist →</button>
+</form>
+        <p class="note">No spam – opt out anytime.</p>
+      </div>
+    </section>
+  </main>
+
+  <footer>
+    <div class="container">
+      <p style="font-size: 12px; color: #666; margin: 0;">© 2025 Sies by Oona Holdings LLC. All rights reserved.</p>
+    </div>
+  </footer>
+
+
+  <script>
+  // Simple analytics tracker for mockup clicks (sends to Formspree)
+  (function(){
+    const COLLECT_URL = 'https://formspree.io/f/meorpayo';
+    function track(eventName, detail){
+      try{
+        if(!navigator.sendBeacon) return;
+        const fd = new FormData();
+        fd.append('type', eventName);
+        fd.append('key', (detail && detail.key) || '');
+        fd.append('meta', JSON.stringify((detail && detail.meta) || {}));
+        fd.append('path', location.pathname);
+        fd.append('ts', String(Date.now()));
+        fd.append('_subject', 'Proxi click');
+        navigator.sendBeacon(COLLECT_URL, fd);
+      }catch(e){
+        // no-op
+      }
+    }
+
+    function handleClick(e){
+      const key = e.currentTarget.getAttribute('data-track');
+      track('mock_click', {key});
+    }
+
+    // Attach to all click overlays and any .mock with data-track
+    document.querySelectorAll('.click-overlay, .mock[data-track]').forEach(el=>{
+      el.addEventListener('click', handleClick, {passive:true});
+    });
+
+    // Listen for button-level events coming from iframes (mock internals)
+    window.addEventListener('message', (e)=>{
+      const data = e.data || {};
+      if(data && data.type === 'mock_button_click'){
+        track('mock_button_click', { key: data.key, meta: data.meta || {} });
+      }
+    }, {passive:true});
+  })();
+  </script>
+
+  <script>
+  (function () {
+  const FORMSPREE_ENDPOINT = 'https://formspree.io/f/meorpayo';
+  const forms = document.querySelectorAll('form[name="waitlist"][data-netlify="true"]');
+
+  forms.forEach(form => {
+    form.addEventListener('submit', async (e) => {
+      e.preventDefault();
+      try {
+        const res = await fetch(FORMSPREE_ENDPOINT, {
+          method: 'POST',
+          headers: { 'Accept': 'application/json' },
+          body: new FormData(form)
+        });
+        if (!res.ok) throw new Error('Network');
+
+        form.innerHTML = `<p style="margin:0.5rem 0 0; font-weight:600">You're in 🎉 We'll email you soon.</p>`;
+        history.replaceState(null, '', location.pathname + '?joined=1');
+      } catch (err) {
+        window.location.href = '/thanks.html';
+      }
+    });
+  });
+})();
+  </script>
+</body>
+</html>

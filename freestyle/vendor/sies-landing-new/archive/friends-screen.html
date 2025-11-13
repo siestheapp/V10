@@ -1,0 +1,352 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Sies · Friends’ Fits (Light – Matched to Feed)</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <style>
+    :root{
+      /* Match feed-screen color system */
+      --bg:#FAF8F6; --ink:#1F1F1F; --muted:#6F6F74; --accent:#8F6AAE;
+      --card:#FFFFFF; --track:#ECECEC; --shadow:0 10px 30px rgba(0,0,0,.06);
+    }
+    *{box-sizing:border-box;margin:0;padding:0}
+    body{font-family:Inter,system-ui,-apple-system,Segoe UI,Roboto,Helvetica,Arial;background:var(--bg);color:var(--ink);
+      min-height:100vh;display:flex;align-items:center;justify-content:center;padding:20px}
+
+    /* Phone frame to match feed-screen */
+    .phone-container{position:relative;width:430px;height:932px;margin:auto}
+    .phone-frame{width:100%;height:100%;background:#000;border-radius:55px;padding:2px}
+    .screen{height:100%;background:#fff;border-radius:53px;overflow:hidden;position:relative;display:flex;flex-direction:column}
+    .island{position:absolute;top:9px;left:50%;transform:translateX(-50%);width:126px;height:37px;background:#000;border-radius:19px;z-index:2}
+    .status{height:54px;margin-top:5px;display:flex;align-items:center;justify-content:space-between;padding:0 30px;font-weight:600;color:#000;font-size:17px;letter-spacing:-.02em}
+    .status .right{display:flex;align-items:center;gap:6px}
+    .status .right img{height:13px;width:auto;display:block}
+
+    .header{padding:16px 24px 6px;display:flex;justify-content:space-between;align-items:center}
+    .logo{font-weight:600;font-size:32px;letter-spacing:-.01em;background:linear-gradient(180deg,#F1DCE3 0%,#8B7F83 100%);
+      -webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent}
+
+    .section{padding:0 24px 6px}
+    .heading-inline{display:flex;align-items:baseline;gap:10px;margin:0 0 6px;flex-wrap:wrap}
+    .heading-main{font-size:26px;font-weight:700;color:var(--ink);letter-spacing:-0.01em;line-height:1.1}
+    .heading-sub{font-size:16px;font-weight:600;color:#6A5B4A;letter-spacing:-.005em;line-height:1.2}
+
+    /* Tabs (reuse chip styling from feed) */
+    .chips{display:flex;gap:8px;padding-top:10px;overflow-x:auto;-webkit-overflow-scrolling:touch;scrollbar-width:none;margin-top:6px}
+    .chips::-webkit-scrollbar{display:none}
+    .chip{border:1px solid #E8E4DE;background:#fff;color:var(--ink);border-radius:9999px;padding:10px 16px;font-size:13px;font-weight:500;white-space:nowrap;transition:all .2s ease;cursor:pointer}
+    .chip.is-active{border-color:var(--accent);background:rgba(143,106,174,.15);color:#8F6AAE;font-weight:600;box-shadow:0 2px 8px rgba(143,106,174,.12)}
+    .chip:not(.is-active):hover{background:#f8f8f8;border-color:#d0d0d0}
+
+    /* Feed & Card (matched sizing from feed-screen) */
+    .feed{padding:0 24px 130px;overflow-y:auto}
+    .card{background:#fff;border:1px solid #eee6;border-radius:18px;overflow:hidden;transition:transform .2s ease;margin-top:8px}
+    .card:hover{transform:translateY(-2px)}
+
+    .head{display:flex;align-items:center;gap:10px;padding:12px 12px 6px}
+    .avatar{width:36px;height:36px;border-radius:50%;object-fit:cover}
+    .meta{display:flex;flex-direction:column}
+    .name{font-weight:600;font-size:13px}
+    .sub{color:#6F6F74;font-size:12px}
+
+    .imgbox{position:relative;overflow:hidden;border-radius:18px;margin:0 12px}
+    .img{width:100%;height:440px;object-fit:cover;object-position:center}
+    .imgbox::after{content:"";position:absolute;left:0;right:0;bottom:0;height:20%;background:linear-gradient(180deg,rgba(255,255,255,0) 0%,rgba(250,248,246,.56) 48%,#fff 100%)}
+
+    .size-pill{position:absolute;left:20px;bottom:20px;display:inline-flex;align-items:center;gap:6px;padding:6px 10px;border:1px solid #E8E4DE;border-radius:999px;background:rgba(255,255,255,.92);backdrop-filter:blur(8px);font:600 12px/1 Inter;color:#4C4C50;z-index:2}
+    .fit-pill{position:absolute;right:20px;bottom:20px;display:inline-flex;align-items:center;gap:6px;padding:6px 10px;border-radius:999px;font:700 12px/1 Inter;z-index:2}
+    .fit-pill.good{background:#EBFDF3;border:1px solid #CDEBDD;color:#237A4B}
+
+    .info{padding:10px 14px 14px}
+    .title{font-weight:700;letter-spacing:-.01em;font-size:16px;line-height:1.25}
+    .title a{color:inherit;text-decoration:none}
+    .brand{color:#4C4C50;font-size:13px;margin-top:2px}
+
+    .actions{display:flex;align-items:center;gap:10px;margin-top:12px}
+    .shop-cta{display:inline-flex;align-items:center;gap:8px;padding:10px 16px;background:rgba(143,106,174,.08);border:1px solid rgba(143,106,174,.2);border-radius:12px;color:#8F6AAE;text-decoration:none;font-weight:600;font-size:14px;transition:all .2s ease}
+    .shop-cta:hover{background:rgba(143,106,174,.15);border-color:rgba(143,106,174,.3);transform:translateY(-1px)}
+
+    .hidden{display:none}
+  </style>
+</head>
+<body>
+  <div class="phone-container">
+    <div class="phone-frame">
+      <div class="screen">
+        <div class="island"></div>
+        <div class="status"><div>9:41</div><div class="right"><img src="../Cellular Connection.svg" alt="cell"/><img src="../Wifi.svg" alt="wifi"/><img src="../Battery.svg" alt="battery"/></div></div>
+
+        <div class="header">
+          <div class="logo">sies</div>
+        </div>
+
+        <div class="section">
+          <div class="heading-inline">
+            <h1 class="heading-main">Friends’ fits</h1>
+            <span class="heading-sub">See what your friends own & how it fits them.</span>
+          </div>
+          <!-- Tabs: All vs Friends (Friends active by default) -->
+          <div class="chips" role="tablist" aria-label="Scope">
+            <button class="chip" role="tab" aria-selected="false" data-filter="all">All</button>
+            <button class="chip is-active" role="tab" aria-selected="true" data-filter="friends">Friends</button>
+          </div>
+        </div>
+
+        <main class="feed" id="feed" aria-live="polite">
+          <!-- Alex card (Friends) -->
+          <article class="card" data-friends="true">
+            <div class="head">
+              <img class="avatar" alt="Alex avatar" src="https://images.unsplash.com/photo-1544005313-94ddf0286df2?q=80&w=120&auto=format&fit=crop"/>
+              <div class="meta">
+                <div class="name">Alex</div>
+                <div class="sub">added just now</div>
+              </div>
+            </div>
+            <figure class="imgbox">
+              <img class="img" alt="Alo Yoga Airbrush Corset Full Zip Jacket in White" src="https://cdn.shopify.com/s/files/1/2185/2813/files/W4529R_00_b2_s1_a1_1_m241_750x.jpg?v=1745620973"/>
+              <figcaption class="size-pill">Size M</figcaption>
+              <div class="fit-pill good">Good Fit</div>
+            </figure>
+            <div class="info">
+              <div class="title"><a href="https://www.aloyoga.com/products/w4529r-airbrush-corset-full-zip-jacket-white?#reviews-section-anchor" target="_blank" rel="noopener">Airbrush Corset Full Zip Jacket</a></div>
+              <div class="brand">Alo Yoga · White</div>
+              <div class="actions">
+                <a class="shop-cta" href="https://www.aloyoga.com/products/w4529r-airbrush-corset-full-zip-jacket-white?#reviews-section-anchor" target="_blank" rel="noopener">Open product page →</a>
+              </div>
+            </div>
+          </article>
+
+          <!-- Example non-friend card (shows only in "All") -->
+          <article class="card" data-friends="false">
+            <div class="head">
+              <img class="avatar" alt="Community avatar" src="https://images.unsplash.com/photo-1547425260-76bcadfb4f2c?q=80&w=120&auto=format&fit=crop"/>
+              <div class="meta">
+                <div class="name">Popular now</div>
+                <div class="sub">community pick</div>
+              </div>
+            </div>
+            <figure class="imgbox">
+              <img class="img" alt="Lifestyle placeholder" src="https://images.unsplash.com/photo-1519741497674-611481863552?q=80&w=1200&auto=format&fit=crop"/>
+              <figcaption class="size-pill">Most saved</figcaption>
+            </figure>
+            <div class="info">
+              <div class="title">Recommended for your sizes</div>
+              <div class="brand">Based on your profile</div>
+            </div>
+          </article>
+        </main>
+
+        <!-- (optional) bottom tabs omitted for brevity in the deck mockup -->
+      </div>
+    </div>
+  </div>
+
+  <script>
+    const chips = document.querySelector('.chips');
+    const feed = document.getElementById('feed');
+
+    function applyScope(){
+      const active = chips.querySelector('.chip.is-active')?.dataset.filter || 'friends';
+      const cards = feed.querySelectorAll('.card');
+      cards.forEach(card=>{
+        const isFriend = card.dataset.friends === 'true';
+        const show = (active === 'all') || (active === 'friends' && isFriend);
+        card.style.display = show ? '' : 'none';
+      });
+    }
+
+    chips.addEventListener('click', (e)=>{
+      const btn = e.target.closest('.chip');
+      if(!btn) return;
+      chips.querySelectorAll('.chip').forEach(c=>c.classList.remove('is-active'));
+      btn.classList.add('is-active');
+      chips.querySelectorAll('[role="tab"]').forEach(t=>t.setAttribute('aria-selected','false'));
+      btn.setAttribute('aria-selected','true');
+      applyScope();
+    });
+
+    // Default to Friends tab active
+    applyScope();
+  </script>
+</body>
+</html>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Sies · Friends’ Fits (Light – Matched to Feed)</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <style>
+    :root{
+      /* Match feed-screen color system */
+      --bg:#FAF8F6; --ink:#1F1F1F; --muted:#6F6F74; --accent:#8F6AAE;
+      --card:#FFFFFF; --track:#ECECEC; --shadow:0 10px 30px rgba(0,0,0,.06);
+    }
+    *{box-sizing:border-box;margin:0;padding:0}
+    body{font-family:Inter,system-ui,-apple-system,Segoe UI,Roboto,Helvetica,Arial;background:var(--bg);color:var(--ink);
+      min-height:100vh;display:flex;align-items:center;justify-content:center;padding:20px}
+
+    /* Phone frame to match feed-screen */
+    .phone-container{position:relative;width:430px;height:932px;margin:auto}
+    .phone-frame{width:100%;height:100%;background:#000;border-radius:55px;padding:2px}
+    .screen{height:100%;background:#fff;border-radius:53px;overflow:hidden;position:relative;display:flex;flex-direction:column}
+    .island{position:absolute;top:9px;left:50%;transform:translateX(-50%);width:126px;height:37px;background:#000;border-radius:19px;z-index:2}
+    .status{height:54px;margin-top:5px;display:flex;align-items:center;justify-content:space-between;padding:0 30px;font-weight:600;color:#000;font-size:17px;letter-spacing:-.02em}
+    .status .right{display:flex;align-items:center;gap:6px}
+    .status .right img{height:13px;width:auto;display:block}
+
+    .header{padding:16px 24px 6px;display:flex;justify-content:space-between;align-items:center}
+    .logo{font-weight:600;font-size:32px;letter-spacing:-.01em;background:linear-gradient(180deg,#F1DCE3 0%,#8B7F83 100%);
+      -webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent}
+
+    .section{padding:0 24px 6px}
+    .heading-inline{display:flex;align-items:baseline;gap:10px;margin:0 0 6px;flex-wrap:wrap}
+    .heading-main{font-size:26px;font-weight:700;color:var(--ink);letter-spacing:-0.01em;line-height:1.1}
+    .heading-sub{font-size:16px;font-weight:600;color:#6A5B4A;letter-spacing:-.005em;line-height:1.2}
+
+    /* Tabs (reuse chip styling from feed) */
+    .chips{display:flex;gap:8px;padding-top:10px;overflow-x:auto;-webkit-overflow-scrolling:touch;scrollbar-width:none;margin-top:6px}
+    .chips::-webkit-scrollbar{display:none}
+    .chip{border:1px solid #E8E4DE;background:#fff;color:var(--ink);border-radius:9999px;padding:10px 16px;font-size:13px;font-weight:500;white-space:nowrap;transition:all .2s ease;cursor:pointer}
+    .chip.is-active{border-color:var(--accent);background:rgba(143,106,174,.15);color:#8F6AAE;font-weight:600;box-shadow:0 2px 8px rgba(143,106,174,.12)}
+    .chip:not(.is-active):hover{background:#f8f8f8;border-color:#d0d0d0}
+
+    /* Feed & Card (matched sizing from feed-screen) */
+    .feed{padding:0 24px 130px;overflow-y:auto}
+    .card{background:#fff;border:1px solid #eee6;border-radius:18px;overflow:hidden;transition:transform .2s ease;margin-top:8px}
+    .card:hover{transform:translateY(-2px)}
+
+    .head{display:flex;align-items:center;gap:10px;padding:12px 12px 6px}
+    .avatar{width:36px;height:36px;border-radius:50%;object-fit:cover}
+    .meta{display:flex;flex-direction:column}
+    .name{font-weight:600;font-size:13px}
+    .sub{color:#6F6F74;font-size:12px}
+
+    .imgbox{position:relative;overflow:hidden;border-radius:18px;margin:0 12px}
+    .img{width:100%;height:440px;object-fit:cover;object-position:center}
+    .imgbox::after{content:"";position:absolute;left:0;right:0;bottom:0;height:20%;background:linear-gradient(180deg,rgba(255,255,255,0) 0%,rgba(250,248,246,.56) 48%,#fff 100%)}
+
+    .size-pill{position:absolute;left:20px;bottom:20px;display:inline-flex;align-items:center;gap:6px;padding:6px 10px;border:1px solid #E8E4DE;border-radius:999px;background:rgba(255,255,255,.92);backdrop-filter:blur(8px);font:600 12px/1 Inter;color:#4C4C50;z-index:2}
+    .fit-pill{position:absolute;right:20px;bottom:20px;display:inline-flex;align-items:center;gap:6px;padding:6px 10px;border-radius:999px;font:700 12px/1 Inter;z-index:2}
+    .fit-pill.good{background:#EBFDF3;border:1px solid #CDEBDD;color:#237A4B}
+
+    .info{padding:10px 14px 14px}
+    .title{font-weight:700;letter-spacing:-.01em;font-size:16px;line-height:1.25}
+    .title a{color:inherit;text-decoration:none}
+    .brand{color:#4C4C50;font-size:13px;margin-top:2px}
+
+    .actions{display:flex;align-items:center;gap:10px;margin-top:12px}
+    .shop-cta{display:inline-flex;align-items:center;gap:8px;padding:10px 16px;background:rgba(143,106,174,.08);border:1px solid rgba(143,106,174,.2);border-radius:12px;color:#8F6AAE;text-decoration:none;font-weight:600;font-size:14px;transition:all .2s ease}
+    .shop-cta:hover{background:rgba(143,106,174,.15);border-color:rgba(143,106,174,.3);transform:translateY(-1px)}
+
+    .hidden{display:none}
+  </style>
+</head>
+<body>
+  <div class="phone-container">
+    <div class="phone-frame">
+      <div class="screen">
+        <div class="island"></div>
+        <div class="status"><div>9:41</div><div class="right"><img src="../Cellular Connection.svg" alt="cell"/><img src="../Wifi.svg" alt="wifi"/><img src="../Battery.svg" alt="battery"/></div></div>
+
+        <div class="header">
+          <div class="logo">sies</div>
+        </div>
+
+        <div class="section">
+          <div class="heading-inline">
+            <h1 class="heading-main">Friends’ fits</h1>
+            <span class="heading-sub">See what your friends own & how it fits them.</span>
+          </div>
+          <!-- Tabs: All vs Friends (Friends active by default) -->
+          <div class="chips" role="tablist" aria-label="Scope">
+            <button class="chip" role="tab" aria-selected="false" data-filter="all">All</button>
+            <button class="chip is-active" role="tab" aria-selected="true" data-filter="friends">Friends</button>
+          </div>
+        </div>
+
+        <main class="feed" id="feed" aria-live="polite">
+          <!-- Alex card (Friends) -->
+          <article class="card" data-friends="true">
+            <div class="head">
+              <img class="avatar" alt="Alex avatar" src="https://images.unsplash.com/photo-1544005313-94ddf0286df2?q=80&w=120&auto=format&fit=crop"/>
+              <div class="meta">
+                <div class="name">Alex</div>
+                <div class="sub">added just now</div>
+              </div>
+            </div>
+            <figure class="imgbox">
+              <img class="img" alt="Alo Yoga Airbrush Corset Full Zip Jacket in White" src="https://cdn.shopify.com/s/files/1/2185/2813/files/W4529R_00_b2_s1_a1_1_m241_750x.jpg?v=1745620973"/>
+              <figcaption class="size-pill">Size M</figcaption>
+              <div class="fit-pill good">Good Fit</div>
+            </figure>
+            <div class="info">
+              <div class="title"><a href="https://www.aloyoga.com/products/w4529r-airbrush-corset-full-zip-jacket-white?#reviews-section-anchor" target="_blank" rel="noopener">Airbrush Corset Full Zip Jacket</a></div>
+              <div class="brand">Alo Yoga · White</div>
+              <div class="actions">
+                <a class="shop-cta" href="https://www.aloyoga.com/products/w4529r-airbrush-corset-full-zip-jacket-white?#reviews-section-anchor" target="_blank" rel="noopener">Open product page →</a>
+              </div>
+            </div>
+          </article>
+
+          <!-- Example non-friend card (shows only in "All") -->
+          <article class="card" data-friends="false">
+            <div class="head">
+              <img class="avatar" alt="Community avatar" src="https://images.unsplash.com/photo-1547425260-76bcadfb4f2c?q=80&w=120&auto=format&fit=crop"/>
+              <div class="meta">
+                <div class="name">Popular now</div>
+                <div class="sub">community pick</div>
+              </div>
+            </div>
+            <figure class="imgbox">
+              <img class="img" alt="Lifestyle placeholder" src="https://images.unsplash.com/photo-1519741497674-611481863552?q=80&w=1200&auto=format&fit=crop"/>
+              <figcaption class="size-pill">Most saved</figcaption>
+            </figure>
+            <div class="info">
+              <div class="title">Recommended for your sizes</div>
+              <div class="brand">Based on your profile</div>
+            </div>
+          </article>
+        </main>
+
+        <!-- (optional) bottom tabs omitted for brevity in the deck mockup -->
+      </div>
+    </div>
+  </div>
+
+  <script>
+    const chips = document.querySelector('.chips');
+    const feed = document.getElementById('feed');
+
+    function applyScope(){
+      const active = chips.querySelector('.chip.is-active')?.dataset.filter || 'friends';
+      const cards = feed.querySelectorAll('.card');
+      cards.forEach(card=>{
+        const isFriend = card.dataset.friends === 'true';
+        const show = (active === 'all') || (active === 'friends' && isFriend);
+        card.style.display = show ? '' : 'none';
+      });
+    }
+
+    chips.addEventListener('click', (e)=>{
+      const btn = e.target.closest('.chip');
+      if(!btn) return;
+      chips.querySelectorAll('.chip').forEach(c=>c.classList.remove('is-active'));
+      btn.classList.add('is-active');
+      chips.querySelectorAll('[role="tab"]').forEach(t=>t.setAttribute('aria-selected','false'));
+      btn.setAttribute('aria-selected','true');
+      applyScope();
+    });
+
+    // Default to Friends tab active
+    applyScope();
+  </script>
+</body>
+</html>

@@ -1,0 +1,196 @@
+{
+  "color": {
+    "ink": {
+      "900": {
+        "value": "#0B0F14"
+      },
+      "700": {
+        "value": "#121A22"
+      },
+      "500": {
+        "value": "#2A3642"
+      },
+      "300": {
+        "value": "#6A7683"
+      }
+    },
+    "canvas": {
+      "0": {
+        "value": "#F7F9FB"
+      },
+      "50": {
+        "value": "#EFF3F6"
+      },
+      "100": {
+        "value": "#E9EEF1"
+      }
+    },
+    "petrol": {
+      "600": {
+        "value": "#009090"
+      },
+      "500": {
+        "value": "#00A3A3"
+      },
+      "400": {
+        "value": "#16B5B5"
+      },
+      "100": {
+        "value": "#E0F7F7"
+      }
+    },
+    "mint": {
+      "400": {
+        "value": "#A6FFCB"
+      }
+    },
+    "ice": {
+      "300": {
+        "value": "#7FE1FF"
+      }
+    },
+    "coral": {
+      "500": {
+        "value": "#FF6B5A"
+      }
+    },
+    "gradients": {
+      "brand-sheen": {
+        "value": "linear-gradient(135deg, #00A3A3 0%, #7FE1FF 50%, #A6FFCB 100%)"
+      }
+    }
+  },
+  "radii": {
+    "card": {
+      "value": 16,
+      "type": "number"
+    },
+    "btn": {
+      "value": 12,
+      "type": "number"
+    },
+    "pill": {
+      "value": 999,
+      "type": "number"
+    }
+  },
+  "spacing": {
+    "4": {
+      "value": 4,
+      "type": "number"
+    },
+    "8": {
+      "value": 8,
+      "type": "number"
+    },
+    "12": {
+      "value": 12,
+      "type": "number"
+    },
+    "16": {
+      "value": 16,
+      "type": "number"
+    },
+    "24": {
+      "value": 24,
+      "type": "number"
+    },
+    "32": {
+      "value": 32,
+      "type": "number"
+    }
+  },
+  "shadows": {
+    "elev-0": {
+      "value": "0 1px 2px rgba(0,0,0,.06)"
+    },
+    "elev-1": {
+      "value": "0 8px 24px rgba(11,15,20,.08)"
+    },
+    "elev-2": {
+      "value": "0 20px 60px rgba(0,0,0,.18)"
+    }
+  },
+  "typography": {
+    "fontFamily": {
+      "base": {
+        "value": "Inter, system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial, sans-serif"
+      }
+    },
+    "display": {
+      "size": {
+        "value": 44
+      },
+      "weight": {
+        "value": 700
+      },
+      "lineHeight": {
+        "value": 110
+      },
+      "letterSpacing": {
+        "value": -0.02
+      }
+    },
+    "h2": {
+      "size": {
+        "value": 28
+      },
+      "weight": {
+        "value": 600
+      },
+      "lineHeight": {
+        "value": 120
+      },
+      "letterSpacing": {
+        "value": -0.01
+      }
+    },
+    "h3": {
+      "size": {
+        "value": 18
+      },
+      "weight": {
+        "value": 600
+      },
+      "lineHeight": {
+        "value": 130
+      },
+      "letterSpacing": {
+        "value": -0.005
+      }
+    },
+    "body": {
+      "size": {
+        "value": 16
+      },
+      "weight": {
+        "value": 400
+      },
+      "lineHeight": {
+        "value": 150
+      }
+    },
+    "bodyMedium": {
+      "size": {
+        "value": 16
+      },
+      "weight": {
+        "value": 500
+      },
+      "lineHeight": {
+        "value": 150
+      }
+    },
+    "caption": {
+      "size": {
+        "value": 12
+      },
+      "weight": {
+        "value": 400
+      },
+      "lineHeight": {
+        "value": 140
+      }
+    }
+  }
+}

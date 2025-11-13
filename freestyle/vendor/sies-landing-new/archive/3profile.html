@@ -1,0 +1,700 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>Sies – Profile (Refined)</title>
+<link href="https://fonts.googleapis.com/css2?family=Instrument+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#FAF8F6;
+  --ink:#1A1A1A;
+  --muted:#8A8A8F;
+  --accent:#9B7AAD;
+  --accent-light:#E8DFF1;
+  --stroke:#F0EDE9;
+  --card:#FFFFFF;
+  --good:#22C55E;
+  --personal:#D4A574;
+  --shimmer: linear-gradient(120deg, transparent 30%, rgba(255,255,255,0.4) 50%, transparent 70%);
+}
+
+*{box-sizing:border-box;margin:0;padding:0}
+
+body{
+  font-family:Inter,system-ui,-apple-system,"Segoe UI",Roboto,Helvetica,Arial;
+  background:var(--bg);
+  color:var(--ink);
+  min-height:100vh;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+}
+
+.phone{
+  width:430px;
+  height:932px;
+  border-radius:55px;
+  background:#000;
+  padding:2px;
+  box-shadow:0 30px 90px -20px rgba(0,0,0,0.25);
+}
+
+.screen{
+  height:100%;
+  background:#fff;
+  border-radius:53px;
+  overflow:hidden;
+  position:relative;
+  display:flex;
+  flex-direction:column;
+}
+
+.island{
+  position:absolute;
+  top:11px;
+  left:50%;
+  transform:translateX(-50%);
+  width:126px;
+  height:37px;
+  background:#000;
+  border-radius:19px;
+  z-index:5;
+}
+
+.status{
+  height:54px;
+  margin-top:5px;
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  padding:0 30px;
+  font-weight:600;
+  color:#000;
+  font-size:17px;
+  letter-spacing:-.02em;
+  font-family:Inter,system-ui,-apple-system,"Segoe UI",Roboto,Helvetica,Arial;
+}
+.status .right{display:flex;align-items:center;gap:6px}
+.status .right img{height:13px;width:auto;display:block}
+
+.header{
+  padding:28px 28px 2px;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+}
+
+.logo{
+  font-weight:600;
+  font-size:32px;
+  letter-spacing:-.02em;
+  background:linear-gradient(180deg,#F1DCE3 0%,#8B7F83 100%);
+  -webkit-background-clip:text;
+  background-clip:text;
+  -webkit-text-fill-color:transparent;
+  font-family:Inter,system-ui,-apple-system,"Segoe UI",Roboto,Helvetica,Arial;
+}
+
+.content{
+  flex:1;
+  overflow:auto;
+  padding:6px 20px 96px;
+  background:
+    radial-gradient(260px 140px at 50% -40px, rgba(143,106,174,.06), rgba(143,106,174,0) 65%), var(--bg);
+}
+
+.content::-webkit-scrollbar{display:none}
+
+/* Category Carousel - Luxury Style */
+.category-carousel{
+  margin:4px 0 14px;
+  position:relative;
+}
+
+.carousel-track{
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  gap:24px;
+  padding:8px 0;
+  position:relative;
+  user-select:none;
+}
+
+.cat-option{
+  font-size:15px;
+  font-weight:500;
+  color:var(--muted);
+  cursor:pointer;
+  transition:all 0.3s cubic-bezier(0.4,0,0.2,1);
+  position:relative;
+  padding:4px 0;
+}
+
+.cat-option.active{
+  color:var(--ink);
+  font-weight:700;
+  font-size:19px;
+}
+
+.cat-option.active::after{
+  content:'';
+  position:absolute;
+  bottom:-6px;
+  left:50%;
+  transform:translateX(-50%);
+  width:40px;
+  height:3px;
+  background:linear-gradient(90deg,#BDA0CF,#8E6FA4);
+  border-radius:2px;
+  animation:slideIn 0.3s ease;
+  box-shadow:0 1px 0 rgba(0,0,0,0.06);
+}
+
+@keyframes slideIn{
+  from{width:0;opacity:0}
+  to{width:32px;opacity:1}
+}
+
+.carousel-hint{
+  text-align:center;
+  font-size:12px;
+  color:var(--muted);
+  margin-top:4px;
+  font-style:italic;
+}
+
+/* Fit Profile Card */
+.fit-profile-card{
+  background:linear-gradient(135deg,#FFFFFF 0%,#FDFBFE 100%);
+  border:1px solid var(--stroke);
+  border-radius:20px;
+  padding:18px;
+  margin-bottom:16px;
+  box-shadow:0 2px 12px rgba(155,122,173,0.08);
+}
+
+.profile-header{
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  margin-bottom:10px;
+}
+
+.profile-title{
+  font-weight:600;
+  font-size:15px;
+  color:var(--ink);
+}
+
+.profile-strength{
+  font-weight:700;
+  font-size:16px;
+  background:linear-gradient(135deg,#C4A7D8,#9B7AAD);
+  -webkit-background-clip:text;
+  background-clip:text;
+  -webkit-text-fill-color:transparent;
+}
+
+.progress-bar{
+  height:5px;
+  background:var(--accent-light);
+  border-radius:10px;
+  overflow:hidden;
+  position:relative;
+}
+
+.progress-fill{
+  height:100%;
+  background:linear-gradient(90deg,#C4A7D8,#9B7AAD);
+  border-radius:10px;
+  width:0;
+  transition:width 1s cubic-bezier(0.4,0,0.2,1);
+  position:relative;
+  overflow:hidden;
+}
+
+.progress-fill::after{
+  content:'';
+  position:absolute;
+  top:0;
+  left:0;
+  right:0;
+  bottom:0;
+  background:var(--shimmer);
+  animation:shimmer 2s infinite;
+}
+
+@keyframes shimmer{
+  0%{transform:translateX(-100%)}
+  100%{transform:translateX(100%)}
+}
+
+.profile-note{
+  font-size:12px;
+  color:var(--muted);
+  margin-top:8px;
+  text-align:center;
+}
+
+/* Size Confidence Ring */
+.confidence-section{
+  background:#FFFFFF;
+  border:1px solid var(--stroke);
+  border-radius:20px;
+  padding:20px;
+  margin-bottom:12px;
+  text-align:center;
+}
+
+.ring-visual{
+  width:140px;
+  height:140px;
+  margin:0 auto 16px;
+  position:relative;
+}
+
+.ring-visual svg{
+  transform:rotate(-90deg);
+}
+
+.ring-percent{
+  position:absolute;
+  inset:0;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  font-weight:700;
+  font-size:36px;
+  color:var(--ink);
+}
+
+.confidence-text{
+  font-size:17px;
+  font-weight:600;
+  color:var(--ink);
+  line-height:1.3;
+  margin-bottom:6px;
+}
+
+.confidence-text .size-highlight{
+  background:linear-gradient(135deg,#C4A7D8,#9B7AAD);
+  -webkit-background-clip:text;
+  background-clip:text;
+  -webkit-text-fill-color:transparent;
+}
+
+.confidence-subtext{
+  font-size:13px;
+  color:var(--muted);
+}
+
+/* Measurement Cards */
+.measurements{
+  display:flex;
+  gap:12px;
+  overflow-x:auto;
+  scroll-snap-type:x mandatory;
+  padding-bottom:6px;
+  margin-bottom:12px;
+  mask-image:linear-gradient(to right, transparent 0, black 24px, black calc(100% - 24px), transparent 100%);
+  -webkit-mask-image:linear-gradient(to right, transparent 0, black 24px, black calc(100% - 24px), transparent 100%);
+}
+
+.measurements::-webkit-scrollbar{display:none}
+
+.measure-card{
+  scroll-snap-align:start;
+  flex:0 0 calc(55% - 10px);
+  padding:12px 14px;
+  background:#FFFFFF;
+  border:1px solid var(--stroke);
+  border-radius:16px;
+  text-align:left;
+  transition: transform 0.2s ease;
+  cursor:pointer;
+}
+.measure-card:hover{ transform: translateY(-2px); }
+
+.measure-label{
+  font-size:13px;
+  text-transform:uppercase;
+  letter-spacing:0.05em;
+  color:var(--muted);
+  font-weight:600;
+  margin-bottom:6px;
+  font-family:Inter,system-ui,-apple-system,"Segoe UI",Roboto,Helvetica,Arial;
+}
+
+.measure-value{
+  font-size:28px;
+  font-weight:700;
+  color:var(--ink);
+  font-variant-numeric: tabular-nums;
+  margin-bottom:0;
+  font-family:Inter,system-ui,-apple-system,"Segoe UI",Roboto,Helvetica,Arial;
+}
+
+/* Smart Fit Suggestion card */
+.fit-insight{ display:flex; gap:12px; align-items:flex-start; }
+.fit-insight .thumb{ width:120px; height:160px; border-radius:20px; overflow:hidden; flex:0 0 120px; border:1px solid var(--stroke); background:#f7f5f2; }
+.fit-insight .thumb img{ width:100%; height:100%; object-fit:cover; display:block; object-position:center 35%; }
+.fit-insight .copy{ flex:1; }
+.fit-insight .eyebrow{ margin-bottom:6px; }
+.fit-insight .title{ font-size:18px; font-weight:700; margin-bottom:4px; letter-spacing:-.01em; }
+.fit-insight .brand{ font-size:14px; color:var(--muted); margin-bottom:10px; }
+.fit-insight .rec{ font-size:12px; color:#57575c; display:flex; align-items:center; gap:8px; }
+.fit-insight .dotb{ width:8px; height:8px; background:var(--accent); border-radius:999px; opacity:.6; }
+.fit-insight .actions{ margin-top:10px; }
+.btn-link{ display:inline-flex; align-items:center; gap:6px; font-size:12px; font-weight:700; color:var(--accent); text-decoration:none; padding:6px 10px; border:1px solid rgba(143,106,174,.22); border-radius:999px; background:#fff; }
+.insight-card:hover{ transform: translateY(-2px); }
+
+/* Personal Insights - Reimagined */
+.insights-card{
+  background:linear-gradient(135deg,#FFFDFB 0%,#FFF9F5 100%);
+  border:1px solid #F0E6DC;
+  border-radius:20px;
+  padding:18px;
+  margin-bottom:16px;
+}
+
+.insights-header{
+  display:flex;
+  align-items:center;
+  gap:8px;
+  margin-bottom:14px;
+}
+
+.insights-icon{
+  width:24px;
+  height:24px;
+  background:linear-gradient(135deg,#D4A574,#C19660);
+  border-radius:50%;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  font-size:14px;
+}
+
+.insights-title{
+  font-size:14px;
+  font-weight:600;
+  color:var(--ink);
+}
+
+.insights-subtitle{
+  font-size:11px;
+  color:var(--muted);
+  margin-left:auto;
+  font-style:italic;
+}
+
+.insight-items{
+  display:flex;
+  flex-direction:column;
+  gap:10px;
+}
+
+.insight{
+  display:flex;
+  align-items:center;
+  gap:10px;
+  padding:10px 12px;
+  background:#FFFFFF;
+  border-radius:12px;
+  border:1px solid #F5EDE5;
+  transition:all 0.2s ease;
+}
+
+.insight:hover{
+  transform:translateX(2px);
+  box-shadow:0 2px 8px rgba(212,165,116,0.15);
+}
+
+.insight-brand{
+  font-weight:600;
+  font-size:14px;
+  color:var(--ink);
+  flex:1;
+}
+
+.insight-feedback{
+  font-size:12px;
+  padding:4px 10px;
+  border-radius:20px;
+  font-weight:500;
+}
+
+.insight-feedback.positive{
+  background:rgba(34,197,94,0.1);
+  color:#16A34A;
+}
+
+.insight-feedback.note{
+  background:rgba(212,165,116,0.15);
+  color:#9B6F3F;
+}
+
+/* Smart Recommendations */
+.recommendations{
+  background:linear-gradient(135deg,#FAFAFF 0%,#FFFFFF 100%);
+  border:1px solid var(--stroke);
+  border-radius:20px;
+  padding:18px;
+  margin-top:20px;
+}
+
+.rec-header{
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  margin-bottom:14px;
+}
+
+.rec-title{
+  font-size:14px;
+  font-weight:600;
+  color:var(--ink);
+}
+
+.rec-swipe{
+  font-size:11px;
+  color:var(--muted);
+  font-style:italic;
+}
+
+/* Bottom Navigation */
+
+.tabs{
+  position:absolute;
+  left:0;
+  right:0;
+  bottom:0;
+  height:83px;
+  background:rgba(255,255,255,.72);
+  border-top:1px solid rgba(0,0,0,.06);
+  backdrop-filter:blur(14px);
+  display:flex;
+  justify-content:space-around;
+  align-items:flex-start;
+  padding-top:8px;
+  padding-bottom:34px;
+}
+
+.tab{
+  display:flex;
+  flex-direction:column;
+  align-items:center;
+  gap:6px;
+  text-decoration:none;
+  color:#8e8e93;
+  font-size:11px;
+  font-weight:500;
+}
+
+.tab.active{color:#8F6AAE}
+
+.ico{width:28px;height:28px}
+</style>
+</head>
+<body>
+  <div class="phone">
+    <div class="screen">
+      <div class="island"></div>
+      <div class="status"><div>9:41</div><div class="right"><img src="../Cellular Connection.svg" alt="cell"/><img src="../Wifi.svg" alt="wifi"/><img src="../Battery.svg" alt="battery"/></div></div>
+      <div class="header">
+        <div class="logo">sies</div>
+      </div>
+      <div class="content">
+
+        <!-- Fit Profile Strength (copied style from profile-screen.html) -->
+        <div class="progress-card" style="background: linear-gradient(135deg, #F0F9FF 0%, #FFFFFF 100%); border: 1px solid #E0F2FE; border-radius: 16px; padding: 16px; margin-bottom: 8px;">
+          <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 8px;">
+            <span style="font-weight: 700; color: var(--ink); font-size: 15px;">Fit Profile Strength</span>
+            <span style="font-weight: 700; color: var(--accent); font-size: 15px;">85%</span>
+          </div>
+          <div style="height: 6px; background: #E5E7EB; border-radius: 3px; overflow: hidden;">
+            <div id="profileBar" style="height: 100%; width: 0%; background: linear-gradient(90deg, var(--accent), #A78BFA); border-radius: 3px; transition: width 0.8s ease; animation: progressLoad 1.2s ease-out;"></div>
+          </div>
+          <div style="font-size: 12px; color: var(--muted); margin-top: 6px;">Add 2 more items to unlock premium fit insights</div>
+        </div>
+
+        <!-- Elegant Category Carousel -->
+        <div class="category-carousel">
+          <div class="carousel-track" id="categoryTrack">
+            <div class="cat-option" data-cat="tops">Tops</div>
+            <div class="cat-option active" data-cat="dresses">Dresses</div>
+            <div class="cat-option" data-cat="pants">Pants</div>
+          </div>
+        </div>
+
+        <!-- Size Confidence -->
+        <div class="confidence-section">
+          <div class="ring-visual">
+            <svg width="140" height="140" viewBox="0 0 140 140">
+              <circle cx="70" cy="70" r="60" stroke="#F5F3F8" stroke-width="8" fill="none"/>
+              <circle id="confidenceRing" cx="70" cy="70" r="60" stroke="url(#gradient)" stroke-width="8" fill="none" 
+                      stroke-linecap="round" stroke-dasharray="377" stroke-dashoffset="377"/>
+              <defs>
+                <linearGradient id="gradient" x1="0" y1="0" x2="1" y2="1">
+                  <stop offset="0%" stop-color="#C4A7D8"/>
+                  <stop offset="100%" stop-color="#9B7AAD"/>
+                </linearGradient>
+              </defs>
+            </svg>
+            <div class="ring-percent">84%</div>
+          </div>
+          <div class="confidence-text">
+            <span class="size-highlight">Size S</span> is your best fit in 84% of brands
+          </div>
+          <div class="confidence-subtext">
+            Based on your ratings + 1,200 similar profiles
+          </div>
+        </div>
+
+        <!-- Measurements -->
+        <div class="measurements">
+          <div class="measure-card">
+            <div class="measure-label">Bust Range</div>
+            <div class="measure-value">31–33.5"</div>
+          </div>
+          <div class="measure-card">
+            <div class="measure-label">Waist Range</div>
+            <div class="measure-value">25.5–26.5"</div>
+          </div>
+          <div class="measure-card">
+            <div class="measure-label">Hip Range</div>
+            <div class="measure-value">34.5–35.5"</div>
+          </div>
+        </div>
+
+        <!-- Personal Insights (Reimagined Quick Guidance) -->
+        <div class="card insight-card" style="margin:14px 0 16px; padding: 20px 24px; background: linear-gradient(135deg, #F9F8FF 0%, #FFFFFF 100%); border: 1px solid rgba(143,106,174,.12); transition: transform 0.2s ease;">
+          <a class="fit-insight" href="https://www.anthropologie.com/shop/hutch-corene-strapless-floral-tulle-a-line-midi-dress2?category=clothes-top-rated&color=038&type=STANDARD&quantity=1" target="_blank" rel="noreferrer" style="text-decoration:none; color:inherit; display:flex; gap:20px; align-items:flex-start;">
+            <div class="thumb" style="border: 2px solid var(--accent);">
+              <img alt="Hutch Corene Strapless Floral Tulle A-Line Midi Dress" src="https://images.urbndata.com/is/image/Anthropologie/98281447_038_b?$a15-pdp-detail-shot$&fit=constrain&fmt=webp&qlt=80&wid=600"/>
+            </div>
+            <div class="copy">
+              <div class="eyebrow" style="color: var(--accent); font-weight: 700; font-size: 14px; margin-bottom: 10px;">Smart Fit Suggestion</div>
+              <div class="product-name" style="font-size: 20px; font-weight: 700; color: var(--ink); margin-bottom: 8px; line-height: 1.2;">Strapless Mini Dress (S)</div>
+              <div class="brand" style="margin-bottom: 10px; font-size: 16px; font-weight: 500; color: var(--ink);">Anthropologie</div>
+              <div class="tap-to-view" style="font-size: 16px; color: var(--accent); font-weight: 700; text-decoration: underline; text-underline-offset: 3px; text-decoration-thickness: 2px; letter-spacing: .01em; display: inline-block;">Explore the fit</div>
+            </div>
+          </a>
+        </div>
+
+        <div class="insights-card">
+          <div class="insights-header">
+            <div class="insights-icon">✨</div>
+            <div class="insights-title">Your Personal Insights</div>
+            <div class="insights-subtitle">from your try-ons</div>
+          </div>
+          <div class="insight-items">
+            <div class="insight">
+              <span class="insight-brand">Anthropologie S</span>
+              <span class="insight-feedback positive">Perfect fit</span>
+            </div>
+            <div class="insight">
+              <span class="insight-brand">Favorite Daughter S</span>
+              <span class="insight-feedback positive">Love it</span>
+            </div>
+            <div class="insight">
+              <span class="insight-brand">Zara S</span>
+              <span class="insight-feedback note">Bust tight</span>
+            </div>
+            <div class="insight">
+              <span class="insight-brand">H&M S</span>
+              <span class="insight-feedback note">Too short</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Smart Recommendations Preview -->
+        <div class="recommendations">
+          <div class="rec-header">
+            <span class="rec-title">Curated for Your Fit</span>
+            <span class="rec-swipe">View all →</span>
+          </div>
+          <!-- Carousel content would go here -->
+        </div>
+
+      </div>
+
+      <div class="tabs">
+        <a class="tab" href="#"><svg class="ico" viewBox="0 0 256 256" aria-hidden="true"><path fill="currentColor" d="M241,150.65s0,0,0-.05a51.33,51.33,0,0,0-2.53-5.9L196.93,50.18a12,12,0,0,0-2.5-3.65,36,36,0,0,0-50.92,0A12,12,0,0,0,140,55V76H116V55a12,12,0,0,0-3.51-8.48,36,36,0,0,0-50.92,0,12,12,0,0,0-2.5,3.65L17.53,144.7A51.33,51.33,0,0,0,15,150.6s0,0,0,.05A52,52,0,1,0,116,168V100h24v68a52,52,0,1,0,101-17.35ZM80,62.28a12,12,0,0,1,12-1.22v63.15a51.9,51.9,0,0,0-35.9-7.62ZM64,196a28,28,0,1,1,28-28A28,28,0,0,1,64,196ZM164,61.06a12.06,12.06,0,0,1,12,1.22l23.87,54.31a51.9,51.9,0,0,0-35.9,7.62ZM192,196a28,28,0,1,1,28-28A28,28,0,0,1,192,196Z"/></svg><span>Find</span></a>
+        <a class="tab" href="#"><svg class="ico" viewBox="0 0 256 256" aria-hidden="true"><path fill="currentColor" d="M225.24,174.74a12,12,0,0,1-1.58,16.89C205.49,206.71,189.06,212,174.15,212c-19.76,0-36.86-9.29-51.88-17.44-25.06-13.62-44.86-24.37-74.61.3a12,12,0,1,1-15.32-18.48c42.25-35,75-17.23,101.39-2.92,25.06,13.61,44.86,24.37,74.61-.3A12,12,0,0,1,225.24,174.74Zm-16.9-57.59c-29.75,24.67-49.55,13.91-74.61.3-26.35-14.3-59.14-32.11-101.39,2.92a12,12,0,0,0,15.32,18.48c29.75-24.67,49.55-13.92,74.61-.3,15,8.15,32.12,17.44,51.88,17.44,14.91,0,31.34-5.29,49.51-20.36a12,12,0,0,0-15.32-18.48ZM47.66,82.84c29.75-24.67,49.55-13.92,74.61-.3,15,8.15,32.12,17.44,51.88,17.44,14.91,0,31.34-5.29,49.51-20.36a12,12,0,0,0-15.32-18.48c-29.75,24.67-49.55,13.92-74.61.3-26.35-14.3-59.14-32.11-101.39,2.93A12,12,0,1,0,47.66,82.84Z"/></svg><span>Feed</span></a>
+        <a class="tab" href="#"><svg class="ico" viewBox="0 0 256 256" aria-hidden="true"><path fill="currentColor" d="M244,168,148,96l19.2-14.4A12,12,0,0,0,172,72a44,44,0,0,0-87.66-5.48,12,12,0,1,0,23.82,3,20,20,0,0,1,39.09-2.92L121,86.24c-.15.1-.29.21-.43.32L12,168a20,20,0,0,0,12,36H232a20,20,0,0,0,12-36ZM36,180l92-69,92,69Z"/></svg><span>Closet</span></a>
+        <a class="tab active" href="#"><svg class="ico" viewBox="0 0 256 256" aria-hidden="true"><path fill="currentColor" d="M234.38,210a123.36,123.36,0,0,0-60.78-53.23,76,76,0,1,0-91.2,0A123.36,123.36,0,0,0,21.62,210a12,12,0,1,0,20.77,12c18.12-31.32,50.12-50,85.61-50s67.49,18.69,85.61,50a12,12,0,0,0,20.77-12ZM76,96a52,52,0,1,1,52,52A52.06,52.06,0,0,1,76,96Z"/></svg><span>Profile</span></a>
+      </div>
+    </div>
+  </div>
+
+<script>
+// Animate profile strength bar
+setTimeout(() => {
+  const el = document.getElementById('profileBar');
+  if(el) el.style.width = '85%';
+}, 100);
+
+// Animate confidence ring
+setTimeout(() => {
+  const ring = document.getElementById('confidenceRing');
+  const percent = 0.84;
+  const circumference = 2 * Math.PI * 60;
+  const offset = circumference * (1 - percent);
+  ring.style.transition = 'stroke-dashoffset 1s cubic-bezier(0.4,0,0.2,1)';
+  ring.style.strokeDashoffset = offset;
+}, 200);
+
+// Category carousel interaction
+const categories = document.querySelectorAll('.cat-option');
+let startX = null;
+let currentX = null;
+let currentIndex = 1; // Start with Dresses
+
+const categoryTrack = document.getElementById('categoryTrack');
+
+categoryTrack.addEventListener('touchstart', (e) => {
+  startX = e.touches[0].clientX;
+}, { passive: true });
+
+categoryTrack.addEventListener('touchmove', (e) => {
+  if (!startX) return;
+  currentX = e.touches[0].clientX;
+}, { passive: true });
+
+categoryTrack.addEventListener('touchend', () => {
+  if (!startX || !currentX) return;
+  
+  const diff = startX - currentX;
+  if (Math.abs(diff) > 50) {
+    if (diff > 0 && currentIndex < categories.length - 1) {
+      currentIndex++;
+    } else if (diff < 0 && currentIndex > 0) {
+      currentIndex--;
+    }
+    updateCategory();
+  }
+  
+  startX = null;
+  currentX = null;
+});
+
+// Click to select category
+categories.forEach((cat, index) => {
+  cat.addEventListener('click', () => {
+    currentIndex = index;
+    updateCategory();
+  });
+});
+
+function updateCategory() {
+  categories.forEach((cat, index) => {
+    cat.classList.toggle('active', index === currentIndex);
+  });
+}
+</script>
+</body>
+</html>

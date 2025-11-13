@@ -1,0 +1,32 @@
+{
+  "expo": {
+    "name": "Freestyle Mobile",
+    "slug": "freestyle-mobile",
+    "version": "1.0.0",
+    "scheme": "freestyle",
+    "orientation": "portrait",
+    "userInterfaceStyle": "automatic",
+    "splash": {
+      "image": "./assets/hero1.jpg",
+      "resizeMode": "contain",
+      "backgroundColor": "#FAF8F6"
+    },
+    "ios": {
+      "bundleIdentifier": "com.davey.proxy",
+      "supportsTablet": true
+    },
+    "web": {
+      "bundler": "metro"
+    },
+    "experiments": {
+      "typedRoutes": true
+    },
+    "extra": {
+      "DEMO": true
+    },
+    "plugins": [
+      "expo-router",
+      "expo-secure-store"
+    ]
+  }
+}
