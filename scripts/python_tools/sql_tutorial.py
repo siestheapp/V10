@@ -7,11 +7,11 @@ import psycopg2
 from psycopg2.extras import RealDictCursor
 
 DB_CONFIG = {
-    'host': 'aws-0-us-east-2.pooler.supabase.com',
-    'port': '6543',
+    'host': 'aws-1-us-east-1.pooler.supabase.com',
+    'port': '5432',
     'database': 'postgres',
-    'user': 'postgres.lbilxlkchzpducggkrxx',
-    'password': 'efvTower12'
+    'user': 'fs_core_rw',
+    'password': 'CHANGE_ME'
 }
 
 def run_query(sql, description):

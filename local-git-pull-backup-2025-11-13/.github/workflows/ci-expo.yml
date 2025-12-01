@@ -1,0 +1,35 @@
+name: CI - Expo Lint
+
+on:
+  push:
+    branches: [ "**" ]
+    paths:
+      - "expo/**"
+      - ".github/workflows/ci-expo.yml"
+  pull_request:
+    branches: [ "**" ]
+    paths:
+      - "expo/**"
+      - ".github/workflows/ci-expo.yml"
+
+jobs:
+  lint:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: expo
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Use Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Lint (non-blocking baseline)
+        run: npm run lint || echo "ESLint reported issues (baseline non-blocking)"
+

@@ -1,0 +1,3 @@
+{"timestamp": "2025-07-03T01:48:51.220088-04:00", "change_type": "INSERT", "table": "user_garment_feedback", "details": {"description": "Added feedback: overall - Good Fit", "garment_id": 1, "dimension": "overall", "feedback_text": "Good Fit"}, "user_id": "2"}
+{"timestamp": "2025-07-03T01:48:51.288429-04:00", "change_type": "INSERT", "table": "user_garment_feedback", "details": {"description": "Added feedback: chest - Good Fit", "garment_id": 1, "dimension": "chest", "feedback_text": "Good Fit"}, "user_id": "2"}
+{"timestamp": "2025-07-03T01:48:51.356501-04:00", "change_type": "INSERT", "table": "user_garment_feedback", "details": {"description": "Added feedback: length - Good Fit", "garment_id": 1, "dimension": "length", "feedback_text": "Good Fit"}, "user_id": "2"}

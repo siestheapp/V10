@@ -1,0 +1,68 @@
+import { Product } from '../types';
+
+export const products: Product[] = [
+  {
+    id: 'jcrew-halter-mixy-dress',
+    name: 'Halter Mixy Dress',
+    brand: 'J.CREW',
+    imageUrl: 'https://www.jcrew.com/s7-img-facade/CL648_RD0165?fmt=jpeg&qlt=90,0&resMode=sharp&op_usm=.1,0,0,0&crop=0,0,0,0&wid=1200&hei=1200',
+    category: 'dresses',
+    url: 'https://www.jcrew.com/p/womens/categories/clothing/dresses-and-jumpsuits/halter-mixy-dress/CL648',
+  },
+  {
+    id: 'georgia-hardinge-relic-dress',
+    name: 'Relic Pleated Metallic-Knit Maxi Dress',
+    brand: 'GEORGIA HARDINGE',
+    imageUrl: 'https://cdn.modaoperandi.com/assets/images/products/1048452/695474/c2/large_georgia-hardinge-gold-relic-dress.jpg',
+    category: 'dresses',
+    url: 'https://www.modaoperandi.com/women/p/georgia-hardinge/relic-dress/695474',
+  },
+  {
+    id: 'reformation-taryn-two-piece',
+    name: 'Taryn Two Piece',
+    brand: 'REFORMATION',
+    imageUrl: 'https://media.thereformation.com/image/upload/f_auto,q_auto:eco,dpr_2.0/w_500/PRD-SFCC/1314122/BLACK/1314122.1.BLACK',
+    category: 'tops',
+    url: 'https://www.thereformation.com/products/taryn-two-piece/1314122.html',
+  },
+  {
+    id: 'alfie-open-back-top',
+    name: 'Open Back Cotton Poplin Top',
+    brand: 'ALFIE',
+    imageUrl: 'https://cdn.modaoperandi.com/assets/images/products/1028958/674197/c/large_alfie-white-backless-top.jpg',
+    category: 'tops',
+    url: 'https://www.modaoperandi.com/women/p/alfie/backless-top/674197',
+  },
+  {
+    id: 'ayr-secret-sauce',
+    name: 'The Secret Sauce',
+    brand: 'AYR',
+    imageUrl: 'https://www.ayr.com/cdn/shop/files/secretsauce-goodmood_CAT_d634f664-cb49-4e61-abef-5d94b707075e.jpg',
+    category: 'bottoms',
+    url: 'https://www.ayr.com/products/the-secret-sauce-1',
+  },
+  {
+    id: 'zara-flare-pants',
+    name: 'Flare Pants',
+    brand: 'ZARA',
+    imageUrl: 'https://static.zara.net/assets/public/a4e8/d8da/2c3b44728736/7e4b4c39762b/03152505800-a1/03152505800-a1.jpg',
+    category: 'bottoms',
+    url: 'https://www.zara.com/us/en/flare-pants-p03152436.html',
+  },
+  {
+    id: 'cos-shrunken-tshirt',
+    name: 'Shrunken T-shirt',
+    brand: 'COS',
+    imageUrl: 'https://cos.h-cdn.co/media/articles/img_1292180003_2025_10_4_40_43_59.jpg',
+    category: 'tops',
+    url: 'https://www.cos.com/en-us/women/womenswear/tshirts/slim/product/shrunken-t-shirt-white-1292180003',
+  },
+  {
+    id: 'alexis-briette-dress',
+    name: 'Briette Satin Maxi Dress',
+    brand: 'ALEXIS',
+    imageUrl: 'https://cdn.modaoperandi.com/assets/images/products/1039207/685257/c/large_alexis-blue-briette-dress.jpg',
+    category: 'dresses',
+    url: 'https://www.modaoperandi.com/women/p/alexis/briette-dress/685257',
+  },
+];

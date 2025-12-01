@@ -4,10 +4,10 @@ from db_change_logger import log_user_creation, log_garment_addition, log_feedba
 # Database connection info (from db_snapshot.py)
 DB_CONFIG = {
     "database": "postgres",
-    "user": "postgres.lbilxlkchzpducggkrxx",
-    "password": "efvTower12",
-    "host": "aws-0-us-east-2.pooler.supabase.com",
-    "port": "6543"
+    "user": "fs_core_rw",
+    "password": "CHANGE_ME",
+    "host": "aws-1-us-east-1.pooler.supabase.com",
+    "port": "5432"
 }
 
 def get_or_create_id(cursor, table, column, value, extra_columns=None, extra_values=None):

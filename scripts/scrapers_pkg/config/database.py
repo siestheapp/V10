@@ -14,11 +14,11 @@ class DatabaseConfig:
     
     def __init__(self):
         self.config = {
-            "host": os.getenv("DB_HOST", "aws-0-us-east-2.pooler.supabase.com"),
-            "port": os.getenv("DB_PORT", "6543"),
+            "host": os.getenv("DB_HOST", "aws-1-us-east-1.pooler.supabase.com"),
+            "port": os.getenv("DB_PORT", "5432"),
             "database": os.getenv("DB_NAME", "postgres"),
-            "user": os.getenv("DB_USER", "postgres.lbilxlkchzpducggkrxx"),
-            "password": os.getenv("DB_PASSWORD", "efvTower12"),
+            "user": os.getenv("DB_USER", "fs_core_rw"),
+            "password": os.getenv("DB_PASSWORD", "CHANGE_ME"),
         }
     
     def get_connection(self):

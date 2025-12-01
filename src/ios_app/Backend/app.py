@@ -17,6 +17,7 @@ import openai
 from contextlib import asynccontextmanager
 import os
 from dotenv import load_dotenv
+from db_config import DB_CONFIG
 from sqlalchemy import text
 
 # Simple in-memory cache for user fit zones data
@@ -47,14 +48,7 @@ if api_key and api_key not in ["your-api-key-here", "your-new-api-key-here"]:
 else:
     print("Warning: OpenAI API key not set. Chat features will be disabled.")
 
-# Database configuration - Updated to use environment variables
-DB_CONFIG = {
-    "database": os.getenv("DB_NAME", "postgres"),
-    "user": os.getenv("DB_USER", "postgres.lbilxlkchzpducggkrxx"),
-    "password": os.getenv("DB_PASSWORD", "efvTower12"),
-    "host": os.getenv("DB_HOST", "aws-0-us-east-2.pooler.supabase.com"),
-    "port": os.getenv("DB_PORT", "6543")
-}
+# Database configuration is centralized in scripts/database/db_config.py
 
 # Global connection pool
 pool = None
@@ -1959,10 +1953,10 @@ async def get_garment_size_recommendation(request: dict):
         
         db_config = {
             "database": os.getenv("DB_NAME", "postgres"),
-            "user": os.getenv("DB_USER", "postgres.lbilxlkchzpducggkrxx"),
-            "password": os.getenv("DB_PASSWORD", "efvTower12"),
-            "host": os.getenv("DB_HOST", "aws-0-us-east-2.pooler.supabase.com"),
-            "port": os.getenv("DB_PORT", "6543")
+            "user": os.getenv("DB_USER", "fs_core_rw"),
+            "password": os.getenv("DB_PASSWORD", "CHANGE_ME"),
+            "host": os.getenv("DB_HOST", "aws-1-us-east-1.pooler.supabase.com"),
+            "port": os.getenv("DB_PORT", "5432")
         }
         
         analyzer = SimpleMultiDimensionalAnalyzer(db_config)

@@ -24,10 +24,10 @@ app.secret_key = 'your-secret-key-here'
 # Database configuration - Updated to use environment variables
 DB_CONFIG = {
     "database": os.getenv("DB_NAME", "postgres"),
-    "user": os.getenv("DB_USER", "postgres.lbilxlkchzpducggkrxx"),
-    "password": os.getenv("DB_PASSWORD", "efvTower12"),
-    "host": os.getenv("DB_HOST", "aws-0-us-east-2.pooler.supabase.com"),
-    "port": os.getenv("DB_PORT", "6543")
+    "user": os.getenv("DB_USER", "fs_core_rw"),
+    "password": os.getenv("DB_PASSWORD", "CHANGE_ME"),
+    "host": os.getenv("DB_HOST", "aws-1-us-east-1.pooler.supabase.com"),
+    "port": os.getenv("DB_PORT", "5432")
 }
 
 def get_db_connection():

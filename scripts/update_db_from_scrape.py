@@ -18,10 +18,10 @@ def update_database_from_scrape(json_file):
     # Database connection
     DB_CONFIG = {
         'database': 'postgres',
-        'user': 'postgres.lbilxlkchzpducggkrxx',
-        'password': 'efvTower12',
-        'host': 'aws-0-us-east-2.pooler.supabase.com',
-        'port': '6543'
+        'user': 'fs_core_rw',
+        'password': 'CHANGE_ME',
+        'host': 'aws-1-us-east-1.pooler.supabase.com',
+        'port': '5432'
     }
     
     conn = psycopg2.connect(**DB_CONFIG)

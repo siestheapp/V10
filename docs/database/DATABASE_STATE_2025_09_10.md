@@ -3,7 +3,7 @@
 ## 📊 Current Database Overview
 
 **Database**: tailor3 (Supabase PostgreSQL)  
-**Connection**: aws-0-us-east-2.pooler.supabase.com:6543  
+**Connection**: aws-1-us-east-1.pooler.supabase.com:6543  
 **Latest Dump**: `database_dumps/tailor3_dump_2025-09-10.sql`  
 **Total Tables**: 59 (vs ~20 originally documented)
 

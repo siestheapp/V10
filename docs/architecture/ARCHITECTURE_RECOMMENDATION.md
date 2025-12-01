@@ -141,11 +141,11 @@ The **environment variables in `.env`** are for:
 ### **Root .env file** (for backend):
 ```bash
 # Database Configuration (for Python scripts and backend)
-DB_HOST=aws-0-us-east-2.pooler.supabase.com
+DB_HOST=aws-1-us-east-1.pooler.supabase.com
 DB_PORT=6543
 DB_NAME=postgres
-DB_USER=postgres.lbilxlkchzpducggkrxx
-DB_PASSWORD=efvTower12
+DB_USER=fs_core_rw
+DB_PASSWORD=CHANGE_ME
 
 # Web Server Configuration
 WEB_SERVER_PORT=5001

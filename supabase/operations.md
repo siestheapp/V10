@@ -4,10 +4,10 @@ This project uses a Supabase-hosted Postgres database referred to as "tailor3".
 
 #### Connection
 
-- Host: `aws-0-us-east-2.pooler.supabase.com`
+- Host: `aws-1-us-east-1.pooler.supabase.com`
 - Port: `6543`
 - Database: `postgres`
-- User: `postgres.lbilxlkchzpducggkrxx`
+- User: `fs_core_rw`
 - Password: stored in env var `DB_PASSWORD` (see `.env`)
 
 Use `db_config.py` for consistent access in Python scripts and for `psql` shell env:

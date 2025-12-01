@@ -43,9 +43,9 @@ def test_jcrew_products():
             "should_work": False
         },
         {
-            "name": "Men's Pants (Should Fail)",
+            "name": "Men's Pants",
             "url": "https://www.jcrew.com/p/mens/categories/clothing/pants/chino/770-straight-fit-chino/E1589",
-            "should_work": False
+            "should_work": True
         }
     ]
     
@@ -94,8 +94,8 @@ def test_jcrew_products():
     print("=" * 60)
     print("✅ Men's shirts, t-shirts, sweaters → Should work")
     print("✅ Men's outerwear (jackets, coats) → Should work")
+    print("✅ Men's pants/chinos → Should work")
     print("❌ Women's products → Should be rejected")
-    print("❌ Men's pants, shorts, etc → Should be rejected")
 
 if __name__ == "__main__":
     test_jcrew_products()

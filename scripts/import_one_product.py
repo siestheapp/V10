@@ -22,10 +22,10 @@ def import_single_product():
     try:
         conn = psycopg2.connect(
             database='postgres',
-            user='postgres.lbilxlkchzpducggkrxx',
-            password='efvTower12',
-            host='aws-0-us-east-2.pooler.supabase.com',
-            port='6543',
+            user='fs_core_rw',
+            password='CHANGE_ME',
+            host='aws-1-us-east-1.pooler.supabase.com',
+            port='5432',
             cursor_factory=RealDictCursor,
             connect_timeout=10  # 10 second connection timeout
         )

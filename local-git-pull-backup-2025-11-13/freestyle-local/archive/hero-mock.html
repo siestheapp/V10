@@ -1,0 +1,687 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8"/>
+  <meta name="viewport" content="width=device-width,initial-scale=1"/>
+  <title>Freestyle — Hero Mock</title>
+
+  <!-- Inter font -->
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+
+  <!-- Freestyle tokens -->
+  <link rel="stylesheet" href="freestyle-tokens.css">
+
+  <style>
+    :root { --hero-max: 1180px; }
+    * { box-sizing:border-box; }
+    html, body { height:100%; }
+    body {
+      margin:0;
+      font-family: Inter, system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial, sans-serif;
+      background: var(--canvas-0);
+      color: var(--ink-900);
+      -webkit-font-smoothing: antialiased;
+      -moz-osx-font-smoothing: grayscale;
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 0;
+    }
+
+    /* iPhone Frame (Finy Style) */
+    .phone {
+      width: 430px;
+      height: 932px;
+      border-radius: 55px;
+      background: #000;
+      padding: 2px;
+      box-shadow: 0 24px 60px rgba(0,0,0,.18);
+    }
+    .screen {
+      height: 100%;
+      background: #fff;
+      border-radius: 53px;
+      overflow: hidden;
+      position: relative;
+      display: flex;
+      flex-direction: column;
+    }
+
+    /* Dynamic Island */
+    .island {
+      position: absolute;
+      top: 9px;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 126px;
+      height: 37px;
+      background: #000;
+      border-radius: 19px;
+      z-index: 2;
+    }
+
+    /* Status Bar */
+    .status {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 54px;
+      margin-top: 5px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0 30px;
+      font-weight: 600;
+      color: #000;
+      font-size: 17px;
+      letter-spacing: -.02em;
+      z-index: 3;
+    }
+    .status .right {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+    .status .right img {
+      height: 13px;
+      width: auto;
+      display: block;
+    }
+
+    .appbar {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 20px 20px 16px;
+      position: relative;
+      margin-top: 54px;
+    }
+    .brand {
+      font-weight: 800;
+      font-size: 36px;
+      letter-spacing: -0.02em;
+      background: var(--brand-sheen);
+      -webkit-background-clip: text;
+      background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+    .halo {
+      position: absolute;
+      inset: auto auto -2px 12px;
+      width: 56px;
+      height: 6px;
+      background: var(--brand-sheen);
+      border-radius: 999px;
+      filter: blur(8px);
+      opacity: .35;
+    }
+    .avatar {
+      width: 36px;
+      height: 36px;
+      border-radius: 50%;
+      object-fit: cover;
+      border: 1px solid rgba(11,15,20,.08);
+    }
+
+    .feed {
+      padding: 0 20px 24px;
+      overflow: auto;
+      flex: 1;
+    }
+    .card {
+      background: #fff;
+      border: 1px solid rgba(11,15,20,.08);
+      border-radius: var(--radius-card);
+      box-shadow: 0 1px 2px rgba(0,0,0,.06);
+      overflow: hidden;
+    }
+    .media {
+      position: relative;
+      aspect-ratio: 3/4;
+      background: var(--canvas-50);
+    }
+    .media img {
+      position: absolute;
+      inset: 0;
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      object-position: center 18%;
+    }
+    .glaze {
+      position: absolute;
+      inset: auto 0 0 0;
+      height: 34%;  /* was 26% */
+      background: linear-gradient(180deg,rgba(255,255,255,0) 0%, rgba(247,249,251,.6) 45%, #fff 100%);
+    }
+
+    .pill {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      padding: 8px 12px;
+      border-radius: var(--radius-pill);
+      border: 1px solid rgba(11,15,20,.12);
+      background: rgba(255,255,255,.88);
+      color: var(--ink-900);
+      font-weight: 700;
+      font-size: 14px;
+      backdrop-filter: blur(10px);
+      box-shadow: 0 6px 18px rgba(11,15,20,.12);
+    }
+    /* Primary hierarchy: Fit Match */
+    .pill.match {
+      background: var(--brand-sheen);
+      border-color: rgba(0,163,163,.35);
+      color: #fff;
+      font-weight: 800;
+      font-size: 15px; /* slightly larger than secondary */
+      letter-spacing: .01em;
+    }
+    /* Secondary hierarchy: Good Fit (neutral green, softer) */
+    .pill.good {
+      background: #E9F8F0; /* soft green */
+      border-color: rgba(16,185,129,.28);
+      color: #066E49;
+      font-weight: 700;
+    }
+    .overlay-top {
+      position: absolute;
+      inset: 16px 12px auto 12px; /* add a bit more breathing room from photo edge */
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 8px;
+    }
+    .overlay-top .left {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    .match-dot {
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      background: var(--petrol-500);
+      box-shadow: 0 0 0 3px rgba(0,163,163,.18);
+    }
+    .save {
+      width: 44px;
+      height: 44px;
+      border-radius: 50%;
+      display: grid;
+      place-items: center;
+      background: rgba(255,255,255,.92);
+      border: 1px solid rgba(11,15,20,.08);
+      cursor: pointer;
+      transition: transform .18s ease, background .2s ease;
+    }
+    .save:hover {
+      transform: translateY(-1px);
+    }
+    .save svg {
+      width: 22px;
+      height: 22px;
+      color: rgba(11,15,20,.6);
+    }
+
+         .overlay-bottom {
+       position: absolute;
+       inset: auto 12px 12px 12px;
+       display: flex;
+       flex-direction: column;
+       align-items: flex-start;
+       gap: 6px; /* a bit tighter */
+       max-width: calc(100% - 24px);
+     }
+         .hook {
+       font-weight: 800;
+       font-size: 15px;      /* was 16px; tighter keeps it one line */
+       color: var(--petrol-600, var(--petrol-500));
+       letter-spacing: -.01em;
+       text-shadow: 0 1px 0 rgba(255,255,255,.35);
+       white-space: nowrap;
+       overflow: hidden;
+       text-overflow: ellipsis;
+     }
+         .consensus {
+       font-weight: 600;
+       font-size: 13.5px;
+       color: rgba(11,15,20,.62);
+       background: rgba(255,255,255,.85);
+       border: 1px solid rgba(11,15,20,.06);
+       border-radius: 10px;
+       padding: 6px 10px;
+       backdrop-filter: blur(6px);
+       white-space: nowrap;
+       overflow: hidden;
+       text-overflow: ellipsis;
+     }
+    .fitnote {
+      display: grid;
+      gap: 4px;
+    }
+    .fitnote .fitnote-label {
+      font-weight: 700;
+      font-size: 11px;
+      color: rgba(11,15,20,.45);
+      letter-spacing: .08em;
+      text-transform: uppercase;
+    }
+    .fitnote .fitnote-bubble {
+      display: inline-flex;
+      align-items: center;
+      white-space: nowrap; /* single-line only */
+      background: var(--petrol-100);
+      border: 1px solid rgba(0,163,163,.28);
+      color: rgba(11,15,20,.80);
+      border-radius: 999px;
+      padding: 6px 10px;
+      font-size: 13px;
+      box-shadow: 0 4px 12px rgba(0,163,163,.12);
+    }
+
+    .meta {
+      padding: 16px 18px;
+      display: grid;
+      gap: 12px;
+    }
+    .row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+    }
+    .title {
+      font-weight: 700;
+      letter-spacing: -.01em;
+      font-size: 16px;
+    }
+    .brandline {
+      font-size: 14px;
+      color: rgba(11,15,20,.5);
+      font-weight: 600;
+      letter-spacing: .02em;
+    }
+    /* Fit Notes block */
+    .fit-notes {
+      margin-top: 6px;
+      background: #fff;
+      border: 1px solid rgba(11,15,20,.08);
+      border-radius: 12px;
+      padding: 10px 12px;
+      box-shadow: var(--elev-0);
+    }
+    .fit-notes .label {
+      display: block;
+      font-weight: 700;
+      font-size: 12px;
+      color: rgba(11,15,20,.50);
+      letter-spacing: .06em;
+      text-transform: uppercase;
+      margin-bottom: 4px;
+    }
+    .fit-notes .text {
+      font-size: 13.5px;
+      color: rgba(11,15,20,.80);
+      font-style: italic;
+    }
+    .actions {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+    .mini-cta {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 12px 16px;
+      border-radius: 999px;
+      border: 1px solid rgba(11,15,20,.12);
+      background: #fff;
+      font-weight: 700;
+      font-size: 15px;
+      color: var(--ink-900);
+      cursor: pointer;
+      transition: border-color .2s ease, transform .18s ease;
+    }
+    .mini-cta:hover {
+      border-color: var(--petrol-500);
+    }
+
+    .trust {
+      padding: 0 18px 18px;
+      font-size: 14px;
+      color: rgba(11,15,20,.5);
+    }
+    .ico {
+      width: 16px;
+      height: 16px;
+      display: inline-block;
+    }
+
+    /* ===== Bottom Tab Bar (Freestyle) ===== */
+    .tabbar {
+      position: absolute;
+      left: 0; right: 0; bottom: 0;
+      height: 86px;
+      background: rgba(255,255,255,.86);
+      backdrop-filter: blur(16px) saturate(1.08);
+      -webkit-backdrop-filter: blur(16px) saturate(1.08);
+      border-top: 1px solid rgba(10,15,20,0.08); /* whisper-thin */
+      display: flex; justify-content: space-around; align-items: flex-start;
+      padding: 8px 10px calc(14px + env(safe-area-inset-bottom));
+      z-index: 3;
+    }
+
+    .tabbar .tab {
+      --ink-muted: rgba(11,15,20,.52);
+      display: flex; flex-direction: column; align-items: center; gap: 6px;
+      min-width: 60px;
+      text-decoration: none;
+      color: var(--ink-muted);
+      font: 600 13px/1.2 Inter, system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial;
+      letter-spacing: .02em;
+      transition: color .18s ease, transform .18s ease;
+    }
+
+    .tabbar .tab:active { transform: translateY(1px); }
+
+    .tabbar .tab .ico {
+      width: 28px; height: 28px;
+      color: currentColor; /* duotone feel via currentColor */
+    }
+
+    .tabbar .tab .label { position: relative; }
+
+    .tabbar .tab .dot {
+      width: 6px; height: 6px; border-radius: 999px;
+      background: var(--petrol-500);
+      box-shadow: 0 0 0 3px rgba(0,163,163,.16);
+      margin-top: 2px;
+      opacity: 0; transform: translateY(2px) scale(.8);
+      transition: opacity .18s ease, transform .18s ease;
+    }
+
+    /* Active state: label/icon stay Ink; dot becomes the petrol signature */
+    .tabbar .tab.is-active { color: var(--ink-900); }
+    .tabbar .tab.is-active .dot { opacity: 1; transform: translateY(0) scale(1); }
+
+    /* Hover polish (desktop previews) */
+    @media (hover:hover) {
+      .tabbar .tab:hover { color: var(--ink-900); }
+    }
+
+    /* Dark-mode ready (if you toggle .dark on body later) */
+    :root.dark .tabbar {
+      background: rgba(18,26,34,.78);
+      border-top: 1px solid rgba(255,255,255,.08);
+    }
+    :root.dark .tabbar .tab { color: rgba(255,255,255,.66); }
+    :root.dark .tabbar .tab.is-active { color: #fff; }
+
+    /* ===== Pro App Header (sticky) ===== */
+    .appbar {
+      position: sticky; top: 0; z-index: 5;
+      display: flex; align-items: center; justify-content: space-between;
+      padding: 14px 16px;
+      background: rgba(255,255,255,.92);
+      -webkit-backdrop-filter: blur(12px) saturate(1.05);
+      backdrop-filter: blur(12px) saturate(1.05);
+      border-bottom: 1px solid rgba(10,15,20,0.08);
+    }
+    .appbar .brand {
+      font-weight: 800; font-size: 32px; letter-spacing: -0.02em;
+      background: var(--brand-sheen);
+      -webkit-background-clip: text; background-clip: text; -webkit-text-fill-color: transparent;
+    }
+    .appbar .actions { display: flex; align-items: center; gap: 10px; }
+    .icon-btn {
+      width: 32px; height: 32px; border-radius: 999px;
+      display: grid; place-items: center; cursor: pointer;
+      background: rgba(255,255,255,.94);
+      border: 1px solid rgba(10,15,20,.10);
+      transition: transform .18s ease, border-color .18s ease;
+    }
+    .icon-btn:hover { border-color: var(--petrol-500); }
+    .icon-btn:active { transform: translateY(1px); }
+    .icon-btn .ico { width: 18px; height: 18px; color: rgba(11,15,20,.62); }
+
+    /* Optional tiny halo under the wordmark */
+    .appbar .halo {
+      position: absolute; left: 16px; right: auto; bottom: -3px;
+      width: 54px; height: 6px; border-radius: 999px;
+      background: var(--brand-sheen); filter: blur(8px); opacity: .35;
+    }
+
+    /* ===== Segmented Filter ("Twins • All") ===== */
+    .segbar {
+      position: sticky; top: 56px; /* sits just below the header */
+      z-index: 4;
+      display: flex; gap: 8px; padding: 10px 16px 12px;
+      background: rgba(255,255,255,.92);
+      -webkit-backdrop-filter: blur(12px) saturate(1.05);
+      backdrop-filter: blur(12px) saturate(1.05);
+      border-bottom: 1px solid rgba(10,15,20,0.06);
+    }
+    .seg {
+      display: inline-flex; align-items: center; gap: 8px;
+      padding: 10px 14px;
+      border-radius: var(--radius-pill);
+      border: 1px solid rgba(10,15,20,0.12);
+      background: #fff; color: rgba(11,15,20,.70);
+      font-weight: 700; font-size: 14px; letter-spacing: .02em;
+      cursor: pointer; transition: border-color .18s ease, transform .18s ease;
+    }
+    .seg:active { transform: translateY(1px); }
+    .seg .dot { width: 6px; height: 6px; border-radius: 999px; background: rgba(11,15,20,.35); }
+
+    /* Active state uses Petrol light fill + border */
+    .seg.is-active {
+      background: var(--petrol-100);
+      border-color: rgba(0,163,163,.35);
+      color: var(--ink-900);
+    }
+    .seg.is-active .dot { background: var(--petrol-500); box-shadow: 0 0 0 3px rgba(0,163,163,.16); }
+
+    /* Dark-mode ready (if you toggle .dark on :root later) */
+    :root.dark .appbar,
+    :root.dark .segbar {
+      background: rgba(18,26,34,.78);
+      border-color: rgba(255,255,255,.08);
+    }
+    :root.dark .icon-btn { background: rgba(18,26,34,.9); border-color: rgba(255,255,255,.10); }
+    :root.dark .icon-btn .ico { color: rgba(255,255,255,.72); }
+    :root.dark .seg { background: rgba(18,26,34,.9); color: rgba(255,255,255,.76); border-color: rgba(255,255,255,.10); }
+    :root.dark .seg.is-active { background: rgba(0,163,163,.18); border-color: rgba(127,225,255,.35); }
+  </style>
+</head>
+<body>
+
+  <div class="phone" aria-label="iPhone preview">
+    <div class="screen">
+      <div class="island" aria-hidden="true"></div>
+      
+      <div class="status">
+        <div>9:14</div>
+        <div class="right">
+          <img src="Cellular Connection.svg" alt="cell"/>
+          <img src="Wifi.svg" alt="wifi"/>
+          <img src="Battery.svg" alt="battery"/>
+        </div>
+      </div>
+
+      <header class="appbar" aria-label="Freestyle">
+        <div style="position:relative; display:flex; align-items:center; gap:8px;">
+          <div class="brand">freestyle</div>
+          <div class="halo" aria-hidden="true"></div>
+        </div>
+        <div class="actions">
+          <!-- Notifications -->
+          <button class="icon-btn" title="Notifications" aria-label="Notifications">
+            <svg class="ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+              <path d="M6 8a6 6 0 1 1 12 0c0 7 3 6 3 9H3c0-3 3-2 3-9"/>
+              <path d="M10 21a2 2 0 0 0 4 0"/>
+            </svg>
+          </button>
+          <!-- Inbox / Messages -->
+          <button class="icon-btn" title="Inbox" aria-label="Inbox">
+            <svg class="ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+              <path d="M22 12h-6l-2 3h-4l-2-3H2"/>
+              <path d="M5 7h14a2 2 0 0 1 2 2v9a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V9a2 2 0 0 1 2-2z"/>
+            </svg>
+          </button>
+        </div>
+      </header>
+
+      <!-- Segmented filter under header -->
+      <div class="segbar" role="tablist" aria-label="Feed filter">
+        <button class="seg is-active" role="tab" aria-selected="true" aria-controls="feed-same-size">
+          <span class="dot" aria-hidden="true"></span> Matches
+        </button>
+        <button class="seg" role="tab" aria-selected="false" aria-controls="feed-friends">
+          <span class="dot" aria-hidden="true"></span> Friends
+        </button>
+        <button class="seg" role="tab" aria-selected="false" aria-controls="feed-all">
+          <span class="dot" aria-hidden="true"></span> All
+        </button>
+      </div>
+
+      <div class="feed" role="feed" aria-label="Fit Match feed">
+        <article class="card" aria-label="Fit Match post">
+          <div class="media">
+            <!-- Your Anthro image -->
+            <img src="https://images.urbndata.com/is/image/Anthropologie/4130652010091_256_b?$a15-pdp-detail-shot$&fit=constrain&fmt=webp&qlt=80&wid=1314"
+                 alt="The Jocelyn Sleeveless Slip Midi Dress by Maeve at Anthropologie"/>
+            <div class="overlay-top">
+              <div class="left">
+                <!-- Pills removed -->
+              </div>
+              <button class="save" title="Save">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/>
+                </svg>
+              </button>
+            </div>
+
+                         <div class="overlay-bottom" aria-label="why you're seeing this">
+               <div class="hook">Alex (your size) wore S — Good fit</div>
+               <div class="consensus">3 matches agreed · $168 · Anthropologie</div>
+               <div class="fitnote">
+                 <span class="fitnote-label">Fit note</span>
+                 <span class="fitnote-bubble"><em>relaxed waist</em></span>
+               </div>
+             </div>
+            <div class="glaze" aria-hidden="true"></div>
+          </div>
+
+          <div class="meta">
+            <div class="row">
+              <div>
+                <div class="title">The Jocelyn Sleeveless Slip Midi Dress</div>
+                <div class="brandline">ANTHROPOLOGIE • by Maeve</div>
+                <!-- <div class="fit-notes">
+                  <span class="label">Fit Notes</span>
+                  <div class="text">Just-right through bust, relaxed at waist</div>
+                </div> -->
+              </div>
+              <div class="actions">
+                                 <button class="mini-cta" title="Ask your matches">
+                   <svg class="ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                     <path d="M21 15a4 4 0 0 1-4 4H7l-4 4V7a4 4 0 0 1 4-4h10a4 4 0 0 1 4 4z"/>
+                   </svg>
+                   Ask matches
+                 </button>
+              </div>
+            </div>
+
+            <div class="brandline">Posted 2h ago</div>
+          </div>
+
+          <!-- deeper stats hidden until expand -->
+        </article>
+      </div>
+
+      <nav class="tabbar" role="navigation" aria-label="Main">
+        <!-- Feed -->
+        <a class="tab is-active" href="#" data-tab="feed" aria-label="Feed" aria-current="page">
+          <svg class="ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+            <path d="M3 10.5 12 3l9 7.5v9a1.5 1.5 0 0 1-1.5 1.5H4.5A1.5 1.5 0 0 1 3 19.5z"/>
+            <path d="M9 21v-6h6v6"/>
+          </svg>
+          <span class="label">Feed</span>
+          <span class="dot" aria-hidden="true"></span>
+        </a>
+
+        <!-- Polls (This or That) -->
+        <a class="tab" href="#" data-tab="polls" aria-label="Polls">
+          <svg class="ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+            <rect x="3" y="4" width="8" height="6" rx="1.5"/>
+            <rect x="13" y="14" width="8" height="6" rx="1.5"/>
+            <path d="M7 10v10M17 4v10"/>
+          </svg>
+          <span class="label">Polls</span>
+          <span class="dot" aria-hidden="true"></span>
+        </a>
+
+        <!-- Search -->
+        <a class="tab" href="#" data-tab="search" aria-label="Search">
+          <svg class="ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+            <circle cx="11" cy="11" r="7"/>
+            <path d="M20 20l-3.5-3.5"/>
+          </svg>
+          <span class="label">Search</span>
+          <span class="dot" aria-hidden="true"></span>
+        </a>
+
+        <!-- Closet -->
+        <a class="tab" href="#" data-tab="closet" aria-label="Closet">
+          <svg class="ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+            <path d="M3 6h18M6 6v12a2 2 0 0 0 2 2h8a2 2 0 0 0 2-2V6"/>
+            <path d="M9 10h6M10 4a2 2 0 1 1 4 0"/>
+            <path d="M12 6v2"/>
+          </svg>
+          <span class="label">Closet</span>
+          <span class="dot" aria-hidden="true"></span>
+        </a>
+
+        <!-- Profile -->
+        <a class="tab" href="#" data-tab="profile" aria-label="Profile">
+          <svg class="ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+            <circle cx="12" cy="8" r="3.25"/>
+            <path d="M5 19.5a7 7 0 0 1 14 0"/>
+          </svg>
+          <span class="label">Profile</span>
+          <span class="dot" aria-hidden="true"></span>
+        </a>
+      </nav>
+    </div>
+  </div>
+
+  <script>
+    const saveBtn = document.querySelector('.save');
+    if (saveBtn) {
+      saveBtn.addEventListener('click', () => {
+        const svg = saveBtn.querySelector('svg');
+        const filled = saveBtn.dataset.filled === '1';
+        saveBtn.dataset.filled = filled ? '0' : '1';
+        svg.innerHTML = filled
+          ? '<path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z" fill="none" stroke="currentColor" stroke-width="2"/>'
+          : '<path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z" fill="currentColor"/>';
+      });
+    }
+
+    // Segmented filter functionality
+    document.querySelectorAll('.segbar .seg').forEach(btn => {
+      btn.addEventListener('click', () => {
+        document.querySelectorAll('.segbar .seg').forEach(b => b.classList.remove('is-active'));
+        btn.classList.add('is-active');
+        // TODO: swap feed dataset here (twins vs all)
+      });
+    });
+  </script>
+</body>
+</html>

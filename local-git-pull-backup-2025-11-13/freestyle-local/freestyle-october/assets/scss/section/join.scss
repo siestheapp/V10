@@ -1,0 +1,20 @@
+@use '../base/var' as *;
+@use '../base/breakpoints' as *;
+
+/* ===== JOIN ===== */
+.join {
+  padding-top: 24px;
+  @include media-breakpoint-down(sm) {
+    padding-bottom: 24px;
+  }
+  @include media-breakpoint-up(xl) {
+    padding-bottom: 48px;
+  }
+  &::after {display: none;}
+
+  .section-header {
+    @include media-breakpoint-up(xl) {
+      margin-bottom: 24px;
+    }
+  }
+}

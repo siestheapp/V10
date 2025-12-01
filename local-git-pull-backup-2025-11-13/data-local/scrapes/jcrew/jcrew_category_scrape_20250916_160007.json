@@ -1,0 +1,73 @@
+{
+  "category_url": "https://www.jcrew.com/plp/mens/categories/clothing/shirts?sub-categories=men-shirts-linen",
+  "started_at": "2025-09-16T15:54:50.182222",
+  "products": [
+    {
+      "url": "https://www.jcrew.com/p/mens/categories/clothing/shirts/cotton-linen-twill/linen-cotton-blend-twill-workshirt/CG345",
+      "product_code": "CG345",
+      "product_name": "",
+      "colors": [
+        "WHITE",
+        "$105.99",
+        "COLOR LIST",
+        "WHITE WAS $118.00, NOW $105.99",
+        "$101.99",
+        "ESTATE BLUE WAS $118.00, NOW $101.99",
+        "$74.50-$105.99",
+        "$49.50\u2013$84.99",
+        "$45.99"
+      ],
+      "fits": [],
+      "error": null,
+      "scraped_at": "2025-09-16T15:58:14.630765"
+    },
+    {
+      "url": "https://www.jcrew.com/p/mens/categories/clothing/shirts/cotton-linen-twill/short-sleeve-slub-cotton-linen-blend-camp-collar-shirt-in-print/BW968",
+      "product_code": "BW968",
+      "product_name": "",
+      "colors": [
+        "PAISLEY MEDALLION NATUR",
+        "$80.99",
+        "COLOR LIST",
+        "PAISLEY MEDALLION NATUR WAS $89.50, NOW $80.99",
+        "$57.99",
+        "BATIK PAISLEY BLACK CAN WAS $89.50, NOW $57.99",
+        "$39.99",
+        "GEO BATIK BLUE MULTI WAS $89.50, NOW $39.99",
+        "$38.99",
+        "GEOMETRIC MENAGERIE NAV WAS $89.50, NOW $38.99",
+        "$21.99",
+        "SMUDGE PAISLEY BROWN BL WAS $89.50, NOW $21.99",
+        "$74.50-$105.99",
+        "$49.50\u2013$84.99",
+        "$45.99"
+      ],
+      "fits": [],
+      "error": null,
+      "scraped_at": "2025-09-16T15:59:09.015267"
+    },
+    {
+      "url": "https://www.jcrew.com/p/mens/categories/clothing/shirts/linen/baird-mcnutt-irish-linen-point-collar-shirt/CF667",
+      "product_code": "CF667",
+      "product_name": "",
+      "colors": [
+        "BENGAL STRIPE FLAX",
+        "COLOR LIST",
+        "BENGAL STRIPE FLAX WAS $98.00, NOW $87.99",
+        "$74.50-$105.99",
+        "$49.50\u2013$84.99",
+        "$45.99"
+      ],
+      "fits": [],
+      "error": null,
+      "scraped_at": "2025-09-16T15:59:36.617237"
+    }
+  ],
+  "summary": {
+    "total_products": 4,
+    "successful": 3,
+    "failed": 0
+  },
+  "completed_at": "2025-09-16T16:00:06.828479",
+  "duration_seconds": 316.646257
+}

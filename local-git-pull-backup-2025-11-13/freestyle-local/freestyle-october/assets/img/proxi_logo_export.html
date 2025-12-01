@@ -1,0 +1,100 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Export proxi transparent logo (HQ)</title>
+    <style>
+      body { font-family: system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial, sans-serif; margin: 24px; background: #f6f7f8; color: #0B0F14; }
+      .wrap { max-width: 960px; margin: 0 auto; display: grid; gap: 16px; }
+      .card { background: white; padding: 20px; border-radius: 12px; box-shadow: 0 10px 30px rgba(0,0,0,.06); }
+      .preview { border-radius: 8px; overflow: hidden; border: 1px solid #e6e8eb; background: transparent; }
+      .row { display: flex; gap: 10px; flex-wrap: wrap; align-items: center; }
+      button { background: #0B0F14; color: white; border: 0; padding: 10px 14px; border-radius: 8px; cursor: pointer; }
+      button:hover { background: #11161c; }
+      input[type="number"] { width: 120px; padding: 8px; border: 1px solid #d4d7db; border-radius: 8px; }
+      code { background: #0b0f1411; padding: 2px 6px; border-radius: 6px; }
+    </style>
+  </head>
+  <body>
+    <div class="wrap">
+      <div class="card">
+        <h1>proxi logo (transparent) PNG (HQ)</h1>
+        <p>Base artboard <code>400×400</code>. Export large, transparent PNGs.</p>
+        <div class="preview">
+          <svg id="logo" width="400" height="400" viewBox="0 0 400 400" xmlns="http://www.w3.org/2000/svg">
+            <defs>
+              <linearGradient id="brandGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+                <stop offset="0%" stop-color="#009090"/>
+                <stop offset="42%" stop-color="#1FAED9"/>
+                <stop offset="62%" stop-color="#00A3A3"/>
+                <stop offset="100%" stop-color="#35D1AE"/>
+              </linearGradient>
+            </defs>
+            <!-- Transparent background, no rects -->
+            <text x="200" y="210"
+                  font-family="Inter, system-ui, -apple-system, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif"
+                  font-size="92" font-weight="800" text-anchor="middle" dominant-baseline="middle"
+                  letter-spacing="-0.02em" fill="url(#brandGradient)">proxi</text>
+          </svg>
+        </div>
+        <div class="row" style="margin-top:14px">
+          <button data-size="1024">Download 1024×1024</button>
+          <button data-size="2048">Download 2048×2048</button>
+          <button data-size="4096">Download 4096×4096</button>
+          <span>Custom square:</span>
+          <input id="size" type="number" value="3072" min="1" step="1">
+          <button id="custom">Download custom</button>
+        </div>
+        <p style="opacity:.7; margin-top:10px">Note: Renders use your system fonts. For pixel-perfect matching, consider converting text to outlines in the SVG.</p>
+      </div>
+    </div>
+    <script>
+      function svgToPng(svgEl, width, height) {
+        const svgData = new XMLSerializer().serializeToString(svgEl);
+        const svgBlob = new Blob([svgData], { type: 'image/svg+xml;charset=utf-8' });
+        const url = URL.createObjectURL(svgBlob);
+        return new Promise((resolve) => {
+          const img = new Image();
+          img.onload = () => {
+            const canvas = document.createElement('canvas');
+            canvas.width = width; canvas.height = height;
+            const ctx = canvas.getContext('2d');
+            ctx.clearRect(0, 0, width, height); // keep transparent
+            ctx.drawImage(img, 0, 0, width, height);
+            URL.revokeObjectURL(url);
+            canvas.toBlob((blob) => resolve(blob), 'image/png');
+          };
+          img.src = url;
+        });
+      }
+
+      const svg = document.getElementById('logo');
+      document.querySelectorAll('button[data-size]').forEach(btn => {
+        btn.addEventListener('click', async () => {
+          const size = parseInt(btn.getAttribute('data-size'), 10);
+          const blob = await svgToPng(svg, size, size);
+          const a = document.createElement('a');
+          a.href = URL.createObjectURL(blob);
+          a.download = `proxi_logo_transparent_${size}.png`;
+          document.body.appendChild(a);
+          a.click();
+          a.remove();
+        });
+      });
+
+      document.getElementById('custom').addEventListener('click', async () => {
+        const size = parseInt(document.getElementById('size').value, 10) || 1024;
+        const blob = await svgToPng(svg, size, size);
+        const a = document.createElement('a');
+        a.href = URL.createObjectURL(blob);
+        a.download = `proxi_logo_transparent_${size}.png`;
+        document.body.appendChild(a);
+        a.click();
+        a.remove();
+      });
+    </script>
+  </body>
+  </html>
+
+

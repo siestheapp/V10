@@ -9,10 +9,10 @@
 - ✅ **Men's Sweaters** (crewneck, v-neck, cardigans)
 - ✅ **Men's Sweatshirts & Hoodies**
 - ✅ **Men's Outerwear** (jackets, coats, blazers)
+- ✅ **Men's Pants & Chinos** (denim, chinos, dress pants)
 
 ### Not Supported (Automatically Rejected):
 - ❌ Women's products (all categories)
-- ❌ Men's pants, shorts, jeans
 - ❌ Accessories (belts, ties, socks)
 - ❌ Shoes
 
@@ -22,9 +22,9 @@
 
 When a user submits a J.Crew URL:
 
-1. **URL Check** → Is it men's tops or outerwear?
+1. **URL Check** → Is it men's tops, outerwear, or pants?
    - ✅ Yes → Continue
-   - ❌ No → Show error: "Only J.Crew men's tops and outerwear are supported"
+   - ❌ No → Show error: "Only J.Crew men's tops, outerwear, and pants are supported"
 
 2. **Product Fetch** → Get product details
    - Check cache first (instant)

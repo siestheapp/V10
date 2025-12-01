@@ -1,0 +1,4 @@
+#!/bin/bash
+# Check Running Services
+cd /Users/seandavey/projects/V10
+python3 dev/scripts/ports/check_ports.py

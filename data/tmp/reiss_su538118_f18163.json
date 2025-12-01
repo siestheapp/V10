@@ -1,0 +1,26 @@
+{
+  "name": "Long-Sleeve Travel Shirt in White",
+  "description": "The Voyager travel shirt is made with comfort-stretch fabric, offering crease resistance and quick-drying properties. UV protection and high breathability ensure optimal performance throughout the year. Comfort-stretch. Crease-resistant. Quick-drying. UV-protected point collar. Button cuffs. French button placket.",
+  "sku": "F18-163",
+  "brand": "Reiss",
+  "price": "165",
+  "currency": "USD",
+  "sizes": [
+    "XS",
+    "S",
+    "M",
+    "L",
+    "XL",
+    "XXL",
+    "3XL"
+  ],
+  "color": "White",
+  "images": [
+    "https://cdn.platform.next/common/items/default/default/itemimages/3_4Ratio/product/lge/F18163s.jpg"
+  ],
+  "material": "",
+  "care": "",
+  "url": "https://www.reiss.com/us/en/style/su538118/f18163",
+  "style_code": "su538118",
+  "product_code": "F18163"
+}

@@ -1,0 +1,33 @@
+name: CI - Python Lint
+
+on:
+  push:
+    branches: [ "**" ]
+  pull_request:
+    branches: [ "**" ]
+
+jobs:
+  lint:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - name: Install ruff
+        run: |
+          python -m pip install --upgrade pip
+          pip install ruff
+
+      - name: Ruff (syntax-only, baseline)
+        run: |
+          ruff check . \
+            --select E9,F63,F7,F82 \
+            --exclude archive,dev,freestyle,mobile,expo/ios/Pods,expo/node_modules,mobile/node_modules
+
+      # TODO: tighten gates (full ruff + formatting) once codebase is aligned
+

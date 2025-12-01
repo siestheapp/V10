@@ -8,10 +8,10 @@ from psycopg2.extras import RealDictCursor
 # Database configuration - Supabase tailor3
 DB_CONFIG = {
     "database": "postgres",
-    "user": "postgres.lbilxlkchzpducggkrxx",
-    "password": "efvTower12",
-    "host": "aws-0-us-east-2.pooler.supabase.com",
-    "port": "6543"
+    "user": "fs_core_rw",
+    "password": "CHANGE_ME",
+    "host": "aws-1-us-east-1.pooler.supabase.com",
+    "port": "5432"
 }
 
 def get_db_connection():

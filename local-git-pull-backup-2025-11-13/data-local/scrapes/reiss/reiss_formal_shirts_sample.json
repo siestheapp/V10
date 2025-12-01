@@ -1,0 +1,79 @@
+[
+  {
+    "name": "Regular Fit Cotton-Tencel Stretch Shirt in Soft Blue",
+    "description": "Crafted from cotton-Tencel with a hint of stretch, the Bishopsgate shirt is the perfect addition to tailored looks. A spread collar adds refined structure to the neckline. Cotton-Tencel with stretch. Spread collar. Buttoned cuffs. Front button placket. Regular fit.",
+    "sku": "AW1-270",
+    "brand": "Reiss",
+    "price": "155",
+    "currency": "USD",
+    "sizes": [
+      "XS",
+      "S",
+      "M",
+      "L",
+      "XL",
+      "XXL",
+      "3XL"
+    ],
+    "color": "Soft Blue",
+    "images": [
+      "https://cdn.platform.next/common/items/default/default/itemimages/3_4Ratio/product/lge/AW1270s.jpg"
+    ],
+    "material": "",
+    "care": "",
+    "url": "https://www.reiss.com/us/en/style/su538115/aw1270#aw1270",
+    "style_code": "su538115",
+    "product_code": "AW1270"
+  },
+  {
+    "name": "Regular Fit Cotton-Sateen Shirt in Mid Blue",
+    "description": "The Remote shirt is crafted from 100% cotton sateen in a slim fit, offering a sharp, tailored look. Sophisticated double cuffs allow for the addition of cufflinks, elevating the shirt for formal occasions, whilst the cutaway collar adds a modern touch to the design. 100% cotton sateen. Slim fit. Double cuffs. Cutaway collar. Front buttons. Cufflinks not included.",
+    "sku": "F77-504",
+    "brand": "Reiss",
+    "price": "155",
+    "currency": "USD",
+    "sizes": [
+      "US 14.5 R",
+      "US 15",
+      "US 15.5 R",
+      "US 12",
+      "US 16.5",
+      "US 17",
+      "18"
+    ],
+    "color": "Mid Blue",
+    "images": [
+      "https://cdn.platform.next/common/items/default/default/itemimages/3_4Ratio/product/lge/F77504s.jpg"
+    ],
+    "material": "",
+    "care": "",
+    "url": "https://www.reiss.com/us/en/style/su608338/f77504#f77504",
+    "style_code": "su608338",
+    "product_code": "F77504"
+  },
+  {
+    "name": "Slim Fit Cotton Dinner Shirt in Black",
+    "description": "The Marcel shirt is tailored for special occasions, crafted from 100% cotton with a subtly textured Marcella bib for a refined touch. Cut in a regular fit, it features a cutaway collar and glossy black buttons for a sophisticated finish. 100% cotton. Regular fit. Marcella bib. Cutaway collar. Button cuffs. Contrasting front buttons.",
+    "sku": "924-474",
+    "brand": "Reiss",
+    "price": "195",
+    "currency": "USD",
+    "sizes": [
+      "XS",
+      "S",
+      "M",
+      "L",
+      "XL",
+      "XXL"
+    ],
+    "color": "Black",
+    "images": [
+      "https://cdn.platform.next/common/items/default/default/itemimages/3_4Ratio/product/lge/924474s.jpg"
+    ],
+    "material": "",
+    "care": "",
+    "url": "https://www.reiss.com/us/en/style/su688945/924474#924474",
+    "style_code": "su688945",
+    "product_code": "924474"
+  }
+]

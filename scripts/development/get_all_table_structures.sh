@@ -1,11 +1,11 @@
 #!/bin/bash
 
 # Database connection details
-DB_HOST="aws-0-us-east-2.pooler.supabase.com"
-DB_PORT="6543"
-DB_USER="postgres.lbilxlkchzpducggkrxx"
+DB_HOST="aws-1-us-east-1.pooler.supabase.com"
+DB_PORT="5432"
+DB_USER="fs_core_rw"
 DB_NAME="postgres"
-DB_PASSWORD="efvTower12"
+DB_PASSWORD="CHANGE_ME"
 
 # Export password for psql
 export PGPASSWORD=$DB_PASSWORD

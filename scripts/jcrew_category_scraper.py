@@ -84,31 +84,31 @@ class JCrewCategoryScraper:
         products = []
         initial_products = self.driver.find_elements(By.CSS_SELECTOR, "a[href*='/p/']")
         print(f"📍 Found {len(initial_products)} initial products")
-        
-        # Optionally scroll to load more products (but not for testing with limit)
-        if len(sys.argv) <= 2 or (len(sys.argv) > 2 and int(sys.argv[2]) > 20):
-            print("📜 Scrolling to load additional products...")
-            
-            # Scroll incrementally to load lazy content
-            viewport_height = self.driver.execute_script("return window.innerHeight")
-            last_height = self.driver.execute_script("return document.body.scrollHeight")
-            scroll_position = 0
-            
-            while scroll_position < last_height:
-                # Scroll down by viewport height
-                scroll_position += viewport_height
-                self.driver.execute_script(f"window.scrollTo(0, {scroll_position});")
-                time.sleep(1)
-                
-                # Check if page height increased (new content loaded)
-                new_height = self.driver.execute_script("return document.body.scrollHeight")
-                if new_height > last_height:
-                    last_height = new_height
-            
-            # Scroll back to top to ensure we can access all elements
-            self.driver.execute_script("window.scrollTo(0, 0);")
+
+        # Scroll to load additional products.
+        # NOTE: This method should not inspect sys.argv because it is called
+        # from multiple entrypoints (standalone script and category ingest).
+        print("📜 Scrolling to load additional products...")
+
+        viewport_height = self.driver.execute_script("return window.innerHeight")
+        last_height = self.driver.execute_script("return document.body.scrollHeight")
+        scroll_position = 0
+
+        while scroll_position < last_height:
+            # Scroll down by viewport height
+            scroll_position += viewport_height
+            self.driver.execute_script(f"window.scrollTo(0, {scroll_position});")
             time.sleep(1)
-        
+
+            # Check if page height increased (new content loaded)
+            new_height = self.driver.execute_script("return document.body.scrollHeight")
+            if new_height > last_height:
+                last_height = new_height
+
+        # Scroll back to top to ensure we can access all elements
+        self.driver.execute_script("window.scrollTo(0, 0);")
+        time.sleep(1)
+
         # Find product links - be more specific to get actual product cards
         # J.Crew uses specific patterns for product links in listing pages
         product_selectors = [

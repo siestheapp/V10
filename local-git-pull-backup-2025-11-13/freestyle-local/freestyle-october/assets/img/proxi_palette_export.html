@@ -1,0 +1,68 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Export proxi_palette.png (1500×500)</title>
+    <style>
+      body { font-family: system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial, sans-serif; margin: 24px; background: #f6f7f8; color: #0B0F14; }
+      .wrap { max-width: 900px; margin: 0 auto; }
+      .card { background: white; padding: 20px; border-radius: 12px; box-shadow: 0 10px 30px rgba(0,0,0,.06); }
+      .preview { border-radius: 8px; overflow: hidden; border: 1px solid #e6e8eb; }
+      button { background: #0B0F14; color: white; border: 0; padding: 10px 14px; border-radius: 8px; cursor: pointer; }
+      button:hover { background: #11161c; }
+      code { background: #0b0f1411; padding: 2px 6px; border-radius: 6px; }
+    </style>
+  </head>
+  <body>
+    <div class="wrap">
+      <div class="card">
+        <h1>proxi_palette.png</h1>
+        <p>Exact size <code>1500×500</code>. Click the button to export PNG.</p>
+        <div class="preview">
+          <svg id="palette" width="1500" height="500" viewBox="0 0 1500 500" xmlns="http://www.w3.org/2000/svg">
+            <rect x="0" y="0" width="375" height="500" fill="#00A3A3"/>
+            <rect x="375" y="0" width="375" height="500" fill="#A6FFCB"/>
+            <rect x="750" y="0" width="375" height="500" fill="#7FE1FF"/>
+            <rect x="1125" y="0" width="375" height="500" fill="#0B0F14"/>
+          </svg>
+        </div>
+        <p style="margin-top:16px">
+          <button id="export">Download PNG</button>
+        </p>
+      </div>
+    </div>
+    <script>
+      function svgToPng(svgEl, width, height) {
+        const svgData = new XMLSerializer().serializeToString(svgEl);
+        const svgBlob = new Blob([svgData], { type: 'image/svg+xml;charset=utf-8' });
+        const url = URL.createObjectURL(svgBlob);
+        return new Promise((resolve) => {
+          const img = new Image();
+          img.onload = () => {
+            const canvas = document.createElement('canvas');
+            canvas.width = width; canvas.height = height;
+            const ctx = canvas.getContext('2d');
+            ctx.drawImage(img, 0, 0, width, height);
+            URL.revokeObjectURL(url);
+            canvas.toBlob((blob) => resolve(blob), 'image/png');
+          };
+          img.src = url;
+        });
+      }
+
+      document.getElementById('export').addEventListener('click', async () => {
+        const svg = document.getElementById('palette');
+        const blob = await svgToPng(svg, 1500, 500);
+        const a = document.createElement('a');
+        a.href = URL.createObjectURL(blob);
+        a.download = 'proxi_palette.png';
+        document.body.appendChild(a);
+        a.click();
+        a.remove();
+      });
+    </script>
+  </body>
+  </html>
+
+

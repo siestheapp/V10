@@ -11,10 +11,10 @@ import os
 
 # Database connection parameters
 DB_CONFIG = {
-    'host': 'aws-0-us-east-2.pooler.supabase.com',
+    'host': 'aws-1-us-east-1.pooler.supabase.com',
     'port': 6543,
-    'user': 'postgres.lbilxlkchzpducggkrxx',
-    'password': 'efvTower12',
+    'user': 'fs_core_rw',
+    'password': 'CHANGE_ME',
     'database': 'postgres'
 }
 

@@ -1,0 +1,2813 @@
+{
+  "action": "Product-Variation",
+  "queryString": "dwvar_J0794505_color=YJY&pid=J0794505",
+  "locale": "default",
+  "product": {
+    "uuid": "4b8f62855dbf2692dd75c22838",
+    "id": "J0794505",
+    "productName": "Sylvain Shirt in Structure Knit",
+    "autoSwatch": null,
+    "productType": "master",
+    "brand": null,
+    "master": true,
+    "isAssignedToSiteCatalog": true,
+    "masterId": "J0794505",
+    "price": {
+      "type": "range",
+      "min": {
+        "sales": {
+          "value": 87.75,
+          "currency": "USD",
+          "formatted": "$87.75",
+          "decimalPrice": "87.75"
+        },
+        "list": null,
+        "percentOff": null
+      },
+      "max": {
+        "sales": {
+          "value": 146.25,
+          "currency": "USD",
+          "formatted": "$146.25",
+          "decimalPrice": "146.25"
+        },
+        "list": null,
+        "percentOff": null
+      },
+      "html": "    \n        <div class=\"price\">\n            <span class=\"range\">\n    \n\n    \n    \n    \n\n<span>\n    \n\n    \n\n    \n    \n        \n        <del class=\"d-none\">\n            <span class=\"strike-through list\">\n                <span class=\"value\"\n                     \n                        content=\"\"\n                    \n                >\n                    <span class=\"sr-only\">\n                        Price reduced from\n                    </span>\n                    \n                    <span class=\"sr-only\">\n                        to\n                    </span>\n                </span>\n            </span>\n        </del>\n\n        \n        <span class=\"sales\">\n            \n                <span class=\"value\" content=\"87.75\" aria-label=\"Sale price $87.75\">\n            \n            $87.75\n\n\n            </span>\n        </span>\n    \n</span>\n\n    -\n    \n    \n    \n\n<span>\n    \n\n    \n\n    \n    \n        \n        <del class=\"d-none\">\n            <span class=\"strike-through list\">\n                <span class=\"value\"\n                     \n                        content=\"\"\n                    \n                >\n                    <span class=\"sr-only\">\n                        Price reduced from\n                    </span>\n                    \n                    <span class=\"sr-only\">\n                        to\n                    </span>\n                </span>\n            </span>\n        </del>\n\n        \n        <span class=\"sales\">\n            \n                <span class=\"value\" content=\"146.25\" aria-label=\"Sale price $146.25\">\n            \n            $146.25\n\n\n            </span>\n        </span>\n    \n</span>\n\n</span>\n\n        </div>\n    \n\n\n"
+    },
+    "decimalPriceforWidgets": "14625",
+    "plpBadge": null,
+    "images": {
+      "large": [
+        {
+          "alt": "Sylvain Shirt in Structure Knit",
+          "url": "https://ak-media.theory.com/i/theory/TH_J0794505_YJY_L0?$TH-pdp-desktop$",
+          "urllarge": "https://ak-media.theory.com/i/theory/TH_J0794505_YJY_L0?$TH-pdp-large-desktop$",
+          "urltablet": "https://ak-media.theory.com/i/theory/TH_J0794505_YJY_L0?$TH-pdp-tablet$",
+          "urldesktopthumb": "https://ak-media.theory.com/i/theory/TH_J0794505_YJY_L0?$TH-pdp-desktop-thumb$",
+          "title": "Sylvain Shirt in Structure Knit",
+          "index": 0,
+          "absURL": "https://ak-media.theory.com/i/theory/TH_J0794505_YJY_L0?$TH-pdp-desktop$",
+          "type": "img",
+          "ismainimage": false,
+          "srcset": "https://ak-media.theory.com/i/theory/TH_J0794505_YJY_L0?$TH-pdp-tablet$ 640w, https://ak-media.theory.com/i/theory/TH_J0794505_YJY_L0?$TH-pdp-desktop$ 1024w, https://ak-media.theory.com/i/theory/TH_J0794505_YJY_L0?$TH-pdp-large-desktop$ ",
+          "imgPlaceholder": "data:image/gif;base64,R0lGODlhAQABAID/AMDAwAAAACH5BAEAAAAALAAAAAABAAEAQAICRAEAOw=="
+        },
+        {
+          "alt": "Sylvain Shirt in Structure Knit",
+          "url": "https://ak-media.theory.com/i/theory/TH_J0794505_YJY_B0?$TH-pdp-desktop$",
+          "urllarge": "https://ak-media.theory.com/i/theory/TH_J0794505_YJY_B0?$TH-pdp-large-desktop$",
+          "urltablet": "https://ak-media.theory.com/i/theory/TH_J0794505_YJY_B0?$TH-pdp-tablet$",
+          "urldesktopthumb": "https://ak-media.theory.com/i/theory/TH_J0794505_YJY_B0?$TH-pdp-desktop-thumb$",
+          "title": "Sylvain Shirt in Structure Knit",
+          "index": 1,
+          "absURL": "https://ak-media.theory.com/i/theory/TH_J0794505_YJY_B0?$TH-pdp-desktop$",
+          "type": "img",
+          "ismainimage": false,
+          "srcset": "https://ak-media.theory.com/i/theory/TH_J0794505_YJY_B0?$TH-pdp-tablet$ 640w, https://ak-media.theory.com/i/theory/TH_J0794505_YJY_B0?$TH-pdp-desktop$ 1024w, https://ak-media.theory.com/i/theory/TH_J0794505_YJY_B0?$TH-pdp-large-desktop$ ",
+          "imgPlaceholder": "data:image/gif;base64,R0lGODlhAQABAID/AMDAwAAAACH5BAEAAAAALAAAAAABAAEAQAICRAEAOw=="
+        },
+        {
+          "alt": "Sylvain Shirt in Structure Knit",
+          "url": "https://ak-media.theory.com/i/theory/TH_J0794505_YJY_D0?$TH-pdp-desktop$",
+          "urllarge": "https://ak-media.theory.com/i/theory/TH_J0794505_YJY_D0?$TH-pdp-large-desktop$",
+          "urltablet": "https://ak-media.theory.com/i/theory/TH_J0794505_YJY_D0?$TH-pdp-tablet$",
+          "urldesktopthumb": "https://ak-media.theory.com/i/theory/TH_J0794505_YJY_D0?$TH-pdp-desktop-thumb$",
+          "title": "Sylvain Shirt in Structure Knit",
+          "index": 2,
+          "absURL": "https://ak-media.theory.com/i/theory/TH_J0794505_YJY_D0?$TH-pdp-desktop$",
+          "type": "img",
+          "ismainimage": false,
+          "srcset": "https://ak-media.theory.com/i/theory/TH_J0794505_YJY_D0?$TH-pdp-tablet$ 640w, https://ak-media.theory.com/i/theory/TH_J0794505_YJY_D0?$TH-pdp-desktop$ 1024w, https://ak-media.theory.com/i/theory/TH_J0794505_YJY_D0?$TH-pdp-large-desktop$ ",
+          "imgPlaceholder": "data:image/gif;base64,R0lGODlhAQABAID/AMDAwAAAACH5BAEAAAAALAAAAAABAAEAQAICRAEAOw=="
+        },
+        {
+          "alt": "Sylvain Shirt in Structure Knit",
+          "url": "https://ak-media.theory.com/i/theory/TH_J0794505_YJY_F0?$TH-pdp-desktop$",
+          "urllarge": "https://ak-media.theory.com/i/theory/TH_J0794505_YJY_F0?$TH-pdp-large-desktop$",
+          "urltablet": "https://ak-media.theory.com/i/theory/TH_J0794505_YJY_F0?$TH-pdp-tablet$",
+          "urldesktopthumb": "https://ak-media.theory.com/i/theory/TH_J0794505_YJY_F0?$TH-pdp-desktop-thumb$",
+          "title": "Sylvain Shirt in Structure Knit",
+          "index": 3,
+          "absURL": "https://ak-media.theory.com/i/theory/TH_J0794505_YJY_F0?$TH-pdp-desktop$",
+          "type": "img",
+          "ismainimage": false,
+          "srcset": "https://ak-media.theory.com/i/theory/TH_J0794505_YJY_F0?$TH-pdp-tablet$ 640w, https://ak-media.theory.com/i/theory/TH_J0794505_YJY_F0?$TH-pdp-desktop$ 1024w, https://ak-media.theory.com/i/theory/TH_J0794505_YJY_F0?$TH-pdp-large-desktop$ ",
+          "imgPlaceholder": "data:image/gif;base64,R0lGODlhAQABAID/AMDAwAAAACH5BAEAAAAALAAAAAABAAEAQAICRAEAOw=="
+        },
+        {
+          "alt": "Sylvain Shirt in Structure Knit",
+          "url": "https://ak-media.theory.com/i/theory/TH_J0794505_YJY_I0?$TH-pdp-desktop$",
+          "urllarge": "https://ak-media.theory.com/i/theory/TH_J0794505_YJY_I0?$TH-pdp-large-desktop$",
+          "urltablet": "https://ak-media.theory.com/i/theory/TH_J0794505_YJY_I0?$TH-pdp-tablet$",
+          "urldesktopthumb": "https://ak-media.theory.com/i/theory/TH_J0794505_YJY_I0?$TH-pdp-desktop-thumb$",
+          "title": "Sylvain Shirt in Structure Knit",
+          "index": 4,
+          "absURL": "https://ak-media.theory.com/i/theory/TH_J0794505_YJY_I0?$TH-pdp-desktop$",
+          "type": "img",
+          "ismainimage": false,
+          "srcset": "https://ak-media.theory.com/i/theory/TH_J0794505_YJY_I0?$TH-pdp-tablet$ 640w, https://ak-media.theory.com/i/theory/TH_J0794505_YJY_I0?$TH-pdp-desktop$ 1024w, https://ak-media.theory.com/i/theory/TH_J0794505_YJY_I0?$TH-pdp-large-desktop$ ",
+          "imgPlaceholder": "data:image/gif;base64,R0lGODlhAQABAID/AMDAwAAAACH5BAEAAAAALAAAAAABAAEAQAICRAEAOw=="
+        },
+        {
+          "alt": "Sylvain Shirt in Structure Knit",
+          "url": "https://ak-media.theory.com/v/theory/TH_J0794505_YJY_VIDEO?$TH-pdp-desktop$",
+          "urllarge": "https://ak-media.theory.com/v/theory/TH_J0794505_YJY_VIDEO?$TH-pdp-large-desktop$",
+          "urltablet": "https://ak-media.theory.com/v/theory/TH_J0794505_YJY_VIDEO?$TH-pdp-tablet$",
+          "urldesktopthumb": "https://ak-media.theory.com/v/theory/TH_J0794505_YJY_VIDEO?$TH-pdp-desktop-thumb$",
+          "title": "Sylvain Shirt in Structure Knit",
+          "index": 5,
+          "absURL": "https://ak-media.theory.com/v/theory/TH_J0794505_YJY_VIDEO?$TH-pdp-desktop$",
+          "type": "video",
+          "ismainimage": false,
+          "srcset": "https://ak-media.theory.com/v/theory/TH_J0794505_YJY_VIDEO?$TH-pdp-tablet$ 640w, https://ak-media.theory.com/v/theory/TH_J0794505_YJY_VIDEO?$TH-pdp-desktop$ 1024w, https://ak-media.theory.com/v/theory/TH_J0794505_YJY_VIDEO?$TH-pdp-large-desktop$ ",
+          "imgPlaceholder": "data:image/gif;base64,R0lGODlhAQABAID/AMDAwAAAACH5BAEAAAAALAAAAAABAAEAQAICRAEAOw==",
+          "thumb": "https://ak-media.theory.com/v/theory/TH_J0794505_YJY_VIDEO/thumbs/8807c32b-ced0-4b79-88d7-2e2f5a389f16",
+          "thumbSrcset": "https://ak-media.theory.com/v/theory/TH_J0794505_YJY_VIDEO/thumbs/8807c32b-ced0-4b79-88d7-2e2f5a389f16?$TH-pdp-tablet$ 640w, https://ak-media.theory.com/v/theory/TH_J0794505_YJY_VIDEO/thumbs/8807c32b-ced0-4b79-88d7-2e2f5a389f16?$TH-pdp-desktop$ 1024w, https://ak-media.theory.com/v/theory/TH_J0794505_YJY_VIDEO/thumbs/8807c32b-ced0-4b79-88d7-2e2f5a389f16 ",
+          "fullhd": "https://ak-media.theory.com/v/theory/TH_J0794505_YJY_VIDEO/fullhd",
+          "mp4720": "https://ak-media.theory.com/v/theory/TH_J0794505_YJY_VIDEO/mp4_720p"
+        },
+        {
+          "alt": "Sylvain Shirt in Structure Knit",
+          "url": "https://ak-media.theory.com/i/theory/TH_J0794505_YJY_0?$TH-pdp-desktop$",
+          "urllarge": "https://ak-media.theory.com/i/theory/TH_J0794505_YJY_0?$TH-pdp-large-desktop$",
+          "urltablet": "https://ak-media.theory.com/i/theory/TH_J0794505_YJY_0?$TH-pdp-tablet$",
+          "urldesktopthumb": "https://ak-media.theory.com/i/theory/TH_J0794505_YJY_0?$TH-pdp-desktop-thumb$",
+          "title": "Sylvain Shirt in Structure Knit",
+          "index": 6,
+          "absURL": "https://ak-media.theory.com/i/theory/TH_J0794505_YJY_0?$TH-pdp-desktop$",
+          "type": "img",
+          "ismainimage": true,
+          "srcset": "https://ak-media.theory.com/i/theory/TH_J0794505_YJY_0?$TH-pdp-tablet$ 640w, https://ak-media.theory.com/i/theory/TH_J0794505_YJY_0?$TH-pdp-desktop$ 1024w, https://ak-media.theory.com/i/theory/TH_J0794505_YJY_0?$TH-pdp-large-desktop$ ",
+          "imgPlaceholder": "data:image/gif;base64,R0lGODlhAQABAID/AMDAwAAAACH5BAEAAAAALAAAAAABAAEAQAICRAEAOw=="
+        }
+      ]
+    },
+    "selectedQuantity": 1,
+    "minOrderQuantity": 1,
+    "maxOrderQuantity": 5,
+    "classCategoryLabelValues": [],
+    "isGiftCard": null,
+    "variationAttributes": [
+      {
+        "attributeId": "color",
+        "displayName": "Color",
+        "id": "color",
+        "swatchable": true,
+        "values": [
+          {
+            "id": "100",
+            "description": null,
+            "displayValue": "WHITE",
+            "value": "100",
+            "selected": false,
+            "selectable": true,
+            "priceData": {},
+            "vpid": "",
+            "availabilityDisplayValue": "WHITE",
+            "isOnline": true,
+            "show": true,
+            "varGroupId": "J0794505_100",
+            "isVariationGroupOnSale": false,
+            "variationGroupOnSaleMessage": "",
+            "url": "https%3A%2F%2Fwww.theory.com%2Fon%2Fdemandware.store%2FSites-theory2_US-Site%2Fdefault%2FProduct-Variation%3FbackAltView%3D0%26dwvar_J0794505__100_color%3D100%26frontAltView%3DL0%26imageBackDefaultView%3D0%26imageFrontDefaultView%3DL0%26pid%3DJ0794505_100%26quantity%3D1",
+            "productLink": "https://www.theory.com/men/shirts/sylvain-shirt-in-structure-knit/J0794505_100.html?dwvar_J0794505__100_color=100",
+            "quickViewUrlColor": "/on/demandware.store/Sites-theory2_US-Site/default/Product-ShowQuickView?pid=J0794505_100&ajax=true&pview=variation",
+            "images": {
+              "swatch": [
+                {
+                  "alt": "SYLVAIN ND",
+                  "url": "//ak-media.theory.com/i/theory/TH_J0794505_100_SWATCH.jpg?$TH-swatch$",
+                  "title": "SYLVAIN ND",
+                  "index": "0",
+                  "absURL": "//ak-media.theory.com/i/theory/TH_J0794505_100_SWATCH.jpg?$TH-swatch$",
+                  "tileFront": "https://ak-media.theory.com/i/theory/TH_J0794505_100_L0?$TH-product-tile3x$",
+                  "tileBack": "https://ak-media.theory.com/i/theory/TH_J0794505_100_0?$TH-product-tile3x$",
+                  "autoSwatch": null,
+                  "srcset": "https://ak-media.theory.com/i/theory/TH_J0794505_100_L0?$TH-product-tile$ 640w, https://ak-media.theory.com/i/theory/TH_J0794505_100_L0?$TH-product-tile2x$ 1024w, https://ak-media.theory.com/i/theory/TH_J0794505_100_L0?$TH-product-tile3x$ ",
+                  "srcsetBack": "https://ak-media.theory.com/i/theory/TH_J0794505_100_0?$TH-product-tile$ 640w, https://ak-media.theory.com/i/theory/TH_J0794505_100_0?$TH-product-tile2x$ 1024w, https://ak-media.theory.com/i/theory/TH_J0794505_100_0?$TH-product-tile3x$ "
+                }
+              ]
+            },
+            "ats": 4683
+          },
+          {
+            "id": "001",
+            "description": null,
+            "displayValue": "BLACK",
+            "value": "001",
+            "selected": false,
+            "selectable": true,
+            "priceData": {},
+            "vpid": "",
+            "availabilityDisplayValue": "BLACK",
+            "isOnline": true,
+            "show": true,
+            "varGroupId": "J0794505_001",
+            "isVariationGroupOnSale": false,
+            "variationGroupOnSaleMessage": "",
+            "url": "https%3A%2F%2Fwww.theory.com%2Fon%2Fdemandware.store%2FSites-theory2_US-Site%2Fdefault%2FProduct-Variation%3FbackAltView%3D0%26dwvar_J0794505__001_color%3D001%26frontAltView%3DL0%26imageBackDefaultView%3D0%26imageFrontDefaultView%3DL0%26pid%3DJ0794505_001%26quantity%3D1",
+            "productLink": "https://www.theory.com/men/shirts/sylvain-shirt-in-structure-knit/J0794505_001.html?dwvar_J0794505__001_color=001",
+            "quickViewUrlColor": "/on/demandware.store/Sites-theory2_US-Site/default/Product-ShowQuickView?pid=J0794505_001&ajax=true&pview=variation",
+            "images": {
+              "swatch": [
+                {
+                  "alt": "SYLVAIN ND",
+                  "url": "//ak-media.theory.com/i/theory/TH_J0794505_001_SWATCH.jpg?$TH-swatch$",
+                  "title": "SYLVAIN ND",
+                  "index": "0",
+                  "absURL": "//ak-media.theory.com/i/theory/TH_J0794505_001_SWATCH.jpg?$TH-swatch$",
+                  "tileFront": "https://ak-media.theory.com/i/theory/TH_J0794505_001_L0?$TH-product-tile3x$",
+                  "tileBack": "https://ak-media.theory.com/i/theory/TH_J0794505_001_0?$TH-product-tile3x$",
+                  "autoSwatch": null,
+                  "srcset": "https://ak-media.theory.com/i/theory/TH_J0794505_001_L0?$TH-product-tile$ 640w, https://ak-media.theory.com/i/theory/TH_J0794505_001_L0?$TH-product-tile2x$ 1024w, https://ak-media.theory.com/i/theory/TH_J0794505_001_L0?$TH-product-tile3x$ ",
+                  "srcsetBack": "https://ak-media.theory.com/i/theory/TH_J0794505_001_0?$TH-product-tile$ 640w, https://ak-media.theory.com/i/theory/TH_J0794505_001_0?$TH-product-tile2x$ 1024w, https://ak-media.theory.com/i/theory/TH_J0794505_001_0?$TH-product-tile3x$ "
+                }
+              ]
+            },
+            "ats": 4513
+          },
+          {
+            "id": "YJY",
+            "description": null,
+            "displayValue": "OLYMPIC",
+            "value": "YJY",
+            "selected": true,
+            "selectable": true,
+            "priceData": {},
+            "vpid": "",
+            "availabilityDisplayValue": "OLYMPIC",
+            "isOnline": true,
+            "show": true,
+            "varGroupId": "J0794505_YJY",
+            "isVariationGroupOnSale": false,
+            "variationGroupOnSaleMessage": "",
+            "url": "https%3A%2F%2Fwww.theory.com%2Fon%2Fdemandware.store%2FSites-theory2_US-Site%2Fdefault%2FProduct-Variation%3FbackAltView%3D0%26dwvar_J0794505__YJY_color%3DYJY%26frontAltView%3DL0%26imageBackDefaultView%3D0%26imageFrontDefaultView%3DL0%26pid%3DJ0794505_YJY%26quantity%3D1",
+            "productLink": "https://www.theory.com/men/shirts/sylvain-shirt-in-structure-knit/J0794505_YJY.html?dwvar_J0794505__YJY_color=YJY",
+            "quickViewUrlColor": "/on/demandware.store/Sites-theory2_US-Site/default/Product-ShowQuickView?pid=J0794505_YJY&ajax=true&pview=variation",
+            "images": {
+              "swatch": [
+                {
+                  "alt": "SYLVAIN ND",
+                  "url": "//ak-media.theory.com/i/theory/TH_J0794505_YJY_SWATCH.jpg?$TH-swatch$",
+                  "title": "SYLVAIN ND",
+                  "index": "0",
+                  "absURL": "//ak-media.theory.com/i/theory/TH_J0794505_YJY_SWATCH.jpg?$TH-swatch$",
+                  "tileFront": "https://ak-media.theory.com/i/theory/TH_J0794505_YJY_L0?$TH-product-tile3x$",
+                  "tileBack": "https://ak-media.theory.com/i/theory/TH_J0794505_YJY_0?$TH-product-tile3x$",
+                  "autoSwatch": null,
+                  "srcset": "https://ak-media.theory.com/i/theory/TH_J0794505_YJY_L0?$TH-product-tile$ 640w, https://ak-media.theory.com/i/theory/TH_J0794505_YJY_L0?$TH-product-tile2x$ 1024w, https://ak-media.theory.com/i/theory/TH_J0794505_YJY_L0?$TH-product-tile3x$ ",
+                  "srcsetBack": "https://ak-media.theory.com/i/theory/TH_J0794505_YJY_0?$TH-product-tile$ 640w, https://ak-media.theory.com/i/theory/TH_J0794505_YJY_0?$TH-product-tile2x$ 1024w, https://ak-media.theory.com/i/theory/TH_J0794505_YJY_0?$TH-product-tile3x$ "
+                }
+              ]
+            },
+            "ats": 3451
+          },
+          {
+            "id": "B7H",
+            "description": null,
+            "displayValue": "ECLIPSE",
+            "value": "B7H",
+            "selected": false,
+            "selectable": true,
+            "priceData": {},
+            "vpid": "",
+            "availabilityDisplayValue": "ECLIPSE",
+            "isOnline": true,
+            "show": true,
+            "varGroupId": "J0794505_B7H",
+            "isVariationGroupOnSale": false,
+            "variationGroupOnSaleMessage": "",
+            "url": "https%3A%2F%2Fwww.theory.com%2Fon%2Fdemandware.store%2FSites-theory2_US-Site%2Fdefault%2FProduct-Variation%3FbackAltView%3D0%26dwvar_J0794505__B7H_color%3DB7H%26frontAltView%3DL0%26imageBackDefaultView%3D0%26imageFrontDefaultView%3DL0%26pid%3DJ0794505_B7H%26quantity%3D1",
+            "productLink": "https://www.theory.com/men/shirts/sylvain-shirt-in-structure-knit/J0794505_B7H.html?dwvar_J0794505__B7H_color=B7H",
+            "quickViewUrlColor": "/on/demandware.store/Sites-theory2_US-Site/default/Product-ShowQuickView?pid=J0794505_B7H&ajax=true&pview=variation",
+            "images": {
+              "swatch": [
+                {
+                  "alt": "SYLVAIN ND",
+                  "url": "//ak-media.theory.com/i/theory/TH_J0794505_B7H_SWATCH.jpg?$TH-swatch$",
+                  "title": "SYLVAIN ND",
+                  "index": "0",
+                  "absURL": "//ak-media.theory.com/i/theory/TH_J0794505_B7H_SWATCH.jpg?$TH-swatch$",
+                  "tileFront": "https://ak-media.theory.com/i/theory/TH_J0794505_B7H_L0?$TH-product-tile3x$",
+                  "tileBack": "https://ak-media.theory.com/i/theory/TH_J0794505_B7H_0?$TH-product-tile3x$",
+                  "autoSwatch": null,
+                  "srcset": "https://ak-media.theory.com/i/theory/TH_J0794505_B7H_L0?$TH-product-tile$ 640w, https://ak-media.theory.com/i/theory/TH_J0794505_B7H_L0?$TH-product-tile2x$ 1024w, https://ak-media.theory.com/i/theory/TH_J0794505_B7H_L0?$TH-product-tile3x$ ",
+                  "srcsetBack": "https://ak-media.theory.com/i/theory/TH_J0794505_B7H_0?$TH-product-tile$ 640w, https://ak-media.theory.com/i/theory/TH_J0794505_B7H_0?$TH-product-tile2x$ 1024w, https://ak-media.theory.com/i/theory/TH_J0794505_B7H_0?$TH-product-tile3x$ "
+                }
+              ]
+            },
+            "ats": 3078
+          },
+          {
+            "id": "2GY",
+            "description": null,
+            "displayValue": "DUFFLE",
+            "value": "2GY",
+            "selected": false,
+            "selectable": true,
+            "priceData": {},
+            "vpid": "",
+            "availabilityDisplayValue": "DUFFLE",
+            "isOnline": true,
+            "show": true,
+            "varGroupId": "J0794505_2GY",
+            "isVariationGroupOnSale": false,
+            "variationGroupOnSaleMessage": "",
+            "url": "https%3A%2F%2Fwww.theory.com%2Fon%2Fdemandware.store%2FSites-theory2_US-Site%2Fdefault%2FProduct-Variation%3FbackAltView%3D0%26dwvar_J0794505__2GY_color%3D2GY%26frontAltView%3DL0%26imageBackDefaultView%3D0%26imageFrontDefaultView%3DL0%26pid%3DJ0794505_2GY%26quantity%3D1",
+            "productLink": "https://www.theory.com/men/shirts/sylvain-shirt-in-structure-knit/J0794505_2GY.html?dwvar_J0794505__2GY_color=2GY",
+            "quickViewUrlColor": "/on/demandware.store/Sites-theory2_US-Site/default/Product-ShowQuickView?pid=J0794505_2GY&ajax=true&pview=variation",
+            "images": {
+              "swatch": [
+                {
+                  "alt": "SYLVAIN ND",
+                  "url": "//ak-media.theory.com/i/theory/TH_J0794505_2GY_SWATCH.jpg?$TH-swatch$",
+                  "title": "SYLVAIN ND",
+                  "index": "0",
+                  "absURL": "//ak-media.theory.com/i/theory/TH_J0794505_2GY_SWATCH.jpg?$TH-swatch$",
+                  "tileFront": "https://ak-media.theory.com/i/theory/TH_J0794505_2GY_L0?$TH-product-tile3x$",
+                  "tileBack": "https://ak-media.theory.com/i/theory/TH_J0794505_2GY_0?$TH-product-tile3x$",
+                  "autoSwatch": null,
+                  "srcset": "https://ak-media.theory.com/i/theory/TH_J0794505_2GY_L0?$TH-product-tile$ 640w, https://ak-media.theory.com/i/theory/TH_J0794505_2GY_L0?$TH-product-tile2x$ 1024w, https://ak-media.theory.com/i/theory/TH_J0794505_2GY_L0?$TH-product-tile3x$ ",
+                  "srcsetBack": "https://ak-media.theory.com/i/theory/TH_J0794505_2GY_0?$TH-product-tile$ 640w, https://ak-media.theory.com/i/theory/TH_J0794505_2GY_0?$TH-product-tile2x$ 1024w, https://ak-media.theory.com/i/theory/TH_J0794505_2GY_0?$TH-product-tile3x$ "
+                }
+              ]
+            },
+            "ats": 234
+          },
+          {
+            "id": "APW",
+            "description": null,
+            "displayValue": "PESTLE",
+            "value": "APW",
+            "selected": false,
+            "selectable": true,
+            "priceData": {},
+            "vpid": "",
+            "availabilityDisplayValue": "PESTLE",
+            "isOnline": true,
+            "show": true,
+            "varGroupId": "J0794505_APW",
+            "isVariationGroupOnSale": false,
+            "variationGroupOnSaleMessage": "",
+            "url": "https%3A%2F%2Fwww.theory.com%2Fon%2Fdemandware.store%2FSites-theory2_US-Site%2Fdefault%2FProduct-Variation%3FbackAltView%3D0%26dwvar_J0794505__APW_color%3DAPW%26frontAltView%3DL0%26imageBackDefaultView%3D0%26imageFrontDefaultView%3DL0%26pid%3DJ0794505_APW%26quantity%3D1",
+            "productLink": "https://www.theory.com/men/shirts/sylvain-shirt-in-structure-knit/J0794505_APW.html?dwvar_J0794505__APW_color=APW",
+            "quickViewUrlColor": "/on/demandware.store/Sites-theory2_US-Site/default/Product-ShowQuickView?pid=J0794505_APW&ajax=true&pview=variation",
+            "images": {
+              "swatch": [
+                {
+                  "alt": "SYLVAIN ND",
+                  "url": "//ak-media.theory.com/i/theory/TH_J0794505_APW_SWATCH.jpg?$TH-swatch$",
+                  "title": "SYLVAIN ND",
+                  "index": "0",
+                  "absURL": "//ak-media.theory.com/i/theory/TH_J0794505_APW_SWATCH.jpg?$TH-swatch$",
+                  "tileFront": "https://ak-media.theory.com/i/theory/TH_J0794505_APW_L0?$TH-product-tile3x$",
+                  "tileBack": "https://ak-media.theory.com/i/theory/TH_J0794505_APW_0?$TH-product-tile3x$",
+                  "autoSwatch": null,
+                  "srcset": "https://ak-media.theory.com/i/theory/TH_J0794505_APW_L0?$TH-product-tile$ 640w, https://ak-media.theory.com/i/theory/TH_J0794505_APW_L0?$TH-product-tile2x$ 1024w, https://ak-media.theory.com/i/theory/TH_J0794505_APW_L0?$TH-product-tile3x$ ",
+                  "srcsetBack": "https://ak-media.theory.com/i/theory/TH_J0794505_APW_0?$TH-product-tile$ 640w, https://ak-media.theory.com/i/theory/TH_J0794505_APW_0?$TH-product-tile2x$ 1024w, https://ak-media.theory.com/i/theory/TH_J0794505_APW_0?$TH-product-tile3x$ "
+                }
+              ]
+            },
+            "ats": 151
+          },
+          {
+            "id": "QI2",
+            "description": null,
+            "displayValue": "FEATHER",
+            "value": "QI2",
+            "selected": false,
+            "selectable": true,
+            "priceData": {},
+            "vpid": "",
+            "availabilityDisplayValue": "FEATHER",
+            "isOnline": true,
+            "show": true,
+            "varGroupId": "J0794505_QI2",
+            "isVariationGroupOnSale": false,
+            "variationGroupOnSaleMessage": "",
+            "url": "https%3A%2F%2Fwww.theory.com%2Fon%2Fdemandware.store%2FSites-theory2_US-Site%2Fdefault%2FProduct-Variation%3FbackAltView%3D0%26dwvar_J0794505__QI2_color%3DQI2%26frontAltView%3DL0%26imageBackDefaultView%3D0%26imageFrontDefaultView%3DL0%26pid%3DJ0794505_QI2%26quantity%3D1",
+            "productLink": "https://www.theory.com/men/shirts/sylvain-shirt-in-structure-knit/J0794505_QI2.html?dwvar_J0794505__QI2_color=QI2",
+            "quickViewUrlColor": "/on/demandware.store/Sites-theory2_US-Site/default/Product-ShowQuickView?pid=J0794505_QI2&ajax=true&pview=variation",
+            "images": {
+              "swatch": [
+                {
+                  "alt": "SYLVAIN ND",
+                  "url": "//ak-media.theory.com/i/theory/TH_J0794505_QI2_SWATCH.jpg?$TH-swatch$",
+                  "title": "SYLVAIN ND",
+                  "index": "0",
+                  "absURL": "//ak-media.theory.com/i/theory/TH_J0794505_QI2_SWATCH.jpg?$TH-swatch$",
+                  "tileFront": "https://ak-media.theory.com/i/theory/TH_J0794505_QI2_L0?$TH-product-tile3x$",
+                  "tileBack": "https://ak-media.theory.com/i/theory/TH_J0794505_QI2_0?$TH-product-tile3x$",
+                  "autoSwatch": null,
+                  "srcset": "https://ak-media.theory.com/i/theory/TH_J0794505_QI2_L0?$TH-product-tile$ 640w, https://ak-media.theory.com/i/theory/TH_J0794505_QI2_L0?$TH-product-tile2x$ 1024w, https://ak-media.theory.com/i/theory/TH_J0794505_QI2_L0?$TH-product-tile3x$ ",
+                  "srcsetBack": "https://ak-media.theory.com/i/theory/TH_J0794505_QI2_0?$TH-product-tile$ 640w, https://ak-media.theory.com/i/theory/TH_J0794505_QI2_0?$TH-product-tile2x$ 1024w, https://ak-media.theory.com/i/theory/TH_J0794505_QI2_0?$TH-product-tile3x$ "
+                }
+              ]
+            },
+            "ats": 103
+          },
+          {
+            "id": "XU8",
+            "description": null,
+            "displayValue": "DEEP EGGPLANT",
+            "value": "XU8",
+            "selected": false,
+            "selectable": false,
+            "priceData": {},
+            "vpid": "",
+            "availabilityDisplayValue": "DEEP EGGPLANT - out of stock",
+            "isOnline": true,
+            "show": false,
+            "varGroupId": "J0794505_XU8",
+            "isVariationGroupOnSale": false,
+            "variationGroupOnSaleMessage": "",
+            "url": "https%3A%2F%2Fwww.theory.com%2Fon%2Fdemandware.store%2FSites-theory2_US-Site%2Fdefault%2FProduct-Variation%3FbackAltView%3D0%26dwvar_J0794505__XU8_color%3DXU8%26frontAltView%3DL0%26imageBackDefaultView%3D0%26imageFrontDefaultView%3DL0%26pid%3DJ0794505_XU8%26quantity%3D1",
+            "productLink": "https://www.theory.com/men/shirts/sylvain-shirt-in-structure-knit/J0794505_XU8.html?dwvar_J0794505__XU8_color=XU8",
+            "quickViewUrlColor": "/on/demandware.store/Sites-theory2_US-Site/default/Product-ShowQuickView?pid=J0794505_XU8&ajax=true&pview=variation",
+            "images": {
+              "swatch": [
+                {
+                  "alt": "SYLVAIN ND",
+                  "url": "//ak-media.theory.com/i/theory/TH_J0794505_XU8_SWATCH.jpg?$TH-swatch$",
+                  "title": "SYLVAIN ND",
+                  "index": "0",
+                  "absURL": "//ak-media.theory.com/i/theory/TH_J0794505_XU8_SWATCH.jpg?$TH-swatch$",
+                  "tileFront": "https://ak-media.theory.com/i/theory/TH_J0794505_XU8_L0?$TH-product-tile3x$",
+                  "tileBack": "https://ak-media.theory.com/i/theory/TH_J0794505_XU8_0?$TH-product-tile3x$",
+                  "autoSwatch": null,
+                  "srcset": "https://ak-media.theory.com/i/theory/TH_J0794505_XU8_L0?$TH-product-tile$ 640w, https://ak-media.theory.com/i/theory/TH_J0794505_XU8_L0?$TH-product-tile2x$ 1024w, https://ak-media.theory.com/i/theory/TH_J0794505_XU8_L0?$TH-product-tile3x$ ",
+                  "srcsetBack": "https://ak-media.theory.com/i/theory/TH_J0794505_XU8_0?$TH-product-tile$ 640w, https://ak-media.theory.com/i/theory/TH_J0794505_XU8_0?$TH-product-tile2x$ 1024w, https://ak-media.theory.com/i/theory/TH_J0794505_XU8_0?$TH-product-tile3x$ "
+                }
+              ]
+            },
+            "ats": 0
+          },
+          {
+            "id": "29F",
+            "description": null,
+            "displayValue": "BLUE LAKE",
+            "value": "29F",
+            "selected": false,
+            "selectable": true,
+            "priceData": {},
+            "vpid": "",
+            "availabilityDisplayValue": "BLUE LAKE",
+            "isOnline": true,
+            "show": true,
+            "varGroupId": "J0794505_29F",
+            "isVariationGroupOnSale": true,
+            "variationGroupOnSaleMessage": "",
+            "url": "https%3A%2F%2Fwww.theory.com%2Fon%2Fdemandware.store%2FSites-theory2_US-Site%2Fdefault%2FProduct-Variation%3FbackAltView%3D0%26dwvar_J0794505__29F_color%3D29F%26frontAltView%3DL0%26imageBackDefaultView%3D0%26imageFrontDefaultView%3DL0%26pid%3DJ0794505_29F%26quantity%3D1",
+            "productLink": "https://www.theory.com/men/shirts/sylvain-shirt-in-structure-knit/J0794505_29F.html?dwvar_J0794505__29F_color=29F",
+            "quickViewUrlColor": "/on/demandware.store/Sites-theory2_US-Site/default/Product-ShowQuickView?pid=J0794505_29F&ajax=true&pview=variation",
+            "images": {
+              "swatch": [
+                {
+                  "alt": "SYLVAIN ND",
+                  "url": "//ak-media.theory.com/i/theory/TH_J0794505_29F_SWATCH.jpg?$TH-swatch$",
+                  "title": "SYLVAIN ND",
+                  "index": "0",
+                  "absURL": "//ak-media.theory.com/i/theory/TH_J0794505_29F_SWATCH.jpg?$TH-swatch$",
+                  "tileFront": "https://ak-media.theory.com/i/theory/TH_J0794505_29F_L0?$TH-product-tile3x$",
+                  "tileBack": "https://ak-media.theory.com/i/theory/TH_J0794505_29F_0?$TH-product-tile3x$",
+                  "autoSwatch": null,
+                  "srcset": "https://ak-media.theory.com/i/theory/TH_J0794505_29F_L0?$TH-product-tile$ 640w, https://ak-media.theory.com/i/theory/TH_J0794505_29F_L0?$TH-product-tile2x$ 1024w, https://ak-media.theory.com/i/theory/TH_J0794505_29F_L0?$TH-product-tile3x$ ",
+                  "srcsetBack": "https://ak-media.theory.com/i/theory/TH_J0794505_29F_0?$TH-product-tile$ 640w, https://ak-media.theory.com/i/theory/TH_J0794505_29F_0?$TH-product-tile2x$ 1024w, https://ak-media.theory.com/i/theory/TH_J0794505_29F_0?$TH-product-tile3x$ "
+                }
+              ]
+            },
+            "ats": 195
+          },
+          {
+            "id": "D9J",
+            "description": null,
+            "displayValue": "CAFE",
+            "value": "D9J",
+            "selected": false,
+            "selectable": true,
+            "priceData": {},
+            "vpid": "",
+            "availabilityDisplayValue": "CAFE",
+            "isOnline": true,
+            "show": true,
+            "varGroupId": "J0794505_D9J",
+            "isVariationGroupOnSale": true,
+            "variationGroupOnSaleMessage": "",
+            "url": "https%3A%2F%2Fwww.theory.com%2Fon%2Fdemandware.store%2FSites-theory2_US-Site%2Fdefault%2FProduct-Variation%3FbackAltView%3D0%26dwvar_J0794505__D9J_color%3DD9J%26frontAltView%3DL0%26imageBackDefaultView%3D0%26imageFrontDefaultView%3DL0%26pid%3DJ0794505_D9J%26quantity%3D1",
+            "productLink": "https://www.theory.com/men/shirts/sylvain-shirt-in-structure-knit/J0794505_D9J.html?dwvar_J0794505__D9J_color=D9J",
+            "quickViewUrlColor": "/on/demandware.store/Sites-theory2_US-Site/default/Product-ShowQuickView?pid=J0794505_D9J&ajax=true&pview=variation",
+            "images": {
+              "swatch": [
+                {
+                  "alt": "SYLVAIN ND",
+                  "url": "//ak-media.theory.com/i/theory/TH_J0794505_D9J_SWATCH.jpg?$TH-swatch$",
+                  "title": "SYLVAIN ND",
+                  "index": "0",
+                  "absURL": "//ak-media.theory.com/i/theory/TH_J0794505_D9J_SWATCH.jpg?$TH-swatch$",
+                  "tileFront": "https://ak-media.theory.com/i/theory/TH_J0794505_D9J_L0?$TH-product-tile3x$",
+                  "tileBack": "https://ak-media.theory.com/i/theory/TH_J0794505_D9J_0?$TH-product-tile3x$",
+                  "autoSwatch": null,
+                  "srcset": "https://ak-media.theory.com/i/theory/TH_J0794505_D9J_L0?$TH-product-tile$ 640w, https://ak-media.theory.com/i/theory/TH_J0794505_D9J_L0?$TH-product-tile2x$ 1024w, https://ak-media.theory.com/i/theory/TH_J0794505_D9J_L0?$TH-product-tile3x$ ",
+                  "srcsetBack": "https://ak-media.theory.com/i/theory/TH_J0794505_D9J_0?$TH-product-tile$ 640w, https://ak-media.theory.com/i/theory/TH_J0794505_D9J_0?$TH-product-tile2x$ 1024w, https://ak-media.theory.com/i/theory/TH_J0794505_D9J_0?$TH-product-tile3x$ "
+                }
+              ]
+            },
+            "ats": 79
+          },
+          {
+            "id": "193",
+            "description": null,
+            "displayValue": "MISTY HAZE",
+            "value": "193",
+            "selected": false,
+            "selectable": false,
+            "priceData": {},
+            "vpid": "",
+            "availabilityDisplayValue": "MISTY HAZE - out of stock",
+            "isOnline": true,
+            "show": false,
+            "varGroupId": "J0794505_193",
+            "isVariationGroupOnSale": true,
+            "variationGroupOnSaleMessage": "",
+            "url": "https%3A%2F%2Fwww.theory.com%2Fon%2Fdemandware.store%2FSites-theory2_US-Site%2Fdefault%2FProduct-Variation%3FbackAltView%3D0%26dwvar_J0794505__193_color%3D193%26frontAltView%3DL0%26imageBackDefaultView%3D0%26imageFrontDefaultView%3DL0%26pid%3DJ0794505_193%26quantity%3D1",
+            "productLink": "https://www.theory.com/men/shirts/sylvain-shirt-in-structure-knit/J0794505_193.html?dwvar_J0794505__193_color=193",
+            "quickViewUrlColor": "/on/demandware.store/Sites-theory2_US-Site/default/Product-ShowQuickView?pid=J0794505_193&ajax=true&pview=variation",
+            "images": {
+              "swatch": [
+                {
+                  "alt": "SYLVAIN ND",
+                  "url": "//ak-media.theory.com/i/theory/TH_J0794505_193_SWATCH.jpg?$TH-swatch$",
+                  "title": "SYLVAIN ND",
+                  "index": "0",
+                  "absURL": "//ak-media.theory.com/i/theory/TH_J0794505_193_SWATCH.jpg?$TH-swatch$",
+                  "tileFront": "https://ak-media.theory.com/i/theory/TH_J0794505_193_L0?$TH-product-tile3x$",
+                  "tileBack": "https://ak-media.theory.com/i/theory/TH_J0794505_193_0?$TH-product-tile3x$",
+                  "autoSwatch": null,
+                  "srcset": "https://ak-media.theory.com/i/theory/TH_J0794505_193_L0?$TH-product-tile$ 640w, https://ak-media.theory.com/i/theory/TH_J0794505_193_L0?$TH-product-tile2x$ 1024w, https://ak-media.theory.com/i/theory/TH_J0794505_193_L0?$TH-product-tile3x$ ",
+                  "srcsetBack": "https://ak-media.theory.com/i/theory/TH_J0794505_193_0?$TH-product-tile$ 640w, https://ak-media.theory.com/i/theory/TH_J0794505_193_0?$TH-product-tile2x$ 1024w, https://ak-media.theory.com/i/theory/TH_J0794505_193_0?$TH-product-tile3x$ "
+                }
+              ]
+            },
+            "ats": 0
+          },
+          {
+            "id": "18Z",
+            "description": null,
+            "displayValue": "BLUE SURF",
+            "value": "18Z",
+            "selected": false,
+            "selectable": false,
+            "priceData": {},
+            "vpid": "",
+            "availabilityDisplayValue": "BLUE SURF - out of stock",
+            "isOnline": true,
+            "show": false,
+            "varGroupId": "J0794505_18Z",
+            "isVariationGroupOnSale": true,
+            "variationGroupOnSaleMessage": "",
+            "url": "https%3A%2F%2Fwww.theory.com%2Fon%2Fdemandware.store%2FSites-theory2_US-Site%2Fdefault%2FProduct-Variation%3FbackAltView%3D0%26dwvar_J0794505__18Z_color%3D18Z%26frontAltView%3DL0%26imageBackDefaultView%3D0%26imageFrontDefaultView%3DL0%26pid%3DJ0794505_18Z%26quantity%3D1",
+            "productLink": "https://www.theory.com/men/shirts/sylvain-shirt-in-structure-knit/J0794505_18Z.html?dwvar_J0794505__18Z_color=18Z",
+            "quickViewUrlColor": "/on/demandware.store/Sites-theory2_US-Site/default/Product-ShowQuickView?pid=J0794505_18Z&ajax=true&pview=variation",
+            "images": {
+              "swatch": [
+                {
+                  "alt": "SYLVAIN ND",
+                  "url": "//ak-media.theory.com/i/theory/TH_J0794505_18Z_SWATCH.jpg?$TH-swatch$",
+                  "title": "SYLVAIN ND",
+                  "index": "0",
+                  "absURL": "//ak-media.theory.com/i/theory/TH_J0794505_18Z_SWATCH.jpg?$TH-swatch$",
+                  "tileFront": "https://ak-media.theory.com/i/theory/TH_J0794505_18Z_L0?$TH-product-tile3x$",
+                  "tileBack": "https://ak-media.theory.com/i/theory/TH_J0794505_18Z_0?$TH-product-tile3x$",
+                  "autoSwatch": null,
+                  "srcset": "https://ak-media.theory.com/i/theory/TH_J0794505_18Z_L0?$TH-product-tile$ 640w, https://ak-media.theory.com/i/theory/TH_J0794505_18Z_L0?$TH-product-tile2x$ 1024w, https://ak-media.theory.com/i/theory/TH_J0794505_18Z_L0?$TH-product-tile3x$ ",
+                  "srcsetBack": "https://ak-media.theory.com/i/theory/TH_J0794505_18Z_0?$TH-product-tile$ 640w, https://ak-media.theory.com/i/theory/TH_J0794505_18Z_0?$TH-product-tile2x$ 1024w, https://ak-media.theory.com/i/theory/TH_J0794505_18Z_0?$TH-product-tile3x$ "
+                }
+              ]
+            },
+            "ats": 0
+          },
+          {
+            "id": "29R",
+            "description": null,
+            "displayValue": "RAINSTORM",
+            "value": "29R",
+            "selected": false,
+            "selectable": false,
+            "priceData": {},
+            "vpid": "",
+            "availabilityDisplayValue": "RAINSTORM - out of stock",
+            "isOnline": true,
+            "show": false,
+            "varGroupId": "J0794505_29R",
+            "isVariationGroupOnSale": true,
+            "variationGroupOnSaleMessage": "",
+            "url": "https%3A%2F%2Fwww.theory.com%2Fon%2Fdemandware.store%2FSites-theory2_US-Site%2Fdefault%2FProduct-Variation%3FbackAltView%3D0%26dwvar_J0794505__29R_color%3D29R%26frontAltView%3DL0%26imageBackDefaultView%3D0%26imageFrontDefaultView%3DL0%26pid%3DJ0794505_29R%26quantity%3D1",
+            "productLink": "https://www.theory.com/men/shirts/sylvain-shirt-in-structure-knit/J0794505_29R.html?dwvar_J0794505__29R_color=29R",
+            "quickViewUrlColor": "/on/demandware.store/Sites-theory2_US-Site/default/Product-ShowQuickView?pid=J0794505_29R&ajax=true&pview=variation",
+            "images": {
+              "swatch": [
+                {
+                  "alt": "SYLVAIN ND",
+                  "url": "//ak-media.theory.com/i/theory/TH_J0794505_29R_SWATCH.jpg?$TH-swatch$",
+                  "title": "SYLVAIN ND",
+                  "index": "0",
+                  "absURL": "//ak-media.theory.com/i/theory/TH_J0794505_29R_SWATCH.jpg?$TH-swatch$",
+                  "tileFront": "https://ak-media.theory.com/i/theory/TH_J0794505_29R_L0?$TH-product-tile3x$",
+                  "tileBack": "https://ak-media.theory.com/i/theory/TH_J0794505_29R_0?$TH-product-tile3x$",
+                  "autoSwatch": null,
+                  "srcset": "https://ak-media.theory.com/i/theory/TH_J0794505_29R_L0?$TH-product-tile$ 640w, https://ak-media.theory.com/i/theory/TH_J0794505_29R_L0?$TH-product-tile2x$ 1024w, https://ak-media.theory.com/i/theory/TH_J0794505_29R_L0?$TH-product-tile3x$ ",
+                  "srcsetBack": "https://ak-media.theory.com/i/theory/TH_J0794505_29R_0?$TH-product-tile$ 640w, https://ak-media.theory.com/i/theory/TH_J0794505_29R_0?$TH-product-tile2x$ 1024w, https://ak-media.theory.com/i/theory/TH_J0794505_29R_0?$TH-product-tile3x$ "
+                }
+              ]
+            },
+            "ats": 0
+          },
+          {
+            "id": "B1K",
+            "description": null,
+            "displayValue": "FOG",
+            "value": "B1K",
+            "selected": false,
+            "selectable": false,
+            "priceData": {},
+            "vpid": "",
+            "availabilityDisplayValue": "FOG - out of stock",
+            "isOnline": true,
+            "show": false,
+            "varGroupId": "J0794505_B1K",
+            "isVariationGroupOnSale": true,
+            "variationGroupOnSaleMessage": "",
+            "url": "https%3A%2F%2Fwww.theory.com%2Fon%2Fdemandware.store%2FSites-theory2_US-Site%2Fdefault%2FProduct-Variation%3FbackAltView%3D0%26dwvar_J0794505__B1K_color%3DB1K%26frontAltView%3DL0%26imageBackDefaultView%3D0%26imageFrontDefaultView%3DL0%26pid%3DJ0794505_B1K%26quantity%3D1",
+            "productLink": "https://www.theory.com/men/shirts/sylvain-shirt-in-structure-knit/J0794505_B1K.html?dwvar_J0794505__B1K_color=B1K",
+            "quickViewUrlColor": "/on/demandware.store/Sites-theory2_US-Site/default/Product-ShowQuickView?pid=J0794505_B1K&ajax=true&pview=variation",
+            "images": {
+              "swatch": [
+                {
+                  "alt": "SYLVAIN ND",
+                  "url": "//ak-media.theory.com/i/theory/TH_J0794505_B1K_SWATCH.jpg?$TH-swatch$",
+                  "title": "SYLVAIN ND",
+                  "index": "0",
+                  "absURL": "//ak-media.theory.com/i/theory/TH_J0794505_B1K_SWATCH.jpg?$TH-swatch$",
+                  "tileFront": "https://ak-media.theory.com/i/theory/TH_J0794505_B1K_L0?$TH-product-tile3x$",
+                  "tileBack": "https://ak-media.theory.com/i/theory/TH_J0794505_B1K_0?$TH-product-tile3x$",
+                  "autoSwatch": null,
+                  "srcset": "https://ak-media.theory.com/i/theory/TH_J0794505_B1K_L0?$TH-product-tile$ 640w, https://ak-media.theory.com/i/theory/TH_J0794505_B1K_L0?$TH-product-tile2x$ 1024w, https://ak-media.theory.com/i/theory/TH_J0794505_B1K_L0?$TH-product-tile3x$ ",
+                  "srcsetBack": "https://ak-media.theory.com/i/theory/TH_J0794505_B1K_0?$TH-product-tile$ 640w, https://ak-media.theory.com/i/theory/TH_J0794505_B1K_0?$TH-product-tile2x$ 1024w, https://ak-media.theory.com/i/theory/TH_J0794505_B1K_0?$TH-product-tile3x$ "
+                }
+              ]
+            },
+            "ats": 0
+          },
+          {
+            "id": "D84",
+            "description": null,
+            "displayValue": "WALNUT",
+            "value": "D84",
+            "selected": false,
+            "selectable": false,
+            "priceData": {},
+            "vpid": "",
+            "availabilityDisplayValue": "WALNUT - out of stock",
+            "isOnline": true,
+            "show": false,
+            "varGroupId": "J0794505_D84",
+            "isVariationGroupOnSale": true,
+            "variationGroupOnSaleMessage": "",
+            "url": "https%3A%2F%2Fwww.theory.com%2Fon%2Fdemandware.store%2FSites-theory2_US-Site%2Fdefault%2FProduct-Variation%3FbackAltView%3D0%26dwvar_J0794505__D84_color%3DD84%26frontAltView%3DL0%26imageBackDefaultView%3D0%26imageFrontDefaultView%3DL0%26pid%3DJ0794505_D84%26quantity%3D1",
+            "productLink": "https://www.theory.com/men/shirts/sylvain-shirt-in-structure-knit/J0794505_D84.html?dwvar_J0794505__D84_color=D84",
+            "quickViewUrlColor": "/on/demandware.store/Sites-theory2_US-Site/default/Product-ShowQuickView?pid=J0794505_D84&ajax=true&pview=variation",
+            "images": {
+              "swatch": [
+                {
+                  "alt": "SYLVAIN ND",
+                  "url": "//ak-media.theory.com/i/theory/TH_J0794505_D84_SWATCH.jpg?$TH-swatch$",
+                  "title": "SYLVAIN ND",
+                  "index": "0",
+                  "absURL": "//ak-media.theory.com/i/theory/TH_J0794505_D84_SWATCH.jpg?$TH-swatch$",
+                  "tileFront": "https://ak-media.theory.com/i/theory/TH_J0794505_D84_L0?$TH-product-tile3x$",
+                  "tileBack": "https://ak-media.theory.com/i/theory/TH_J0794505_D84_0?$TH-product-tile3x$",
+                  "autoSwatch": null,
+                  "srcset": "https://ak-media.theory.com/i/theory/TH_J0794505_D84_L0?$TH-product-tile$ 640w, https://ak-media.theory.com/i/theory/TH_J0794505_D84_L0?$TH-product-tile2x$ 1024w, https://ak-media.theory.com/i/theory/TH_J0794505_D84_L0?$TH-product-tile3x$ ",
+                  "srcsetBack": "https://ak-media.theory.com/i/theory/TH_J0794505_D84_0?$TH-product-tile$ 640w, https://ak-media.theory.com/i/theory/TH_J0794505_D84_0?$TH-product-tile2x$ 1024w, https://ak-media.theory.com/i/theory/TH_J0794505_D84_0?$TH-product-tile3x$ "
+                }
+              ]
+            },
+            "ats": 0
+          },
+          {
+            "id": "G6P",
+            "description": null,
+            "displayValue": "LIMESTONE",
+            "value": "G6P",
+            "selected": false,
+            "selectable": false,
+            "priceData": {},
+            "vpid": "",
+            "availabilityDisplayValue": "LIMESTONE - out of stock",
+            "isOnline": true,
+            "show": false,
+            "varGroupId": "J0794505_G6P",
+            "isVariationGroupOnSale": true,
+            "variationGroupOnSaleMessage": "",
+            "url": "https%3A%2F%2Fwww.theory.com%2Fon%2Fdemandware.store%2FSites-theory2_US-Site%2Fdefault%2FProduct-Variation%3FbackAltView%3D0%26dwvar_J0794505__G6P_color%3DG6P%26frontAltView%3DL0%26imageBackDefaultView%3D0%26imageFrontDefaultView%3DL0%26pid%3DJ0794505_G6P%26quantity%3D1",
+            "productLink": "https://www.theory.com/men/shirts/sylvain-shirt-in-structure-knit/J0794505_G6P.html?dwvar_J0794505__G6P_color=G6P",
+            "quickViewUrlColor": "/on/demandware.store/Sites-theory2_US-Site/default/Product-ShowQuickView?pid=J0794505_G6P&ajax=true&pview=variation",
+            "images": {
+              "swatch": [
+                {
+                  "alt": "SYLVAIN ND",
+                  "url": "//ak-media.theory.com/i/theory/TH_J0794505_G6P_SWATCH.jpg?$TH-swatch$",
+                  "title": "SYLVAIN ND",
+                  "index": "0",
+                  "absURL": "//ak-media.theory.com/i/theory/TH_J0794505_G6P_SWATCH.jpg?$TH-swatch$",
+                  "tileFront": "https://ak-media.theory.com/i/theory/TH_J0794505_G6P_L0?$TH-product-tile3x$",
+                  "tileBack": "https://ak-media.theory.com/i/theory/TH_J0794505_G6P_0?$TH-product-tile3x$",
+                  "autoSwatch": null,
+                  "srcset": "https://ak-media.theory.com/i/theory/TH_J0794505_G6P_L0?$TH-product-tile$ 640w, https://ak-media.theory.com/i/theory/TH_J0794505_G6P_L0?$TH-product-tile2x$ 1024w, https://ak-media.theory.com/i/theory/TH_J0794505_G6P_L0?$TH-product-tile3x$ ",
+                  "srcsetBack": "https://ak-media.theory.com/i/theory/TH_J0794505_G6P_0?$TH-product-tile$ 640w, https://ak-media.theory.com/i/theory/TH_J0794505_G6P_0?$TH-product-tile2x$ 1024w, https://ak-media.theory.com/i/theory/TH_J0794505_G6P_0?$TH-product-tile3x$ "
+                }
+              ]
+            },
+            "ats": 0
+          },
+          {
+            "id": "RXG",
+            "description": null,
+            "displayValue": "TWILIGHT",
+            "value": "RXG",
+            "selected": false,
+            "selectable": false,
+            "priceData": {},
+            "vpid": "",
+            "availabilityDisplayValue": "TWILIGHT - out of stock",
+            "isOnline": true,
+            "show": false,
+            "varGroupId": "J0794505_RXG",
+            "isVariationGroupOnSale": true,
+            "variationGroupOnSaleMessage": "",
+            "url": "https%3A%2F%2Fwww.theory.com%2Fon%2Fdemandware.store%2FSites-theory2_US-Site%2Fdefault%2FProduct-Variation%3FbackAltView%3D0%26dwvar_J0794505__RXG_color%3DRXG%26frontAltView%3DL0%26imageBackDefaultView%3D0%26imageFrontDefaultView%3DL0%26pid%3DJ0794505_RXG%26quantity%3D1",
+            "productLink": "https://www.theory.com/men/sale/sylvain-shirt-in-structure-knit/J0794505_RXG.html?dwvar_J0794505__RXG_color=RXG",
+            "quickViewUrlColor": "/on/demandware.store/Sites-theory2_US-Site/default/Product-ShowQuickView?pid=J0794505_RXG&ajax=true&pview=variation",
+            "images": {
+              "swatch": [
+                {
+                  "alt": "SYLVAIN ND",
+                  "url": "//ak-media.theory.com/i/theory/TH_J0794505_RXG_SWATCH.jpg?$TH-swatch$",
+                  "title": "SYLVAIN ND",
+                  "index": "0",
+                  "absURL": "//ak-media.theory.com/i/theory/TH_J0794505_RXG_SWATCH.jpg?$TH-swatch$",
+                  "tileFront": "https://ak-media.theory.com/i/theory/TH_J0794505_RXG_L0?$TH-product-tile3x$",
+                  "tileBack": "https://ak-media.theory.com/i/theory/TH_J0794505_RXG_0?$TH-product-tile3x$",
+                  "autoSwatch": null,
+                  "srcset": "https://ak-media.theory.com/i/theory/TH_J0794505_RXG_L0?$TH-product-tile$ 640w, https://ak-media.theory.com/i/theory/TH_J0794505_RXG_L0?$TH-product-tile2x$ 1024w, https://ak-media.theory.com/i/theory/TH_J0794505_RXG_L0?$TH-product-tile3x$ ",
+                  "srcsetBack": "https://ak-media.theory.com/i/theory/TH_J0794505_RXG_0?$TH-product-tile$ 640w, https://ak-media.theory.com/i/theory/TH_J0794505_RXG_0?$TH-product-tile2x$ 1024w, https://ak-media.theory.com/i/theory/TH_J0794505_RXG_0?$TH-product-tile3x$ "
+                }
+              ]
+            },
+            "ats": 0
+          },
+          {
+            "id": "TRX",
+            "description": null,
+            "displayValue": "PALE PINK",
+            "value": "TRX",
+            "selected": false,
+            "selectable": false,
+            "priceData": {},
+            "vpid": "",
+            "availabilityDisplayValue": "PALE PINK - out of stock",
+            "isOnline": true,
+            "show": false,
+            "varGroupId": "J0794505_TRX",
+            "isVariationGroupOnSale": true,
+            "variationGroupOnSaleMessage": "",
+            "url": "https%3A%2F%2Fwww.theory.com%2Fon%2Fdemandware.store%2FSites-theory2_US-Site%2Fdefault%2FProduct-Variation%3FbackAltView%3D0%26dwvar_J0794505__TRX_color%3DTRX%26frontAltView%3DL0%26imageBackDefaultView%3D0%26imageFrontDefaultView%3DL0%26pid%3DJ0794505_TRX%26quantity%3D1",
+            "productLink": "https://www.theory.com/men/sale/sylvain-shirt-in-structure-knit/J0794505_TRX.html?dwvar_J0794505__TRX_color=TRX",
+            "quickViewUrlColor": "/on/demandware.store/Sites-theory2_US-Site/default/Product-ShowQuickView?pid=J0794505_TRX&ajax=true&pview=variation",
+            "images": {
+              "swatch": [
+                {
+                  "alt": "SYLVAIN ND",
+                  "url": "//ak-media.theory.com/i/theory/TH_J0794505_TRX_SWATCH.jpg?$TH-swatch$",
+                  "title": "SYLVAIN ND",
+                  "index": "0",
+                  "absURL": "//ak-media.theory.com/i/theory/TH_J0794505_TRX_SWATCH.jpg?$TH-swatch$",
+                  "tileFront": "https://ak-media.theory.com/i/theory/TH_J0794505_TRX_L0?$TH-product-tile3x$",
+                  "tileBack": "https://ak-media.theory.com/i/theory/TH_J0794505_TRX_0?$TH-product-tile3x$",
+                  "autoSwatch": null,
+                  "srcset": "https://ak-media.theory.com/i/theory/TH_J0794505_TRX_L0?$TH-product-tile$ 640w, https://ak-media.theory.com/i/theory/TH_J0794505_TRX_L0?$TH-product-tile2x$ 1024w, https://ak-media.theory.com/i/theory/TH_J0794505_TRX_L0?$TH-product-tile3x$ ",
+                  "srcsetBack": "https://ak-media.theory.com/i/theory/TH_J0794505_TRX_0?$TH-product-tile$ 640w, https://ak-media.theory.com/i/theory/TH_J0794505_TRX_0?$TH-product-tile2x$ 1024w, https://ak-media.theory.com/i/theory/TH_J0794505_TRX_0?$TH-product-tile3x$ "
+                }
+              ]
+            },
+            "ats": 0
+          }
+        ],
+        "saleValues": [
+          {
+            "id": "193",
+            "description": null,
+            "displayValue": "MISTY HAZE",
+            "value": "193",
+            "selected": false,
+            "selectable": false,
+            "priceData": {},
+            "vpid": "",
+            "availabilityDisplayValue": "MISTY HAZE - out of stock",
+            "isOnline": true,
+            "show": false,
+            "varGroupId": "J0794505_193",
+            "isVariationGroupOnSale": true,
+            "variationGroupOnSaleMessage": "",
+            "url": "https%3A%2F%2Fwww.theory.com%2Fon%2Fdemandware.store%2FSites-theory2_US-Site%2Fdefault%2FProduct-Variation%3FbackAltView%3D0%26dwvar_J0794505__193_color%3D193%26frontAltView%3DL0%26imageBackDefaultView%3D0%26imageFrontDefaultView%3DL0%26pid%3DJ0794505_193%26quantity%3D1",
+            "productLink": "https://www.theory.com/men/shirts/sylvain-shirt-in-structure-knit/J0794505_193.html?dwvar_J0794505__193_color=193",
+            "quickViewUrlColor": "/on/demandware.store/Sites-theory2_US-Site/default/Product-ShowQuickView?pid=J0794505_193&ajax=true&pview=variation",
+            "images": {
+              "swatch": [
+                {
+                  "alt": "SYLVAIN ND",
+                  "url": "//ak-media.theory.com/i/theory/TH_J0794505_193_SWATCH.jpg?$TH-swatch$",
+                  "title": "SYLVAIN ND",
+                  "index": "0",
+                  "absURL": "//ak-media.theory.com/i/theory/TH_J0794505_193_SWATCH.jpg?$TH-swatch$",
+                  "tileFront": "https://ak-media.theory.com/i/theory/TH_J0794505_193_L0?$TH-product-tile3x$",
+                  "tileBack": "https://ak-media.theory.com/i/theory/TH_J0794505_193_0?$TH-product-tile3x$",
+                  "autoSwatch": null,
+                  "srcset": "https://ak-media.theory.com/i/theory/TH_J0794505_193_L0?$TH-product-tile$ 640w, https://ak-media.theory.com/i/theory/TH_J0794505_193_L0?$TH-product-tile2x$ 1024w, https://ak-media.theory.com/i/theory/TH_J0794505_193_L0?$TH-product-tile3x$ ",
+                  "srcsetBack": "https://ak-media.theory.com/i/theory/TH_J0794505_193_0?$TH-product-tile$ 640w, https://ak-media.theory.com/i/theory/TH_J0794505_193_0?$TH-product-tile2x$ 1024w, https://ak-media.theory.com/i/theory/TH_J0794505_193_0?$TH-product-tile3x$ "
+                }
+              ]
+            },
+            "ats": 0
+          },
+          {
+            "id": "18Z",
+            "description": null,
+            "displayValue": "BLUE SURF",
+            "value": "18Z",
+            "selected": false,
+            "selectable": false,
+            "priceData": {},
+            "vpid": "",
+            "availabilityDisplayValue": "BLUE SURF - out of stock",
+            "isOnline": true,
+            "show": false,
+            "varGroupId": "J0794505_18Z",
+            "isVariationGroupOnSale": true,
+            "variationGroupOnSaleMessage": "",
+            "url": "https%3A%2F%2Fwww.theory.com%2Fon%2Fdemandware.store%2FSites-theory2_US-Site%2Fdefault%2FProduct-Variation%3FbackAltView%3D0%26dwvar_J0794505__18Z_color%3D18Z%26frontAltView%3DL0%26imageBackDefaultView%3D0%26imageFrontDefaultView%3DL0%26pid%3DJ0794505_18Z%26quantity%3D1",
+            "productLink": "https://www.theory.com/men/shirts/sylvain-shirt-in-structure-knit/J0794505_18Z.html?dwvar_J0794505__18Z_color=18Z",
+            "quickViewUrlColor": "/on/demandware.store/Sites-theory2_US-Site/default/Product-ShowQuickView?pid=J0794505_18Z&ajax=true&pview=variation",
+            "images": {
+              "swatch": [
+                {
+                  "alt": "SYLVAIN ND",
+                  "url": "//ak-media.theory.com/i/theory/TH_J0794505_18Z_SWATCH.jpg?$TH-swatch$",
+                  "title": "SYLVAIN ND",
+                  "index": "0",
+                  "absURL": "//ak-media.theory.com/i/theory/TH_J0794505_18Z_SWATCH.jpg?$TH-swatch$",
+                  "tileFront": "https://ak-media.theory.com/i/theory/TH_J0794505_18Z_L0?$TH-product-tile3x$",
+                  "tileBack": "https://ak-media.theory.com/i/theory/TH_J0794505_18Z_0?$TH-product-tile3x$",
+                  "autoSwatch": null,
+                  "srcset": "https://ak-media.theory.com/i/theory/TH_J0794505_18Z_L0?$TH-product-tile$ 640w, https://ak-media.theory.com/i/theory/TH_J0794505_18Z_L0?$TH-product-tile2x$ 1024w, https://ak-media.theory.com/i/theory/TH_J0794505_18Z_L0?$TH-product-tile3x$ ",
+                  "srcsetBack": "https://ak-media.theory.com/i/theory/TH_J0794505_18Z_0?$TH-product-tile$ 640w, https://ak-media.theory.com/i/theory/TH_J0794505_18Z_0?$TH-product-tile2x$ 1024w, https://ak-media.theory.com/i/theory/TH_J0794505_18Z_0?$TH-product-tile3x$ "
+                }
+              ]
+            },
+            "ats": 0
+          },
+          {
+            "id": "29F",
+            "description": null,
+            "displayValue": "BLUE LAKE",
+            "value": "29F",
+            "selected": false,
+            "selectable": true,
+            "priceData": {},
+            "vpid": "",
+            "availabilityDisplayValue": "BLUE LAKE",
+            "isOnline": true,
+            "show": true,
+            "varGroupId": "J0794505_29F",
+            "isVariationGroupOnSale": true,
+            "variationGroupOnSaleMessage": "",
+            "url": "https%3A%2F%2Fwww.theory.com%2Fon%2Fdemandware.store%2FSites-theory2_US-Site%2Fdefault%2FProduct-Variation%3FbackAltView%3D0%26dwvar_J0794505__29F_color%3D29F%26frontAltView%3DL0%26imageBackDefaultView%3D0%26imageFrontDefaultView%3DL0%26pid%3DJ0794505_29F%26quantity%3D1",
+            "productLink": "https://www.theory.com/men/shirts/sylvain-shirt-in-structure-knit/J0794505_29F.html?dwvar_J0794505__29F_color=29F",
+            "quickViewUrlColor": "/on/demandware.store/Sites-theory2_US-Site/default/Product-ShowQuickView?pid=J0794505_29F&ajax=true&pview=variation",
+            "images": {
+              "swatch": [
+                {
+                  "alt": "SYLVAIN ND",
+                  "url": "//ak-media.theory.com/i/theory/TH_J0794505_29F_SWATCH.jpg?$TH-swatch$",
+                  "title": "SYLVAIN ND",
+                  "index": "0",
+                  "absURL": "//ak-media.theory.com/i/theory/TH_J0794505_29F_SWATCH.jpg?$TH-swatch$",
+                  "tileFront": "https://ak-media.theory.com/i/theory/TH_J0794505_29F_L0?$TH-product-tile3x$",
+                  "tileBack": "https://ak-media.theory.com/i/theory/TH_J0794505_29F_0?$TH-product-tile3x$",
+                  "autoSwatch": null,
+                  "srcset": "https://ak-media.theory.com/i/theory/TH_J0794505_29F_L0?$TH-product-tile$ 640w, https://ak-media.theory.com/i/theory/TH_J0794505_29F_L0?$TH-product-tile2x$ 1024w, https://ak-media.theory.com/i/theory/TH_J0794505_29F_L0?$TH-product-tile3x$ ",
+                  "srcsetBack": "https://ak-media.theory.com/i/theory/TH_J0794505_29F_0?$TH-product-tile$ 640w, https://ak-media.theory.com/i/theory/TH_J0794505_29F_0?$TH-product-tile2x$ 1024w, https://ak-media.theory.com/i/theory/TH_J0794505_29F_0?$TH-product-tile3x$ "
+                }
+              ]
+            },
+            "ats": 195
+          },
+          {
+            "id": "29R",
+            "description": null,
+            "displayValue": "RAINSTORM",
+            "value": "29R",
+            "selected": false,
+            "selectable": false,
+            "priceData": {},
+            "vpid": "",
+            "availabilityDisplayValue": "RAINSTORM - out of stock",
+            "isOnline": true,
+            "show": false,
+            "varGroupId": "J0794505_29R",
+            "isVariationGroupOnSale": true,
+            "variationGroupOnSaleMessage": "",
+            "url": "https%3A%2F%2Fwww.theory.com%2Fon%2Fdemandware.store%2FSites-theory2_US-Site%2Fdefault%2FProduct-Variation%3FbackAltView%3D0%26dwvar_J0794505__29R_color%3D29R%26frontAltView%3DL0%26imageBackDefaultView%3D0%26imageFrontDefaultView%3DL0%26pid%3DJ0794505_29R%26quantity%3D1",
+            "productLink": "https://www.theory.com/men/shirts/sylvain-shirt-in-structure-knit/J0794505_29R.html?dwvar_J0794505__29R_color=29R",
+            "quickViewUrlColor": "/on/demandware.store/Sites-theory2_US-Site/default/Product-ShowQuickView?pid=J0794505_29R&ajax=true&pview=variation",
+            "images": {
+              "swatch": [
+                {
+                  "alt": "SYLVAIN ND",
+                  "url": "//ak-media.theory.com/i/theory/TH_J0794505_29R_SWATCH.jpg?$TH-swatch$",
+                  "title": "SYLVAIN ND",
+                  "index": "0",
+                  "absURL": "//ak-media.theory.com/i/theory/TH_J0794505_29R_SWATCH.jpg?$TH-swatch$",
+                  "tileFront": "https://ak-media.theory.com/i/theory/TH_J0794505_29R_L0?$TH-product-tile3x$",
+                  "tileBack": "https://ak-media.theory.com/i/theory/TH_J0794505_29R_0?$TH-product-tile3x$",
+                  "autoSwatch": null,
+                  "srcset": "https://ak-media.theory.com/i/theory/TH_J0794505_29R_L0?$TH-product-tile$ 640w, https://ak-media.theory.com/i/theory/TH_J0794505_29R_L0?$TH-product-tile2x$ 1024w, https://ak-media.theory.com/i/theory/TH_J0794505_29R_L0?$TH-product-tile3x$ ",
+                  "srcsetBack": "https://ak-media.theory.com/i/theory/TH_J0794505_29R_0?$TH-product-tile$ 640w, https://ak-media.theory.com/i/theory/TH_J0794505_29R_0?$TH-product-tile2x$ 1024w, https://ak-media.theory.com/i/theory/TH_J0794505_29R_0?$TH-product-tile3x$ "
+                }
+              ]
+            },
+            "ats": 0
+          },
+          {
+            "id": "B1K",
+            "description": null,
+            "displayValue": "FOG",
+            "value": "B1K",
+            "selected": false,
+            "selectable": false,
+            "priceData": {},
+            "vpid": "",
+            "availabilityDisplayValue": "FOG - out of stock",
+            "isOnline": true,
+            "show": false,
+            "varGroupId": "J0794505_B1K",
+            "isVariationGroupOnSale": true,
+            "variationGroupOnSaleMessage": "",
+            "url": "https%3A%2F%2Fwww.theory.com%2Fon%2Fdemandware.store%2FSites-theory2_US-Site%2Fdefault%2FProduct-Variation%3FbackAltView%3D0%26dwvar_J0794505__B1K_color%3DB1K%26frontAltView%3DL0%26imageBackDefaultView%3D0%26imageFrontDefaultView%3DL0%26pid%3DJ0794505_B1K%26quantity%3D1",
+            "productLink": "https://www.theory.com/men/shirts/sylvain-shirt-in-structure-knit/J0794505_B1K.html?dwvar_J0794505__B1K_color=B1K",
+            "quickViewUrlColor": "/on/demandware.store/Sites-theory2_US-Site/default/Product-ShowQuickView?pid=J0794505_B1K&ajax=true&pview=variation",
+            "images": {
+              "swatch": [
+                {
+                  "alt": "SYLVAIN ND",
+                  "url": "//ak-media.theory.com/i/theory/TH_J0794505_B1K_SWATCH.jpg?$TH-swatch$",
+                  "title": "SYLVAIN ND",
+                  "index": "0",
+                  "absURL": "//ak-media.theory.com/i/theory/TH_J0794505_B1K_SWATCH.jpg?$TH-swatch$",
+                  "tileFront": "https://ak-media.theory.com/i/theory/TH_J0794505_B1K_L0?$TH-product-tile3x$",
+                  "tileBack": "https://ak-media.theory.com/i/theory/TH_J0794505_B1K_0?$TH-product-tile3x$",
+                  "autoSwatch": null,
+                  "srcset": "https://ak-media.theory.com/i/theory/TH_J0794505_B1K_L0?$TH-product-tile$ 640w, https://ak-media.theory.com/i/theory/TH_J0794505_B1K_L0?$TH-product-tile2x$ 1024w, https://ak-media.theory.com/i/theory/TH_J0794505_B1K_L0?$TH-product-tile3x$ ",
+                  "srcsetBack": "https://ak-media.theory.com/i/theory/TH_J0794505_B1K_0?$TH-product-tile$ 640w, https://ak-media.theory.com/i/theory/TH_J0794505_B1K_0?$TH-product-tile2x$ 1024w, https://ak-media.theory.com/i/theory/TH_J0794505_B1K_0?$TH-product-tile3x$ "
+                }
+              ]
+            },
+            "ats": 0
+          },
+          {
+            "id": "D84",
+            "description": null,
+            "displayValue": "WALNUT",
+            "value": "D84",
+            "selected": false,
+            "selectable": false,
+            "priceData": {},
+            "vpid": "",
+            "availabilityDisplayValue": "WALNUT - out of stock",
+            "isOnline": true,
+            "show": false,
+            "varGroupId": "J0794505_D84",
+            "isVariationGroupOnSale": true,
+            "variationGroupOnSaleMessage": "",
+            "url": "https%3A%2F%2Fwww.theory.com%2Fon%2Fdemandware.store%2FSites-theory2_US-Site%2Fdefault%2FProduct-Variation%3FbackAltView%3D0%26dwvar_J0794505__D84_color%3DD84%26frontAltView%3DL0%26imageBackDefaultView%3D0%26imageFrontDefaultView%3DL0%26pid%3DJ0794505_D84%26quantity%3D1",
+            "productLink": "https://www.theory.com/men/shirts/sylvain-shirt-in-structure-knit/J0794505_D84.html?dwvar_J0794505__D84_color=D84",
+            "quickViewUrlColor": "/on/demandware.store/Sites-theory2_US-Site/default/Product-ShowQuickView?pid=J0794505_D84&ajax=true&pview=variation",
+            "images": {
+              "swatch": [
+                {
+                  "alt": "SYLVAIN ND",
+                  "url": "//ak-media.theory.com/i/theory/TH_J0794505_D84_SWATCH.jpg?$TH-swatch$",
+                  "title": "SYLVAIN ND",
+                  "index": "0",
+                  "absURL": "//ak-media.theory.com/i/theory/TH_J0794505_D84_SWATCH.jpg?$TH-swatch$",
+                  "tileFront": "https://ak-media.theory.com/i/theory/TH_J0794505_D84_L0?$TH-product-tile3x$",
+                  "tileBack": "https://ak-media.theory.com/i/theory/TH_J0794505_D84_0?$TH-product-tile3x$",
+                  "autoSwatch": null,
+                  "srcset": "https://ak-media.theory.com/i/theory/TH_J0794505_D84_L0?$TH-product-tile$ 640w, https://ak-media.theory.com/i/theory/TH_J0794505_D84_L0?$TH-product-tile2x$ 1024w, https://ak-media.theory.com/i/theory/TH_J0794505_D84_L0?$TH-product-tile3x$ ",
+                  "srcsetBack": "https://ak-media.theory.com/i/theory/TH_J0794505_D84_0?$TH-product-tile$ 640w, https://ak-media.theory.com/i/theory/TH_J0794505_D84_0?$TH-product-tile2x$ 1024w, https://ak-media.theory.com/i/theory/TH_J0794505_D84_0?$TH-product-tile3x$ "
+                }
+              ]
+            },
+            "ats": 0
+          },
+          {
+            "id": "D9J",
+            "description": null,
+            "displayValue": "CAFE",
+            "value": "D9J",
+            "selected": false,
+            "selectable": true,
+            "priceData": {},
+            "vpid": "",
+            "availabilityDisplayValue": "CAFE",
+            "isOnline": true,
+            "show": true,
+            "varGroupId": "J0794505_D9J",
+            "isVariationGroupOnSale": true,
+            "variationGroupOnSaleMessage": "",
+            "url": "https%3A%2F%2Fwww.theory.com%2Fon%2Fdemandware.store%2FSites-theory2_US-Site%2Fdefault%2FProduct-Variation%3FbackAltView%3D0%26dwvar_J0794505__D9J_color%3DD9J%26frontAltView%3DL0%26imageBackDefaultView%3D0%26imageFrontDefaultView%3DL0%26pid%3DJ0794505_D9J%26quantity%3D1",
+            "productLink": "https://www.theory.com/men/shirts/sylvain-shirt-in-structure-knit/J0794505_D9J.html?dwvar_J0794505__D9J_color=D9J",
+            "quickViewUrlColor": "/on/demandware.store/Sites-theory2_US-Site/default/Product-ShowQuickView?pid=J0794505_D9J&ajax=true&pview=variation",
+            "images": {
+              "swatch": [
+                {
+                  "alt": "SYLVAIN ND",
+                  "url": "//ak-media.theory.com/i/theory/TH_J0794505_D9J_SWATCH.jpg?$TH-swatch$",
+                  "title": "SYLVAIN ND",
+                  "index": "0",
+                  "absURL": "//ak-media.theory.com/i/theory/TH_J0794505_D9J_SWATCH.jpg?$TH-swatch$",
+                  "tileFront": "https://ak-media.theory.com/i/theory/TH_J0794505_D9J_L0?$TH-product-tile3x$",
+                  "tileBack": "https://ak-media.theory.com/i/theory/TH_J0794505_D9J_0?$TH-product-tile3x$",
+                  "autoSwatch": null,
+                  "srcset": "https://ak-media.theory.com/i/theory/TH_J0794505_D9J_L0?$TH-product-tile$ 640w, https://ak-media.theory.com/i/theory/TH_J0794505_D9J_L0?$TH-product-tile2x$ 1024w, https://ak-media.theory.com/i/theory/TH_J0794505_D9J_L0?$TH-product-tile3x$ ",
+                  "srcsetBack": "https://ak-media.theory.com/i/theory/TH_J0794505_D9J_0?$TH-product-tile$ 640w, https://ak-media.theory.com/i/theory/TH_J0794505_D9J_0?$TH-product-tile2x$ 1024w, https://ak-media.theory.com/i/theory/TH_J0794505_D9J_0?$TH-product-tile3x$ "
+                }
+              ]
+            },
+            "ats": 79
+          },
+          {
+            "id": "G6P",
+            "description": null,
+            "displayValue": "LIMESTONE",
+            "value": "G6P",
+            "selected": false,
+            "selectable": false,
+            "priceData": {},
+            "vpid": "",
+            "availabilityDisplayValue": "LIMESTONE - out of stock",
+            "isOnline": true,
+            "show": false,
+            "varGroupId": "J0794505_G6P",
+            "isVariationGroupOnSale": true,
+            "variationGroupOnSaleMessage": "",
+            "url": "https%3A%2F%2Fwww.theory.com%2Fon%2Fdemandware.store%2FSites-theory2_US-Site%2Fdefault%2FProduct-Variation%3FbackAltView%3D0%26dwvar_J0794505__G6P_color%3DG6P%26frontAltView%3DL0%26imageBackDefaultView%3D0%26imageFrontDefaultView%3DL0%26pid%3DJ0794505_G6P%26quantity%3D1",
+            "productLink": "https://www.theory.com/men/shirts/sylvain-shirt-in-structure-knit/J0794505_G6P.html?dwvar_J0794505__G6P_color=G6P",
+            "quickViewUrlColor": "/on/demandware.store/Sites-theory2_US-Site/default/Product-ShowQuickView?pid=J0794505_G6P&ajax=true&pview=variation",
+            "images": {
+              "swatch": [
+                {
+                  "alt": "SYLVAIN ND",
+                  "url": "//ak-media.theory.com/i/theory/TH_J0794505_G6P_SWATCH.jpg?$TH-swatch$",
+                  "title": "SYLVAIN ND",
+                  "index": "0",
+                  "absURL": "//ak-media.theory.com/i/theory/TH_J0794505_G6P_SWATCH.jpg?$TH-swatch$",
+                  "tileFront": "https://ak-media.theory.com/i/theory/TH_J0794505_G6P_L0?$TH-product-tile3x$",
+                  "tileBack": "https://ak-media.theory.com/i/theory/TH_J0794505_G6P_0?$TH-product-tile3x$",
+                  "autoSwatch": null,
+                  "srcset": "https://ak-media.theory.com/i/theory/TH_J0794505_G6P_L0?$TH-product-tile$ 640w, https://ak-media.theory.com/i/theory/TH_J0794505_G6P_L0?$TH-product-tile2x$ 1024w, https://ak-media.theory.com/i/theory/TH_J0794505_G6P_L0?$TH-product-tile3x$ ",
+                  "srcsetBack": "https://ak-media.theory.com/i/theory/TH_J0794505_G6P_0?$TH-product-tile$ 640w, https://ak-media.theory.com/i/theory/TH_J0794505_G6P_0?$TH-product-tile2x$ 1024w, https://ak-media.theory.com/i/theory/TH_J0794505_G6P_0?$TH-product-tile3x$ "
+                }
+              ]
+            },
+            "ats": 0
+          },
+          {
+            "id": "RXG",
+            "description": null,
+            "displayValue": "TWILIGHT",
+            "value": "RXG",
+            "selected": false,
+            "selectable": false,
+            "priceData": {},
+            "vpid": "",
+            "availabilityDisplayValue": "TWILIGHT - out of stock",
+            "isOnline": true,
+            "show": false,
+            "varGroupId": "J0794505_RXG",
+            "isVariationGroupOnSale": true,
+            "variationGroupOnSaleMessage": "",
+            "url": "https%3A%2F%2Fwww.theory.com%2Fon%2Fdemandware.store%2FSites-theory2_US-Site%2Fdefault%2FProduct-Variation%3FbackAltView%3D0%26dwvar_J0794505__RXG_color%3DRXG%26frontAltView%3DL0%26imageBackDefaultView%3D0%26imageFrontDefaultView%3DL0%26pid%3DJ0794505_RXG%26quantity%3D1",
+            "productLink": "https://www.theory.com/men/sale/sylvain-shirt-in-structure-knit/J0794505_RXG.html?dwvar_J0794505__RXG_color=RXG",
+            "quickViewUrlColor": "/on/demandware.store/Sites-theory2_US-Site/default/Product-ShowQuickView?pid=J0794505_RXG&ajax=true&pview=variation",
+            "images": {
+              "swatch": [
+                {
+                  "alt": "SYLVAIN ND",
+                  "url": "//ak-media.theory.com/i/theory/TH_J0794505_RXG_SWATCH.jpg?$TH-swatch$",
+                  "title": "SYLVAIN ND",
+                  "index": "0",
+                  "absURL": "//ak-media.theory.com/i/theory/TH_J0794505_RXG_SWATCH.jpg?$TH-swatch$",
+                  "tileFront": "https://ak-media.theory.com/i/theory/TH_J0794505_RXG_L0?$TH-product-tile3x$",
+                  "tileBack": "https://ak-media.theory.com/i/theory/TH_J0794505_RXG_0?$TH-product-tile3x$",
+                  "autoSwatch": null,
+                  "srcset": "https://ak-media.theory.com/i/theory/TH_J0794505_RXG_L0?$TH-product-tile$ 640w, https://ak-media.theory.com/i/theory/TH_J0794505_RXG_L0?$TH-product-tile2x$ 1024w, https://ak-media.theory.com/i/theory/TH_J0794505_RXG_L0?$TH-product-tile3x$ ",
+                  "srcsetBack": "https://ak-media.theory.com/i/theory/TH_J0794505_RXG_0?$TH-product-tile$ 640w, https://ak-media.theory.com/i/theory/TH_J0794505_RXG_0?$TH-product-tile2x$ 1024w, https://ak-media.theory.com/i/theory/TH_J0794505_RXG_0?$TH-product-tile3x$ "
+                }
+              ]
+            },
+            "ats": 0
+          },
+          {
+            "id": "TRX",
+            "description": null,
+            "displayValue": "PALE PINK",
+            "value": "TRX",
+            "selected": false,
+            "selectable": false,
+            "priceData": {},
+            "vpid": "",
+            "availabilityDisplayValue": "PALE PINK - out of stock",
+            "isOnline": true,
+            "show": false,
+            "varGroupId": "J0794505_TRX",
+            "isVariationGroupOnSale": true,
+            "variationGroupOnSaleMessage": "",
+            "url": "https%3A%2F%2Fwww.theory.com%2Fon%2Fdemandware.store%2FSites-theory2_US-Site%2Fdefault%2FProduct-Variation%3FbackAltView%3D0%26dwvar_J0794505__TRX_color%3DTRX%26frontAltView%3DL0%26imageBackDefaultView%3D0%26imageFrontDefaultView%3DL0%26pid%3DJ0794505_TRX%26quantity%3D1",
+            "productLink": "https://www.theory.com/men/sale/sylvain-shirt-in-structure-knit/J0794505_TRX.html?dwvar_J0794505__TRX_color=TRX",
+            "quickViewUrlColor": "/on/demandware.store/Sites-theory2_US-Site/default/Product-ShowQuickView?pid=J0794505_TRX&ajax=true&pview=variation",
+            "images": {
+              "swatch": [
+                {
+                  "alt": "SYLVAIN ND",
+                  "url": "//ak-media.theory.com/i/theory/TH_J0794505_TRX_SWATCH.jpg?$TH-swatch$",
+                  "title": "SYLVAIN ND",
+                  "index": "0",
+                  "absURL": "//ak-media.theory.com/i/theory/TH_J0794505_TRX_SWATCH.jpg?$TH-swatch$",
+                  "tileFront": "https://ak-media.theory.com/i/theory/TH_J0794505_TRX_L0?$TH-product-tile3x$",
+                  "tileBack": "https://ak-media.theory.com/i/theory/TH_J0794505_TRX_0?$TH-product-tile3x$",
+                  "autoSwatch": null,
+                  "srcset": "https://ak-media.theory.com/i/theory/TH_J0794505_TRX_L0?$TH-product-tile$ 640w, https://ak-media.theory.com/i/theory/TH_J0794505_TRX_L0?$TH-product-tile2x$ 1024w, https://ak-media.theory.com/i/theory/TH_J0794505_TRX_L0?$TH-product-tile3x$ ",
+                  "srcsetBack": "https://ak-media.theory.com/i/theory/TH_J0794505_TRX_0?$TH-product-tile$ 640w, https://ak-media.theory.com/i/theory/TH_J0794505_TRX_0?$TH-product-tile2x$ 1024w, https://ak-media.theory.com/i/theory/TH_J0794505_TRX_0?$TH-product-tile3x$ "
+                }
+              ]
+            },
+            "ats": 0
+          }
+        ],
+        "selectableValuesQuantity": 9
+      },
+      {
+        "attributeId": "size",
+        "displayName": "Size",
+        "id": "size",
+        "swatchable": false,
+        "values": [
+          {
+            "id": "XS",
+            "description": null,
+            "displayValue": "XS",
+            "value": "XS",
+            "selected": false,
+            "selectable": true,
+            "priceData": null,
+            "vpid": "196060486264",
+            "availabilityDisplayValue": "XS",
+            "varGroupId": "",
+            "isVariationGroupOnSale": false,
+            "variationGroupOnSaleMessage": "",
+            "url": "https%3A%2F%2Fwww.theory.com%2Fon%2Fdemandware.store%2FSites-theory2_US-Site%2Fdefault%2FProduct-Variation%3FbackAltView%3D0%26dwvar_J0794505_color%3DYJY%26dwvar_J0794505_size%3DXS%26frontAltView%3DL0%26imageBackDefaultView%3D0%26imageFrontDefaultView%3DL0%26pid%3DJ0794505%26quantity%3D1",
+            "productLink": "https://www.theory.com/men/shirts/sylvain-shirt-in-structure-knit/J0794505.html?dwvar_J0794505_size=XS&dwvar_J0794505_color=YJY",
+            "quickViewUrlColor": "/on/demandware.store/Sites-theory2_US-Site/default/Product-ShowQuickView?pid=J0794505&ajax=true&pview=variation",
+            "waitListEnabled": null
+          },
+          {
+            "id": "S",
+            "description": null,
+            "displayValue": "S",
+            "value": "S",
+            "selected": false,
+            "selectable": true,
+            "priceData": null,
+            "vpid": "196060486271",
+            "availabilityDisplayValue": "S",
+            "varGroupId": "",
+            "isVariationGroupOnSale": false,
+            "variationGroupOnSaleMessage": "",
+            "url": "https%3A%2F%2Fwww.theory.com%2Fon%2Fdemandware.store%2FSites-theory2_US-Site%2Fdefault%2FProduct-Variation%3FbackAltView%3D0%26dwvar_J0794505_color%3DYJY%26dwvar_J0794505_size%3DS%26frontAltView%3DL0%26imageBackDefaultView%3D0%26imageFrontDefaultView%3DL0%26pid%3DJ0794505%26quantity%3D1",
+            "productLink": "https://www.theory.com/men/shirts/sylvain-shirt-in-structure-knit/J0794505.html?dwvar_J0794505_size=S&dwvar_J0794505_color=YJY",
+            "quickViewUrlColor": "/on/demandware.store/Sites-theory2_US-Site/default/Product-ShowQuickView?pid=J0794505&ajax=true&pview=variation",
+            "waitListEnabled": null
+          },
+          {
+            "id": "M",
+            "description": null,
+            "displayValue": "M",
+            "value": "M",
+            "selected": false,
+            "selectable": true,
+            "priceData": null,
+            "vpid": "196060486288",
+            "availabilityDisplayValue": "M",
+            "varGroupId": "",
+            "isVariationGroupOnSale": false,
+            "variationGroupOnSaleMessage": "",
+            "url": "https%3A%2F%2Fwww.theory.com%2Fon%2Fdemandware.store%2FSites-theory2_US-Site%2Fdefault%2FProduct-Variation%3FbackAltView%3D0%26dwvar_J0794505_color%3DYJY%26dwvar_J0794505_size%3DM%26frontAltView%3DL0%26imageBackDefaultView%3D0%26imageFrontDefaultView%3DL0%26pid%3DJ0794505%26quantity%3D1",
+            "productLink": "https://www.theory.com/men/shirts/sylvain-shirt-in-structure-knit/J0794505.html?dwvar_J0794505_size=M&dwvar_J0794505_color=YJY",
+            "quickViewUrlColor": "/on/demandware.store/Sites-theory2_US-Site/default/Product-ShowQuickView?pid=J0794505&ajax=true&pview=variation",
+            "waitListEnabled": null
+          },
+          {
+            "id": "L",
+            "description": null,
+            "displayValue": "L",
+            "value": "L",
+            "selected": false,
+            "selectable": true,
+            "priceData": null,
+            "vpid": "196060486295",
+            "availabilityDisplayValue": "L",
+            "varGroupId": "",
+            "isVariationGroupOnSale": false,
+            "variationGroupOnSaleMessage": "",
+            "url": "https%3A%2F%2Fwww.theory.com%2Fon%2Fdemandware.store%2FSites-theory2_US-Site%2Fdefault%2FProduct-Variation%3FbackAltView%3D0%26dwvar_J0794505_color%3DYJY%26dwvar_J0794505_size%3DL%26frontAltView%3DL0%26imageBackDefaultView%3D0%26imageFrontDefaultView%3DL0%26pid%3DJ0794505%26quantity%3D1",
+            "productLink": "https://www.theory.com/men/shirts/sylvain-shirt-in-structure-knit/J0794505.html?dwvar_J0794505_size=L&dwvar_J0794505_color=YJY",
+            "quickViewUrlColor": "/on/demandware.store/Sites-theory2_US-Site/default/Product-ShowQuickView?pid=J0794505&ajax=true&pview=variation",
+            "waitListEnabled": null
+          },
+          {
+            "id": "XL",
+            "description": null,
+            "displayValue": "XL",
+            "value": "XL",
+            "selected": false,
+            "selectable": true,
+            "priceData": null,
+            "vpid": "196060486301",
+            "availabilityDisplayValue": "XL",
+            "varGroupId": "",
+            "isVariationGroupOnSale": false,
+            "variationGroupOnSaleMessage": "",
+            "url": "https%3A%2F%2Fwww.theory.com%2Fon%2Fdemandware.store%2FSites-theory2_US-Site%2Fdefault%2FProduct-Variation%3FbackAltView%3D0%26dwvar_J0794505_color%3DYJY%26dwvar_J0794505_size%3DXL%26frontAltView%3DL0%26imageBackDefaultView%3D0%26imageFrontDefaultView%3DL0%26pid%3DJ0794505%26quantity%3D1",
+            "productLink": "https://www.theory.com/men/shirts/sylvain-shirt-in-structure-knit/J0794505.html?dwvar_J0794505_size=XL&dwvar_J0794505_color=YJY",
+            "quickViewUrlColor": "/on/demandware.store/Sites-theory2_US-Site/default/Product-ShowQuickView?pid=J0794505&ajax=true&pview=variation",
+            "waitListEnabled": null
+          },
+          {
+            "id": "XXL",
+            "description": null,
+            "displayValue": "XXL",
+            "value": "XXL",
+            "selected": false,
+            "selectable": true,
+            "priceData": null,
+            "vpid": "196060486318",
+            "availabilityDisplayValue": "XXL",
+            "varGroupId": "",
+            "isVariationGroupOnSale": false,
+            "variationGroupOnSaleMessage": "",
+            "url": "https%3A%2F%2Fwww.theory.com%2Fon%2Fdemandware.store%2FSites-theory2_US-Site%2Fdefault%2FProduct-Variation%3FbackAltView%3D0%26dwvar_J0794505_color%3DYJY%26dwvar_J0794505_size%3DXXL%26frontAltView%3DL0%26imageBackDefaultView%3D0%26imageFrontDefaultView%3DL0%26pid%3DJ0794505%26quantity%3D1",
+            "productLink": "https://www.theory.com/men/shirts/sylvain-shirt-in-structure-knit/J0794505.html?dwvar_J0794505_size=XXL&dwvar_J0794505_color=YJY",
+            "quickViewUrlColor": "/on/demandware.store/Sites-theory2_US-Site/default/Product-ShowQuickView?pid=J0794505&ajax=true&pview=variation",
+            "waitListEnabled": null
+          }
+        ],
+        "saleValues": [],
+        "resetUrl": "https%3A%2F%2Fwww.theory.com%2Fon%2Fdemandware.store%2FSites-theory2_US-Site%2Fdefault%2FProduct-Variation%3FbackAltView%3D0%26dwvar_J0794505_color%3DYJY%26dwvar_J0794505_size%3DXS%26frontAltView%3DL0%26imageBackDefaultView%3D0%26imageFrontDefaultView%3DL0%26pid%3DJ0794505%26quantity%3D1",
+        "selectableValuesQuantity": 0
+      }
+    ],
+    "sizeVariationAttributes": {
+      "attributeId": "size",
+      "displayName": "Size",
+      "id": "size",
+      "swatchable": false,
+      "values": [
+        {
+          "id": "XS",
+          "description": null,
+          "displayValue": "XS",
+          "value": "XS",
+          "selected": false,
+          "selectable": true,
+          "priceData": null,
+          "vpid": "196060486264",
+          "availabilityDisplayValue": "XS",
+          "varGroupId": "",
+          "isVariationGroupOnSale": false,
+          "variationGroupOnSaleMessage": "",
+          "url": "https%3A%2F%2Fwww.theory.com%2Fon%2Fdemandware.store%2FSites-theory2_US-Site%2Fdefault%2FProduct-Variation%3FbackAltView%3D0%26dwvar_J0794505_color%3DYJY%26dwvar_J0794505_size%3DXS%26frontAltView%3DL0%26imageBackDefaultView%3D0%26imageFrontDefaultView%3DL0%26pid%3DJ0794505%26quantity%3D1",
+          "productLink": "https://www.theory.com/men/shirts/sylvain-shirt-in-structure-knit/J0794505.html?dwvar_J0794505_size=XS&dwvar_J0794505_color=YJY",
+          "quickViewUrlColor": "/on/demandware.store/Sites-theory2_US-Site/default/Product-ShowQuickView?pid=J0794505&ajax=true&pview=variation",
+          "waitListEnabled": null
+        },
+        {
+          "id": "S",
+          "description": null,
+          "displayValue": "S",
+          "value": "S",
+          "selected": false,
+          "selectable": true,
+          "priceData": null,
+          "vpid": "196060486271",
+          "availabilityDisplayValue": "S",
+          "varGroupId": "",
+          "isVariationGroupOnSale": false,
+          "variationGroupOnSaleMessage": "",
+          "url": "https%3A%2F%2Fwww.theory.com%2Fon%2Fdemandware.store%2FSites-theory2_US-Site%2Fdefault%2FProduct-Variation%3FbackAltView%3D0%26dwvar_J0794505_color%3DYJY%26dwvar_J0794505_size%3DS%26frontAltView%3DL0%26imageBackDefaultView%3D0%26imageFrontDefaultView%3DL0%26pid%3DJ0794505%26quantity%3D1",
+          "productLink": "https://www.theory.com/men/shirts/sylvain-shirt-in-structure-knit/J0794505.html?dwvar_J0794505_size=S&dwvar_J0794505_color=YJY",
+          "quickViewUrlColor": "/on/demandware.store/Sites-theory2_US-Site/default/Product-ShowQuickView?pid=J0794505&ajax=true&pview=variation",
+          "waitListEnabled": null
+        },
+        {
+          "id": "M",
+          "description": null,
+          "displayValue": "M",
+          "value": "M",
+          "selected": false,
+          "selectable": true,
+          "priceData": null,
+          "vpid": "196060486288",
+          "availabilityDisplayValue": "M",
+          "varGroupId": "",
+          "isVariationGroupOnSale": false,
+          "variationGroupOnSaleMessage": "",
+          "url": "https%3A%2F%2Fwww.theory.com%2Fon%2Fdemandware.store%2FSites-theory2_US-Site%2Fdefault%2FProduct-Variation%3FbackAltView%3D0%26dwvar_J0794505_color%3DYJY%26dwvar_J0794505_size%3DM%26frontAltView%3DL0%26imageBackDefaultView%3D0%26imageFrontDefaultView%3DL0%26pid%3DJ0794505%26quantity%3D1",
+          "productLink": "https://www.theory.com/men/shirts/sylvain-shirt-in-structure-knit/J0794505.html?dwvar_J0794505_size=M&dwvar_J0794505_color=YJY",
+          "quickViewUrlColor": "/on/demandware.store/Sites-theory2_US-Site/default/Product-ShowQuickView?pid=J0794505&ajax=true&pview=variation",
+          "waitListEnabled": null
+        },
+        {
+          "id": "L",
+          "description": null,
+          "displayValue": "L",
+          "value": "L",
+          "selected": false,
+          "selectable": true,
+          "priceData": null,
+          "vpid": "196060486295",
+          "availabilityDisplayValue": "L",
+          "varGroupId": "",
+          "isVariationGroupOnSale": false,
+          "variationGroupOnSaleMessage": "",
+          "url": "https%3A%2F%2Fwww.theory.com%2Fon%2Fdemandware.store%2FSites-theory2_US-Site%2Fdefault%2FProduct-Variation%3FbackAltView%3D0%26dwvar_J0794505_color%3DYJY%26dwvar_J0794505_size%3DL%26frontAltView%3DL0%26imageBackDefaultView%3D0%26imageFrontDefaultView%3DL0%26pid%3DJ0794505%26quantity%3D1",
+          "productLink": "https://www.theory.com/men/shirts/sylvain-shirt-in-structure-knit/J0794505.html?dwvar_J0794505_size=L&dwvar_J0794505_color=YJY",
+          "quickViewUrlColor": "/on/demandware.store/Sites-theory2_US-Site/default/Product-ShowQuickView?pid=J0794505&ajax=true&pview=variation",
+          "waitListEnabled": null
+        },
+        {
+          "id": "XL",
+          "description": null,
+          "displayValue": "XL",
+          "value": "XL",
+          "selected": false,
+          "selectable": true,
+          "priceData": null,
+          "vpid": "196060486301",
+          "availabilityDisplayValue": "XL",
+          "varGroupId": "",
+          "isVariationGroupOnSale": false,
+          "variationGroupOnSaleMessage": "",
+          "url": "https%3A%2F%2Fwww.theory.com%2Fon%2Fdemandware.store%2FSites-theory2_US-Site%2Fdefault%2FProduct-Variation%3FbackAltView%3D0%26dwvar_J0794505_color%3DYJY%26dwvar_J0794505_size%3DXL%26frontAltView%3DL0%26imageBackDefaultView%3D0%26imageFrontDefaultView%3DL0%26pid%3DJ0794505%26quantity%3D1",
+          "productLink": "https://www.theory.com/men/shirts/sylvain-shirt-in-structure-knit/J0794505.html?dwvar_J0794505_size=XL&dwvar_J0794505_color=YJY",
+          "quickViewUrlColor": "/on/demandware.store/Sites-theory2_US-Site/default/Product-ShowQuickView?pid=J0794505&ajax=true&pview=variation",
+          "waitListEnabled": null
+        },
+        {
+          "id": "XXL",
+          "description": null,
+          "displayValue": "XXL",
+          "value": "XXL",
+          "selected": false,
+          "selectable": true,
+          "priceData": null,
+          "vpid": "196060486318",
+          "availabilityDisplayValue": "XXL",
+          "varGroupId": "",
+          "isVariationGroupOnSale": false,
+          "variationGroupOnSaleMessage": "",
+          "url": "https%3A%2F%2Fwww.theory.com%2Fon%2Fdemandware.store%2FSites-theory2_US-Site%2Fdefault%2FProduct-Variation%3FbackAltView%3D0%26dwvar_J0794505_color%3DYJY%26dwvar_J0794505_size%3DXXL%26frontAltView%3DL0%26imageBackDefaultView%3D0%26imageFrontDefaultView%3DL0%26pid%3DJ0794505%26quantity%3D1",
+          "productLink": "https://www.theory.com/men/shirts/sylvain-shirt-in-structure-knit/J0794505.html?dwvar_J0794505_size=XXL&dwvar_J0794505_color=YJY",
+          "quickViewUrlColor": "/on/demandware.store/Sites-theory2_US-Site/default/Product-ShowQuickView?pid=J0794505&ajax=true&pview=variation",
+          "waitListEnabled": null
+        }
+      ],
+      "saleValues": [],
+      "resetUrl": "https%3A%2F%2Fwww.theory.com%2Fon%2Fdemandware.store%2FSites-theory2_US-Site%2Fdefault%2FProduct-Variation%3FbackAltView%3D0%26dwvar_J0794505_color%3DYJY%26dwvar_J0794505_size%3DXS%26frontAltView%3DL0%26imageBackDefaultView%3D0%26imageFrontDefaultView%3DL0%26pid%3DJ0794505%26quantity%3D1",
+      "selectableValuesQuantity": 0
+    },
+    "colorVariationAttributes": {
+      "attributeId": "color",
+      "displayName": "Color",
+      "id": "color",
+      "swatchable": true,
+      "values": [
+        {
+          "id": "100",
+          "description": null,
+          "displayValue": "WHITE",
+          "value": "100",
+          "selected": false,
+          "selectable": true,
+          "priceData": {},
+          "vpid": "",
+          "availabilityDisplayValue": "WHITE",
+          "isOnline": true,
+          "show": true,
+          "varGroupId": "J0794505_100",
+          "isVariationGroupOnSale": false,
+          "variationGroupOnSaleMessage": "",
+          "url": "https%3A%2F%2Fwww.theory.com%2Fon%2Fdemandware.store%2FSites-theory2_US-Site%2Fdefault%2FProduct-Variation%3FbackAltView%3D0%26dwvar_J0794505__100_color%3D100%26frontAltView%3DL0%26imageBackDefaultView%3D0%26imageFrontDefaultView%3DL0%26pid%3DJ0794505_100%26quantity%3D1",
+          "productLink": "https://www.theory.com/men/shirts/sylvain-shirt-in-structure-knit/J0794505_100.html?dwvar_J0794505__100_color=100",
+          "quickViewUrlColor": "/on/demandware.store/Sites-theory2_US-Site/default/Product-ShowQuickView?pid=J0794505_100&ajax=true&pview=variation",
+          "images": {
+            "swatch": [
+              {
+                "alt": "SYLVAIN ND",
+                "url": "//ak-media.theory.com/i/theory/TH_J0794505_100_SWATCH.jpg?$TH-swatch$",
+                "title": "SYLVAIN ND",
+                "index": "0",
+                "absURL": "//ak-media.theory.com/i/theory/TH_J0794505_100_SWATCH.jpg?$TH-swatch$",
+                "tileFront": "https://ak-media.theory.com/i/theory/TH_J0794505_100_L0?$TH-product-tile3x$",
+                "tileBack": "https://ak-media.theory.com/i/theory/TH_J0794505_100_0?$TH-product-tile3x$",
+                "autoSwatch": null,
+                "srcset": "https://ak-media.theory.com/i/theory/TH_J0794505_100_L0?$TH-product-tile$ 640w, https://ak-media.theory.com/i/theory/TH_J0794505_100_L0?$TH-product-tile2x$ 1024w, https://ak-media.theory.com/i/theory/TH_J0794505_100_L0?$TH-product-tile3x$ ",
+                "srcsetBack": "https://ak-media.theory.com/i/theory/TH_J0794505_100_0?$TH-product-tile$ 640w, https://ak-media.theory.com/i/theory/TH_J0794505_100_0?$TH-product-tile2x$ 1024w, https://ak-media.theory.com/i/theory/TH_J0794505_100_0?$TH-product-tile3x$ "
+              }
+            ]
+          },
+          "ats": 4683
+        },
+        {
+          "id": "001",
+          "description": null,
+          "displayValue": "BLACK",
+          "value": "001",
+          "selected": false,
+          "selectable": true,
+          "priceData": {},
+          "vpid": "",
+          "availabilityDisplayValue": "BLACK",
+          "isOnline": true,
+          "show": true,
+          "varGroupId": "J0794505_001",
+          "isVariationGroupOnSale": false,
+          "variationGroupOnSaleMessage": "",
+          "url": "https%3A%2F%2Fwww.theory.com%2Fon%2Fdemandware.store%2FSites-theory2_US-Site%2Fdefault%2FProduct-Variation%3FbackAltView%3D0%26dwvar_J0794505__001_color%3D001%26frontAltView%3DL0%26imageBackDefaultView%3D0%26imageFrontDefaultView%3DL0%26pid%3DJ0794505_001%26quantity%3D1",
+          "productLink": "https://www.theory.com/men/shirts/sylvain-shirt-in-structure-knit/J0794505_001.html?dwvar_J0794505__001_color=001",
+          "quickViewUrlColor": "/on/demandware.store/Sites-theory2_US-Site/default/Product-ShowQuickView?pid=J0794505_001&ajax=true&pview=variation",
+          "images": {
+            "swatch": [
+              {
+                "alt": "SYLVAIN ND",
+                "url": "//ak-media.theory.com/i/theory/TH_J0794505_001_SWATCH.jpg?$TH-swatch$",
+                "title": "SYLVAIN ND",
+                "index": "0",
+                "absURL": "//ak-media.theory.com/i/theory/TH_J0794505_001_SWATCH.jpg?$TH-swatch$",
+                "tileFront": "https://ak-media.theory.com/i/theory/TH_J0794505_001_L0?$TH-product-tile3x$",
+                "tileBack": "https://ak-media.theory.com/i/theory/TH_J0794505_001_0?$TH-product-tile3x$",
+                "autoSwatch": null,
+                "srcset": "https://ak-media.theory.com/i/theory/TH_J0794505_001_L0?$TH-product-tile$ 640w, https://ak-media.theory.com/i/theory/TH_J0794505_001_L0?$TH-product-tile2x$ 1024w, https://ak-media.theory.com/i/theory/TH_J0794505_001_L0?$TH-product-tile3x$ ",
+                "srcsetBack": "https://ak-media.theory.com/i/theory/TH_J0794505_001_0?$TH-product-tile$ 640w, https://ak-media.theory.com/i/theory/TH_J0794505_001_0?$TH-product-tile2x$ 1024w, https://ak-media.theory.com/i/theory/TH_J0794505_001_0?$TH-product-tile3x$ "
+              }
+            ]
+          },
+          "ats": 4513
+        },
+        {
+          "id": "YJY",
+          "description": null,
+          "displayValue": "OLYMPIC",
+          "value": "YJY",
+          "selected": true,
+          "selectable": true,
+          "priceData": {},
+          "vpid": "",
+          "availabilityDisplayValue": "OLYMPIC",
+          "isOnline": true,
+          "show": true,
+          "varGroupId": "J0794505_YJY",
+          "isVariationGroupOnSale": false,
+          "variationGroupOnSaleMessage": "",
+          "url": "https%3A%2F%2Fwww.theory.com%2Fon%2Fdemandware.store%2FSites-theory2_US-Site%2Fdefault%2FProduct-Variation%3FbackAltView%3D0%26dwvar_J0794505__YJY_color%3DYJY%26frontAltView%3DL0%26imageBackDefaultView%3D0%26imageFrontDefaultView%3DL0%26pid%3DJ0794505_YJY%26quantity%3D1",
+          "productLink": "https://www.theory.com/men/shirts/sylvain-shirt-in-structure-knit/J0794505_YJY.html?dwvar_J0794505__YJY_color=YJY",
+          "quickViewUrlColor": "/on/demandware.store/Sites-theory2_US-Site/default/Product-ShowQuickView?pid=J0794505_YJY&ajax=true&pview=variation",
+          "images": {
+            "swatch": [
+              {
+                "alt": "SYLVAIN ND",
+                "url": "//ak-media.theory.com/i/theory/TH_J0794505_YJY_SWATCH.jpg?$TH-swatch$",
+                "title": "SYLVAIN ND",
+                "index": "0",
+                "absURL": "//ak-media.theory.com/i/theory/TH_J0794505_YJY_SWATCH.jpg?$TH-swatch$",
+                "tileFront": "https://ak-media.theory.com/i/theory/TH_J0794505_YJY_L0?$TH-product-tile3x$",
+                "tileBack": "https://ak-media.theory.com/i/theory/TH_J0794505_YJY_0?$TH-product-tile3x$",
+                "autoSwatch": null,
+                "srcset": "https://ak-media.theory.com/i/theory/TH_J0794505_YJY_L0?$TH-product-tile$ 640w, https://ak-media.theory.com/i/theory/TH_J0794505_YJY_L0?$TH-product-tile2x$ 1024w, https://ak-media.theory.com/i/theory/TH_J0794505_YJY_L0?$TH-product-tile3x$ ",
+                "srcsetBack": "https://ak-media.theory.com/i/theory/TH_J0794505_YJY_0?$TH-product-tile$ 640w, https://ak-media.theory.com/i/theory/TH_J0794505_YJY_0?$TH-product-tile2x$ 1024w, https://ak-media.theory.com/i/theory/TH_J0794505_YJY_0?$TH-product-tile3x$ "
+              }
+            ]
+          },
+          "ats": 3451
+        },
+        {
+          "id": "B7H",
+          "description": null,
+          "displayValue": "ECLIPSE",
+          "value": "B7H",
+          "selected": false,
+          "selectable": true,
+          "priceData": {},
+          "vpid": "",
+          "availabilityDisplayValue": "ECLIPSE",
+          "isOnline": true,
+          "show": true,
+          "varGroupId": "J0794505_B7H",
+          "isVariationGroupOnSale": false,
+          "variationGroupOnSaleMessage": "",
+          "url": "https%3A%2F%2Fwww.theory.com%2Fon%2Fdemandware.store%2FSites-theory2_US-Site%2Fdefault%2FProduct-Variation%3FbackAltView%3D0%26dwvar_J0794505__B7H_color%3DB7H%26frontAltView%3DL0%26imageBackDefaultView%3D0%26imageFrontDefaultView%3DL0%26pid%3DJ0794505_B7H%26quantity%3D1",
+          "productLink": "https://www.theory.com/men/shirts/sylvain-shirt-in-structure-knit/J0794505_B7H.html?dwvar_J0794505__B7H_color=B7H",
+          "quickViewUrlColor": "/on/demandware.store/Sites-theory2_US-Site/default/Product-ShowQuickView?pid=J0794505_B7H&ajax=true&pview=variation",
+          "images": {
+            "swatch": [
+              {
+                "alt": "SYLVAIN ND",
+                "url": "//ak-media.theory.com/i/theory/TH_J0794505_B7H_SWATCH.jpg?$TH-swatch$",
+                "title": "SYLVAIN ND",
+                "index": "0",
+                "absURL": "//ak-media.theory.com/i/theory/TH_J0794505_B7H_SWATCH.jpg?$TH-swatch$",
+                "tileFront": "https://ak-media.theory.com/i/theory/TH_J0794505_B7H_L0?$TH-product-tile3x$",
+                "tileBack": "https://ak-media.theory.com/i/theory/TH_J0794505_B7H_0?$TH-product-tile3x$",
+                "autoSwatch": null,
+                "srcset": "https://ak-media.theory.com/i/theory/TH_J0794505_B7H_L0?$TH-product-tile$ 640w, https://ak-media.theory.com/i/theory/TH_J0794505_B7H_L0?$TH-product-tile2x$ 1024w, https://ak-media.theory.com/i/theory/TH_J0794505_B7H_L0?$TH-product-tile3x$ ",
+                "srcsetBack": "https://ak-media.theory.com/i/theory/TH_J0794505_B7H_0?$TH-product-tile$ 640w, https://ak-media.theory.com/i/theory/TH_J0794505_B7H_0?$TH-product-tile2x$ 1024w, https://ak-media.theory.com/i/theory/TH_J0794505_B7H_0?$TH-product-tile3x$ "
+              }
+            ]
+          },
+          "ats": 3078
+        },
+        {
+          "id": "2GY",
+          "description": null,
+          "displayValue": "DUFFLE",
+          "value": "2GY",
+          "selected": false,
+          "selectable": true,
+          "priceData": {},
+          "vpid": "",
+          "availabilityDisplayValue": "DUFFLE",
+          "isOnline": true,
+          "show": true,
+          "varGroupId": "J0794505_2GY",
+          "isVariationGroupOnSale": false,
+          "variationGroupOnSaleMessage": "",
+          "url": "https%3A%2F%2Fwww.theory.com%2Fon%2Fdemandware.store%2FSites-theory2_US-Site%2Fdefault%2FProduct-Variation%3FbackAltView%3D0%26dwvar_J0794505__2GY_color%3D2GY%26frontAltView%3DL0%26imageBackDefaultView%3D0%26imageFrontDefaultView%3DL0%26pid%3DJ0794505_2GY%26quantity%3D1",
+          "productLink": "https://www.theory.com/men/shirts/sylvain-shirt-in-structure-knit/J0794505_2GY.html?dwvar_J0794505__2GY_color=2GY",
+          "quickViewUrlColor": "/on/demandware.store/Sites-theory2_US-Site/default/Product-ShowQuickView?pid=J0794505_2GY&ajax=true&pview=variation",
+          "images": {
+            "swatch": [
+              {
+                "alt": "SYLVAIN ND",
+                "url": "//ak-media.theory.com/i/theory/TH_J0794505_2GY_SWATCH.jpg?$TH-swatch$",
+                "title": "SYLVAIN ND",
+                "index": "0",
+                "absURL": "//ak-media.theory.com/i/theory/TH_J0794505_2GY_SWATCH.jpg?$TH-swatch$",
+                "tileFront": "https://ak-media.theory.com/i/theory/TH_J0794505_2GY_L0?$TH-product-tile3x$",
+                "tileBack": "https://ak-media.theory.com/i/theory/TH_J0794505_2GY_0?$TH-product-tile3x$",
+                "autoSwatch": null,
+                "srcset": "https://ak-media.theory.com/i/theory/TH_J0794505_2GY_L0?$TH-product-tile$ 640w, https://ak-media.theory.com/i/theory/TH_J0794505_2GY_L0?$TH-product-tile2x$ 1024w, https://ak-media.theory.com/i/theory/TH_J0794505_2GY_L0?$TH-product-tile3x$ ",
+                "srcsetBack": "https://ak-media.theory.com/i/theory/TH_J0794505_2GY_0?$TH-product-tile$ 640w, https://ak-media.theory.com/i/theory/TH_J0794505_2GY_0?$TH-product-tile2x$ 1024w, https://ak-media.theory.com/i/theory/TH_J0794505_2GY_0?$TH-product-tile3x$ "
+              }
+            ]
+          },
+          "ats": 234
+        },
+        {
+          "id": "APW",
+          "description": null,
+          "displayValue": "PESTLE",
+          "value": "APW",
+          "selected": false,
+          "selectable": true,
+          "priceData": {},
+          "vpid": "",
+          "availabilityDisplayValue": "PESTLE",
+          "isOnline": true,
+          "show": true,
+          "varGroupId": "J0794505_APW",
+          "isVariationGroupOnSale": false,
+          "variationGroupOnSaleMessage": "",
+          "url": "https%3A%2F%2Fwww.theory.com%2Fon%2Fdemandware.store%2FSites-theory2_US-Site%2Fdefault%2FProduct-Variation%3FbackAltView%3D0%26dwvar_J0794505__APW_color%3DAPW%26frontAltView%3DL0%26imageBackDefaultView%3D0%26imageFrontDefaultView%3DL0%26pid%3DJ0794505_APW%26quantity%3D1",
+          "productLink": "https://www.theory.com/men/shirts/sylvain-shirt-in-structure-knit/J0794505_APW.html?dwvar_J0794505__APW_color=APW",
+          "quickViewUrlColor": "/on/demandware.store/Sites-theory2_US-Site/default/Product-ShowQuickView?pid=J0794505_APW&ajax=true&pview=variation",
+          "images": {
+            "swatch": [
+              {
+                "alt": "SYLVAIN ND",
+                "url": "//ak-media.theory.com/i/theory/TH_J0794505_APW_SWATCH.jpg?$TH-swatch$",
+                "title": "SYLVAIN ND",
+                "index": "0",
+                "absURL": "//ak-media.theory.com/i/theory/TH_J0794505_APW_SWATCH.jpg?$TH-swatch$",
+                "tileFront": "https://ak-media.theory.com/i/theory/TH_J0794505_APW_L0?$TH-product-tile3x$",
+                "tileBack": "https://ak-media.theory.com/i/theory/TH_J0794505_APW_0?$TH-product-tile3x$",
+                "autoSwatch": null,
+                "srcset": "https://ak-media.theory.com/i/theory/TH_J0794505_APW_L0?$TH-product-tile$ 640w, https://ak-media.theory.com/i/theory/TH_J0794505_APW_L0?$TH-product-tile2x$ 1024w, https://ak-media.theory.com/i/theory/TH_J0794505_APW_L0?$TH-product-tile3x$ ",
+                "srcsetBack": "https://ak-media.theory.com/i/theory/TH_J0794505_APW_0?$TH-product-tile$ 640w, https://ak-media.theory.com/i/theory/TH_J0794505_APW_0?$TH-product-tile2x$ 1024w, https://ak-media.theory.com/i/theory/TH_J0794505_APW_0?$TH-product-tile3x$ "
+              }
+            ]
+          },
+          "ats": 151
+        },
+        {
+          "id": "QI2",
+          "description": null,
+          "displayValue": "FEATHER",
+          "value": "QI2",
+          "selected": false,
+          "selectable": true,
+          "priceData": {},
+          "vpid": "",
+          "availabilityDisplayValue": "FEATHER",
+          "isOnline": true,
+          "show": true,
+          "varGroupId": "J0794505_QI2",
+          "isVariationGroupOnSale": false,
+          "variationGroupOnSaleMessage": "",
+          "url": "https%3A%2F%2Fwww.theory.com%2Fon%2Fdemandware.store%2FSites-theory2_US-Site%2Fdefault%2FProduct-Variation%3FbackAltView%3D0%26dwvar_J0794505__QI2_color%3DQI2%26frontAltView%3DL0%26imageBackDefaultView%3D0%26imageFrontDefaultView%3DL0%26pid%3DJ0794505_QI2%26quantity%3D1",
+          "productLink": "https://www.theory.com/men/shirts/sylvain-shirt-in-structure-knit/J0794505_QI2.html?dwvar_J0794505__QI2_color=QI2",
+          "quickViewUrlColor": "/on/demandware.store/Sites-theory2_US-Site/default/Product-ShowQuickView?pid=J0794505_QI2&ajax=true&pview=variation",
+          "images": {
+            "swatch": [
+              {
+                "alt": "SYLVAIN ND",
+                "url": "//ak-media.theory.com/i/theory/TH_J0794505_QI2_SWATCH.jpg?$TH-swatch$",
+                "title": "SYLVAIN ND",
+                "index": "0",
+                "absURL": "//ak-media.theory.com/i/theory/TH_J0794505_QI2_SWATCH.jpg?$TH-swatch$",
+                "tileFront": "https://ak-media.theory.com/i/theory/TH_J0794505_QI2_L0?$TH-product-tile3x$",
+                "tileBack": "https://ak-media.theory.com/i/theory/TH_J0794505_QI2_0?$TH-product-tile3x$",
+                "autoSwatch": null,
+                "srcset": "https://ak-media.theory.com/i/theory/TH_J0794505_QI2_L0?$TH-product-tile$ 640w, https://ak-media.theory.com/i/theory/TH_J0794505_QI2_L0?$TH-product-tile2x$ 1024w, https://ak-media.theory.com/i/theory/TH_J0794505_QI2_L0?$TH-product-tile3x$ ",
+                "srcsetBack": "https://ak-media.theory.com/i/theory/TH_J0794505_QI2_0?$TH-product-tile$ 640w, https://ak-media.theory.com/i/theory/TH_J0794505_QI2_0?$TH-product-tile2x$ 1024w, https://ak-media.theory.com/i/theory/TH_J0794505_QI2_0?$TH-product-tile3x$ "
+              }
+            ]
+          },
+          "ats": 103
+        },
+        {
+          "id": "XU8",
+          "description": null,
+          "displayValue": "DEEP EGGPLANT",
+          "value": "XU8",
+          "selected": false,
+          "selectable": false,
+          "priceData": {},
+          "vpid": "",
+          "availabilityDisplayValue": "DEEP EGGPLANT - out of stock",
+          "isOnline": true,
+          "show": false,
+          "varGroupId": "J0794505_XU8",
+          "isVariationGroupOnSale": false,
+          "variationGroupOnSaleMessage": "",
+          "url": "https%3A%2F%2Fwww.theory.com%2Fon%2Fdemandware.store%2FSites-theory2_US-Site%2Fdefault%2FProduct-Variation%3FbackAltView%3D0%26dwvar_J0794505__XU8_color%3DXU8%26frontAltView%3DL0%26imageBackDefaultView%3D0%26imageFrontDefaultView%3DL0%26pid%3DJ0794505_XU8%26quantity%3D1",
+          "productLink": "https://www.theory.com/men/shirts/sylvain-shirt-in-structure-knit/J0794505_XU8.html?dwvar_J0794505__XU8_color=XU8",
+          "quickViewUrlColor": "/on/demandware.store/Sites-theory2_US-Site/default/Product-ShowQuickView?pid=J0794505_XU8&ajax=true&pview=variation",
+          "images": {
+            "swatch": [
+              {
+                "alt": "SYLVAIN ND",
+                "url": "//ak-media.theory.com/i/theory/TH_J0794505_XU8_SWATCH.jpg?$TH-swatch$",
+                "title": "SYLVAIN ND",
+                "index": "0",
+                "absURL": "//ak-media.theory.com/i/theory/TH_J0794505_XU8_SWATCH.jpg?$TH-swatch$",
+                "tileFront": "https://ak-media.theory.com/i/theory/TH_J0794505_XU8_L0?$TH-product-tile3x$",
+                "tileBack": "https://ak-media.theory.com/i/theory/TH_J0794505_XU8_0?$TH-product-tile3x$",
+                "autoSwatch": null,
+                "srcset": "https://ak-media.theory.com/i/theory/TH_J0794505_XU8_L0?$TH-product-tile$ 640w, https://ak-media.theory.com/i/theory/TH_J0794505_XU8_L0?$TH-product-tile2x$ 1024w, https://ak-media.theory.com/i/theory/TH_J0794505_XU8_L0?$TH-product-tile3x$ ",
+                "srcsetBack": "https://ak-media.theory.com/i/theory/TH_J0794505_XU8_0?$TH-product-tile$ 640w, https://ak-media.theory.com/i/theory/TH_J0794505_XU8_0?$TH-product-tile2x$ 1024w, https://ak-media.theory.com/i/theory/TH_J0794505_XU8_0?$TH-product-tile3x$ "
+              }
+            ]
+          },
+          "ats": 0
+        },
+        {
+          "id": "29F",
+          "description": null,
+          "displayValue": "BLUE LAKE",
+          "value": "29F",
+          "selected": false,
+          "selectable": true,
+          "priceData": {},
+          "vpid": "",
+          "availabilityDisplayValue": "BLUE LAKE",
+          "isOnline": true,
+          "show": true,
+          "varGroupId": "J0794505_29F",
+          "isVariationGroupOnSale": true,
+          "variationGroupOnSaleMessage": "",
+          "url": "https%3A%2F%2Fwww.theory.com%2Fon%2Fdemandware.store%2FSites-theory2_US-Site%2Fdefault%2FProduct-Variation%3FbackAltView%3D0%26dwvar_J0794505__29F_color%3D29F%26frontAltView%3DL0%26imageBackDefaultView%3D0%26imageFrontDefaultView%3DL0%26pid%3DJ0794505_29F%26quantity%3D1",
+          "productLink": "https://www.theory.com/men/shirts/sylvain-shirt-in-structure-knit/J0794505_29F.html?dwvar_J0794505__29F_color=29F",
+          "quickViewUrlColor": "/on/demandware.store/Sites-theory2_US-Site/default/Product-ShowQuickView?pid=J0794505_29F&ajax=true&pview=variation",
+          "images": {
+            "swatch": [
+              {
+                "alt": "SYLVAIN ND",
+                "url": "//ak-media.theory.com/i/theory/TH_J0794505_29F_SWATCH.jpg?$TH-swatch$",
+                "title": "SYLVAIN ND",
+                "index": "0",
+                "absURL": "//ak-media.theory.com/i/theory/TH_J0794505_29F_SWATCH.jpg?$TH-swatch$",
+                "tileFront": "https://ak-media.theory.com/i/theory/TH_J0794505_29F_L0?$TH-product-tile3x$",
+                "tileBack": "https://ak-media.theory.com/i/theory/TH_J0794505_29F_0?$TH-product-tile3x$",
+                "autoSwatch": null,
+                "srcset": "https://ak-media.theory.com/i/theory/TH_J0794505_29F_L0?$TH-product-tile$ 640w, https://ak-media.theory.com/i/theory/TH_J0794505_29F_L0?$TH-product-tile2x$ 1024w, https://ak-media.theory.com/i/theory/TH_J0794505_29F_L0?$TH-product-tile3x$ ",
+                "srcsetBack": "https://ak-media.theory.com/i/theory/TH_J0794505_29F_0?$TH-product-tile$ 640w, https://ak-media.theory.com/i/theory/TH_J0794505_29F_0?$TH-product-tile2x$ 1024w, https://ak-media.theory.com/i/theory/TH_J0794505_29F_0?$TH-product-tile3x$ "
+              }
+            ]
+          },
+          "ats": 195
+        },
+        {
+          "id": "D9J",
+          "description": null,
+          "displayValue": "CAFE",
+          "value": "D9J",
+          "selected": false,
+          "selectable": true,
+          "priceData": {},
+          "vpid": "",
+          "availabilityDisplayValue": "CAFE",
+          "isOnline": true,
+          "show": true,
+          "varGroupId": "J0794505_D9J",
+          "isVariationGroupOnSale": true,
+          "variationGroupOnSaleMessage": "",
+          "url": "https%3A%2F%2Fwww.theory.com%2Fon%2Fdemandware.store%2FSites-theory2_US-Site%2Fdefault%2FProduct-Variation%3FbackAltView%3D0%26dwvar_J0794505__D9J_color%3DD9J%26frontAltView%3DL0%26imageBackDefaultView%3D0%26imageFrontDefaultView%3DL0%26pid%3DJ0794505_D9J%26quantity%3D1",
+          "productLink": "https://www.theory.com/men/shirts/sylvain-shirt-in-structure-knit/J0794505_D9J.html?dwvar_J0794505__D9J_color=D9J",
+          "quickViewUrlColor": "/on/demandware.store/Sites-theory2_US-Site/default/Product-ShowQuickView?pid=J0794505_D9J&ajax=true&pview=variation",
+          "images": {
+            "swatch": [
+              {
+                "alt": "SYLVAIN ND",
+                "url": "//ak-media.theory.com/i/theory/TH_J0794505_D9J_SWATCH.jpg?$TH-swatch$",
+                "title": "SYLVAIN ND",
+                "index": "0",
+                "absURL": "//ak-media.theory.com/i/theory/TH_J0794505_D9J_SWATCH.jpg?$TH-swatch$",
+                "tileFront": "https://ak-media.theory.com/i/theory/TH_J0794505_D9J_L0?$TH-product-tile3x$",
+                "tileBack": "https://ak-media.theory.com/i/theory/TH_J0794505_D9J_0?$TH-product-tile3x$",
+                "autoSwatch": null,
+                "srcset": "https://ak-media.theory.com/i/theory/TH_J0794505_D9J_L0?$TH-product-tile$ 640w, https://ak-media.theory.com/i/theory/TH_J0794505_D9J_L0?$TH-product-tile2x$ 1024w, https://ak-media.theory.com/i/theory/TH_J0794505_D9J_L0?$TH-product-tile3x$ ",
+                "srcsetBack": "https://ak-media.theory.com/i/theory/TH_J0794505_D9J_0?$TH-product-tile$ 640w, https://ak-media.theory.com/i/theory/TH_J0794505_D9J_0?$TH-product-tile2x$ 1024w, https://ak-media.theory.com/i/theory/TH_J0794505_D9J_0?$TH-product-tile3x$ "
+              }
+            ]
+          },
+          "ats": 79
+        },
+        {
+          "id": "193",
+          "description": null,
+          "displayValue": "MISTY HAZE",
+          "value": "193",
+          "selected": false,
+          "selectable": false,
+          "priceData": {},
+          "vpid": "",
+          "availabilityDisplayValue": "MISTY HAZE - out of stock",
+          "isOnline": true,
+          "show": false,
+          "varGroupId": "J0794505_193",
+          "isVariationGroupOnSale": true,
+          "variationGroupOnSaleMessage": "",
+          "url": "https%3A%2F%2Fwww.theory.com%2Fon%2Fdemandware.store%2FSites-theory2_US-Site%2Fdefault%2FProduct-Variation%3FbackAltView%3D0%26dwvar_J0794505__193_color%3D193%26frontAltView%3DL0%26imageBackDefaultView%3D0%26imageFrontDefaultView%3DL0%26pid%3DJ0794505_193%26quantity%3D1",
+          "productLink": "https://www.theory.com/men/shirts/sylvain-shirt-in-structure-knit/J0794505_193.html?dwvar_J0794505__193_color=193",
+          "quickViewUrlColor": "/on/demandware.store/Sites-theory2_US-Site/default/Product-ShowQuickView?pid=J0794505_193&ajax=true&pview=variation",
+          "images": {
+            "swatch": [
+              {
+                "alt": "SYLVAIN ND",
+                "url": "//ak-media.theory.com/i/theory/TH_J0794505_193_SWATCH.jpg?$TH-swatch$",
+                "title": "SYLVAIN ND",
+                "index": "0",
+                "absURL": "//ak-media.theory.com/i/theory/TH_J0794505_193_SWATCH.jpg?$TH-swatch$",
+                "tileFront": "https://ak-media.theory.com/i/theory/TH_J0794505_193_L0?$TH-product-tile3x$",
+                "tileBack": "https://ak-media.theory.com/i/theory/TH_J0794505_193_0?$TH-product-tile3x$",
+                "autoSwatch": null,
+                "srcset": "https://ak-media.theory.com/i/theory/TH_J0794505_193_L0?$TH-product-tile$ 640w, https://ak-media.theory.com/i/theory/TH_J0794505_193_L0?$TH-product-tile2x$ 1024w, https://ak-media.theory.com/i/theory/TH_J0794505_193_L0?$TH-product-tile3x$ ",
+                "srcsetBack": "https://ak-media.theory.com/i/theory/TH_J0794505_193_0?$TH-product-tile$ 640w, https://ak-media.theory.com/i/theory/TH_J0794505_193_0?$TH-product-tile2x$ 1024w, https://ak-media.theory.com/i/theory/TH_J0794505_193_0?$TH-product-tile3x$ "
+              }
+            ]
+          },
+          "ats": 0
+        },
+        {
+          "id": "18Z",
+          "description": null,
+          "displayValue": "BLUE SURF",
+          "value": "18Z",
+          "selected": false,
+          "selectable": false,
+          "priceData": {},
+          "vpid": "",
+          "availabilityDisplayValue": "BLUE SURF - out of stock",
+          "isOnline": true,
+          "show": false,
+          "varGroupId": "J0794505_18Z",
+          "isVariationGroupOnSale": true,
+          "variationGroupOnSaleMessage": "",
+          "url": "https%3A%2F%2Fwww.theory.com%2Fon%2Fdemandware.store%2FSites-theory2_US-Site%2Fdefault%2FProduct-Variation%3FbackAltView%3D0%26dwvar_J0794505__18Z_color%3D18Z%26frontAltView%3DL0%26imageBackDefaultView%3D0%26imageFrontDefaultView%3DL0%26pid%3DJ0794505_18Z%26quantity%3D1",
+          "productLink": "https://www.theory.com/men/shirts/sylvain-shirt-in-structure-knit/J0794505_18Z.html?dwvar_J0794505__18Z_color=18Z",
+          "quickViewUrlColor": "/on/demandware.store/Sites-theory2_US-Site/default/Product-ShowQuickView?pid=J0794505_18Z&ajax=true&pview=variation",
+          "images": {
+            "swatch": [
+              {
+                "alt": "SYLVAIN ND",
+                "url": "//ak-media.theory.com/i/theory/TH_J0794505_18Z_SWATCH.jpg?$TH-swatch$",
+                "title": "SYLVAIN ND",
+                "index": "0",
+                "absURL": "//ak-media.theory.com/i/theory/TH_J0794505_18Z_SWATCH.jpg?$TH-swatch$",
+                "tileFront": "https://ak-media.theory.com/i/theory/TH_J0794505_18Z_L0?$TH-product-tile3x$",
+                "tileBack": "https://ak-media.theory.com/i/theory/TH_J0794505_18Z_0?$TH-product-tile3x$",
+                "autoSwatch": null,
+                "srcset": "https://ak-media.theory.com/i/theory/TH_J0794505_18Z_L0?$TH-product-tile$ 640w, https://ak-media.theory.com/i/theory/TH_J0794505_18Z_L0?$TH-product-tile2x$ 1024w, https://ak-media.theory.com/i/theory/TH_J0794505_18Z_L0?$TH-product-tile3x$ ",
+                "srcsetBack": "https://ak-media.theory.com/i/theory/TH_J0794505_18Z_0?$TH-product-tile$ 640w, https://ak-media.theory.com/i/theory/TH_J0794505_18Z_0?$TH-product-tile2x$ 1024w, https://ak-media.theory.com/i/theory/TH_J0794505_18Z_0?$TH-product-tile3x$ "
+              }
+            ]
+          },
+          "ats": 0
+        },
+        {
+          "id": "29R",
+          "description": null,
+          "displayValue": "RAINSTORM",
+          "value": "29R",
+          "selected": false,
+          "selectable": false,
+          "priceData": {},
+          "vpid": "",
+          "availabilityDisplayValue": "RAINSTORM - out of stock",
+          "isOnline": true,
+          "show": false,
+          "varGroupId": "J0794505_29R",
+          "isVariationGroupOnSale": true,
+          "variationGroupOnSaleMessage": "",
+          "url": "https%3A%2F%2Fwww.theory.com%2Fon%2Fdemandware.store%2FSites-theory2_US-Site%2Fdefault%2FProduct-Variation%3FbackAltView%3D0%26dwvar_J0794505__29R_color%3D29R%26frontAltView%3DL0%26imageBackDefaultView%3D0%26imageFrontDefaultView%3DL0%26pid%3DJ0794505_29R%26quantity%3D1",
+          "productLink": "https://www.theory.com/men/shirts/sylvain-shirt-in-structure-knit/J0794505_29R.html?dwvar_J0794505__29R_color=29R",
+          "quickViewUrlColor": "/on/demandware.store/Sites-theory2_US-Site/default/Product-ShowQuickView?pid=J0794505_29R&ajax=true&pview=variation",
+          "images": {
+            "swatch": [
+              {
+                "alt": "SYLVAIN ND",
+                "url": "//ak-media.theory.com/i/theory/TH_J0794505_29R_SWATCH.jpg?$TH-swatch$",
+                "title": "SYLVAIN ND",
+                "index": "0",
+                "absURL": "//ak-media.theory.com/i/theory/TH_J0794505_29R_SWATCH.jpg?$TH-swatch$",
+                "tileFront": "https://ak-media.theory.com/i/theory/TH_J0794505_29R_L0?$TH-product-tile3x$",
+                "tileBack": "https://ak-media.theory.com/i/theory/TH_J0794505_29R_0?$TH-product-tile3x$",
+                "autoSwatch": null,
+                "srcset": "https://ak-media.theory.com/i/theory/TH_J0794505_29R_L0?$TH-product-tile$ 640w, https://ak-media.theory.com/i/theory/TH_J0794505_29R_L0?$TH-product-tile2x$ 1024w, https://ak-media.theory.com/i/theory/TH_J0794505_29R_L0?$TH-product-tile3x$ ",
+                "srcsetBack": "https://ak-media.theory.com/i/theory/TH_J0794505_29R_0?$TH-product-tile$ 640w, https://ak-media.theory.com/i/theory/TH_J0794505_29R_0?$TH-product-tile2x$ 1024w, https://ak-media.theory.com/i/theory/TH_J0794505_29R_0?$TH-product-tile3x$ "
+              }
+            ]
+          },
+          "ats": 0
+        },
+        {
+          "id": "B1K",
+          "description": null,
+          "displayValue": "FOG",
+          "value": "B1K",
+          "selected": false,
+          "selectable": false,
+          "priceData": {},
+          "vpid": "",
+          "availabilityDisplayValue": "FOG - out of stock",
+          "isOnline": true,
+          "show": false,
+          "varGroupId": "J0794505_B1K",
+          "isVariationGroupOnSale": true,
+          "variationGroupOnSaleMessage": "",
+          "url": "https%3A%2F%2Fwww.theory.com%2Fon%2Fdemandware.store%2FSites-theory2_US-Site%2Fdefault%2FProduct-Variation%3FbackAltView%3D0%26dwvar_J0794505__B1K_color%3DB1K%26frontAltView%3DL0%26imageBackDefaultView%3D0%26imageFrontDefaultView%3DL0%26pid%3DJ0794505_B1K%26quantity%3D1",
+          "productLink": "https://www.theory.com/men/shirts/sylvain-shirt-in-structure-knit/J0794505_B1K.html?dwvar_J0794505__B1K_color=B1K",
+          "quickViewUrlColor": "/on/demandware.store/Sites-theory2_US-Site/default/Product-ShowQuickView?pid=J0794505_B1K&ajax=true&pview=variation",
+          "images": {
+            "swatch": [
+              {
+                "alt": "SYLVAIN ND",
+                "url": "//ak-media.theory.com/i/theory/TH_J0794505_B1K_SWATCH.jpg?$TH-swatch$",
+                "title": "SYLVAIN ND",
+                "index": "0",
+                "absURL": "//ak-media.theory.com/i/theory/TH_J0794505_B1K_SWATCH.jpg?$TH-swatch$",
+                "tileFront": "https://ak-media.theory.com/i/theory/TH_J0794505_B1K_L0?$TH-product-tile3x$",
+                "tileBack": "https://ak-media.theory.com/i/theory/TH_J0794505_B1K_0?$TH-product-tile3x$",
+                "autoSwatch": null,
+                "srcset": "https://ak-media.theory.com/i/theory/TH_J0794505_B1K_L0?$TH-product-tile$ 640w, https://ak-media.theory.com/i/theory/TH_J0794505_B1K_L0?$TH-product-tile2x$ 1024w, https://ak-media.theory.com/i/theory/TH_J0794505_B1K_L0?$TH-product-tile3x$ ",
+                "srcsetBack": "https://ak-media.theory.com/i/theory/TH_J0794505_B1K_0?$TH-product-tile$ 640w, https://ak-media.theory.com/i/theory/TH_J0794505_B1K_0?$TH-product-tile2x$ 1024w, https://ak-media.theory.com/i/theory/TH_J0794505_B1K_0?$TH-product-tile3x$ "
+              }
+            ]
+          },
+          "ats": 0
+        },
+        {
+          "id": "D84",
+          "description": null,
+          "displayValue": "WALNUT",
+          "value": "D84",
+          "selected": false,
+          "selectable": false,
+          "priceData": {},
+          "vpid": "",
+          "availabilityDisplayValue": "WALNUT - out of stock",
+          "isOnline": true,
+          "show": false,
+          "varGroupId": "J0794505_D84",
+          "isVariationGroupOnSale": true,
+          "variationGroupOnSaleMessage": "",
+          "url": "https%3A%2F%2Fwww.theory.com%2Fon%2Fdemandware.store%2FSites-theory2_US-Site%2Fdefault%2FProduct-Variation%3FbackAltView%3D0%26dwvar_J0794505__D84_color%3DD84%26frontAltView%3DL0%26imageBackDefaultView%3D0%26imageFrontDefaultView%3DL0%26pid%3DJ0794505_D84%26quantity%3D1",
+          "productLink": "https://www.theory.com/men/shirts/sylvain-shirt-in-structure-knit/J0794505_D84.html?dwvar_J0794505__D84_color=D84",
+          "quickViewUrlColor": "/on/demandware.store/Sites-theory2_US-Site/default/Product-ShowQuickView?pid=J0794505_D84&ajax=true&pview=variation",
+          "images": {
+            "swatch": [
+              {
+                "alt": "SYLVAIN ND",
+                "url": "//ak-media.theory.com/i/theory/TH_J0794505_D84_SWATCH.jpg?$TH-swatch$",
+                "title": "SYLVAIN ND",
+                "index": "0",
+                "absURL": "//ak-media.theory.com/i/theory/TH_J0794505_D84_SWATCH.jpg?$TH-swatch$",
+                "tileFront": "https://ak-media.theory.com/i/theory/TH_J0794505_D84_L0?$TH-product-tile3x$",
+                "tileBack": "https://ak-media.theory.com/i/theory/TH_J0794505_D84_0?$TH-product-tile3x$",
+                "autoSwatch": null,
+                "srcset": "https://ak-media.theory.com/i/theory/TH_J0794505_D84_L0?$TH-product-tile$ 640w, https://ak-media.theory.com/i/theory/TH_J0794505_D84_L0?$TH-product-tile2x$ 1024w, https://ak-media.theory.com/i/theory/TH_J0794505_D84_L0?$TH-product-tile3x$ ",
+                "srcsetBack": "https://ak-media.theory.com/i/theory/TH_J0794505_D84_0?$TH-product-tile$ 640w, https://ak-media.theory.com/i/theory/TH_J0794505_D84_0?$TH-product-tile2x$ 1024w, https://ak-media.theory.com/i/theory/TH_J0794505_D84_0?$TH-product-tile3x$ "
+              }
+            ]
+          },
+          "ats": 0
+        },
+        {
+          "id": "G6P",
+          "description": null,
+          "displayValue": "LIMESTONE",
+          "value": "G6P",
+          "selected": false,
+          "selectable": false,
+          "priceData": {},
+          "vpid": "",
+          "availabilityDisplayValue": "LIMESTONE - out of stock",
+          "isOnline": true,
+          "show": false,
+          "varGroupId": "J0794505_G6P",
+          "isVariationGroupOnSale": true,
+          "variationGroupOnSaleMessage": "",
+          "url": "https%3A%2F%2Fwww.theory.com%2Fon%2Fdemandware.store%2FSites-theory2_US-Site%2Fdefault%2FProduct-Variation%3FbackAltView%3D0%26dwvar_J0794505__G6P_color%3DG6P%26frontAltView%3DL0%26imageBackDefaultView%3D0%26imageFrontDefaultView%3DL0%26pid%3DJ0794505_G6P%26quantity%3D1",
+          "productLink": "https://www.theory.com/men/shirts/sylvain-shirt-in-structure-knit/J0794505_G6P.html?dwvar_J0794505__G6P_color=G6P",
+          "quickViewUrlColor": "/on/demandware.store/Sites-theory2_US-Site/default/Product-ShowQuickView?pid=J0794505_G6P&ajax=true&pview=variation",
+          "images": {
+            "swatch": [
+              {
+                "alt": "SYLVAIN ND",
+                "url": "//ak-media.theory.com/i/theory/TH_J0794505_G6P_SWATCH.jpg?$TH-swatch$",
+                "title": "SYLVAIN ND",
+                "index": "0",
+                "absURL": "//ak-media.theory.com/i/theory/TH_J0794505_G6P_SWATCH.jpg?$TH-swatch$",
+                "tileFront": "https://ak-media.theory.com/i/theory/TH_J0794505_G6P_L0?$TH-product-tile3x$",
+                "tileBack": "https://ak-media.theory.com/i/theory/TH_J0794505_G6P_0?$TH-product-tile3x$",
+                "autoSwatch": null,
+                "srcset": "https://ak-media.theory.com/i/theory/TH_J0794505_G6P_L0?$TH-product-tile$ 640w, https://ak-media.theory.com/i/theory/TH_J0794505_G6P_L0?$TH-product-tile2x$ 1024w, https://ak-media.theory.com/i/theory/TH_J0794505_G6P_L0?$TH-product-tile3x$ ",
+                "srcsetBack": "https://ak-media.theory.com/i/theory/TH_J0794505_G6P_0?$TH-product-tile$ 640w, https://ak-media.theory.com/i/theory/TH_J0794505_G6P_0?$TH-product-tile2x$ 1024w, https://ak-media.theory.com/i/theory/TH_J0794505_G6P_0?$TH-product-tile3x$ "
+              }
+            ]
+          },
+          "ats": 0
+        },
+        {
+          "id": "RXG",
+          "description": null,
+          "displayValue": "TWILIGHT",
+          "value": "RXG",
+          "selected": false,
+          "selectable": false,
+          "priceData": {},
+          "vpid": "",
+          "availabilityDisplayValue": "TWILIGHT - out of stock",
+          "isOnline": true,
+          "show": false,
+          "varGroupId": "J0794505_RXG",
+          "isVariationGroupOnSale": true,
+          "variationGroupOnSaleMessage": "",
+          "url": "https%3A%2F%2Fwww.theory.com%2Fon%2Fdemandware.store%2FSites-theory2_US-Site%2Fdefault%2FProduct-Variation%3FbackAltView%3D0%26dwvar_J0794505__RXG_color%3DRXG%26frontAltView%3DL0%26imageBackDefaultView%3D0%26imageFrontDefaultView%3DL0%26pid%3DJ0794505_RXG%26quantity%3D1",
+          "productLink": "https://www.theory.com/men/sale/sylvain-shirt-in-structure-knit/J0794505_RXG.html?dwvar_J0794505__RXG_color=RXG",
+          "quickViewUrlColor": "/on/demandware.store/Sites-theory2_US-Site/default/Product-ShowQuickView?pid=J0794505_RXG&ajax=true&pview=variation",
+          "images": {
+            "swatch": [
+              {
+                "alt": "SYLVAIN ND",
+                "url": "//ak-media.theory.com/i/theory/TH_J0794505_RXG_SWATCH.jpg?$TH-swatch$",
+                "title": "SYLVAIN ND",
+                "index": "0",
+                "absURL": "//ak-media.theory.com/i/theory/TH_J0794505_RXG_SWATCH.jpg?$TH-swatch$",
+                "tileFront": "https://ak-media.theory.com/i/theory/TH_J0794505_RXG_L0?$TH-product-tile3x$",
+                "tileBack": "https://ak-media.theory.com/i/theory/TH_J0794505_RXG_0?$TH-product-tile3x$",
+                "autoSwatch": null,
+                "srcset": "https://ak-media.theory.com/i/theory/TH_J0794505_RXG_L0?$TH-product-tile$ 640w, https://ak-media.theory.com/i/theory/TH_J0794505_RXG_L0?$TH-product-tile2x$ 1024w, https://ak-media.theory.com/i/theory/TH_J0794505_RXG_L0?$TH-product-tile3x$ ",
+                "srcsetBack": "https://ak-media.theory.com/i/theory/TH_J0794505_RXG_0?$TH-product-tile$ 640w, https://ak-media.theory.com/i/theory/TH_J0794505_RXG_0?$TH-product-tile2x$ 1024w, https://ak-media.theory.com/i/theory/TH_J0794505_RXG_0?$TH-product-tile3x$ "
+              }
+            ]
+          },
+          "ats": 0
+        },
+        {
+          "id": "TRX",
+          "description": null,
+          "displayValue": "PALE PINK",
+          "value": "TRX",
+          "selected": false,
+          "selectable": false,
+          "priceData": {},
+          "vpid": "",
+          "availabilityDisplayValue": "PALE PINK - out of stock",
+          "isOnline": true,
+          "show": false,
+          "varGroupId": "J0794505_TRX",
+          "isVariationGroupOnSale": true,
+          "variationGroupOnSaleMessage": "",
+          "url": "https%3A%2F%2Fwww.theory.com%2Fon%2Fdemandware.store%2FSites-theory2_US-Site%2Fdefault%2FProduct-Variation%3FbackAltView%3D0%26dwvar_J0794505__TRX_color%3DTRX%26frontAltView%3DL0%26imageBackDefaultView%3D0%26imageFrontDefaultView%3DL0%26pid%3DJ0794505_TRX%26quantity%3D1",
+          "productLink": "https://www.theory.com/men/sale/sylvain-shirt-in-structure-knit/J0794505_TRX.html?dwvar_J0794505__TRX_color=TRX",
+          "quickViewUrlColor": "/on/demandware.store/Sites-theory2_US-Site/default/Product-ShowQuickView?pid=J0794505_TRX&ajax=true&pview=variation",
+          "images": {
+            "swatch": [
+              {
+                "alt": "SYLVAIN ND",
+                "url": "//ak-media.theory.com/i/theory/TH_J0794505_TRX_SWATCH.jpg?$TH-swatch$",
+                "title": "SYLVAIN ND",
+                "index": "0",
+                "absURL": "//ak-media.theory.com/i/theory/TH_J0794505_TRX_SWATCH.jpg?$TH-swatch$",
+                "tileFront": "https://ak-media.theory.com/i/theory/TH_J0794505_TRX_L0?$TH-product-tile3x$",
+                "tileBack": "https://ak-media.theory.com/i/theory/TH_J0794505_TRX_0?$TH-product-tile3x$",
+                "autoSwatch": null,
+                "srcset": "https://ak-media.theory.com/i/theory/TH_J0794505_TRX_L0?$TH-product-tile$ 640w, https://ak-media.theory.com/i/theory/TH_J0794505_TRX_L0?$TH-product-tile2x$ 1024w, https://ak-media.theory.com/i/theory/TH_J0794505_TRX_L0?$TH-product-tile3x$ ",
+                "srcsetBack": "https://ak-media.theory.com/i/theory/TH_J0794505_TRX_0?$TH-product-tile$ 640w, https://ak-media.theory.com/i/theory/TH_J0794505_TRX_0?$TH-product-tile2x$ 1024w, https://ak-media.theory.com/i/theory/TH_J0794505_TRX_0?$TH-product-tile3x$ "
+              }
+            ]
+          },
+          "ats": 0
+        }
+      ],
+      "saleValues": [
+        {
+          "id": "193",
+          "description": null,
+          "displayValue": "MISTY HAZE",
+          "value": "193",
+          "selected": false,
+          "selectable": false,
+          "priceData": {},
+          "vpid": "",
+          "availabilityDisplayValue": "MISTY HAZE - out of stock",
+          "isOnline": true,
+          "show": false,
+          "varGroupId": "J0794505_193",
+          "isVariationGroupOnSale": true,
+          "variationGroupOnSaleMessage": "",
+          "url": "https%3A%2F%2Fwww.theory.com%2Fon%2Fdemandware.store%2FSites-theory2_US-Site%2Fdefault%2FProduct-Variation%3FbackAltView%3D0%26dwvar_J0794505__193_color%3D193%26frontAltView%3DL0%26imageBackDefaultView%3D0%26imageFrontDefaultView%3DL0%26pid%3DJ0794505_193%26quantity%3D1",
+          "productLink": "https://www.theory.com/men/shirts/sylvain-shirt-in-structure-knit/J0794505_193.html?dwvar_J0794505__193_color=193",
+          "quickViewUrlColor": "/on/demandware.store/Sites-theory2_US-Site/default/Product-ShowQuickView?pid=J0794505_193&ajax=true&pview=variation",
+          "images": {
+            "swatch": [
+              {
+                "alt": "SYLVAIN ND",
+                "url": "//ak-media.theory.com/i/theory/TH_J0794505_193_SWATCH.jpg?$TH-swatch$",
+                "title": "SYLVAIN ND",
+                "index": "0",
+                "absURL": "//ak-media.theory.com/i/theory/TH_J0794505_193_SWATCH.jpg?$TH-swatch$",
+                "tileFront": "https://ak-media.theory.com/i/theory/TH_J0794505_193_L0?$TH-product-tile3x$",
+                "tileBack": "https://ak-media.theory.com/i/theory/TH_J0794505_193_0?$TH-product-tile3x$",
+                "autoSwatch": null,
+                "srcset": "https://ak-media.theory.com/i/theory/TH_J0794505_193_L0?$TH-product-tile$ 640w, https://ak-media.theory.com/i/theory/TH_J0794505_193_L0?$TH-product-tile2x$ 1024w, https://ak-media.theory.com/i/theory/TH_J0794505_193_L0?$TH-product-tile3x$ ",
+                "srcsetBack": "https://ak-media.theory.com/i/theory/TH_J0794505_193_0?$TH-product-tile$ 640w, https://ak-media.theory.com/i/theory/TH_J0794505_193_0?$TH-product-tile2x$ 1024w, https://ak-media.theory.com/i/theory/TH_J0794505_193_0?$TH-product-tile3x$ "
+              }
+            ]
+          },
+          "ats": 0
+        },
+        {
+          "id": "18Z",
+          "description": null,
+          "displayValue": "BLUE SURF",
+          "value": "18Z",
+          "selected": false,
+          "selectable": false,
+          "priceData": {},
+          "vpid": "",
+          "availabilityDisplayValue": "BLUE SURF - out of stock",
+          "isOnline": true,
+          "show": false,
+          "varGroupId": "J0794505_18Z",
+          "isVariationGroupOnSale": true,
+          "variationGroupOnSaleMessage": "",
+          "url": "https%3A%2F%2Fwww.theory.com%2Fon%2Fdemandware.store%2FSites-theory2_US-Site%2Fdefault%2FProduct-Variation%3FbackAltView%3D0%26dwvar_J0794505__18Z_color%3D18Z%26frontAltView%3DL0%26imageBackDefaultView%3D0%26imageFrontDefaultView%3DL0%26pid%3DJ0794505_18Z%26quantity%3D1",
+          "productLink": "https://www.theory.com/men/shirts/sylvain-shirt-in-structure-knit/J0794505_18Z.html?dwvar_J0794505__18Z_color=18Z",
+          "quickViewUrlColor": "/on/demandware.store/Sites-theory2_US-Site/default/Product-ShowQuickView?pid=J0794505_18Z&ajax=true&pview=variation",
+          "images": {
+            "swatch": [
+              {
+                "alt": "SYLVAIN ND",
+                "url": "//ak-media.theory.com/i/theory/TH_J0794505_18Z_SWATCH.jpg?$TH-swatch$",
+                "title": "SYLVAIN ND",
+                "index": "0",
+                "absURL": "//ak-media.theory.com/i/theory/TH_J0794505_18Z_SWATCH.jpg?$TH-swatch$",
+                "tileFront": "https://ak-media.theory.com/i/theory/TH_J0794505_18Z_L0?$TH-product-tile3x$",
+                "tileBack": "https://ak-media.theory.com/i/theory/TH_J0794505_18Z_0?$TH-product-tile3x$",
+                "autoSwatch": null,
+                "srcset": "https://ak-media.theory.com/i/theory/TH_J0794505_18Z_L0?$TH-product-tile$ 640w, https://ak-media.theory.com/i/theory/TH_J0794505_18Z_L0?$TH-product-tile2x$ 1024w, https://ak-media.theory.com/i/theory/TH_J0794505_18Z_L0?$TH-product-tile3x$ ",
+                "srcsetBack": "https://ak-media.theory.com/i/theory/TH_J0794505_18Z_0?$TH-product-tile$ 640w, https://ak-media.theory.com/i/theory/TH_J0794505_18Z_0?$TH-product-tile2x$ 1024w, https://ak-media.theory.com/i/theory/TH_J0794505_18Z_0?$TH-product-tile3x$ "
+              }
+            ]
+          },
+          "ats": 0
+        },
+        {
+          "id": "29F",
+          "description": null,
+          "displayValue": "BLUE LAKE",
+          "value": "29F",
+          "selected": false,
+          "selectable": true,
+          "priceData": {},
+          "vpid": "",
+          "availabilityDisplayValue": "BLUE LAKE",
+          "isOnline": true,
+          "show": true,
+          "varGroupId": "J0794505_29F",
+          "isVariationGroupOnSale": true,
+          "variationGroupOnSaleMessage": "",
+          "url": "https%3A%2F%2Fwww.theory.com%2Fon%2Fdemandware.store%2FSites-theory2_US-Site%2Fdefault%2FProduct-Variation%3FbackAltView%3D0%26dwvar_J0794505__29F_color%3D29F%26frontAltView%3DL0%26imageBackDefaultView%3D0%26imageFrontDefaultView%3DL0%26pid%3DJ0794505_29F%26quantity%3D1",
+          "productLink": "https://www.theory.com/men/shirts/sylvain-shirt-in-structure-knit/J0794505_29F.html?dwvar_J0794505__29F_color=29F",
+          "quickViewUrlColor": "/on/demandware.store/Sites-theory2_US-Site/default/Product-ShowQuickView?pid=J0794505_29F&ajax=true&pview=variation",
+          "images": {
+            "swatch": [
+              {
+                "alt": "SYLVAIN ND",
+                "url": "//ak-media.theory.com/i/theory/TH_J0794505_29F_SWATCH.jpg?$TH-swatch$",
+                "title": "SYLVAIN ND",
+                "index": "0",
+                "absURL": "//ak-media.theory.com/i/theory/TH_J0794505_29F_SWATCH.jpg?$TH-swatch$",
+                "tileFront": "https://ak-media.theory.com/i/theory/TH_J0794505_29F_L0?$TH-product-tile3x$",
+                "tileBack": "https://ak-media.theory.com/i/theory/TH_J0794505_29F_0?$TH-product-tile3x$",
+                "autoSwatch": null,
+                "srcset": "https://ak-media.theory.com/i/theory/TH_J0794505_29F_L0?$TH-product-tile$ 640w, https://ak-media.theory.com/i/theory/TH_J0794505_29F_L0?$TH-product-tile2x$ 1024w, https://ak-media.theory.com/i/theory/TH_J0794505_29F_L0?$TH-product-tile3x$ ",
+                "srcsetBack": "https://ak-media.theory.com/i/theory/TH_J0794505_29F_0?$TH-product-tile$ 640w, https://ak-media.theory.com/i/theory/TH_J0794505_29F_0?$TH-product-tile2x$ 1024w, https://ak-media.theory.com/i/theory/TH_J0794505_29F_0?$TH-product-tile3x$ "
+              }
+            ]
+          },
+          "ats": 195
+        },
+        {
+          "id": "29R",
+          "description": null,
+          "displayValue": "RAINSTORM",
+          "value": "29R",
+          "selected": false,
+          "selectable": false,
+          "priceData": {},
+          "vpid": "",
+          "availabilityDisplayValue": "RAINSTORM - out of stock",
+          "isOnline": true,
+          "show": false,
+          "varGroupId": "J0794505_29R",
+          "isVariationGroupOnSale": true,
+          "variationGroupOnSaleMessage": "",
+          "url": "https%3A%2F%2Fwww.theory.com%2Fon%2Fdemandware.store%2FSites-theory2_US-Site%2Fdefault%2FProduct-Variation%3FbackAltView%3D0%26dwvar_J0794505__29R_color%3D29R%26frontAltView%3DL0%26imageBackDefaultView%3D0%26imageFrontDefaultView%3DL0%26pid%3DJ0794505_29R%26quantity%3D1",
+          "productLink": "https://www.theory.com/men/shirts/sylvain-shirt-in-structure-knit/J0794505_29R.html?dwvar_J0794505__29R_color=29R",
+          "quickViewUrlColor": "/on/demandware.store/Sites-theory2_US-Site/default/Product-ShowQuickView?pid=J0794505_29R&ajax=true&pview=variation",
+          "images": {
+            "swatch": [
+              {
+                "alt": "SYLVAIN ND",
+                "url": "//ak-media.theory.com/i/theory/TH_J0794505_29R_SWATCH.jpg?$TH-swatch$",
+                "title": "SYLVAIN ND",
+                "index": "0",
+                "absURL": "//ak-media.theory.com/i/theory/TH_J0794505_29R_SWATCH.jpg?$TH-swatch$",
+                "tileFront": "https://ak-media.theory.com/i/theory/TH_J0794505_29R_L0?$TH-product-tile3x$",
+                "tileBack": "https://ak-media.theory.com/i/theory/TH_J0794505_29R_0?$TH-product-tile3x$",
+                "autoSwatch": null,
+                "srcset": "https://ak-media.theory.com/i/theory/TH_J0794505_29R_L0?$TH-product-tile$ 640w, https://ak-media.theory.com/i/theory/TH_J0794505_29R_L0?$TH-product-tile2x$ 1024w, https://ak-media.theory.com/i/theory/TH_J0794505_29R_L0?$TH-product-tile3x$ ",
+                "srcsetBack": "https://ak-media.theory.com/i/theory/TH_J0794505_29R_0?$TH-product-tile$ 640w, https://ak-media.theory.com/i/theory/TH_J0794505_29R_0?$TH-product-tile2x$ 1024w, https://ak-media.theory.com/i/theory/TH_J0794505_29R_0?$TH-product-tile3x$ "
+              }
+            ]
+          },
+          "ats": 0
+        },
+        {
+          "id": "B1K",
+          "description": null,
+          "displayValue": "FOG",
+          "value": "B1K",
+          "selected": false,
+          "selectable": false,
+          "priceData": {},
+          "vpid": "",
+          "availabilityDisplayValue": "FOG - out of stock",
+          "isOnline": true,
+          "show": false,
+          "varGroupId": "J0794505_B1K",
+          "isVariationGroupOnSale": true,
+          "variationGroupOnSaleMessage": "",
+          "url": "https%3A%2F%2Fwww.theory.com%2Fon%2Fdemandware.store%2FSites-theory2_US-Site%2Fdefault%2FProduct-Variation%3FbackAltView%3D0%26dwvar_J0794505__B1K_color%3DB1K%26frontAltView%3DL0%26imageBackDefaultView%3D0%26imageFrontDefaultView%3DL0%26pid%3DJ0794505_B1K%26quantity%3D1",
+          "productLink": "https://www.theory.com/men/shirts/sylvain-shirt-in-structure-knit/J0794505_B1K.html?dwvar_J0794505__B1K_color=B1K",
+          "quickViewUrlColor": "/on/demandware.store/Sites-theory2_US-Site/default/Product-ShowQuickView?pid=J0794505_B1K&ajax=true&pview=variation",
+          "images": {
+            "swatch": [
+              {
+                "alt": "SYLVAIN ND",
+                "url": "//ak-media.theory.com/i/theory/TH_J0794505_B1K_SWATCH.jpg?$TH-swatch$",
+                "title": "SYLVAIN ND",
+                "index": "0",
+                "absURL": "//ak-media.theory.com/i/theory/TH_J0794505_B1K_SWATCH.jpg?$TH-swatch$",
+                "tileFront": "https://ak-media.theory.com/i/theory/TH_J0794505_B1K_L0?$TH-product-tile3x$",
+                "tileBack": "https://ak-media.theory.com/i/theory/TH_J0794505_B1K_0?$TH-product-tile3x$",
+                "autoSwatch": null,
+                "srcset": "https://ak-media.theory.com/i/theory/TH_J0794505_B1K_L0?$TH-product-tile$ 640w, https://ak-media.theory.com/i/theory/TH_J0794505_B1K_L0?$TH-product-tile2x$ 1024w, https://ak-media.theory.com/i/theory/TH_J0794505_B1K_L0?$TH-product-tile3x$ ",
+                "srcsetBack": "https://ak-media.theory.com/i/theory/TH_J0794505_B1K_0?$TH-product-tile$ 640w, https://ak-media.theory.com/i/theory/TH_J0794505_B1K_0?$TH-product-tile2x$ 1024w, https://ak-media.theory.com/i/theory/TH_J0794505_B1K_0?$TH-product-tile3x$ "
+              }
+            ]
+          },
+          "ats": 0
+        },
+        {
+          "id": "D84",
+          "description": null,
+          "displayValue": "WALNUT",
+          "value": "D84",
+          "selected": false,
+          "selectable": false,
+          "priceData": {},
+          "vpid": "",
+          "availabilityDisplayValue": "WALNUT - out of stock",
+          "isOnline": true,
+          "show": false,
+          "varGroupId": "J0794505_D84",
+          "isVariationGroupOnSale": true,
+          "variationGroupOnSaleMessage": "",
+          "url": "https%3A%2F%2Fwww.theory.com%2Fon%2Fdemandware.store%2FSites-theory2_US-Site%2Fdefault%2FProduct-Variation%3FbackAltView%3D0%26dwvar_J0794505__D84_color%3DD84%26frontAltView%3DL0%26imageBackDefaultView%3D0%26imageFrontDefaultView%3DL0%26pid%3DJ0794505_D84%26quantity%3D1",
+          "productLink": "https://www.theory.com/men/shirts/sylvain-shirt-in-structure-knit/J0794505_D84.html?dwvar_J0794505__D84_color=D84",
+          "quickViewUrlColor": "/on/demandware.store/Sites-theory2_US-Site/default/Product-ShowQuickView?pid=J0794505_D84&ajax=true&pview=variation",
+          "images": {
+            "swatch": [
+              {
+                "alt": "SYLVAIN ND",
+                "url": "//ak-media.theory.com/i/theory/TH_J0794505_D84_SWATCH.jpg?$TH-swatch$",
+                "title": "SYLVAIN ND",
+                "index": "0",
+                "absURL": "//ak-media.theory.com/i/theory/TH_J0794505_D84_SWATCH.jpg?$TH-swatch$",
+                "tileFront": "https://ak-media.theory.com/i/theory/TH_J0794505_D84_L0?$TH-product-tile3x$",
+                "tileBack": "https://ak-media.theory.com/i/theory/TH_J0794505_D84_0?$TH-product-tile3x$",
+                "autoSwatch": null,
+                "srcset": "https://ak-media.theory.com/i/theory/TH_J0794505_D84_L0?$TH-product-tile$ 640w, https://ak-media.theory.com/i/theory/TH_J0794505_D84_L0?$TH-product-tile2x$ 1024w, https://ak-media.theory.com/i/theory/TH_J0794505_D84_L0?$TH-product-tile3x$ ",
+                "srcsetBack": "https://ak-media.theory.com/i/theory/TH_J0794505_D84_0?$TH-product-tile$ 640w, https://ak-media.theory.com/i/theory/TH_J0794505_D84_0?$TH-product-tile2x$ 1024w, https://ak-media.theory.com/i/theory/TH_J0794505_D84_0?$TH-product-tile3x$ "
+              }
+            ]
+          },
+          "ats": 0
+        },
+        {
+          "id": "D9J",
+          "description": null,
+          "displayValue": "CAFE",
+          "value": "D9J",
+          "selected": false,
+          "selectable": true,
+          "priceData": {},
+          "vpid": "",
+          "availabilityDisplayValue": "CAFE",
+          "isOnline": true,
+          "show": true,
+          "varGroupId": "J0794505_D9J",
+          "isVariationGroupOnSale": true,
+          "variationGroupOnSaleMessage": "",
+          "url": "https%3A%2F%2Fwww.theory.com%2Fon%2Fdemandware.store%2FSites-theory2_US-Site%2Fdefault%2FProduct-Variation%3FbackAltView%3D0%26dwvar_J0794505__D9J_color%3DD9J%26frontAltView%3DL0%26imageBackDefaultView%3D0%26imageFrontDefaultView%3DL0%26pid%3DJ0794505_D9J%26quantity%3D1",
+          "productLink": "https://www.theory.com/men/shirts/sylvain-shirt-in-structure-knit/J0794505_D9J.html?dwvar_J0794505__D9J_color=D9J",
+          "quickViewUrlColor": "/on/demandware.store/Sites-theory2_US-Site/default/Product-ShowQuickView?pid=J0794505_D9J&ajax=true&pview=variation",
+          "images": {
+            "swatch": [
+              {
+                "alt": "SYLVAIN ND",
+                "url": "//ak-media.theory.com/i/theory/TH_J0794505_D9J_SWATCH.jpg?$TH-swatch$",
+                "title": "SYLVAIN ND",
+                "index": "0",
+                "absURL": "//ak-media.theory.com/i/theory/TH_J0794505_D9J_SWATCH.jpg?$TH-swatch$",
+                "tileFront": "https://ak-media.theory.com/i/theory/TH_J0794505_D9J_L0?$TH-product-tile3x$",
+                "tileBack": "https://ak-media.theory.com/i/theory/TH_J0794505_D9J_0?$TH-product-tile3x$",
+                "autoSwatch": null,
+                "srcset": "https://ak-media.theory.com/i/theory/TH_J0794505_D9J_L0?$TH-product-tile$ 640w, https://ak-media.theory.com/i/theory/TH_J0794505_D9J_L0?$TH-product-tile2x$ 1024w, https://ak-media.theory.com/i/theory/TH_J0794505_D9J_L0?$TH-product-tile3x$ ",
+                "srcsetBack": "https://ak-media.theory.com/i/theory/TH_J0794505_D9J_0?$TH-product-tile$ 640w, https://ak-media.theory.com/i/theory/TH_J0794505_D9J_0?$TH-product-tile2x$ 1024w, https://ak-media.theory.com/i/theory/TH_J0794505_D9J_0?$TH-product-tile3x$ "
+              }
+            ]
+          },
+          "ats": 79
+        },
+        {
+          "id": "G6P",
+          "description": null,
+          "displayValue": "LIMESTONE",
+          "value": "G6P",
+          "selected": false,
+          "selectable": false,
+          "priceData": {},
+          "vpid": "",
+          "availabilityDisplayValue": "LIMESTONE - out of stock",
+          "isOnline": true,
+          "show": false,
+          "varGroupId": "J0794505_G6P",
+          "isVariationGroupOnSale": true,
+          "variationGroupOnSaleMessage": "",
+          "url": "https%3A%2F%2Fwww.theory.com%2Fon%2Fdemandware.store%2FSites-theory2_US-Site%2Fdefault%2FProduct-Variation%3FbackAltView%3D0%26dwvar_J0794505__G6P_color%3DG6P%26frontAltView%3DL0%26imageBackDefaultView%3D0%26imageFrontDefaultView%3DL0%26pid%3DJ0794505_G6P%26quantity%3D1",
+          "productLink": "https://www.theory.com/men/shirts/sylvain-shirt-in-structure-knit/J0794505_G6P.html?dwvar_J0794505__G6P_color=G6P",
+          "quickViewUrlColor": "/on/demandware.store/Sites-theory2_US-Site/default/Product-ShowQuickView?pid=J0794505_G6P&ajax=true&pview=variation",
+          "images": {
+            "swatch": [
+              {
+                "alt": "SYLVAIN ND",
+                "url": "//ak-media.theory.com/i/theory/TH_J0794505_G6P_SWATCH.jpg?$TH-swatch$",
+                "title": "SYLVAIN ND",
+                "index": "0",
+                "absURL": "//ak-media.theory.com/i/theory/TH_J0794505_G6P_SWATCH.jpg?$TH-swatch$",
+                "tileFront": "https://ak-media.theory.com/i/theory/TH_J0794505_G6P_L0?$TH-product-tile3x$",
+                "tileBack": "https://ak-media.theory.com/i/theory/TH_J0794505_G6P_0?$TH-product-tile3x$",
+                "autoSwatch": null,
+                "srcset": "https://ak-media.theory.com/i/theory/TH_J0794505_G6P_L0?$TH-product-tile$ 640w, https://ak-media.theory.com/i/theory/TH_J0794505_G6P_L0?$TH-product-tile2x$ 1024w, https://ak-media.theory.com/i/theory/TH_J0794505_G6P_L0?$TH-product-tile3x$ ",
+                "srcsetBack": "https://ak-media.theory.com/i/theory/TH_J0794505_G6P_0?$TH-product-tile$ 640w, https://ak-media.theory.com/i/theory/TH_J0794505_G6P_0?$TH-product-tile2x$ 1024w, https://ak-media.theory.com/i/theory/TH_J0794505_G6P_0?$TH-product-tile3x$ "
+              }
+            ]
+          },
+          "ats": 0
+        },
+        {
+          "id": "RXG",
+          "description": null,
+          "displayValue": "TWILIGHT",
+          "value": "RXG",
+          "selected": false,
+          "selectable": false,
+          "priceData": {},
+          "vpid": "",
+          "availabilityDisplayValue": "TWILIGHT - out of stock",
+          "isOnline": true,
+          "show": false,
+          "varGroupId": "J0794505_RXG",
+          "isVariationGroupOnSale": true,
+          "variationGroupOnSaleMessage": "",
+          "url": "https%3A%2F%2Fwww.theory.com%2Fon%2Fdemandware.store%2FSites-theory2_US-Site%2Fdefault%2FProduct-Variation%3FbackAltView%3D0%26dwvar_J0794505__RXG_color%3DRXG%26frontAltView%3DL0%26imageBackDefaultView%3D0%26imageFrontDefaultView%3DL0%26pid%3DJ0794505_RXG%26quantity%3D1",
+          "productLink": "https://www.theory.com/men/sale/sylvain-shirt-in-structure-knit/J0794505_RXG.html?dwvar_J0794505__RXG_color=RXG",
+          "quickViewUrlColor": "/on/demandware.store/Sites-theory2_US-Site/default/Product-ShowQuickView?pid=J0794505_RXG&ajax=true&pview=variation",
+          "images": {
+            "swatch": [
+              {
+                "alt": "SYLVAIN ND",
+                "url": "//ak-media.theory.com/i/theory/TH_J0794505_RXG_SWATCH.jpg?$TH-swatch$",
+                "title": "SYLVAIN ND",
+                "index": "0",
+                "absURL": "//ak-media.theory.com/i/theory/TH_J0794505_RXG_SWATCH.jpg?$TH-swatch$",
+                "tileFront": "https://ak-media.theory.com/i/theory/TH_J0794505_RXG_L0?$TH-product-tile3x$",
+                "tileBack": "https://ak-media.theory.com/i/theory/TH_J0794505_RXG_0?$TH-product-tile3x$",
+                "autoSwatch": null,
+                "srcset": "https://ak-media.theory.com/i/theory/TH_J0794505_RXG_L0?$TH-product-tile$ 640w, https://ak-media.theory.com/i/theory/TH_J0794505_RXG_L0?$TH-product-tile2x$ 1024w, https://ak-media.theory.com/i/theory/TH_J0794505_RXG_L0?$TH-product-tile3x$ ",
+                "srcsetBack": "https://ak-media.theory.com/i/theory/TH_J0794505_RXG_0?$TH-product-tile$ 640w, https://ak-media.theory.com/i/theory/TH_J0794505_RXG_0?$TH-product-tile2x$ 1024w, https://ak-media.theory.com/i/theory/TH_J0794505_RXG_0?$TH-product-tile3x$ "
+              }
+            ]
+          },
+          "ats": 0
+        },
+        {
+          "id": "TRX",
+          "description": null,
+          "displayValue": "PALE PINK",
+          "value": "TRX",
+          "selected": false,
+          "selectable": false,
+          "priceData": {},
+          "vpid": "",
+          "availabilityDisplayValue": "PALE PINK - out of stock",
+          "isOnline": true,
+          "show": false,
+          "varGroupId": "J0794505_TRX",
+          "isVariationGroupOnSale": true,
+          "variationGroupOnSaleMessage": "",
+          "url": "https%3A%2F%2Fwww.theory.com%2Fon%2Fdemandware.store%2FSites-theory2_US-Site%2Fdefault%2FProduct-Variation%3FbackAltView%3D0%26dwvar_J0794505__TRX_color%3DTRX%26frontAltView%3DL0%26imageBackDefaultView%3D0%26imageFrontDefaultView%3DL0%26pid%3DJ0794505_TRX%26quantity%3D1",
+          "productLink": "https://www.theory.com/men/sale/sylvain-shirt-in-structure-knit/J0794505_TRX.html?dwvar_J0794505__TRX_color=TRX",
+          "quickViewUrlColor": "/on/demandware.store/Sites-theory2_US-Site/default/Product-ShowQuickView?pid=J0794505_TRX&ajax=true&pview=variation",
+          "images": {
+            "swatch": [
+              {
+                "alt": "SYLVAIN ND",
+                "url": "//ak-media.theory.com/i/theory/TH_J0794505_TRX_SWATCH.jpg?$TH-swatch$",
+                "title": "SYLVAIN ND",
+                "index": "0",
+                "absURL": "//ak-media.theory.com/i/theory/TH_J0794505_TRX_SWATCH.jpg?$TH-swatch$",
+                "tileFront": "https://ak-media.theory.com/i/theory/TH_J0794505_TRX_L0?$TH-product-tile3x$",
+                "tileBack": "https://ak-media.theory.com/i/theory/TH_J0794505_TRX_0?$TH-product-tile3x$",
+                "autoSwatch": null,
+                "srcset": "https://ak-media.theory.com/i/theory/TH_J0794505_TRX_L0?$TH-product-tile$ 640w, https://ak-media.theory.com/i/theory/TH_J0794505_TRX_L0?$TH-product-tile2x$ 1024w, https://ak-media.theory.com/i/theory/TH_J0794505_TRX_L0?$TH-product-tile3x$ ",
+                "srcsetBack": "https://ak-media.theory.com/i/theory/TH_J0794505_TRX_0?$TH-product-tile$ 640w, https://ak-media.theory.com/i/theory/TH_J0794505_TRX_0?$TH-product-tile2x$ 1024w, https://ak-media.theory.com/i/theory/TH_J0794505_TRX_0?$TH-product-tile3x$ "
+              }
+            ]
+          },
+          "ats": 0
+        }
+      ],
+      "selectableValuesQuantity": 9
+    },
+    "longDescription": null,
+    "shortDescription": "A tailored style with minimal detailing, our Sylvain shirt is designed with a structured point collar, and a longer hem that easily tucks into your pant. Cut from an ultra-compact knit with inherent stretch from one of Japan’s finest mills, it's designed for a comfortable, casual feel and a sharp look. This machine-washable fabric features a wrinkle-resistant construction for optimum shape retention throughout the day.",
+    "aggregateRating": {
+      "ratingValue": "4.9",
+      "reviewCount": 318
+    },
+    "promotions": [
+      {
+        "callOutMsg": "Black Friday Offer Applied",
+        "details": "Black Friday Offer Applied",
+        "hasCoupon": false,
+        "enabled": true,
+        "id": "TBF-25",
+        "name": null,
+        "promotionClass": "PRODUCT",
+        "rank": 20,
+        "showTrioSelector": false,
+        "trioSelectorCtaText": "",
+        "calloutBadge": true
+      },
+      {
+        "callOutMsg": "3 for $450",
+        "details": "3 for $450",
+        "hasCoupon": false,
+        "enabled": true,
+        "id": "S-SK",
+        "name": "SYLVAIN ND STRUCTURE KNIT",
+        "promotionClass": "PRODUCT",
+        "rank": 30,
+        "showTrioSelector": true,
+        "trioSelectorCtaText": "SELECT 3 for $450",
+        "calloutBadge": true
+      }
+    ],
+    "attributes": [
+      {
+        "ID": "Presentation",
+        "name": "Presentation Attributes",
+        "attributes": [
+          {
+            "label": "smartGiftPdp",
+            "value": [
+              true
+            ]
+          }
+        ]
+      },
+      {
+        "ID": "Custom",
+        "name": "Custom",
+        "attributes": [
+          {
+            "label": "smartGiftPdp",
+            "value": [
+              true
+            ]
+          }
+        ]
+      }
+    ],
+    "availability": {
+      "messages": [
+        "Available: In Stock"
+      ],
+      "inStockDate": null,
+      "availabilityStatus": "IN_STOCK",
+      "isHideInStock": true,
+      "class": "",
+      "statusText": "IN_STOCK",
+      "isPreOrder": false
+    },
+    "available": true,
+    "options": [],
+    "quantities": [
+      {
+        "value": "1",
+        "selected": true,
+        "url": "/on/demandware.store/Sites-theory2_US-Site/default/Product-Variation?dwvar_J0794505_color=YJY&pid=J0794505&quantity=1"
+      },
+      {
+        "value": "2",
+        "selected": false,
+        "url": "/on/demandware.store/Sites-theory2_US-Site/default/Product-Variation?dwvar_J0794505_color=YJY&pid=J0794505&quantity=2"
+      },
+      {
+        "value": "3",
+        "selected": false,
+        "url": "/on/demandware.store/Sites-theory2_US-Site/default/Product-Variation?dwvar_J0794505_color=YJY&pid=J0794505&quantity=3"
+      },
+      {
+        "value": "4",
+        "selected": false,
+        "url": "/on/demandware.store/Sites-theory2_US-Site/default/Product-Variation?dwvar_J0794505_color=YJY&pid=J0794505&quantity=4"
+      },
+      {
+        "value": "5",
+        "selected": false,
+        "url": "/on/demandware.store/Sites-theory2_US-Site/default/Product-Variation?dwvar_J0794505_color=YJY&pid=J0794505&quantity=5"
+      }
+    ],
+    "prefilledCarouselData": null,
+    "nameDW": "Sylvain Shirt in Structure Knit",
+    "fit": null,
+    "bodyLength": "Regular",
+    "rise": "",
+    "theoryForGood": null,
+    "theoryForGoodContentId": null,
+    "stretch": null,
+    "fabric": "STRUCTURE KNIT",
+    "videoLink": null,
+    "videoLinkMobile": null,
+    "videoText": null,
+    "modelSize": "<li class=\"pdp-details-info\"> True to size, choose your normal size </li>   <li class=\"pdp-details-info\"> Slim fit, long sleeves</li>    <li class=\"pdp-details-info\"> Hip length </li>    <li class=\"pdp-details-info\"> Model is 6’2”, chest 38” and wearing a US size M </li>",
+    "material": "53% Cotton, 47% Polyester",
+    "care": "Machine wash cold, gentle cycle. Only non-chlorine bleach when needed. Hang to dry in shade, do not tumble dry. Cool iron with press cloth if needed. Dry clean with any solvent except trichloroethylene. Imported",
+    "selectedColorID": "YJY",
+    "masterClassCategory": "mens-shirts",
+    "mainStyle": "SYLVAIN",
+    "waitlistEnable": null,
+    "selectedVariationGroup": "J0794505_100",
+    "productVariationGroups": "[\"J0794505_100\",\"J0794505_001\",\"J0794505_29F\",\"J0794505_2GY\",\"J0794505_APW\",\"J0794505_B7H\",\"J0794505_D9J\",\"J0794505_QI2\",\"J0794505_YJY\"]",
+    "availableSizeValues": "[\"{\\\"XS\\\" : \\\"true\\\"}\",\"{\\\"S\\\" : \\\"true\\\"}\",\"{\\\"M\\\" : \\\"true\\\"}\",\"{\\\"L\\\" : \\\"true\\\"}\",\"{\\\"XL\\\" : \\\"true\\\"}\",\"{\\\"XXL\\\" : \\\"true\\\"}\"]",
+    "defaultMainImageUrl": "https://ak-media.theory.com/i/theory/TH_J0794505_YJY_0?$TH-pdp-desktop$",
+    "whyWeMadeThis": "wwmt-sylvain-shirt-in-structure-knit",
+    "isGWP": false,
+    "badges": [
+      "Black Friday Offer Applied"
+    ],
+    "isTrioBadgeDisplayed": false,
+    "classificationCategory": {},
+    "primaryCategory": {},
+    "categories": {},
+    "sizeChartId": "size-chart-men-shirts",
+    "sizeGuideAttrs": null,
+    "selectedProductUrl": "/men/shirts/sylvain-shirt-in-structure-knit/J0794505.html?dwvar_J0794505_color=YJY",
+    "readyToOrder": false,
+    "online": true,
+    "pageTitle": "Sylvain Shirt in Structure Knit | Men’s Tailored Knit Shirt | Theory",
+    "pageDescription": "Elevate your wardrobe with the Sylvain Shirt in Structure Knit. This tailored shirt features a structured point collar and a longer hem for easy tucking. Made of an ultra-compact knit with inherent stretch from one of Japan’s finest mills, it delivers a comfortable, casual feel with a sharp look. The machine-washable, wrinkle-resistant fabric ensures optimum shape retention throughout the day.",
+    "pageKeywords": "Sylvain shirt, knit shirt, men’s tailored shirt, Theory structure knit, stretch cotton shirt, Japanese fabric, wrinkle-resistant shirt, modern men’s essentials",
+    "pageMetaTags": [
+      {},
+      {},
+      {},
+      {},
+      {},
+      {},
+      {},
+      {},
+      {},
+      {},
+      {},
+      {},
+      {}
+    ],
+    "template": null,
+    "finalsale": false,
+    "highlightTileAttr": {
+      "enabled": true,
+      "id": "Structure Knit",
+      "imageUrl": "//ak-media.theory.com/i/theory/TH_HIGHLIGHT_TILE_STRUCTURED_KNIT?$TH-HighlightTile$",
+      "headerText": "Structure Knit",
+      "bodyText": "A knit version of our classic woven shirting, this super-compact fabric is produced at a top Japanese mill that specializes in innovative knits. Structure Knit has a clean pressed finish, comfortable stretch, and excellent recovery, all while being easy to care for.",
+      "ctaText": "",
+      "ctaUrl": ""
+    },
+    "productIcons": [
+      {
+        "id": "MTRL_08_FNCTN",
+        "alt": "MTRL_08_FNCTN",
+        "markup": "<svg xmlns='http://www.w3.org/2000/svg' width='190' height='210' viewBox='380.19 322.74 41.05 48.84'><g><path d='M397.09,358.99v3.04c0.03,0.85,0.52,1.36,1.29,1.36s1.26-0.51,1.29-1.36v-3.04h0.42v3.04c-0.01,1.01-0.58,1.75-1.72,1.75   c-1.14,0-1.7-0.74-1.72-1.75v-3.04H397.09z'/><path d='M403.21,363.26h0.01l1.49-4.27h0.42l-1.7,4.69h-0.48l-1.72-4.69h0.46L403.21,363.26z'/><path d='M380.19,371.48v-4.69h1.18c0.9-0.02,1.92,0.21,1.92,1.33s-1.01,1.35-1.92,1.33h-0.75v2.04H380.19z M380.61,369.05h1.03   c0.63,0,1.19-0.2,1.19-0.94s-0.56-0.94-1.19-0.94h-1.03V369.05z'/><path d='M384.96,371.48h-0.42v-4.69h1.53c0.41,0,0.75,0.03,1.1,0.25c0.33,0.2,0.48,0.53,0.48,0.98c0,0.51-0.36,0.87-0.9,1.01v0.01   c0.6,0.1,0.73,0.5,0.79,1.05c0.08,0.76,0.06,1.11,0.25,1.4h-0.49c-0.11-0.31-0.14-0.64-0.16-0.97c-0.1-1.07-0.16-1.26-1.01-1.26   h-1.16V371.48z M385.87,368.85c0.6,0,1.34-0.04,1.34-0.84c0-0.9-0.84-0.84-1.29-0.84h-0.95v1.68H385.87z'/><path d='M391.08,371.58c-1.35,0-2.09-0.98-2.09-2.44s0.75-2.44,2.09-2.44c1.35,0,2.09,0.98,2.09,2.44S392.42,371.58,391.08,371.58z    M391.08,371.19c1.17,0,1.64-1.03,1.64-2.05s-0.47-2.05-1.64-2.05c-1.17,0-1.64,1.03-1.64,2.05S389.91,371.19,391.08,371.19z'/><path d='M395.47,367.18h-1.51v-0.39h3.43v0.39h-1.49l-0.01,4.3h-0.42L395.47,367.18z'/><path d='M398.57,371.48v-4.69h2.79v0.39h-2.37v1.68h2.28v0.39h-2.28v1.84h2.46v0.39H398.57z'/><path d='M405.71,367.89c-0.08-0.57-0.57-0.81-1.11-0.81c-1.2,0-1.57,1.09-1.57,2.05s0.36,2.05,1.57,2.05   c0.52,0,1.04-0.26,1.16-0.84h0.46c-0.14,0.79-0.86,1.24-1.61,1.24c-1.42,0-2.02-1.14-2.02-2.44c0-1.29,0.6-2.44,2.02-2.44   c0.77,0,1.5,0.35,1.56,1.2H405.71z'/><path d='M408.61,367.18h-1.51v-0.39h3.43v0.39h-1.49l-0.01,4.3h-0.42L408.61,367.18z'/><path d='M411.72,371.48v-4.71h0.42v4.71H411.72z'/><path d='M415.28,371.06h0.01l1.49-4.27h0.42l-1.7,4.69h-0.48l-1.72-4.69h0.46L415.28,371.06z'/><path d='M418.36,371.48v-4.69h2.79v0.39h-2.37v1.68h2.28v0.39h-2.28v1.84h2.46v0.39H418.36z'/></g><g><path d='M401.7,343.4L401.7,343.4c-0.18,0-0.33-0.15-0.33-0.33l0-3c0-0.18,0.15-0.33,0.33-0.33l0,0c0.18,0,0.33,0.15,0.33,0.33l0,3   C402.02,343.25,401.88,343.4,401.7,343.4z'/><path d='M401.7,326.4c-0.18,0-0.33-0.15-0.33-0.33v-3c0-0.18,0.15-0.33,0.33-0.33s0.33,0.15,0.33,0.33v3   C402.03,326.25,401.88,326.4,401.7,326.4z'/><path d='M394.7,333.4h-3c-0.18,0-0.33-0.15-0.33-0.33s0.15-0.33,0.33-0.33h3c0.18,0,0.33,0.15,0.33,0.33S394.88,333.4,394.7,333.4z   '/><path d='M411.7,333.4h-3c-0.18,0-0.33-0.15-0.33-0.33s0.15-0.33,0.33-0.33h3c0.18,0,0.33,0.15,0.33,0.33S411.88,333.4,411.7,333.4z   '/><path d='M401.7,337.9c-2.66,0-4.83-2.17-4.83-4.83s2.17-4.83,4.83-4.83s4.83,2.17,4.83,4.83S404.36,337.9,401.7,337.9z    M401.7,328.9c-2.3,0-4.17,1.87-4.17,4.17s1.87,4.17,4.17,4.17s4.17-1.87,4.17-4.17S404,328.9,401.7,328.9z'/><path d='M394.63,340.47c-0.08,0-0.17-0.03-0.23-0.1c-0.13-0.13-0.13-0.33,0-0.46l2.12-2.12c0.13-0.13,0.33-0.13,0.46,0   c0.13,0.13,0.13,0.33,0,0.46l-2.12,2.12C394.79,340.44,394.71,340.47,394.63,340.47z'/><path d='M406.65,328.45c-0.08,0-0.17-0.03-0.23-0.1c-0.13-0.13-0.13-0.33,0-0.46l2.12-2.12c0.13-0.13,0.33-0.13,0.46,0   s0.13,0.33,0,0.46l-2.12,2.12C406.82,328.42,406.73,328.45,406.65,328.45z'/><path d='M396.75,328.45c-0.08,0-0.17-0.03-0.23-0.1l-2.12-2.12c-0.13-0.13-0.13-0.33,0-0.46s0.33-0.13,0.46,0l2.12,2.12   c0.13,0.13,0.13,0.33,0,0.46C396.92,328.42,396.83,328.45,396.75,328.45z'/><path d='M408.77,340.47c-0.08,0-0.17-0.03-0.23-0.1l-2.12-2.12c-0.13-0.13-0.13-0.33,0-0.46s0.33-0.13,0.46,0l2.12,2.12   c0.13,0.13,0.13,0.33,0,0.46C408.94,340.44,408.85,340.47,408.77,340.47z'/></g></svg>"
+      },
+      {
+        "id": "MTRL_09_FNCTN",
+        "alt": "MTRL_09_FNCTN",
+        "markup": "<svg xmlns='http://www.w3.org/2000/svg' width='160' height='210' viewBox='455.3 322.76 36.33 48.82' ><path d='M460.42 363.68h-.6l-1.22-4.69h.45l1.09 4.27h.01l1.37-4.27h.51l1.43 4.27h.01l1.08-4.27h.41l-1.23 4.69h-.58l-1.38-4.26h-.01l-1.34 4.26zm6.16 0h-.42v-4.69h1.53c.41 0 .75.03 1.11.25.33.2.48.53.48.98 0 .51-.36.87-.9 1.01v.01c.6.1.73.5.79 1.05.08.76.06 1.11.25 1.4h-.49c-.11-.31-.14-.64-.16-.97-.1-1.07-.16-1.26-1.01-1.26h-1.16v2.22zm.9-2.63c.6 0 1.34-.04 1.34-.84 0-.9-.84-.84-1.29-.84h-.95v1.68h.9zm3.38 2.63v-4.71h.42v4.71h-.42zm2.07-4.69h.48l2.59 4.13h.01v-4.13h.42v4.69h-.53l-2.54-4.06h-.01v4.06h-.42v-4.69zm5.16 4.69v-4.69h.42l.01 2.07 2.1-2.07h.53l-2.16 2.12 2.36 2.57h-.58l-2.25-2.45-.01 2.45h-.42zm4.4 0v-4.69h.42v4.3h2.36v.39h-2.78zm4.01 0v-4.69h2.79v.39h-2.37v1.68h2.28v.39h-2.28v1.84h2.46v.39h-2.88zm-30.78 7.8h-.42v-4.69h1.54c.41 0 .75.03 1.1.25.33.2.48.53.48.98 0 .51-.36.87-.9 1.01v.01c.6.1.73.5.79 1.05.08.76.06 1.11.25 1.4h-.49c-.11-.31-.14-.64-.16-.97-.1-1.07-.16-1.26-1.01-1.26h-1.16v2.22zm.9-2.63c.6 0 1.34-.04 1.34-.84 0-.9-.85-.84-1.29-.84h-.95v1.68h.9zm3.36 2.63v-4.69h2.79v.39h-2.37v1.68h2.28v.39h-2.28v1.84h2.46v.39h-2.88zm5.4.1c-.75 0-1.38-.55-1.4-1.32h.46c.01.72.55.93 1.18.93.53 0 1.13-.3 1.13-.9 0-.47-.34-.69-.73-.82-.76-.25-1.92-.49-1.92-1.51 0-.82.75-1.27 1.49-1.27.62 0 1.42.21 1.53 1.12h-.46c-.01-.58-.54-.73-1.02-.73-.49 0-1.09.25-1.09.82 0 1.33 2.65.73 2.65 2.35 0 1.02-.88 1.33-1.82 1.33zm3.26-.1v-4.71h.42v4.71h-.42zm3.23.1c-.75 0-1.38-.55-1.4-1.32h.46c.01.72.55.93 1.18.93.53 0 1.13-.3 1.13-.9 0-.47-.34-.69-.73-.82-.76-.25-1.92-.49-1.92-1.51 0-.82.75-1.27 1.5-1.27.62 0 1.42.21 1.53 1.12h-.46c-.01-.58-.54-.73-1.02-.73-.49 0-1.09.25-1.09.82 0 1.33 2.65.73 2.65 2.35-.01 1.02-.89 1.33-1.83 1.33zm4.24-4.4h-1.51v-.39h3.43v.39h-1.49l-.01 4.3h-.42v-4.3zm2.09 4.3l1.86-4.69h.49l1.87 4.69h-.46l-.5-1.27h-2.33l-.49 1.27h-.44zm3.11-1.66l-1.01-2.65-1.03 2.65h2.04zm2.24-3.03h.48l2.59 4.13h.01v-4.13h.42v4.69h-.53l-2.54-4.06h-.01v4.06h-.42v-4.69zm6.16.39h-1.51v-.39h3.43v.39h-1.49l-.01 4.3h-.42v-4.3zm-9.15-37.68c-.08 0-.17-.03-.23-.1l-2.37-2.37a.325.325 0 1 1 .46-.46l2.37 2.37a.32.32 0 0 1 0 .46c-.06.06-.15.1-.23.1zm-.76 4.28c-.08 0-.17-.03-.23-.1l-5.89-5.89a.325.325 0 1 1 .46-.46l5.89 5.89a.32.32 0 0 1 0 .46c-.06.06-.15.1-.23.1zm-.06 4.97c-.08 0-.17-.03-.23-.1l-10.81-10.81a.325.325 0 1 1 .46-.46l10.81 10.81a.32.32 0 0 1 0 .46.32.32 0 0 1-.23.1zm-4.59.45c-.08 0-.17-.03-.23-.1l-6.67-6.67a.325.325 0 1 1 .46-.46l6.67 6.67a.32.32 0 0 1 0 .46.32.32 0 0 1-.23.1zm-4.54.5c-.08 0-.17-.03-.23-.1l-2.62-2.62a.325.325 0 1 1 .46-.46l2.62 2.62a.32.32 0 0 1 0 .46.32.32 0 0 1-.23.1zm14.09 3.8l-4.21-.9-2.96.81-3.26-.75-3.26.75-2.96-.81-4.21.9.96-4.12-.87-2.99.98-3.24-.98-3.27.87-3.14-.44-3.79 3.68.77 3.03-.96 3.2.95 3.2-.95 3.03.96 3.68-.77-.44 3.79.87 3.14-.98 3.27.98 3.24-.87 2.99.96 4.12zm-16.63-1.57l2.95.81 3.25-.75 3.25.75 2.96-.81 3.36.72-.77-3.29.86-2.97-.98-3.24.98-3.28-.86-3.08.35-3.02-2.96.62-3-.95-3.19.95-3.2-.95-3 .95-2.96-.62.35 3.02-.86 3.08.98 3.28-.98 3.24.86 2.97-.77 3.29 3.38-.72z'/></svg>"
+      }
+    ],
+    "availableForSameDayDelivery": true,
+    "gender": "man",
+    "defaultVariantId": "192648157304",
+    "sizeGuideLabels": {
+      "XS": "XS",
+      "S": "S",
+      "M": "M",
+      "L": "L",
+      "XL": "XL",
+      "XXL": "XXL",
+      "header": "Size"
+    },
+    "sizeGuideValues": {
+      "centricLength": {
+        "XS": "28.5",
+        "S": "29",
+        "M": "29.5",
+        "L": "30",
+        "XL": "30.5",
+        "XXL": "31",
+        "header": "Length"
+      },
+      "centricChestSize": {
+        "XS": "39",
+        "S": "41",
+        "M": "43",
+        "L": "45",
+        "XL": "48",
+        "XXL": "51",
+        "header": "Chest"
+      },
+      "centricShoulderSize": {
+        "XS": "17.5",
+        "S": "18",
+        "M": "18.5",
+        "L": "19",
+        "XL": "19.75",
+        "XXL": "20.5",
+        "header": "Shoulder"
+      },
+      "centricSleeveSize": {
+        "XS": "25",
+        "S": "25.25",
+        "M": "25.5",
+        "L": "25.75",
+        "XL": "26",
+        "XXL": "26.25",
+        "header": "Sleeve"
+      },
+      "centricNeckSize": {
+        "XS": "15.25",
+        "S": "15.75",
+        "M": "16.25",
+        "L": "16.75",
+        "XL": "17.5",
+        "XXL": "18.25",
+        "header": "Neck"
+      }
+    },
+    "sustainabilityValues": [
+      {
+        "label": "manufactureCountry",
+        "countryCode": "VN"
+      },
+      {
+        "label": "COOCountry",
+        "countryCode": "JP"
+      },
+      {
+        "label": "WeavingCountry",
+        "countryCode": "JP"
+      },
+      {
+        "label": "DyeingCountry",
+        "countryCode": "JP"
+      },
+      {
+        "label": "FinishingCountry",
+        "countryCode": "JP"
+      }
+    ],
+    "sustainability": null,
+    "marketingFabricDescription": null,
+    "groupLinks": {
+      "links": [
+        {
+          "label": "Structure Knit",
+          "url": {},
+          "selected": true,
+          "productID": "J0794505",
+          "ats": 16487
+        },
+        {
+          "label": "Good Cotton",
+          "url": {},
+          "selected": false,
+          "productID": "A0674535",
+          "ats": 6510
+        },
+        {
+          "label": "Structure Twill",
+          "url": {},
+          "selected": false,
+          "productID": "P0794514",
+          "ats": 136
+        }
+      ],
+      "label": "Fabric"
+    },
+    "groupLinks2": {
+      "links": []
+    },
+    "isNotOrderable": true,
+    "notesFromTheAtelier": null,
+    "hasUnisexCategory": false,
+    "shopTheLookLink": null,
+    "fitImage": null,
+    "fitMessage": "Slim fit, long sleeves",
+    "sizingMessage": "True to size, choose your normal size",
+    "fitLink": "Discover the best fit for you on our <a class=\"fit-link\" href=\"/mens-fit-guide.html\">Fit Guide</a>.",
+    "fitShape": "Slim",
+    "fitModelMsg": "Model is 6’2”, chest 38” and wearing a US size M",
+    "attributesHtml": "    <div class=\"col-12\">\n        <button class=\"title btn text-left btn-block d-lg-none collapsed\"\n                type=\"button\"\n                data-toggle=\"collapse\"\n                aria-expanded=\"false\"\n        >\n            Attributes\n        </button>\n        <h2 class=\"title d-none d-lg-block\">\n            Attributes\n        </h2>\n    </div>\n    <div class=\"col-12 value content collapse show d-lg-block\" id=\"collapsible-attributes\">\n        \n            \n                <h3 class=\"attribute-name\">\n                    Presentation Attributes\n                </h3>\n                <ul>\n                    \n                        <li class=\"attribute-values\">\n                            smartGiftPdp:\n                            \n                                true\n                            \n                        </li>\n                    \n                </ul>\n            \n        \n            \n                <h3 class=\"attribute-name\">\n                    Custom\n                </h3>\n                <ul>\n                    \n                        <li class=\"attribute-values\">\n                            smartGiftPdp:\n                            \n                                true\n                            \n                        </li>\n                    \n                </ul>\n            \n        \n    </div>\n\n\n",
+    "promotionsHtml": "    \n        <div class=\"row collapsible-xl\">\n\t        <div class=\"col-12\">\n\t            <button class=\"title callout btn text-left btn-block\"\n\t                    aria-expanded=\"false\" aria-controls=\"collapsible-promotion-details-0\">\n\t                null\n\t            </button>\n\t        </div>\n\t\t\t<div class=\"col-12 value content\" id=\"collapsible-promotion-details-0\">\n\t\t        Black Friday Offer Applied\n            </div>\n\t    </div>\n\t    <hr>\n    \n        <div class=\"row collapsible-xl\">\n\t        <div class=\"col-12\">\n\t            <button class=\"title callout btn text-left btn-block\"\n\t                    aria-expanded=\"false\" aria-controls=\"collapsible-promotion-details-1\">\n\t                null\n\t            </button>\n\t        </div>\n\t\t\t<div class=\"col-12 value content\" id=\"collapsible-promotion-details-1\">\n\t\t        3 for $450\n            </div>\n\t    </div>\n\t    <hr>\n    \n\n"
+  },
+  "resources": {
+    "info_selectforstock": "Select Styles for Availability",
+    "assistiveSelectedText": "selected",
+    "backorderCta": "Back-Order",
+    "preorderCta": "Pre-Order",
+    "addToCartCta": "Add to Bag",
+    "outOfStockCta": "Item is Sold Out",
+    "addToCartText": "Add to Bag"
+  },
+  "skipAvailability": true,
+  "currentZipcode": "06830",
+  "isSddActive": true,
+  "storePickupEnabled": true,
+  "showShippingWidget": true,
+  "showWaitlistSection": false,
+  "popUpUrl": "/on/demandware.store/Sites-theory2_US-Site/default/Stores-getZipSearchPopUp",
+  "atsUrl": "/on/demandware.store/Sites-theory2_US-Site/default/Stores-GetAvailability",
+  "productError": "select size",
+  "defaultShippingMethod": {
+    "ID": "012",
+    "displayName": "Ground",
+    "description": "3-5 business days after processing",
+    "estimatedArrivalTime": "3-5 business days after processing",
+    "default": true,
+    "shippingCost": "$0.00",
+    "selected": true,
+    "sameDayDelivery": false,
+    "storePickup": false,
+    "ishubboxable": false
+  },
+  "sdd": {},
+  "bopis": {},
+  "wishlistExists": false,
+  "promotions": [
+    {
+      "callOutMsg": "Black Friday Offer Applied",
+      "details": "Black Friday Offer Applied",
+      "hasCoupon": false,
+      "enabled": true,
+      "id": "TBF-25",
+      "name": null,
+      "promotionClass": "PRODUCT",
+      "rank": 20,
+      "showTrioSelector": false,
+      "trioSelectorCtaText": "",
+      "calloutBadge": true
+    },
+    {
+      "callOutMsg": "3 for $450",
+      "details": "3 for $450",
+      "hasCoupon": false,
+      "enabled": true,
+      "id": "S-SK",
+      "name": "SYLVAIN ND STRUCTURE KNIT",
+      "promotionClass": "PRODUCT",
+      "rank": 30,
+      "showTrioSelector": true,
+      "trioSelectorCtaText": "SELECT 3 for $450",
+      "calloutBadge": true
+    }
+  ],
+  "selectedSize": "",
+  "productData": {
+    "id": "J0794505",
+    "name": "Sylvain Shirt in Structure Knit",
+    "brand": "Theory",
+    "price": null,
+    "category": "mens-shirts",
+    "list": "",
+    "variant": "n/a",
+    "variationgroup": "J0794505_100",
+    "dimension3": "n/a",
+    "dimension4": "OLYMPIC",
+    "dimension6": "J0794505",
+    "dimension7": "STRUCTURE KNIT",
+    "dimension8": "SYLVAIN ND.STRUCTURE",
+    "issale": "N",
+    "currencyCode": "USD",
+    "dimension14": "yes"
+  }
+}

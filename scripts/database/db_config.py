@@ -19,6 +19,19 @@ DB_CONFIG = {
     "port": os.getenv("DB_PORT", ""),
 }
 
+
+def validate_db_config() -> None:
+    """Ensure every DB setting is present before code tries to connect."""
+    missing = [key for key, value in DB_CONFIG.items() if not value]
+    if missing:
+        raise RuntimeError(
+            "Missing database environment variables: "
+            + ", ".join(missing)
+        )
+
+
+validate_db_config()
+
 # For psql commands - export these environment variables
 PSQL_ENV = {
     "PGPASSWORD": DB_CONFIG["password"],

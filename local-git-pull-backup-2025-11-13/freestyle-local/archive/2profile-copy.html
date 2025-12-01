@@ -1,0 +1,346 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1"/>
+  <title>Sies — Fit Range Visualization</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --bg:#FAF8F6;
+      --ink:#1F1F1F;
+      --muted:#6F6F74;
+      --accent:#8F6AAE;
+      --card:#FFFFFF;
+      --stroke:#E8E4DE;
+    }
+    * { box-sizing:border-box; margin:0; padding:0; }
+    body {
+      font-family:Inter,system-ui,-apple-system,"Segoe UI",Roboto,Helvetica,Arial;
+      background:var(--bg); color:var(--ink);
+      min-height:100vh; display:flex; align-items:center; justify-content:center; padding:20px;
+    }
+
+    /* Phone shell */
+    .phone{width:430px;height:932px;border-radius:55px;background:#000;padding:2px;box-shadow:0 20px 60px -10px rgba(0,0,0,.06)}
+    .screen{height:100%;background:#fff;border-radius:53px;overflow:hidden;position:relative;display:flex;flex-direction:column}
+    .island{position:absolute;top:11px;left:50%;transform:translateX(-50%);width:126px;height:37px;background:#000;border-radius:19px;z-index:5}
+    .status{height:54px;margin-top:5px;display:flex;align-items:center;justify-content:space-between;padding:0 30px;font-weight:600;color:#000;font-size:17px;letter-spacing:-.02em}
+    .status .right{display:flex;align-items:center;gap:6px}
+    .status .right img{height:13px;width:auto;display:block}
+    .header{padding:16px 24px 6px;display:flex;align-items:center;justify-content:center;position:relative}
+    .logo{font-weight:600;font-size:32px;letter-spacing:-.01em;background:linear-gradient(180deg,#F1DCE3 0%,#8B7F83 100%);
+      -webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent}
+
+    .content{flex:1;overflow:auto;padding:0 24px 96px; background:
+      radial-gradient(260px 140px at 50% -40px, rgba(143,106,174,.06), rgba(143,106,174,0) 65%), var(--bg);
+    }
+
+    /* Fit Bracket Component */
+    .fit-bracket{
+      background:#fff; border:1px solid var(--stroke); border-radius:16px;
+      padding:20px 18px 24px; margin:20px 0; box-shadow:0 12px 28px rgba(0,0,0,.08);
+    }
+    
+    .bracket-header{
+      text-align:center; margin-bottom:16px;
+    }
+    
+    .bracket-title{
+      font-weight:700; font-size:18px; color:var(--ink); margin-bottom:4px;
+    }
+    
+    .bracket-subtitle{
+      font-size:13px; color:var(--muted); font-weight:500;
+    }
+    
+    .bracket-viz{
+      position:relative; height:120px; margin:20px 0;
+    }
+    
+    /* Main horizontal line */
+    .base-line{
+      position:absolute; top:70px; left:20px; right:20px; height:2px;
+      background:#E5E7EB; border-radius:1px;
+    }
+    
+    /* Tick marks and labels */
+    .tick{
+      position:absolute; top:60px; width:1px; height:20px; background:#9CA3AF;
+    }
+    .tick-label{
+      position:absolute; top:85px; font-size:11px; color:var(--muted); 
+      font-weight:600; transform:translateX(-50%);
+    }
+    
+    /* Good range bracket */
+    .good-bracket{
+      position:absolute; top:35px; color:var(--accent);
+    }
+    
+    .bracket-svg{
+      width:100%; height:40px;
+    }
+    
+    .bracket-brace{
+      fill:none; stroke:var(--accent); stroke-width:2.5; stroke-linecap:round;
+    }
+    
+    .bracket-arrow{
+      fill:var(--accent);
+    }
+    
+    .bracket-label{
+      position:absolute; top:-25px; left:50%; transform:translateX(-50%);
+      background:#fff; padding:2px 8px; border-radius:8px;
+      font-size:12px; font-weight:700; color:var(--accent);
+      border:1px solid rgba(143,106,174,.2);
+    }
+    
+    /* Outlier marker */
+    .outlier{
+      position:absolute; top:20px;
+    }
+    
+    .outlier-dot{
+      width:8px; height:8px; background:#FF6B6B; border-radius:50%;
+      margin:0 auto 6px; box-shadow:0 2px 8px rgba(255,107,107,.3);
+    }
+    
+    .outlier-line{
+      width:1px; height:25px; background:#FF6B6B; margin:0 auto;
+    }
+    
+    .outlier-label{
+      position:absolute; top:-30px; left:50%; transform:translateX(-50%);
+      background:#FFF5F5; padding:3px 8px; border-radius:6px;
+      font-size:11px; font-weight:600; color:#DC2626;
+      border:1px solid #FED7D7; white-space:nowrap;
+    }
+
+    /* Progress card styling */
+    .progress-card{
+      background:linear-gradient(135deg, #F0F9FF 0%, #FFFFFF 100%);
+      border:1px solid #E0F2FE; border-radius:16px; padding:16px; margin-bottom:16px;
+    }
+
+    .progress-header{
+      display:flex; align-items:center; justify-content:space-between; margin-bottom:8px;
+    }
+
+    .progress-bar{
+      height:6px; background:#E5E7EB; border-radius:3px; overflow:hidden;
+    }
+
+    .progress-fill{
+      height:100%; width:85%; background:linear-gradient(90deg, var(--accent), #A78BFA);
+      border-radius:3px; transition:width 0.8s ease;
+      animation:progressLoad 1.2s ease-out;
+    }
+
+    @keyframes progressLoad {
+      from { width: 0%; }
+      to { width: 85%; }
+    }
+
+    /* Tab bar */
+    .tabs{position:absolute;left:0;right:0;bottom:0;height:83px;background:rgba(255,255,255,.72);
+      border-top:1px solid rgba(0,0,0,.06);backdrop-filter:blur(14px);display:flex;justify-content:space-around;
+      align-items:flex-start;padding-top:8px;padding-bottom:34px}
+    .tab{display:flex;flex-direction:column;align-items:center;gap:6px;text-decoration:none;
+      color:#8e8e93;font-size:11px;font-weight:500}
+    .tab.active{color:#8F6AAE}
+    .ico{width:28px;height:28px}
+
+    /* SVG Fit Line Styles */
+    .fl-svg{ width:100%; height:210px; display:block }
+    .fl-base{ stroke:#DCD8E7; stroke-width:3; stroke-linecap:round }
+    .fl-endtick{ stroke:#BDB6CD; stroke-width:2 }
+    .fl-tick{ stroke:#E6E2EF; stroke-width:2 }
+    .fl-label{ fill:#77747d; font:600 11px/1 Inter; text-anchor:middle }
+
+    .fl-bracket{ fill:rgba(143,106,174,.10); stroke:rgba(143,106,174,.70); stroke-width:2.5; transition:d .35s cubic-bezier(.22,.61,.36,1) }
+    .fl-arrow{ fill:#8F6AAE; filter:drop-shadow(0 4px 8px rgba(143,106,174,.25)) }
+
+    .fl-dot{ fill:#8F6AAE; stroke:#fff; stroke-width:2; filter:drop-shadow(0 4px 10px rgba(143,106,174,.25)) }
+    .fl-stem{ stroke:#8F6AAE; stroke-opacity:.5; stroke-width:2 }
+    .fl-note-bg{ fill:#fff; stroke:#E8E4DE }
+    .fl-note{ fill:#5a5562; font:600 12px/1 Inter; dominant-baseline:middle }
+  </style>
+</head>
+<body>
+  <div class="phone">
+    <div class="screen">
+      <div class="island"></div>
+      <div class="status"><div>9:41</div><div class="right">📶 📶 🔋</div></div>
+
+      <div class="header">
+        <div class="logo">sies</div>
+      </div>
+
+      <div class="content">
+        <!-- Progress card -->
+        <div class="progress-card">
+          <div class="progress-header">
+            <span style="font-weight:700;color:var(--ink);font-size:15px;">Fit Profile Strength</span>
+            <span style="font-weight:700;color:var(--accent);font-size:15px;">85%</span>
+          </div>
+          <div class="progress-bar">
+            <div class="progress-fill"></div>
+          </div>
+          <div style="font-size:12px;color:var(--muted);margin-top:6px;">Add 2 more items to unlock premium fit insights</div>
+        </div>
+
+        <!-- Fit Bracket Visualization -->
+        <div class="fit-bracket">
+          <div class="bracket-header">
+            <div class="bracket-title">Bust Fit Range</div>
+            <div class="bracket-subtitle">Based on your garment measurements</div>
+          </div>
+          
+          <div class="bracket-viz">
+            <svg id="fitSvg" class="fl-svg" viewBox="0 0 1000 210" preserveAspectRatio="none" aria-labelledby="flTitle">
+              <!-- baseline -->
+              <line x1="40" y1="130" x2="960" y2="130" class="fl-base"/>
+
+              <!-- ticks + labels (built by JS) -->
+              <g id="flTicks"></g>
+
+              <!-- bracket end ticks -->
+              <line id="flTickL" y1="130" y2="98" class="fl-endtick"/>
+              <line id="flTickR" y1="130" y2="98" class="fl-endtick"/>
+
+              <!-- wavy brace that meets at a small arrow -->
+              <path id="flBracket" class="fl-bracket" d=""/>
+              <polygon id="flArrow" class="fl-arrow" points="500,82 490,98 510,98"/>
+
+              <!-- outlier pin + label -->
+              <g id="flOutlier">
+                <circle id="flDot" r="6" class="fl-dot"/>
+                <line id="flStem" y1="130" y2="84" class="fl-stem"/>
+                <rect id="flNoteBg" rx="8" ry="8" height="24" class="fl-note-bg"/>
+                <text id="flNote" class="fl-note">RÓHE Top</text>
+              </g>
+            </svg>
+          </div>
+
+          <script>
+          (() => {
+            // Data
+            const BASE_MIN = 30, BASE_MAX = 40;
+            const FIT_MIN = 31.0, FIT_MAX = 33.5;   // highlighted range
+            const OUTLIER  = 40.0;                  // outlier marker at the end
+
+            // SVG coords
+            const XMIN = 40, XMAX = 960, Y = 130;
+
+            const mapX = v => XMIN + ((v - BASE_MIN) / (BASE_MAX - BASE_MIN)) * (XMAX - XMIN);
+
+            // Elements
+            const ticksG  = document.getElementById('flTicks');
+            const tickL   = document.getElementById('flTickL');
+            const tickR   = document.getElementById('flTickR');
+            const bracket = document.getElementById('flBracket');
+            const arrow   = document.getElementById('flArrow');
+            const dot     = document.getElementById('flDot');
+            const stem    = document.getElementById('flStem');
+            const noteBg  = document.getElementById('flNoteBg');
+            const note    = document.getElementById('flNote');
+
+            // Build ticks every 1"
+            for (let v = BASE_MIN; v <= BASE_MAX; v++) {
+              const x = mapX(v);
+              const t = document.createElementNS('http://www.w3.org/2000/svg','line');
+              t.setAttribute('x1', x); t.setAttribute('x2', x);
+              t.setAttribute('y1', Y); t.setAttribute('y2', Y + 8);
+              t.setAttribute('class','fl-tick');
+              ticksG.appendChild(t);
+
+              const lbl = document.createElementNS('http://www.w3.org/2000/svg','text');
+              lbl.setAttribute('x', x); lbl.setAttribute('y', Y + 26);
+              lbl.setAttribute('class','fl-label');
+              lbl.textContent = `${v}″`;
+              ticksG.appendChild(lbl);
+            }
+
+            // End ticks at the fit range
+            const x1 = mapX(FIT_MIN), x2 = mapX(FIT_MAX);
+            tickL.setAttribute('x1', x1); tickL.setAttribute('x2', x1);
+            tickR.setAttribute('x1', x2); tickR.setAttribute('x2', x2);
+
+            // Elegant wavy brace meeting at arrow
+            function bracePath(a, b){
+              const mid = (a + b)/2, top = 82, floor = 98, lift = 14;
+              const l = `M ${a} ${floor} C ${a+30} ${floor-lift*.8}, ${mid-70} ${top+6}, ${mid-18} ${top+6}
+                         C ${mid-10} ${top+6}, ${mid-10} ${top}, ${mid-8} ${top}`;
+              const r = `C ${mid+10} ${top}, ${mid+10} ${top+6}, ${mid+18} ${top+6}
+                         C ${mid+70} ${top+6}, ${b-30} ${floor-lift*.8}, ${b} ${floor}`;
+              return `${l} ${r} L ${b} ${floor} L ${a} ${floor} Z`.replace(/\s+/g,' ');
+            }
+            bracket.setAttribute('d', bracePath(x1, x2));
+
+            // Center the arrow above the brace
+            const mid = (x1 + x2) / 2;
+            arrow.style.transform = `translateX(${mid - 500}px)`; // viewBox center ≈ 500
+
+            // Outlier pin at 40"
+            const xo = mapX(OUTLIER);
+            dot.setAttribute('cx', xo); dot.setAttribute('cy', Y);
+            stem.setAttribute('x1', xo); stem.setAttribute('x2', xo);
+
+            // Label bubble to the left of the pin (auto widths)
+            const text = 'RÓHE Top';
+            const estWidth = Math.max(88, text.length * 7.2 + 16); // quick estimate
+            noteBg.setAttribute('x', xo - estWidth - 10); noteBg.setAttribute('y', 58);
+            noteBg.setAttribute('width', estWidth);
+            note.setAttribute('x', xo - estWidth/2 - 10); note.setAttribute('y', 70);
+          })();
+          </script>
+          
+          <div style="text-align:center; margin-top:8px;">
+            <span style="font-size:13px; color:var(--muted);">
+              Your typical fit range: <strong style="color:var(--accent);">31″ – 34″</strong>
+            </span>
+          </div>
+        </div>
+
+        <!-- Additional info card -->
+        <div style="background:#F8FAFC; border:1px solid #E2E8F0; border-radius:12px; padding:14px; margin-top:16px;">
+          <div style="font-size:13px; color:#475569; line-height:1.5;">
+            <strong style="color:var(--ink);">How we calculate this:</strong> 
+            We analyze the bust measurements from your perfectly-fitting garments to identify your optimal range. Outliers like oversized pieces are noted separately.
+          </div>
+        </div>
+
+        <!-- Smart Fit Suggestion Card -->
+        <div class="card insight-card" style="margin-top:20px; padding: 20px 24px; background: linear-gradient(135deg, #F9F8FF 0%, #FFFFFF 100%); border: 1px solid rgba(143,106,174,.12); transition: transform 0.2s ease;">
+          <a class="insight" href="https://www.anthropologie.com/shop/hutch-corene-strapless-floral-tulle-a-line-midi-dress2?category=clothes-top-rated&color=038&type=STANDARD&quantity=1" target="_blank" rel="noreferrer" style="text-decoration:none; color:inherit; display: flex; gap: 20px; align-items: flex-start;">
+            <div class="thumb" style="border: 2px solid var(--accent); width:120px; height:160px; border-radius:20px; overflow:hidden; flex:0 0 120px; background:#f7f5f2;">
+              <img alt="Hutch Corene Strapless Floral Tulle A-Line Midi Dress" src="https://images.urbndata.com/is/image/Anthropologie/98281447_038_b?$a15-pdp-detail-shot        <!-- Additional info card -->
+        <div style="background:#F8FAFC; border:1px solid #E2E8F0; border-radius:12px; padding:14px; margin-top:16px;">
+          <div style="font-size:13px; color:#475569; line-height:1.5;">
+            <strong style="color:var(--ink);">How we calculate this:</strong> 
+            We analyze the bust measurements from your perfectly-fitting garments to identify your optimal range. Outliers like oversized pieces are noted separately.
+          </div>
+        </div>fit=constrain&fmt=webp&qlt=80&wid=600" style="width:100%; height:100%; object-fit:cover; object-position:center 35%;"/>
+            </div>
+            <div class="copy" style="flex:1;">
+              <div class="eyebrow" style="color: var(--accent); font-weight: 700; font-size: 14px; margin-bottom: 10px;">Smart Fit Suggestion</div>
+              <div class="product-name" style="font-size: 20px; font-weight: 700; color: var(--ink); margin-bottom: 8px; line-height: 1.2;">Strapless Mini Dress (XS)</div>
+              <div class="brand" style="margin-bottom: 10px; font-size: 16px; font-weight: 500; color: var(--ink);">Anthropologie</div>
+              <div class="tap-to-view" style="font-size: 13px; color: var(--accent); font-weight: 600;">Tap to view</div>
+            </div>
+          </a>
+        </div>
+      </div>
+
+      <div class="tabs">
+        <a class="tab" href="#"><svg class="ico" viewBox="0 0 256 256"><path fill="currentColor" d="M241,150.65s0,0,0-.05a51.33,51.33,0,0,0-2.53-5.9L196.93,50.18a12,12,0,0,0-2.5-3.65,36,36,0,0,0-50.92,0A12,12,0,0,0,140,55V76H116V55a12,12,0,0,0-3.51-8.48,36,36,0,0,0-50.92,0,12,12,0,0,0-2.5,3.65L17.53,144.7A51.33,51.33,0,0,0,15,150.6s0,0,0,.05A52,52,0,1,0,116,168V100h24v68a52,52,0,1,0,101-17.35ZM80,62.28a12,12,0,0,1,12-1.22v63.15a51.9,51.9,0,0,0-35.9-7.62ZM64,196a28,28,0,1,1,28-28A28,28,0,0,1,64,196ZM164,61.06a12.06,12.06,0,0,1,12,1.22l23.87,54.31a51.9,51.9,0,0,0-35.9,7.62ZM192,196a28,28,0,1,1,28-28A28,28,0,0,1,192,196Z"/></svg><span>Find</span></a>
+        <a class="tab" href="#"><svg class="ico" viewBox="0 0 256 256"><path fill="currentColor" d="M225.24,174.74a12,12,0,0,1-1.58,16.89C205.49,206.71,189.06,212,174.15,212c-19.76,0-36.86-9.29-51.88-17.44-25.06-13.62-44.86-24.37-74.61.3a12,12,0,1,1-15.32-18.48c42.25-35,75-17.23,101.39-2.92,25.06,13.61,44.86,24.37,74.61-.3A12,12,0,0,1,225.24,174.74Zm-16.9-57.59c-29.75,24.67-49.55,13.91-74.61.3-26.35-14.3-59.14-32.11-101.39,2.92a12,12,0,0,0,15.32,18.48c29.75-24.67,49.55-13.92,74.61-.3,15,8.15,32.12,17.44,51.88,17.44,14.91,0,31.34-5.29,49.51-20.36a12,12,0,0,0-15.32-18.48ZM47.66,82.84c29.75-24.67,49.55-13.92,74.61-.3,15,8.15,32.12,17.44,51.88,17.44,14.91,0,31.34-5.29,49.51-20.36a12,12,0,0,0-15.32-18.48c-29.75,24.67-49.55,13.92-74.61.3-26.35-14.3-59.14-32.11-101.39,2.93A12,12,0,1,0,47.66,82.84Z"/></svg><span>Feed</span></a>
+        <a class="tab" href="#"><svg class="ico" viewBox="0 0 256 256"><path fill="currentColor" d="M244,168,148,96l19.2-14.4A12,12,0,0,0,172,72a44,44,0,0,0-87.66-5.48,12,12,0,1,0,23.82,3,20,20,0,0,1,39.09-2.92L121,86.24c-.15.1-.29.21-.43.32L12,168a20,20,0,0,0,12,36H232a20,20,0,0,0,12-36ZM36,180l92-69,92,69Z"/></svg><span>Closet</span></a>
+        <a class="tab active" href="#"><svg class="ico" viewBox="0 0 256 256"><path fill="currentColor" d="M234.38,210a123.36,123.36,0,0,0-60.78-53.23,76,76,0,1,0-91.2,0A123.36,123.36,0,0,0,21.62,210a12,12,0,1,0,20.77,12c18.12-31.32,50.12-50,85.61-50s67.49,18.69,85.61,50a12,12,0,0,0,20.77-12ZM76,96a52,52,0,1,1,52,52A52.06,52.06,0,0,1,76,96Z"/></svg><span>Profile</span></a>
+      </div>
+    </div>
+  </div>
+</body>
+</html>

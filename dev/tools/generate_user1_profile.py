@@ -17,10 +17,10 @@ sys.path.append('src/ios_app/Backend')
 # Database config
 DB_CONFIG = {
     'database': 'postgres',
-    'user': 'postgres.lbilxlkchzpducggkrxx', 
-    'password': 'efvTower12',
-    'host': 'aws-0-us-east-2.pooler.supabase.com',
-    'port': '6543'
+    'user': 'fs_core_rw', 
+    'password': 'CHANGE_ME',
+    'host': 'aws-1-us-east-1.pooler.supabase.com',
+    'port': '5432'
 }
 
 def get_user1_complete_profile():

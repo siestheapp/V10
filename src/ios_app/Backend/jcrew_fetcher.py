@@ -85,7 +85,9 @@ class JCrewProductFetcher:
         """
         # Check if it's a supported product type (all men's tops including outerwear)
         if not self._is_supported_product(product_url):
-            print(f"❌ Unsupported product type. Only J.Crew men's tops (shirts, sweaters, jackets) are supported.")
+            print(
+                "❌ Unsupported product type. Only J.Crew men's tops, outerwear, and pants/chinos are supported."
+            )
             return None
         
         # Get normalized cache key for consistent caching across color variants
@@ -144,7 +146,13 @@ class JCrewProductFetcher:
             "/jacket",   # ✅ Now supported - same size guide
             "/coat",     # ✅ Now supported - same size guide  
             "/outerwear/",  # ✅ Now supported - same size guide
-            "/blazer"    # ✅ Now supported - same size guide
+            "/blazer",   # ✅ Now supported - same size guide
+            "/pants/",
+            "/pant/",
+            "/chinos/",
+            "/denim/",
+            "/jeans/",
+            "/bottoms/",
         ]
         
         # Check if URL contains any supported category
@@ -393,6 +401,14 @@ class JCrewProductFetcher:
                 return {'category': 'Shirts', 'subcategory': 'Oxford'}
             else:
                 return {'category': 'Shirts', 'subcategory': 'Casual'}
+
+        # Bottoms / Pants
+        elif any(keyword in url_lower for keyword in ['/pants/', '/pant/', '/chinos/', '/denim/', '/jeans/', '/bottoms/']):
+            if 'denim' in url_lower or 'jean' in url_lower:
+                return {'category': 'Pants', 'subcategory': 'Denim'}
+            if 'chino' in url_lower:
+                return {'category': 'Pants', 'subcategory': 'Chinos'}
+            return {'category': 'Pants', 'subcategory': 'Classic'}
         
         # Default for men's tops
         else:
